@@ -3,7 +3,7 @@
 Cyber Vulnerability Lifecycle · Semester Ganjil 2026/2027 · Samuel, Rousan, Abhi, Rizky.
 
 Repository independen dan private: [samindriano/tk2-kasdad](https://github.com/samindriano/tk2-kasdad).
-Audit, EDA formal Samuel, **Regression Round 1 dan Classification Round 1 selesai pada 30 Oktober 2026**. Regression telah disetujui pengguna untuk progression; Classification Round 1 kini berhenti untuk review. Belum ada final model atau Kaggle submission.
+Audit, EDA formal Samuel, Regression Round 1 serta **Classification Round 1 dan Round 2 selesai pada 30 Oktober 2026**. Round 1 menjadi checkpoint yang dipertahankan; Classification Round 2 berhenti untuk review. Belum ada final model atau Kaggle submission.
 
 ## Status dan temuan awal
 
@@ -13,9 +13,12 @@ Audit, EDA formal Samuel, **Regression Round 1 dan Classification Round 1 selesa
 | Regression | Audit aktual selesai | Train 50.608 × 19, test 29.421 × 18; `threat_rank` terverifikasi lewat train/test/sample |
 | EDA Samuel | EDA formal selesai; pertanyaan tetap | Pertanyaan utama dipilih pengguna; seluruh 33 cycle, robustness periodisasi, common-support dan EF composition diperiksa |
 | Regression Samuel Round 1 | Selesai; disetujui pengguna untuk progression | 64 fit + 64 refit terpisah; seluruh prediction vectors bit-identical; R1-D memimpin primary, tetapi R1-C sedikit lebih baik pada pooled H12 |
-| Classification Samuel Round 1 | Selesai; berhenti untuk review | 7 recipe, 56 evaluation jobs; 78 fits +13 representative refits. Hybrid LR fixed F1 0,8206, dengan missing-stream dan threshold trade-offs |
+| Classification Samuel Round 1 | Selesai; disetujui sebagai checkpoint | 7 recipe, 56 evaluation jobs; 78 fits +13 representative refits. Hybrid LR fixed F1 0,8206, dengan missing-stream dan threshold trade-offs |
+| Classification Samuel Round 2 | Selesai; berhenti untuk review | 10 recipe, 4 policies, 80 window jobs, 72 fits +12 representative refits. Fixed HGB fallback route F1 0,8255 primary /0,7968 H12 |
 
-Milestone terbaru: [notebook Classification Round 1](notebooks/samuel/05_samuel_classification_round1.ipynb), [hasil dan rekomendasi](reports/classification_round1/FINDINGS.md), [tabel detail](reports/classification_round1/comparison_tables.md), serta [protocol dan reproduksi](docs/CLASSIFICATION_ROUND1.md). Structured/text/hybrid dibandingkan dengan threshold 0,50 dan inner temporal selection. Semua source dan hasil Regression Round 1 dipertahankan.
+Milestone terbaru: [notebook Classification Round 2](notebooks/samuel/06_samuel_classification_round2.ipynb), [findings dan rekomendasi](reports/classification_round2/FINDINGS.md), [tabel detail](reports/classification_round2/comparison_tables.md), [protocol/reproduksi](docs/CLASSIFICATION_ROUND2.md), serta [verification receipt](reports/classification_round2/verification.json). Fixed routing memperbaiki missing-stream; dua text weights dan alternatif threshold belum memberi perbaikan universal. Seluruh hasil adalah adaptive development evidence dari validation yang dipakai ulang.
+
+Checkpoint Classification Round 1: [notebook](notebooks/samuel/05_samuel_classification_round1.ipynb), [hasil dan rekomendasi](reports/classification_round1/FINDINGS.md), [tabel detail](reports/classification_round1/comparison_tables.md), serta [protocol dan reproduksi](docs/CLASSIFICATION_ROUND1.md). Structured/text/hybrid dibandingkan dengan threshold 0,50 dan inner temporal selection. Semua source dan hasil kedua task Round 1 dipertahankan.
 
 Mulai dari [notebook Round 1](notebooks/samuel/04_samuel_regression_round1.ipynb), [hasil dan rekomendasi](reports/round1/ROUND1_FINDINGS.md), [seluruh tabel](reports/round1/COMPARISON_TABLES.md), [QA](reports/round1/VALIDATION.md), dan [reproduksi](docs/ROUND1_REPRODUCIBILITY.md). Primary MAE R1-D **13,3498** versus R1-C **15,1490**; pada H12_E R1-D memburuk **17,7956** versus **16,4321**. Kandidat terbaik masih sementara.
 
@@ -35,12 +38,12 @@ Python yang dipakai: 3.13.5. Dari root repository:
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
-python scripts/run_classification_round1.py
-python scripts/build_classification_round1_notebook.py
-python -m unittest discover -s tests -v
+python scripts/run_classification_round2.py
+python scripts/build_classification_round2_notebook.py
+python -m unittest tests.test_classification_round2_models tests.test_classification_round2_metrics tests.test_classification_round2_evaluation tests.test_classification_round2_results -v
 ```
 
-Untuk menjalankan ulang Regression Round 1 secara terpisah:
+Round 2 memakai output/cache namespace sendiri dan memverifikasi checkpoint lama. Rincian bootstrap dependency vectors, repeat serta helper compatibility tests ada di panduan Round 2. Reproduksi Regression Round 1 secara terpisah:
 
 ```powershell
 python scripts/run_round1.py
@@ -98,15 +101,17 @@ data/                 raw lokal, processed, derived, panduan data
 notebooks/            samuel, rousan, abhi, rizky; audit sebagai companion Samuel
 src/data/             audit dan EDA deskriptif
 src/features/         placeholder
-src/models/           recipe, evaluation, diagnostics dan reporting kedua task Round 1
+src/models/           recipe, evaluation, diagnostics dan reporting kedua task; Classification Round 2 terpisah
 src/utils/            konfigurasi path portable
 scripts/              entry point audit, training/evaluation dan builder notebook
 reports/audits/       laporan Markdown/JSON, hash dan profil input
 reports/eda/          status/hasil EDA Samuel
 reports/round1/       aggregate metrics, fit audits, figures, findings dan QA
 reports/classification_round1/  classification review, metrics, fit audits, figures dan findings
+reports/classification_round2/  ablation/routing/weight/policy comparisons dan independent receipts
 experiments/round1/   protocol dan receipt freeze sebelum fit
 experiments/classification_round1/  protocol dan freeze classification
+experiments/classification_round2/  protocol, source/reference identity dan checkpoint protection
 experiments/runs/     ignored validation vectors untuk reproduksi lokal
 submissions/          placeholder, output diabaikan Git
 deliverables/individual-final/  placeholder
@@ -124,7 +129,7 @@ Folder `data/derived`, `notebooks/classification`, `notebooks/regression`, dokum
 - [Protokol Round 1](docs/ROUND1_PROTOCOL.md) dan [feature eligibility](docs/ROUND1_FEATURE_ELIGIBILITY.md) dibekukan sebelum eksperimen. Enam primary windows adalah development validation karena seluruh train sudah dipakai EDA. Recipe TP1 tidak dipindahkan otomatis.
 - [Referensi TP1](docs/TP1_REFERENCE.md) dibaca tanpa perubahan. Ada perbedaan antara ringkasan resep lama dan artifact final yang ditemukan; perbedaannya didokumentasikan.
 
-Langkah berikutnya adalah review Classification Round 1 dan memilih prioritas pengembangan kedua task bersama pengguna. Pertanyaan EDA tetap. Recipe TP1 tidak disalin otomatis dan Round 2 belum dijalankan. Kenaikan skor agregat tetap dibaca bersama horizon panjang, threshold policy serta missing-stream/EF subgroups.
+Langkah berikutnya adalah review Classification Round 2 dan memilih prioritas kedua task bersama pengguna. Pertanyaan EDA tetap. Belum ada Classification Round 3 atau Regression Round 2. Kenaikan skor agregat dibaca bersama horizon panjang, reused-validation selection bias, threshold policy serta missing-stream/EF subgroups.
 
 ## Discovery regression terbaru
 

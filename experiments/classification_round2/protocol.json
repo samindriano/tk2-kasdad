@@ -1,0 +1,395 @@
+{
+  "protocol_id": "samuel-classification-round2-v1",
+  "stage": "ADAPTIVE_DEVELOPMENT_REUSE_NOT_UNTOUCHED_VALIDATION",
+  "target": "artifact_signal",
+  "primary_metric": "macro_f1",
+  "primary_control_policy": "fixed_0.5",
+  "seed": 42,
+  "thread_limit": 2,
+  "baseline_checkpoint": "6ca43f5c3ac7eb6d3fe5efb1dd9777fd68528214",
+  "round1_run_id": "classification_round1_v1",
+  "primary_windows": [
+    {
+      "id": "W1",
+      "fit": [
+        47,
+        55
+      ],
+      "validation": [
+        56,
+        59
+      ]
+    },
+    {
+      "id": "W2",
+      "fit": [
+        47,
+        59
+      ],
+      "validation": [
+        60,
+        63
+      ]
+    },
+    {
+      "id": "W3",
+      "fit": [
+        47,
+        63
+      ],
+      "validation": [
+        64,
+        67
+      ]
+    },
+    {
+      "id": "W4",
+      "fit": [
+        47,
+        67
+      ],
+      "validation": [
+        68,
+        71
+      ]
+    },
+    {
+      "id": "W5",
+      "fit": [
+        47,
+        71
+      ],
+      "validation": [
+        72,
+        75
+      ]
+    },
+    {
+      "id": "W6",
+      "fit": [
+        47,
+        75
+      ],
+      "validation": [
+        76,
+        79
+      ]
+    }
+  ],
+  "secondary_windows": [
+    {
+      "id": "H12_E",
+      "fit": [
+        47,
+        55
+      ],
+      "validation": [
+        56,
+        67
+      ]
+    },
+    {
+      "id": "H12_L",
+      "fit": [
+        47,
+        67
+      ],
+      "validation": [
+        68,
+        79
+      ]
+    }
+  ],
+  "feature_sets": {
+    "two": [
+      "impact_load",
+      "entry_friction"
+    ],
+    "ef": [
+      "entry_friction"
+    ],
+    "structured": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code"
+    ],
+    "text": [
+      "signal_stream"
+    ],
+    "hybrid": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code",
+      "signal_stream"
+    ]
+  },
+  "lr_parameters": {
+    "C": 1.0,
+    "solver": "liblinear",
+    "max_iter": 2000,
+    "tol": 0.0001,
+    "class_weight": null,
+    "random_state": 42
+  },
+  "hgb_parameters": {
+    "learning_rate": 0.05,
+    "max_iter": 200,
+    "max_leaf_nodes": 15,
+    "min_samples_leaf": 30,
+    "l2_regularization": 1.0,
+    "max_bins": 255,
+    "early_stopping": false,
+    "random_state": 42,
+    "loss": "log_loss"
+  },
+  "tfidf_parameters": {
+    "analyzer": "word",
+    "ngram_range": [
+      1,
+      2
+    ],
+    "min_df": 3,
+    "max_df": 0.995,
+    "max_features": 20000,
+    "sublinear_tf": true,
+    "lowercase": true,
+    "strip_accents": "unicode",
+    "token_pattern": "(?u)\\b\\w\\w+\\b"
+  },
+  "preprocessing": "Reuse frozen Round1 model/parser methods read-only. Same learned boundaries; no raw/target joins.",
+  "recipes": [
+    {
+      "id": "C1_A",
+      "kind": "control",
+      "source": "C1_A",
+      "description": "Unmodified Round1 control, fresh outer refit; saved inner probabilities reused"
+    },
+    {
+      "id": "C1_B",
+      "kind": "control",
+      "source": "C1_B",
+      "description": "Unmodified Round1 control, fresh outer refit; saved inner probabilities reused"
+    },
+    {
+      "id": "C2_A",
+      "kind": "control",
+      "source": "C2_A",
+      "description": "Unmodified Round1 control, fresh outer refit; saved inner probabilities reused"
+    },
+    {
+      "id": "C2_B",
+      "kind": "control",
+      "source": "C2_B",
+      "description": "Unmodified Round1 control, fresh outer refit; saved inner probabilities reused"
+    },
+    {
+      "id": "C3_B",
+      "kind": "variant",
+      "variant": "structured_indicator",
+      "description": "C1_A plus explicit missing-stream indicator; all other preprocessing andC fixed"
+    },
+    {
+      "id": "C3_C",
+      "kind": "variant",
+      "variant": "hybrid_no_indicator",
+      "description": "C2_B minus explicit missing-stream indicator"
+    },
+    {
+      "id": "C5_LOW",
+      "kind": "variant",
+      "variant": "hybrid_text_half",
+      "description": "C2_B with TFIDF block multiplied by0.5 atfit/predict; C1 unchanged"
+    },
+    {
+      "id": "C5_HIGH",
+      "kind": "variant",
+      "variant": "hybrid_text_double",
+      "description": "C2_B with TFIDF block multiplied by2.0 atfit/predict; C1 unchanged"
+    },
+    {
+      "id": "C4_LR",
+      "kind": "route",
+      "present": "C2_B",
+      "missing": "C1_A",
+      "description": "Fixed availability route; one pooled inner threshold on combined probabilities"
+    },
+    {
+      "id": "C4_HGB",
+      "kind": "route",
+      "present": "C2_B",
+      "missing": "C1_B",
+      "description": "Fixed availability route; one pooled inner threshold on combined probabilities"
+    }
+  ],
+  "fit_recipes": [
+    "C1_A",
+    "C1_B",
+    "C2_A",
+    "C2_B",
+    "C3_B",
+    "C3_C",
+    "C5_LOW",
+    "C5_HIGH"
+  ],
+  "threshold_policies": [
+    "fixed_0.5",
+    "inner_pooled",
+    "inner_shrink50",
+    "inner_equal_cycle"
+  ],
+  "threshold_selection": {
+    "last_n_fit_cycles": 4,
+    "minimum_inner_fit_cycles": 3,
+    "minimum_inner_fit_rows": 500,
+    "minimum_inner_validation_rows": 200,
+    "grid": [
+      0.1,
+      0.11,
+      0.12,
+      0.13,
+      0.14,
+      0.15,
+      0.16,
+      0.17,
+      0.18,
+      0.19,
+      0.2,
+      0.21,
+      0.22,
+      0.23,
+      0.24,
+      0.25,
+      0.26,
+      0.27,
+      0.28,
+      0.29,
+      0.3,
+      0.31,
+      0.32,
+      0.33,
+      0.34,
+      0.35,
+      0.36,
+      0.37,
+      0.38,
+      0.39,
+      0.4,
+      0.41,
+      0.42,
+      0.43,
+      0.44,
+      0.45,
+      0.46,
+      0.47,
+      0.48,
+      0.49,
+      0.5,
+      0.51,
+      0.52,
+      0.53,
+      0.54,
+      0.55,
+      0.56,
+      0.57,
+      0.58,
+      0.59,
+      0.6,
+      0.61,
+      0.62,
+      0.63,
+      0.64,
+      0.65,
+      0.66,
+      0.67,
+      0.68,
+      0.69,
+      0.7,
+      0.71,
+      0.72,
+      0.73,
+      0.74,
+      0.75,
+      0.76,
+      0.77,
+      0.78,
+      0.79,
+      0.8,
+      0.81,
+      0.82,
+      0.83,
+      0.84,
+      0.85,
+      0.86,
+      0.87,
+      0.88,
+      0.89,
+      0.9
+    ],
+    "tie_rule": "max pooled Macro F1; within 1e-12 closest to0.5 then lower threshold",
+    "fallback": "0.5 if too few rows/cycles or fewer than two actual classes in inner-fit/inner-validation",
+    "outer_refit": "Refit model on full outer training history after threshold chosen using separate inner model.",
+    "no_outer_label_selection": true,
+    "existing": "Same last4cycle temporal holdout; controls reuse saved inner probabilities, variants new inner fits; routes combine matching inner vectors using availability before selecting threshold.",
+    "inner_shrink50": "0.5+0.5*(inner_pooled_threshold-0.5), no extra rounding or outer-label choice",
+    "inner_equal_cycle": "Max arithmetic mean of fixed-label [0,1] MacroF1 over all4innercycles, samegrid/tie rule; empty/insufficient total innercoverage fallsback0.5",
+    "policy_scope": "All4policies evaluated for all10recipes; no stream-specific cutoffs, calibration,outer-label gate choice"
+  },
+  "routing_gate": "Missing if NaN or strip(signal_stream)==empty, exactly Round1 definition; present uses C2_B, missing C1_A/C1_B; no learned gate",
+  "block_hypotheses": {
+    "half": "Test whether reducing text representation weight changes sharedstructured/intercept andmissingrisk",
+    "double": "Test whether emphasizingtext preserves presentgain or worsens conditionalrobustness",
+    "interpretation": "Cfixed1, scaling text changes effective L2 penalty relative tostructured; not purecausalfeatureimportance"
+  },
+  "metrics": {
+    "policies": [
+      "fixed_0.5",
+      "inner_pooled",
+      "inner_shrink50",
+      "inner_equal_cycle"
+    ],
+    "comparison": "Report both separately on identical validation records; majority only fixed",
+    "labels": [
+      0,
+      1
+    ],
+    "zero_division": 0,
+    "single_class": "Keep two-label macro F1 and flag; AP/balanced accuracy null",
+    "pr_auc": "sklearn average_precision_score (stepwise average precision), not trapezoidal PR integration",
+    "pooled": "Recompute from concatenated predictions; never average cycle/window F1 as pooled",
+    "equal_cycle": "Arithmetic mean of 24 cycle Macro F1, separate from pooled",
+    "calibration": "10 fixed equal-width bins, Brier score; diagnostic only no calibration fits",
+    "impact_subgroups": "Per-outer-fit 1/3 and2/3 quantiles of impact_load, same across model recipes, cutpoints recorded; no label based grouping."
+  },
+  "subgroups": "Reuse frozen Round1 subgroup masks, fit-only impactterciles, EF×stream andknown/unseen/missing; never average subgroupF1 as pooled",
+  "coefficient_analysis": "Extract safe field coefficients/blocknorms/intercept fromrefits; ignored per-row logit components; verify expit(sumcomponents)==probability andtextcomponent==0 for missing. No rawvocab ormodelweights inGit.",
+  "diagnostic_before_refit": "After freeze compute both fixed routes from saved Round1 probabilities, then compare fresh-refit routed vectors byte-identically; no new recipe chosen from diagnostic outcomes.",
+  "compute": "6uniquehistories:24controlouterrefits+24variantouterfits+24variantinnerfits=72freshfits. Reuse24controlinner vectors; routes do not fit estimators. W1/H12E,W4/H12L share fits.",
+  "reproduction": "Prespecified end67 representative rerun:8outer+4newinnerfits=12freshfits; compare probabilities,thresholds,coefficient summaries/logit components. No full redundantrepeat.",
+  "selection_bias": "Round2 is designed from Round1 outcomes on reusedcycles56-79; allcomparisons adaptive development evidence, not independentholdout/generalization guarantee. H12 overlaps primary.",
+  "boundaries": [
+    "Preserve all Round1 artifacts/source andTP1",
+    "No officialTest predictions orsubmission",
+    "No finalall-Trainfit",
+    "No calibration fitting,ensemble/search orRound3",
+    "No outervalidationlabels forfit/threshold/gate/featurechoice",
+    "StopforuserreviewafterRound2"
+  ]
+}
