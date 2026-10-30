@@ -86,14 +86,14 @@ def build_notebook():
     notebook.cells = [
         nbformat.v4.new_markdown_cell("""# EDA Samuel — `impact_load`, `threat_rank`, dan `cycle_code`
 
-**Pertanyaan:** Seberapa kuat hubungan antara `impact_load` dan `threat_rank`, dan apakah pola deskriptifnya terlihat serupa pada periode `cycle_code` yang berbeda?
+**Diagnostik awal, bukan pertanyaan final:** Seberapa kuat hubungan antara `impact_load` dan `threat_rank`, dan apakah pola deskriptifnya terlihat serupa pada periode `cycle_code` yang berbeda? Discovery lebih luas dan perbandingan TP1 ada pada notebook `02_regression_discovery.ipynb`.
 
 Notebook ini memeriksa data regresi TP2 yang resmi, mengonfirmasi target lewat skema train–test–sample, lalu menghitung hubungan numerik dan ringkasan periode. Saat file regresi belum tersedia, notebook menampilkan status blocker dan nama file yang diperlukan. Ia tidak mengganti data regresi dengan classification.
 
 **Batas interpretasi:** `cycle_code` diurutkan sebagai asumsi kerja untuk membentuk tiga periode berurutan. Makna domainnya perlu dikonfirmasi. Korelasi dan perbedaan distribusi bersifat deskriptif; tidak membuktikan sebab-akibat, drift, atau signifikansi statistik."""),
         nbformat.v4.new_markdown_cell("""## tl;dr
 
-**Status saat audit awal (30 Oktober 2026): `BLOCKED_MISSING_REGRESSION_DATA`.** Folder regresi TP2 belum berisi file resmi yang diperlukan. Hasil korelasi belum tersedia. Cell status berikutnya menghitung ulang status dari file yang saat ini ada."""),
+**Discovery, pertanyaan belum dikunci.** Dataset regression sudah tersedia. Analisis awal menunjukkan asosiasi positif yang tidak deterministik dan perbedaan kekuatan asosiasi antarperiode. Cell berikutnya menghitung angka aktual dari data; rekomendasi kandidat ada di `reports/eda/REGRESSION_DISCOVERY.md`."""),
         nbformat.v4.new_markdown_cell("""## Context & Methods
 
 - Unit analisis: satu baris train regresi.

@@ -1,18 +1,26 @@
-# EDA Samuel — status and method
+# EDA Samuel — discovery, pertanyaan belum final
 
-**Status: blocked pending official regression files.** The current `data/raw/regression/` folder has no files. The available TP2 classification data includes `impact_load` and `cycle_code`, but not `threat_rank`; it is not a valid substitute for this regression question.
+Regression resmi sudah tersedia dan audit aktual selesai. `threat_rank` dikonfirmasi lewat train/test/sample, bukan diasumsikan dari rencana. Tidak ada modeling, tuning atau submission.
 
-The EDA runner looks for `Train.csv`, `Test.csv`, and `SampleSubmission.csv` under `data/raw/regression/`. Alternatively, set `TP2_DATA_DIR` to a directory containing `regression/`. File discovery ignores filename case but stops on ambiguous duplicate names. The target is accepted only when `threat_rank` is the sole train-only column and the sample submission has exactly `record_id` and `threat_rank`. A missing or ambiguous target remains blocked. This schema confirms the target column name, not its numeric scale or domain meaning; those remain UNKNOWN until an official definition is available.
+- `notebooks/samuel/01_impact_threat_cycle.ipynb`: diagnostik relasi awal dan kuantil periode; pertanyaan lama menjadi salah satu lensa, bukan pertanyaan final.
+- `notebooks/samuel/02_regression_discovery.ipynb`: distribusi target TP1/TP2, repeated impact, hubungan percycle, pola percentile percycle dan tails.
+- `reports/eda/REGRESSION_DISCOVERY.md`: audit regression, riwayat REG-Lite B/Phase16 B2, lima kandidat pertanyaan dan rekomendasi utama yang belum dikunci.
+- `reports/eda/discovery_summary.json` dan `samuel_regression_eda.json`: evidence agregat yang dapat dihitung ulang; source hashes tersimpan.
 
-Run from any working directory after installing `requirements.txt`:
+## Jalankan dari root repository
 
 ```powershell
-python "<TP2 project root>/scripts/samuel_eda.py"
-python "<TP2 project root>/scripts/build_samuel_notebook.py"
+python scripts/audit_data.py --tp1-data-dir "../TK1/tk1-eda-3/data/raw"
+python scripts/samuel_eda.py
+python scripts/discover_regression.py --tp1-data-dir "../TK1/tk1-eda-3/data/raw"
+python scripts/build_samuel_notebook.py
+python scripts/build_discovery_notebook.py
 ```
 
-The CLI writes `reports/eda/samuel_regression_eda.json`; when inputs are valid it also writes PNG figures beside the report. The notebook is `notebooks/samuel/01_impact_threat_cycle.ipynb` and executes from the repository root or a nested folder. In the current blocked state, it records the missing official files without emitting fabricated numbers or plots. Reports store relative filenames or generic `TP2_DATA_DIR/...` labels, not absolute user paths.
+Default raw TP2 relatif terhadap root kode; `TP2_DATA_DIR` dapat mengubah root yang berisi folder regression/classification. Untuk notebook discovery, `TP1_DATA_DIR` adalah root raw TP1 (berisi regression/) jika checkout referensi tidak tersedia di lokasi tetangga. TP1 opsional: TP2 tetap dianalisis tanpa perbandingan TP1. Tidak ada data fallback atau label tambahan yang diambil dari TP1.
 
-Once the regression data is available, the analysis checks column presence, parse failures, non-finite values, ranges, quantiles, and univariate IQR outliers. It calculates Pearson and Spearman associations on complete finite pairs, summarizes target spread within common equal-width `impact_load` bins, and compares distributions and correlations by `cycle_code` and by three contiguous groups of its sorted observed values. The period split is chosen without consulting `threat_rank`; the impact-bin edges are held common across periods. Test `impact_load` and `cycle_code` availability is checked, while test target values are never used.
+Pearson merangkum asosiasi linear dan Spearman asosiasi urutan pada pasangan finite. Tiga periode membagi 33 cycle unik menjadi tiga blok 11 cycle, tanpa memotong cycle atau melihat target untuk batas periode. Bin impact memakai batas bersama; perbandingan exact-impact memakai nilai yang sama persis. P10/P90 atau IQR adalah sebaran observasi, bukan confidence interval. Batas target <=5 dan >=95 adalah definisi deskriptif eksploratif, bukan preregistration atau threshold model.
 
-The cycle chronology is an explicit working assumption until its domain meaning is confirmed. Descriptive differences do not prove temporal drift or a feature effect; correlations do not establish causality or statistical significance. Outlier flags use 1.5 × IQR and do not prescribe deletion. This work performs no predictive modeling, tuning, or submission generation.
+Materi TP1 halaman 16 menyatakan cycle lebih besar lebih baru; receipt di reports/audits/source_definitions.json. Semantik khusus threat_rank tetap belum terkonfirmasi. Identitas average percentile dari target itu sendiri adalah audit geometri skala, bukan predictor, bukti lineage generator, atau izin merangking ulang target pada validation/test.
+
+Rekomendasi utama meneliti perubahan conditional threat_rank pada impact_load yang sama di balik marginal target yang hampir stabil. Prinsip distribution/tail REG-Lite B relevan untuk EDA, sedangkan recipe multiclass atas skor diskret TP1 tidak otomatis cocok dengan target TP2 yang jauh lebih padat. Tidak ada klaim error over/underprediction TP2 karena belum ada prediksinya.

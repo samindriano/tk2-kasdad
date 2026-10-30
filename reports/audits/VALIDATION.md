@@ -1,5 +1,7 @@
 # Verifikasi setup — 30 Oktober 2026
 
+> Riwayat validasi saat regression belum tersedia. Validasi lanjutan ada di `REGRESSION_VALIDATION.md`.
+
 - Audit CLI dijalankan terhadap tiga CSV classification aktual. Independent read-only audit mengonfirmasi shape, target, class counts, duplicate/ID checks dan missingness utama.
 - `reports/audits/*_audit.json` dihasilkan kode, bukan hasil yang diisi manual. Reconciliation TP1 memakai join ID unik dan pengecekan nilai/NA semua kolom bersama; tidak memodifikasi TP1.
 - Notebook audit dan notebook Samuel dieksekusi top-to-bottom dengan nbclient, lalu divalidasi nbformat. Audit notebook memiliki dua output figure; notebook Samuel menampilkan blocker tanpa relasi target atau figure palsu.

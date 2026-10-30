@@ -3,15 +3,15 @@
 Cyber Vulnerability Lifecycle · Semester Ganjil 2026/2027 · Samuel, Rousan, Abhi, Rizky.
 
 Repository independen dan private: [samindriano/tk2-kasdad](https://github.com/samindriano/tk2-kasdad).
-Persiapan dan audit dijalankan pada **30 Oktober 2026**. Tidak ada training, tuning, atau submission TP2 pada tahap ini.
+Persiapan, audit kedua task, dan discovery regression dijalankan pada **30 Oktober 2026**. Tidak ada training, tuning, atau submission TP2 pada tahap ini.
 
 ## Status dan temuan awal
 
 | Bagian | Status | Evidence |
 |---|---|---|
 | Classification | Audit aktual selesai; bukan sertifikasi bebas leakage | Train 50.608 × 19, test 29.421 × 18; target `artifact_signal` terverifikasi lewat train/test/sample |
-| Regression | **BLOCKED_MISSING_DATA** | Folder raw regression kosong; `threat_rank` masih dugaan yang belum diverifikasi dari file |
-| EDA Samuel | Notebook dieksekusi dengan status blocked | Ketiga file regression resmi belum ada; belum ada korelasi atau grafik relasi target |
+| Regression | Audit aktual selesai | Train 50.608 × 19, test 29.421 × 18; `threat_rank` terverifikasi lewat train/test/sample |
+| EDA Samuel | Discovery dieksekusi; pertanyaan belum final | Target hampir uniform, hubungan impact–threat tidak deterministik, conditional patterns berbeda antarperiode |
 
 - Classification: kelas 0 = 33.038; kelas 1 = 17.570 (34,72%). Tidak ada missing target, duplikasi baris/ID, atau ID overlap antar-split.
 - Train cycle 47–79, test 80–91. Makna kalender dan mekanisme `cycle_code` belum dikonfirmasi; perbedaan periode tidak membuktikan causal drift.
@@ -19,7 +19,7 @@ Persiapan dan audit dijalankan pada **30 Oktober 2026**. Tidak ada training, tun
 - `impact_load` dan `entry_friction` tersedia sebagai fitur classification resmi. Kesamaan dengan target TP1 tidak otomatis membuktikan leakage; provenance dan waktu ketersediaan fitur tetap perlu dikonfirmasi.
 - `scope_pressure` memiliki perbedaan distribusi train/test terbesar di antara fitur numerik non-ID/cycle (KS D = 0,2138). Test dipakai untuk audit skema/distribusi, bukan memilih model.
 
-Lihat [ringkasan audit](reports/audits/FINDINGS.md), [audit classification](reports/audits/classification_audit.md), [audit regression](reports/audits/regression_audit.md), dan [status EDA Samuel](docs/SAMUEL_EDA.md). JSON pendamping menyimpan profil setiap kolom, hash input, dan versi runtime.
+Lihat [discovery dan rekomendasi pertanyaan Samuel](reports/eda/REGRESSION_DISCOVERY.md), [riwayat audit awal](reports/audits/FINDINGS.md), [audit classification](reports/audits/classification_audit.md), [audit regression](reports/audits/regression_audit.md), dan [status EDA Samuel](docs/SAMUEL_EDA.md). JSON pendamping menyimpan profil setiap kolom, hash input, dan versi runtime.
 
 ## Menjalankan ulang
 
@@ -33,6 +33,8 @@ python scripts/audit_data.py
 python scripts/samuel_eda.py
 python scripts/build_audit_notebook.py
 python scripts/build_samuel_notebook.py
+python scripts/discover_regression.py --tp1-data-dir "../TK1/tk1-eda-3/data/raw"
+python scripts/build_discovery_notebook.py
 python -m unittest discover -s tests -v
 ```
 
@@ -57,7 +59,7 @@ Panduan rinci: [data/README.md](data/README.md). Definisi domain `threat_rank`, 
 
 | Anggota | Task | Pertanyaan yang disepakati |
 |---|---|---|
-| Samuel | Regression | Seberapa kuat hubungan `impact_load` dan `threat_rank`, serta apakah konsisten pada berbagai periode `cycle_code`? |
+| Samuel | Regression | Discovery; pertanyaan belum dikunci. Kandidat dan rekomendasi berbukti ada di laporan discovery. |
 | Rousan | Classification | Apakah proporsi `artifact_signal` berbeda berdasarkan `entry_friction`, dan bagaimana hubungan berubah pada berbagai tingkat `impact_load`? |
 | Abhi | Regression | Apakah `scope_pressure` memberi informasi tambahan mengenai `threat_rank` setelah mempertimbangkan `impact_load`? |
 | Rizky | Classification | Bagaimana hubungan `telemetry_flag` dengan `artifact_signal`, dan apakah berbeda pada berbagai tingkat `module_spread`? |
@@ -90,7 +92,15 @@ Folder `data/derived`, `notebooks/classification`, `notebooks/regression`, dokum
 - Simpan source data utuh; transformasi ke `data/processed/`, artifact besar ke folder ignored. Jangan commit credential, `.env`, dataset, atau model.
 - Gunakan hash input, versi environment, preprocessing, seed, split/cycle, metric dan identitas commit untuk eksperimen berikutnya. Template: [experiments/README.md](experiments/README.md).
 - Pelajari imputasi/encoding/vektor teks hanya dari train fold. Jangan menggabungkan label tambahan TP1 atau memilih konfigurasi berdasarkan test.
-- Belum ada validation split/metric TP2 yang dibekukan; konfirmasi rubric dan makna cycle dahulu. Jangan menganggap resep TP1 pasti cocok dengan target TP2.
+- Belum ada validation split/model TP2 yang dibekukan; konfirmasi rubric dan makna cycle dahulu. Jangan menganggap resep TP1 pasti cocok dengan target TP2.
 - [Referensi TP1](docs/TP1_REFERENCE.md) dibaca tanpa perubahan. Ada perbedaan antara ringkasan resep lama dan artifact final yang ditemukan; perbedaannya didokumentasikan.
 
-Langkah berikutnya: tambahkan file regression resmi, jalankan ulang audit dan notebook Samuel, tinjau definisi target serta availability fitur, baru sepakati rancangan validasi sebelum modeling.
+Langkah berikutnya: pilih pertanyaan EDA setelah meninjau 5 kandidat pada laporan discovery, konfirmasi definisi resmi threat_rank dan timing fitur, lalu sepakati validation strategy sebelum modeling. Melanjutkan pelajaran distribusi/ekstrem TP1 relevan sebagai lensa EDA; recipe multiclass TP1 tidak dipindahkan otomatis karena support target TP2 sangat berbeda.
+
+## Discovery regression terbaru
+
+Arsip regression dipindahkan dari Downloads ke raw lokal; CRC dan SHA-256 diverifikasi. Tidak ada overwrite data lama. Kedua task memakai file test yang byte-identical; train regression memakai 18 kolom input yang sama (termasuk ID), dengan label threat_rank.
+
+Threat_rank memiliki 34.333 nilai unik, range teramati 0,0428–100, median 50,0282, top-10 nilai hanya 1,08% baris; TP1 impact_load memiliki 80 nilai dan top-10 mencakup 79,10%. Pearson impact–threat 0,6370 dan Spearman 0,6211. Pearson per periode 47–57 / 58–68 / 69–79 adalah 0,4994 / 0,6722 / 0,6964, sementara marginal target hampir tetap. Ini deskriptif dan tidak membuktikan causal drift atau error model TP2.
+
+Notebook discovery: `notebooks/samuel/02_regression_discovery.ipynb`. Perbandingan TP1 opsional memerlukan root raw TP1 via `--tp1-data-dir` atau environment `TP1_DATA_DIR`; TP2 tetap dapat dijalankan tanpa TP1. Definisi cycle terurut tercantum dalam materi lokal TP1 halaman 16; definisi khusus threat_rank belum ditemukan pada materi yang diperiksa.

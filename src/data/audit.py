@@ -42,6 +42,12 @@ def profile(frame):
                 item['iqr_outlier_count'] = int(((values < lower-1.5*iqr) | (values > upper+1.5*iqr)).sum())
         else:
             counts = series.value_counts(dropna=True)
+            item['category_frequency_summary'] = {
+                'nonmissing_rows': int(counts.sum()),
+                'most_frequent_count': int(counts.iloc[0]) if len(counts) else 0,
+                'top10_row_share_nonmissing': float(counts.head(10).sum()/counts.sum()) if counts.sum() else None,
+                'singleton_category_count': int((counts == 1).sum()),
+            }
             # Do not export raw vulnerability text or record identifiers.
             if name != 'signal_stream' and item['unique_nonmissing'] <= 50:
                 item['category_counts'] = {str(k): int(v) for k, v in counts.items()}
@@ -121,6 +127,14 @@ def audit_task(task, root=None):
         if target:
             y = train[target]
             result['target_summary'] = {'dtype': str(y.dtype), 'nonmissing': int(y.notna().sum()), 'unique': int(y.nunique())}
+            frequencies = y.value_counts()
+            result['target_summary']['top10_value_counts'] = {str(k): int(v) for k,v in frequencies.head(10).items()}
+            result['target_summary']['top1_row_share'] = float(frequencies.iloc[0]/len(y)) if len(y) else None
+            result['target_summary']['top10_row_share'] = float(frequencies.head(10).sum()/len(y)) if len(y) else None
+            if pd.api.types.is_numeric_dtype(y):
+                finite_y = finite_numeric(y)
+                result['target_summary']['quantiles'] = {str(k): float(v) if np.isfinite(v) else None for k,v in finite_y.quantile([0,.01,.05,.1,.25,.5,.75,.9,.95,.99,1]).items()}
+                result['target_summary']['integer_like_count_atol_1e8'] = int(np.isclose(finite_y, np.round(finite_y), rtol=0, atol=1e-8).sum())
             if y.nunique() <= 100:
                 result['target_summary']['counts'] = {str(k): int(v) for k, v in y.value_counts(dropna=False).sort_index().items()}
             result['numeric_target_associations'] = {}
@@ -210,6 +224,9 @@ def markdown_report(result):
         if result.get('target_summary', {}).get('counts'):
             total = result['target_summary']['nonmissing']
             lines += ['Distribusi target train: '+', '.join(f'{k}: {v:,} ({v/total:.2%})' for k,v in result['target_summary']['counts'].items())+'.', '']
+        elif result.get('target_summary', {}).get('quantiles'):
+            s = result['target_summary']
+            lines += [f"Target numerik train: {s['unique']:,} nilai unik; kuantil {s['quantiles']}; top-10 nilai mencakup {s['top10_row_share']:.2%} baris. Angka ini deskriptif; nama/range teramati tidak menetapkan definisi domain target.", '']
         lines += ['| Kolom | Missing train | Missing test | KS numeric / TV categorical |','|---|---:|---:|---:|']
         for col, item in c['columns'].items():
             shift = item.get('ks_statistic', item.get('total_variation_nonmissing'))

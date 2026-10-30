@@ -1,5 +1,7 @@
 # Ringkasan audit TP2 — 30 Oktober 2026
 
+> Riwayat audit inisialisasi sebelum dataset regression diterima. Status regression blocked di bawah sudah digantikan oleh `regression_audit.md` dan `../eda/REGRESSION_DISCOVERY.md`. Classification tetap dapat dirujuk sesuai hash sumbernya.
+
 **Classification: profil aktual tersedia; regression dan EDA relasi Samuel: BLOCKED karena semua file regression resmi belum ada.** Tidak ada training, tuning atau Kaggle submission.
 
 ## Sumber, grain, dan coverage

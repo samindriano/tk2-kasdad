@@ -13,7 +13,7 @@ def main():
 
 ## tl;dr
 
-Audit awal 30 Oktober 2026: classification tersedia dan target `artifact_signal` terverifikasi dari skema; regression belum tersedia. Profil lengkap dan hash ada di laporan JSON. Notebook ini mengaudit kualitas data, bukan EDA anggota lain atau training. Status dinamis di bawah mengontrol interpretasi setelah input berubah.
+Classification dan regression tersedia; target `artifact_signal` dan `threat_rank` diverifikasi dari skema train/test/sample. Profil lengkap dan hash ada di laporan JSON. Notebook ini mengaudit kualitas data, bukan EDA anggota lain atau training. Status dinamis di bawah mengontrol interpretasi setelah input berubah.
 
 ## Context & Methods
 

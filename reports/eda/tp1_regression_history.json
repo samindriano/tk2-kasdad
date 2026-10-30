@@ -1,0 +1,142 @@
+{
+  "status": "READ_ONLY_HISTORICAL_REPORT_REVIEW_NO_REFIT",
+  "source_heads": {
+    "canonical": "b065c884728fcb428657c78806910213a8786ca3",
+    "executed_individual": "d26501a05fe9bf5bec265441de7f8aad21d3ecab"
+  },
+  "sources": [
+    {
+      "checkout": "executed_individual",
+      "path": "docs/reg_lite_academic_suitability.md",
+      "sha256": "975a3d12ab5b64736cd5f016d09a0cb1b3d9a6454ae4b5a41158e3f3f26b60d8"
+    },
+    {
+      "checkout": "executed_individual",
+      "path": "reports/individual_balanced/reg_lite_academic_confirmation.json",
+      "sha256": "fca8c0c9cd525c7230f2e87696da638216a014979d76d33fe281197b51b5984b"
+    },
+    {
+      "checkout": "canonical",
+      "path": "docs/phase16_report.md",
+      "sha256": "af6eda470cb1b1de6de875e02b2d5cff18ecb649356dc0321d95022e688ce9a8"
+    },
+    {
+      "checkout": "canonical",
+      "path": "docs/FINAL_CONTEXT.md",
+      "sha256": "f8f8b7b49c470c1d7bdb244d4f3ec391fd832226f0963cde20634e04a6cc3105"
+    }
+  ],
+  "reg_lite_B": {
+    "individual_academic_verdict": "CONDITIONALLY SUITABLE",
+    "research_promotion_verdict": "FAIL (unchanged; R4 failed the originally pre-registered S6 bias-safety gate)",
+    "why_conditional": "H12_64 passes the pre-locked pooled and 66-71 equal-cycle MAE comparisons, but H12 S6 also fails; R4 S6 failure remains historical. Positive signed-error shift and lower-target overprediction are disclosed risks.",
+    "validation_design": {
+      "window": "H12_64",
+      "fit_cycles": [
+        47,
+        63
+      ],
+      "validation_cycles": [
+        64,
+        75
+      ],
+      "fit_rows": 22627,
+      "validation_rows": 19490,
+      "fit_ordered_record_id_sha256": "f74c649950abf48dceed902b878f6284edb7ac19d92fe4f443f6147d72c37f8c",
+      "validation_ordered_record_id_sha256": "cdc800a5a2ae3def4cafb132be5644ce7b43507a846a1a95959d1e3320590242",
+      "reused_cycles": [
+        64,
+        65,
+        72,
+        73,
+        74,
+        75
+      ],
+      "cleaner_mid_block_cycles": [
+        66,
+        67,
+        68,
+        69,
+        70,
+        71
+      ],
+      "mid_block_rows": 8654,
+      "not_untouched_holdout": true
+    },
+    "locked_mae_decision": {
+      "pooled": {
+        "Phase5": 17.123116104509887,
+        "Phase14": 16.16026088811031,
+        "REG-Lite B": 15.71752903788021
+      },
+      "pooled_delta_B_minus_Phase14": -0.44273185023010164,
+      "pooled_delta_B_minus_Phase5": -1.4055870666296766,
+      "equal_cycle_mean_cycles_66_71": {
+        "Phase5": 16.922409004552986,
+        "Phase14": 16.38933904054625,
+        "REG-Lite B": 15.7288533555488
+      },
+      "mid_delta_B_minus_Phase14": -0.6604856849974503,
+      "mid_delta_B_minus_Phase5": -1.1935556490041854,
+      "pooled_gate_pass": true,
+      "mid_cycle_gate_pass": true,
+      "overall_gate_pass": true
+    },
+    "s6_diagnostic": {
+      "mean_signed_error_change": 1.147155481326394,
+      "paired_cycle_bootstrap_se": 0.13987951569722915,
+      "frozen_S6_harm_limit": 0.5,
+      "S6_pass": false,
+      "bootstrap_p05_p95": [
+        0.9279754046835771,
+        1.383820745955636
+      ]
+    },
+    "target_cohorts": [
+      {
+        "cohort": "fit-defined lower target tercile",
+        "rows": 5560,
+        "mae": 22.652372,
+        "signed_error_mean": 22.371586,
+        "absolute_signed_error": 22.371586,
+        "median_signed_error": 17.4707,
+        "overprediction_rate": 0.673022,
+        "underprediction_rate": 0.01259,
+        "abs_error_p95": 68.2172,
+        "abs_error_p99": 80.766205,
+        "abs_error_max": 123.8947
+      },
+      {
+        "cohort": "fit-defined middle target tercile",
+        "rows": 6700,
+        "mae": 11.984531,
+        "signed_error_mean": 6.46314,
+        "absolute_signed_error": 6.46314,
+        "median_signed_error": 0.0,
+        "overprediction_rate": 0.351343,
+        "underprediction_rate": 0.161493,
+        "abs_error_p95": 48.9002,
+        "abs_error_p99": 59.483725,
+        "abs_error_max": 71.0583
+      },
+      {
+        "cohort": "fit-defined upper target tercile",
+        "rows": 7230,
+        "mae": 13.843858,
+        "signed_error_mean": -9.614396,
+        "absolute_signed_error": 9.614396,
+        "median_signed_error": 0.0,
+        "overprediction_rate": 0.104564,
+        "underprediction_rate": 0.405394,
+        "abs_error_p95": 43.51,
+        "abs_error_p99": 64.1162,
+        "abs_error_max": 81.4968
+      }
+    ]
+  },
+  "limitations": [
+    "All scores are historical stored development evidence, not recomputed model outputs.",
+    "REG-Lite B is an academic alternative; Phase16 B2 is a different recipe branch, not a chronological successor of the Oct9 simplified delivery.",
+    "No TP2 prediction errors exist because no TP2 model was trained."
+  ]
+}

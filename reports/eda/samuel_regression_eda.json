@@ -1,5 +1,6 @@
 {
-  "status": "BLOCKED_MISSING_REGRESSION_DATA",
+  "status": "COMPLETE",
+  "question_status": "PROVISIONAL_DIAGNOSTIC_NOT_FINAL",
   "question": "How strongly are impact_load and threat_rank associated, and is the descriptive relationship consistent across ordered cycle_code periods?",
   "input_root": "data/raw/regression",
   "expected_files": [
@@ -8,13 +9,21 @@
     "SampleSubmission.csv"
   ],
   "files": {
-    "train": null,
-    "test": null,
-    "sample": null
+    "train": "Train.csv",
+    "test": "Test.csv",
+    "sample": "SampleSubmission.csv"
   },
   "target_verification": {
-    "status": "UNKNOWN",
-    "reason": "Train/Test/Sample schemas unavailable."
+    "train_only_columns": [
+      "threat_rank"
+    ],
+    "sample_label_columns": [
+      "threat_rank"
+    ],
+    "confirmed_target": "threat_rank",
+    "status": "CONFIRMED",
+    "semantics": "UNKNOWN: schema confirms the target column name only; numeric rank scale and domain meaning need an official definition.",
+    "rule": "Confirm only when threat_rank is the sole train-only column and the sample submission has exactly record_id plus threat_rank."
   },
   "limitations": [
     "cycle_code ordering is treated as chronological for grouping; its domain meaning is not independently established.",
@@ -25,10 +34,907 @@
     "pandas": "2.3.3",
     "numpy": "2.4.2"
   },
-  "missing_files": [
-    "Train.csv",
-    "Test.csv",
-    "SampleSubmission.csv"
+  "input_sha256": {
+    "train": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+    "test": "4e6c381d582ed24f92d17f620f4f0ad25e2e0def29eb57a91a5482867f6afe3c",
+    "sample": "63a51f4b7dfbb0eec9800099407abd8be14d25ec18a533cd39dc854ffc190a32"
+  },
+  "schema": {
+    "train_shape": [
+      50608,
+      19
+    ],
+    "test_shape": [
+      29421,
+      18
+    ],
+    "sample_shape": [
+      29421,
+      2
+    ],
+    "train_dtypes": {
+      "record_id": "object",
+      "cycle_code": "int64",
+      "org_code": "object",
+      "module_code": "object",
+      "pattern_code": "object",
+      "signal_stream": "object",
+      "scope_trace": "object",
+      "org_spread": "object",
+      "module_spread": "object",
+      "text_load": "float64",
+      "scope_pressure": "float64",
+      "pulse_a": "float64",
+      "pulse_b": "float64",
+      "telemetry_flag": "object",
+      "audit_lane": "object",
+      "checksum_hint": "float64",
+      "impact_load": "float64",
+      "entry_friction": "int64",
+      "threat_rank": "float64"
+    },
+    "test_dtypes": {
+      "record_id": "object",
+      "cycle_code": "int64",
+      "org_code": "object",
+      "module_code": "object",
+      "pattern_code": "object",
+      "signal_stream": "object",
+      "scope_trace": "object",
+      "org_spread": "object",
+      "module_spread": "object",
+      "text_load": "float64",
+      "scope_pressure": "float64",
+      "pulse_a": "float64",
+      "pulse_b": "float64",
+      "telemetry_flag": "object",
+      "audit_lane": "object",
+      "checksum_hint": "float64",
+      "impact_load": "float64",
+      "entry_friction": "int64"
+    },
+    "train_test_feature_schema_matches": true,
+    "train_columns_missing_test": [
+      "threat_rank"
+    ],
+    "test_columns_missing_train": []
+  },
+  "required_columns_missing": {
+    "train": [],
+    "test": [],
+    "sample": []
+  },
+  "target_schema_confirmed": true,
+  "numeric_profiles": {
+    "train": {
+      "impact_load": {
+        "rows": 50608,
+        "missing_or_unparseable": 0,
+        "non_finite": 0,
+        "distinct_finite": 80,
+        "integer_like_count": 0,
+        "integer_like_fraction": 0.0,
+        "min": 22.6469,
+        "q01": 42.2906,
+        "q25": 75.9658,
+        "median": 110.5078,
+        "q75": 134.6432,
+        "q99": 154.0178,
+        "max": 157.9725,
+        "iqr_outlier_count": 0
+      },
+      "threat_rank": {
+        "rows": 50608,
+        "missing_or_unparseable": 0,
+        "non_finite": 0,
+        "distinct_finite": 34333,
+        "integer_like_count": 149,
+        "integer_like_fraction": 0.0029441985456844766,
+        "min": 0.0428,
+        "q01": 1.075707,
+        "q25": 25.0476,
+        "median": 50.02815,
+        "q75": 74.9819,
+        "q99": 99.0291,
+        "max": 100.0,
+        "iqr_outlier_count": 0
+      },
+      "cycle_code": {
+        "rows": 50608,
+        "missing_or_unparseable": 0,
+        "non_finite": 0,
+        "distinct_finite": 33,
+        "integer_like_count": 50608,
+        "integer_like_fraction": 1.0,
+        "min": 47.0,
+        "q01": 47.0,
+        "q25": 57.0,
+        "median": 65.0,
+        "q75": 73.0,
+        "q99": 79.0,
+        "max": 79.0,
+        "iqr_outlier_count": 0
+      }
+    },
+    "test": {
+      "impact_load": {
+        "rows": 29421,
+        "missing_or_unparseable": 0,
+        "non_finite": 0,
+        "distinct_finite": 81,
+        "integer_like_count": 0,
+        "integer_like_fraction": 0.0,
+        "min": 4.3402,
+        "q01": 42.2906,
+        "q25": 75.9658,
+        "median": 92.8189,
+        "q75": 121.4936,
+        "q99": 154.0178,
+        "max": 157.9725,
+        "iqr_outlier_count": 1
+      },
+      "cycle_code": {
+        "rows": 29421,
+        "missing_or_unparseable": 0,
+        "non_finite": 0,
+        "distinct_finite": 12,
+        "integer_like_count": 29421,
+        "integer_like_fraction": 1.0,
+        "min": 80.0,
+        "q01": 80.0,
+        "q25": 83.0,
+        "median": 86.0,
+        "q75": 89.0,
+        "q99": 91.0,
+        "max": 91.0,
+        "iqr_outlier_count": 0
+      }
+    }
+  },
+  "impact_load_availability": {
+    "train": {
+      "column_present": true,
+      "rows": 50608,
+      "finite_parsed_count": 50608
+    },
+    "test": {
+      "column_present": true,
+      "rows": 29421,
+      "finite_parsed_count": 29421
+    }
+  },
+  "relationship": {
+    "overall": {
+      "n_complete": 50608,
+      "pearson_r": 0.6370171784053338,
+      "spearman_rho": 0.6211024737558063
+    },
+    "exact_impact_repeat_audit": {
+      "unique_impact_values_with_complete_pairs": 80,
+      "impact_values_repeated": 78,
+      "repeated_impact_values_with_multiple_targets": 77,
+      "exactly_determined_on_repeated_impact_values": false
+    },
+    "by_cycle": [
+      {
+        "cycle_code": 47,
+        "n_complete": 1342,
+        "pearson_r": 0.448749089978521,
+        "spearman_rho": 0.4147563826430592,
+        "target_nonmissing_n": 1342,
+        "threat_rank_median": 50.0559,
+        "threat_rank_q25": 25.055925,
+        "threat_rank_q75": 75.01865000000001
+      },
+      {
+        "cycle_code": 48,
+        "n_complete": 977,
+        "pearson_r": 0.5123289029094072,
+        "spearman_rho": 0.4843606832285158,
+        "target_nonmissing_n": 977,
+        "threat_rank_median": 52.0983,
+        "threat_rank_q25": 25.1279,
+        "threat_rank_q75": 75.0256
+      },
+      {
+        "cycle_code": 49,
+        "n_complete": 1255,
+        "pearson_r": 0.45409035829174377,
+        "spearman_rho": 0.4283509980821019,
+        "target_nonmissing_n": 1255,
+        "threat_rank_median": 50.0,
+        "threat_rank_q25": 25.07965,
+        "threat_rank_q75": 75.01995
+      },
+      {
+        "cycle_code": 50,
+        "n_complete": 1111,
+        "pearson_r": 0.49039985100617484,
+        "spearman_rho": 0.4737007132571854,
+        "target_nonmissing_n": 1111,
+        "threat_rank_median": 50.045,
+        "threat_rank_q25": 25.2475,
+        "threat_rank_q75": 74.97749999999999
+      },
+      {
+        "cycle_code": 51,
+        "n_complete": 1535,
+        "pearson_r": 0.5481986594683177,
+        "spearman_rho": 0.5343404147573426,
+        "target_nonmissing_n": 1535,
+        "threat_rank_median": 50.0326,
+        "threat_rank_q25": 25.04885,
+        "threat_rank_q75": 75.0163
+      },
+      {
+        "cycle_code": 52,
+        "n_complete": 1565,
+        "pearson_r": 0.47559219192399316,
+        "spearman_rho": 0.4534277408443121,
+        "target_nonmissing_n": 1565,
+        "threat_rank_median": 50.0319,
+        "threat_rank_q25": 25.0479,
+        "threat_rank_q75": 75.016
+      },
+      {
+        "cycle_code": 53,
+        "n_complete": 1371,
+        "pearson_r": 0.4804894444991089,
+        "spearman_rho": 0.4406458793570455,
+        "target_nonmissing_n": 1371,
+        "threat_rank_median": 50.0365,
+        "threat_rank_q25": 25.0547,
+        "threat_rank_q75": 75.01825
+      },
+      {
+        "cycle_code": 54,
+        "n_complete": 1256,
+        "pearson_r": 0.514710620761145,
+        "spearman_rho": 0.4939500638895,
+        "target_nonmissing_n": 1256,
+        "threat_rank_median": 50.0398,
+        "threat_rank_q25": 25.1194,
+        "threat_rank_q75": 75.0398
+      },
+      {
+        "cycle_code": 55,
+        "n_complete": 1608,
+        "pearson_r": 0.4471685736729572,
+        "spearman_rho": 0.4386039492095407,
+        "target_nonmissing_n": 1608,
+        "threat_rank_median": 50.031099999999995,
+        "threat_rank_q25": 24.2537,
+        "threat_rank_q75": 74.992225
+      },
+      {
+        "cycle_code": 56,
+        "n_complete": 564,
+        "pearson_r": 0.6510695529839445,
+        "spearman_rho": 0.6343989430547486,
+        "target_nonmissing_n": 564,
+        "threat_rank_median": 50.132999999999996,
+        "threat_rank_q25": 25.1995,
+        "threat_rank_q75": 75.044325
+      },
+      {
+        "cycle_code": 57,
+        "n_complete": 962,
+        "pearson_r": 0.6205433841707936,
+        "spearman_rho": 0.6122326371142905,
+        "target_nonmissing_n": 962,
+        "threat_rank_median": 50.052,
+        "threat_rank_q25": 25.104,
+        "threat_rank_q75": 74.948
+      },
+      {
+        "cycle_code": 58,
+        "n_complete": 1205,
+        "pearson_r": 0.7014892745867989,
+        "spearman_rho": 0.6903329211876171,
+        "target_nonmissing_n": 1205,
+        "threat_rank_median": 50.0415,
+        "threat_rank_q25": 24.1079,
+        "threat_rank_q75": 75.0207
+      },
+      {
+        "cycle_code": 59,
+        "n_complete": 1383,
+        "pearson_r": 0.6942333408810356,
+        "spearman_rho": 0.6801292842330818,
+        "target_nonmissing_n": 1383,
+        "threat_rank_median": 50.0362,
+        "threat_rank_q25": 25.05425,
+        "threat_rank_q75": 74.9819
+      },
+      {
+        "cycle_code": 60,
+        "n_complete": 1478,
+        "pearson_r": 0.6932513329702228,
+        "spearman_rho": 0.6908637457335735,
+        "target_nonmissing_n": 1478,
+        "threat_rank_median": 49.9662,
+        "threat_rank_q25": 25.050725,
+        "threat_rank_q75": 74.96615
+      },
+      {
+        "cycle_code": 61,
+        "n_complete": 1632,
+        "pearson_r": 0.7200675953331501,
+        "spearman_rho": 0.7131916530622067,
+        "target_nonmissing_n": 1632,
+        "threat_rank_median": 50.03065,
+        "threat_rank_q25": 25.045975,
+        "threat_rank_q75": 75.0306
+      },
+      {
+        "cycle_code": 62,
+        "n_complete": 1500,
+        "pearson_r": 0.6624380016900747,
+        "spearman_rho": 0.6525986949357497,
+        "target_nonmissing_n": 1500,
+        "threat_rank_median": 50.0,
+        "threat_rank_q25": 25.15,
+        "threat_rank_q75": 74.0333
+      },
+      {
+        "cycle_code": 63,
+        "n_complete": 1883,
+        "pearson_r": 0.7025965476388106,
+        "spearman_rho": 0.696275054555638,
+        "target_nonmissing_n": 1883,
+        "threat_rank_median": 50.0266,
+        "threat_rank_q25": 25.0664,
+        "threat_rank_q75": 74.9071
+      },
+      {
+        "cycle_code": 64,
+        "n_complete": 1807,
+        "pearson_r": 0.6434100878373894,
+        "spearman_rho": 0.6275735590728879,
+        "target_nonmissing_n": 1807,
+        "threat_rank_median": 50.0277,
+        "threat_rank_q25": 25.0692,
+        "threat_rank_q75": 75.0
+      },
+      {
+        "cycle_code": 65,
+        "n_complete": 1567,
+        "pearson_r": 0.6887497524299132,
+        "spearman_rho": 0.6775727795710772,
+        "target_nonmissing_n": 1567,
+        "threat_rank_median": 49.9362,
+        "threat_rank_q25": 25.0319,
+        "threat_rank_q75": 75.22335000000001
+      },
+      {
+        "cycle_code": 66,
+        "n_complete": 1751,
+        "pearson_r": 0.6260111024416904,
+        "spearman_rho": 0.6191295995453647,
+        "target_nonmissing_n": 1751,
+        "threat_rank_median": 50.0286,
+        "threat_rank_q25": 25.0571,
+        "threat_rank_q75": 75.05709999999999
+      },
+      {
+        "cycle_code": 67,
+        "n_complete": 1953,
+        "pearson_r": 0.6344188647502316,
+        "spearman_rho": 0.6280507188650997,
+        "target_nonmissing_n": 1953,
+        "threat_rank_median": 50.0256,
+        "threat_rank_q25": 25.0128,
+        "threat_rank_q75": 75.0384
+      },
+      {
+        "cycle_code": 68,
+        "n_complete": 577,
+        "pearson_r": 0.6393252588897277,
+        "spearman_rho": 0.6243353472856935,
+        "target_nonmissing_n": 577,
+        "threat_rank_median": 50.0867,
+        "threat_rank_q25": 25.13,
+        "threat_rank_q75": 75.0433
+      },
+      {
+        "cycle_code": 69,
+        "n_complete": 1079,
+        "pearson_r": 0.7434615726233761,
+        "spearman_rho": 0.722893253035799,
+        "target_nonmissing_n": 1079,
+        "threat_rank_median": 50.0463,
+        "threat_rank_q25": 25.046300000000002,
+        "threat_rank_q75": 75.02315
+      },
+      {
+        "cycle_code": 70,
+        "n_complete": 1605,
+        "pearson_r": 0.7386673025757796,
+        "spearman_rho": 0.718505945425222,
+        "target_nonmissing_n": 1605,
+        "threat_rank_median": 50.0312,
+        "threat_rank_q25": 25.0467,
+        "threat_rank_q75": 74.9844
+      },
+      {
+        "cycle_code": 71,
+        "n_complete": 1689,
+        "pearson_r": 0.7557213708505529,
+        "spearman_rho": 0.7428175474455144,
+        "target_nonmissing_n": 1689,
+        "threat_rank_median": 50.0296,
+        "threat_rank_q25": 25.074,
+        "threat_rank_q75": 75.0148
+      },
+      {
+        "cycle_code": 72,
+        "n_complete": 1811,
+        "pearson_r": 0.7065634110883698,
+        "spearman_rho": 0.6985816682239158,
+        "target_nonmissing_n": 1811,
+        "threat_rank_median": 50.0276,
+        "threat_rank_q25": 25.069,
+        "threat_rank_q75": 74.8482
+      },
+      {
+        "cycle_code": 73,
+        "n_complete": 1880,
+        "pearson_r": 0.7357357438355069,
+        "spearman_rho": 0.717147210256804,
+        "target_nonmissing_n": 1880,
+        "threat_rank_median": 50.4787,
+        "threat_rank_q25": 25.0399,
+        "threat_rank_q75": 75.0133
+      },
+      {
+        "cycle_code": 74,
+        "n_complete": 1814,
+        "pearson_r": 0.6508235954798803,
+        "spearman_rho": 0.6287576679407062,
+        "target_nonmissing_n": 1814,
+        "threat_rank_median": 50.0,
+        "threat_rank_q25": 25.048275,
+        "threat_rank_q75": 75.0138
+      },
+      {
+        "cycle_code": 75,
+        "n_complete": 1957,
+        "pearson_r": 0.7420777018394322,
+        "spearman_rho": 0.724114849477879,
+        "target_nonmissing_n": 1957,
+        "threat_rank_median": 50.0255,
+        "threat_rank_q25": 24.885,
+        "threat_rank_q75": 75.0128
+      },
+      {
+        "cycle_code": 76,
+        "n_complete": 1822,
+        "pearson_r": 0.7053022006686062,
+        "spearman_rho": 0.6828942946073537,
+        "target_nonmissing_n": 1822,
+        "threat_rank_median": 50.02745,
+        "threat_rank_q25": 25.0549,
+        "threat_rank_q75": 75.034325
+      },
+      {
+        "cycle_code": 77,
+        "n_complete": 2335,
+        "pearson_r": 0.6292572413740164,
+        "spearman_rho": 0.6125798492827703,
+        "target_nonmissing_n": 2335,
+        "threat_rank_median": 50.0214,
+        "threat_rank_q25": 25.0428,
+        "threat_rank_q75": 75.0107
+      },
+      {
+        "cycle_code": 78,
+        "n_complete": 2146,
+        "pearson_r": 0.6155222189317094,
+        "spearman_rho": 0.5991466540162749,
+        "target_nonmissing_n": 2146,
+        "threat_rank_median": 50.0233,
+        "threat_rank_q25": 25.3786,
+        "threat_rank_q75": 75.01165
+      },
+      {
+        "cycle_code": 79,
+        "n_complete": 2188,
+        "pearson_r": 0.7014927773803233,
+        "spearman_rho": 0.6904505476931148,
+        "target_nonmissing_n": 2188,
+        "threat_rank_median": 50.02285,
+        "threat_rank_q25": 25.034275,
+        "threat_rank_q75": 75.011425
+      }
+    ],
+    "by_period": [
+      {
+        "period": "period_01",
+        "n_complete": 13546,
+        "pearson_r": 0.49939347584908866,
+        "spearman_rho": 0.47727987467761096,
+        "target_nonmissing_n": 13546,
+        "impact_load_median": 108.7033,
+        "threat_rank_median": 50.032250000000005,
+        "threat_rank_q25": 25.104,
+        "threat_rank_q75": 75.0232
+      },
+      {
+        "period": "period_02",
+        "n_complete": 16736,
+        "pearson_r": 0.6721779182928238,
+        "spearman_rho": 0.6631138064611372,
+        "target_nonmissing_n": 16736,
+        "impact_load_median": 110.5078,
+        "threat_rank_median": 50.0128,
+        "threat_rank_q25": 25.054425,
+        "threat_rank_q75": 74.9071
+      },
+      {
+        "period": "period_03",
+        "n_complete": 20326,
+        "pearson_r": 0.6963912925448407,
+        "spearman_rho": 0.6797833469120436,
+        "target_nonmissing_n": 20326,
+        "impact_load_median": 106.9066,
+        "threat_rank_median": 50.03845,
+        "threat_rank_q25": 25.024375,
+        "threat_rank_q75": 75.021175
+      }
+    ],
+    "period_cycle_ranges": [
+      {
+        "label": "period_01",
+        "cycle_min": 47,
+        "cycle_max": 57,
+        "unique_cycles": 11
+      },
+      {
+        "label": "period_02",
+        "cycle_min": 58,
+        "cycle_max": 68,
+        "unique_cycles": 11
+      },
+      {
+        "label": "period_03",
+        "cycle_min": 69,
+        "cycle_max": 79,
+        "unique_cycles": 11
+      }
+    ],
+    "impact_bins": [
+      22.6469,
+      39.5626,
+      56.478300000000004,
+      73.394,
+      90.3097,
+      107.22540000000001,
+      124.14110000000001,
+      141.0568,
+      157.9725
+    ],
+    "target_by_impact_bin": [
+      {
+        "impact_bin": "(22.645999999999997, 39.563]",
+        "n_complete_pairs": 262,
+        "threat_rank_median": 7.6235,
+        "threat_rank_q25": 2.457825,
+        "threat_rank_q75": 14.9734,
+        "threat_rank_std": 15.199691321324094
+      },
+      {
+        "impact_bin": "(39.563, 56.478]",
+        "n_complete_pairs": 811,
+        "threat_rank_median": 12.8113,
+        "threat_rank_q25": 5.10225,
+        "threat_rank_q75": 21.8003,
+        "threat_rank_std": 18.263689919993404
+      },
+      {
+        "impact_bin": "(56.478, 73.394]",
+        "n_complete_pairs": 6187,
+        "threat_rank_median": 24.016,
+        "threat_rank_q25": 10.1641,
+        "threat_rank_q75": 47.0814,
+        "threat_rank_std": 23.94723901729209
+      },
+      {
+        "impact_bin": "(73.394, 90.31]",
+        "n_complete_pairs": 10751,
+        "threat_rank_median": 27.4876,
+        "threat_rank_q25": 11.7512,
+        "threat_rank_q75": 44.2457,
+        "threat_rank_std": 21.51356850515811
+      },
+      {
+        "impact_bin": "(90.31, 107.225]",
+        "n_complete_pairs": 6981,
+        "threat_rank_median": 41.4894,
+        "threat_rank_q25": 24.0196,
+        "threat_rank_q75": 58.0083,
+        "threat_rank_std": 22.683482555162257
+      },
+      {
+        "impact_bin": "(107.225, 124.141]",
+        "n_complete_pairs": 11824,
+        "threat_rank_median": 62.3073,
+        "threat_rank_q25": 43.13065,
+        "threat_rank_q75": 78.2441,
+        "threat_rank_std": 23.081199529538022
+      },
+      {
+        "impact_bin": "(124.141, 141.057]",
+        "n_complete_pairs": 6080,
+        "threat_rank_median": 61.3944,
+        "threat_rank_q25": 39.873375,
+        "threat_rank_q75": 78.2016,
+        "threat_rank_std": 23.76814233024604
+      },
+      {
+        "impact_bin": "(141.057, 157.972]",
+        "n_complete_pairs": 7712,
+        "threat_rank_median": 87.4417,
+        "threat_rank_q25": 76.075625,
+        "threat_rank_q75": 94.731825,
+        "threat_rank_std": 14.500390249628833
+      }
+    ],
+    "by_period_and_impact_bin": [
+      {
+        "period": "period_01",
+        "impact_bin": "(22.645999999999997, 39.563]",
+        "n_complete_pairs": 79,
+        "threat_rank_median": 8.3955,
+        "threat_rank_q25": 0.9061,
+        "threat_rank_q75": 20.6229
+      },
+      {
+        "period": "period_01",
+        "impact_bin": "(39.563, 56.478]",
+        "n_complete_pairs": 258,
+        "threat_rank_median": 14.539,
+        "threat_rank_q25": 2.933125,
+        "threat_rank_q75": 48.643775000000005
+      },
+      {
+        "period": "period_01",
+        "impact_bin": "(56.478, 73.394]",
+        "n_complete_pairs": 1602,
+        "threat_rank_median": 32.58715,
+        "threat_rank_q25": 13.713325000000001,
+        "threat_rank_q75": 55.8835
+      },
+      {
+        "period": "period_01",
+        "impact_bin": "(73.394, 90.31]",
+        "n_complete_pairs": 2932,
+        "threat_rank_median": 32.03255,
+        "threat_rank_q25": 12.5255,
+        "threat_rank_q75": 52.866875
+      },
+      {
+        "period": "period_01",
+        "impact_bin": "(90.31, 107.225]",
+        "n_complete_pairs": 1894,
+        "threat_rank_median": 39.516149999999996,
+        "threat_rank_q25": 18.967475,
+        "threat_rank_q75": 63.32895
+      },
+      {
+        "period": "period_01",
+        "impact_bin": "(107.225, 124.141]",
+        "n_complete_pairs": 3550,
+        "threat_rank_median": 58.7376,
+        "threat_rank_q25": 35.9139,
+        "threat_rank_q75": 81.0288
+      },
+      {
+        "period": "period_01",
+        "impact_bin": "(124.141, 141.057]",
+        "n_complete_pairs": 1618,
+        "threat_rank_median": 61.4739,
+        "threat_rank_q25": 41.3591,
+        "threat_rank_q75": 80.7612
+      },
+      {
+        "period": "period_01",
+        "impact_bin": "(141.057, 157.972]",
+        "n_complete_pairs": 1613,
+        "threat_rank_median": 83.0104,
+        "threat_rank_q25": 67.4367,
+        "threat_rank_q75": 94.403
+      },
+      {
+        "period": "period_02",
+        "impact_bin": "(22.645999999999997, 39.563]",
+        "n_complete_pairs": 89,
+        "threat_rank_median": 6.0893,
+        "threat_rank_q25": 2.3004,
+        "threat_rank_q75": 8.8848
+      },
+      {
+        "period": "period_02",
+        "impact_bin": "(39.563, 56.478]",
+        "n_complete_pairs": 287,
+        "threat_rank_median": 11.3971,
+        "threat_rank_q25": 5.1349,
+        "threat_rank_q75": 14.843350000000001
+      },
+      {
+        "period": "period_02",
+        "impact_bin": "(56.478, 73.394]",
+        "n_complete_pairs": 1875,
+        "threat_rank_median": 20.1593,
+        "threat_rank_q25": 10.6311,
+        "threat_rank_q75": 41.01465
+      },
+      {
+        "period": "period_02",
+        "impact_bin": "(73.394, 90.31]",
+        "n_complete_pairs": 3204,
+        "threat_rank_median": 25.436700000000002,
+        "threat_rank_q25": 12.186325,
+        "threat_rank_q75": 39.4301
+      },
+      {
+        "period": "period_02",
+        "impact_bin": "(90.31, 107.225]",
+        "n_complete_pairs": 2608,
+        "threat_rank_median": 41.6667,
+        "threat_rank_q25": 26.53295,
+        "threat_rank_q75": 55.4531
+      },
+      {
+        "period": "period_02",
+        "impact_bin": "(107.225, 124.141]",
+        "n_complete_pairs": 3994,
+        "threat_rank_median": 63.3767,
+        "threat_rank_q25": 44.9396,
+        "threat_rank_q75": 76.31812500000001
+      },
+      {
+        "period": "period_02",
+        "impact_bin": "(124.141, 141.057]",
+        "n_complete_pairs": 1792,
+        "threat_rank_median": 60.84335,
+        "threat_rank_q25": 44.266325,
+        "threat_rank_q75": 79.7714
+      },
+      {
+        "period": "period_02",
+        "impact_bin": "(141.057, 157.972]",
+        "n_complete_pairs": 2887,
+        "threat_rank_median": 85.5392,
+        "threat_rank_q25": 74.1007,
+        "threat_rank_q75": 93.5773
+      },
+      {
+        "period": "period_03",
+        "impact_bin": "(22.645999999999997, 39.563]",
+        "n_complete_pairs": 94,
+        "threat_rank_median": 12.1173,
+        "threat_rank_q25": 4.1176,
+        "threat_rank_q75": 14.9734
+      },
+      {
+        "period": "period_03",
+        "impact_bin": "(39.563, 56.478]",
+        "n_complete_pairs": 266,
+        "threat_rank_median": 14.4265,
+        "threat_rank_q25": 7.7386,
+        "threat_rank_q75": 18.8804
+      },
+      {
+        "period": "period_03",
+        "impact_bin": "(56.478, 73.394]",
+        "n_complete_pairs": 2710,
+        "threat_rank_median": 22.13725,
+        "threat_rank_q25": 8.395975,
+        "threat_rank_q75": 45.155
+      },
+      {
+        "period": "period_03",
+        "impact_bin": "(73.394, 90.31]",
+        "n_complete_pairs": 4615,
+        "threat_rank_median": 26.9196,
+        "threat_rank_q25": 11.334150000000001,
+        "threat_rank_q75": 43.4594
+      },
+      {
+        "period": "period_03",
+        "impact_bin": "(90.31, 107.225]",
+        "n_complete_pairs": 2479,
+        "threat_rank_median": 41.9561,
+        "threat_rank_q25": 25.57125,
+        "threat_rank_q75": 58.649150000000006
+      },
+      {
+        "period": "period_03",
+        "impact_bin": "(107.225, 124.141]",
+        "n_complete_pairs": 4280,
+        "threat_rank_median": 63.0997,
+        "threat_rank_q25": 46.596725,
+        "threat_rank_q75": 78.2441
+      },
+      {
+        "period": "period_03",
+        "impact_bin": "(124.141, 141.057]",
+        "n_complete_pairs": 2670,
+        "threat_rank_median": 61.575199999999995,
+        "threat_rank_q25": 36.8951,
+        "threat_rank_q75": 76.525575
+      },
+      {
+        "period": "period_03",
+        "impact_bin": "(141.057, 157.972]",
+        "n_complete_pairs": 3212,
+        "threat_rank_median": 89.67984999999999,
+        "threat_rank_q25": 80.9322,
+        "threat_rank_q75": 95.462125
+      }
+    ]
+  },
+  "temporal": {
+    "status": "COMPLETE",
+    "unique_cycle_count": 33,
+    "period_count": 3,
+    "period_target_distribution": [
+      {
+        "label": "period_01",
+        "n": 13546,
+        "median": 50.032250000000005,
+        "q25": 25.104,
+        "q75": 75.0232,
+        "impact_load_median": 108.7033
+      },
+      {
+        "label": "period_02",
+        "n": 16736,
+        "median": 50.0128,
+        "q25": 25.054425,
+        "q75": 74.9071,
+        "impact_load_median": 110.5078
+      },
+      {
+        "label": "period_03",
+        "n": 20326,
+        "median": 50.03845,
+        "q25": 25.024375,
+        "q75": 75.021175,
+        "impact_load_median": 106.9066
+      }
+    ]
+  },
+  "outlier_diagnostics": {
+    "method": "Univariate 1.5 x IQR fences, descriptive flag only.",
+    "impact_outlier_rows": 0,
+    "target_outlier_rows": 0,
+    "complete_pair_rows": 50608,
+    "outlier_counts_by_period": [
+      {
+        "period": "period_01",
+        "impact_outlier_count": 0,
+        "target_outlier_count": 0,
+        "rows": 13546
+      },
+      {
+        "period": "period_02",
+        "impact_outlier_count": 0,
+        "target_outlier_count": 0,
+        "rows": 16736
+      },
+      {
+        "period": "period_03",
+        "impact_outlier_count": 0,
+        "target_outlier_count": 0,
+        "rows": 20326
+      }
+    ]
+  },
+  "figures": [
+    "samuel_impact_threat_hexbin.png",
+    "samuel_impact_bins_by_period.png",
+    "samuel_threat_by_period.png"
   ],
-  "next_action": "Place the official regression Train.csv, Test.csv, and SampleSubmission.csv in data/raw/regression/ (or TP2_DATA_DIR/regression/), then rerun."
+  "interpretation_guardrail": "Report direction, strength, conditional spread and period contrasts as observed descriptions only. Pearson is calculated only for finite, nonconstant numeric pairs; Spearman is a rank association. The name threat_rank is schema evidence only; its scale and semantics remain UNKNOWN until an official definition is available. A changing association or distribution is not, by itself, evidence of a mechanism or statistically established drift."
 }

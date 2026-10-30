@@ -11,7 +11,7 @@ data/raw/regression/Test.csv
 data/raw/regression/SampleSubmission.csv
 ```
 
-Pada 30 Oktober 2026 hanya tiga file classification tersedia. Train 50.608 × 19, test 29.421 × 18, sample 29.421 × 2. Target terverifikasi: `artifact_signal`; 17 prediktor selain `record_id`. Target regression `threat_rank` belum terverifikasi karena semua file regression belum tersedia. Nama target pada dokumen perencanaan bukan pengganti bukti skema.
+Pada 30 Oktober 2026 kedua task tersedia: masing-masing train 50.608 × 19, test 29.421 × 18, sample 29.421 × 2. Target classification `artifact_signal` dan regression `threat_rank` terverifikasi lewat skema train/test/sample; 17 prediktor selain record_id. Arsip regression dipindahkan dari Downloads dan diekstrak byte-identical; receipt CRC/SHA-256 di `reports/audits/regression_acquisition.json`.
 
 Provenance sebelumnya dicatat sebagai unduhan resmi Kaggle oleh dokumen 27 Oktober. Audit sekarang hanya memverifikasi byte lokal melalui SHA-256, bukan tanggal publikasi atau autentisitas upstream. Simpan informasi asal unduhan dan data dictionary ketika tersedia. Semua hash input, ukuran byte, dtype, missingness, unique count, distribusi dan perbandingan split tersimpan di `reports/audits/*_audit.json`.
 
@@ -19,4 +19,4 @@ Provenance sebelumnya dicatat sebagai unduhan resmi Kaggle oleh dokumen 27 Oktob
 
 Sample submission hanya digunakan untuk mengonfirmasi header prediksi, jumlah baris, dan urutan ID; nilai placeholdernya bukan label test. Jangan melatih model atau mengukur target shift dari sample. Jangan menyimpulkan `threat_rank` adalah ranking ordinal, indeks kontinu, atau berskala 0–100 sebelum definisi resmi dan data diperiksa.
 
-Semantik satu record, kalender cycle, lineage `audit_lane`/`checksum_hint`, dan saat ketersediaan `impact_load`/`entry_friction` tetap UNKNOWN. Minta penjelasan asisten sebelum menganggap fitur tersebut aman pada waktu prediksi.
+Materi lokal halaman 16 menjelaskan record_id sebagai ID observasi kerentanan dan cycle_code sebagai urutan siklus disclosure (besar = lebih baru); kalender absolut, lineage `audit_lane`/`checksum_hint`, dan saat ketersediaan `impact_load`/`entry_friction` tetap UNKNOWN. Minta penjelasan asisten sebelum menganggap fitur tersebut aman pada waktu prediksi.

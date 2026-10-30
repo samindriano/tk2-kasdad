@@ -37,7 +37,7 @@ def _number_stats(series: pd.Series) -> dict:
         "missing_or_unparseable": int(numeric.isna().sum()),
         "non_finite": int((numeric.notna() & ~np.isfinite(numeric)).sum()),
         "distinct_finite": int(finite.nunique()),
-        "integer_like_count": int(np.isclose(finite, np.round(finite)).sum()),
+        "integer_like_count": int(np.isclose(finite, np.round(finite), rtol=0, atol=1e-8).sum()),
     }
     result["integer_like_fraction"] = (
         float(result["integer_like_count"] / len(finite)) if len(finite) else None
@@ -132,7 +132,8 @@ def _plot_relationship(frame: pd.DataFrame, report: dict, out_dir: Path) -> list
 
     # Facet-by-period, sharing the same impact bins and target scale.
     bins = report["relationship"]["impact_bins"]
-    periods = list(temporal_pairs.period.dropna().unique())
+    periods = sorted(temporal_pairs.period.dropna().unique())
+    bounds = {item['label']: item for item in report['relationship']['period_cycle_ranges']}
     if periods:
         fig, axes = plt.subplots(1, len(periods), figsize=(5 * len(periods), 4.8),
                                  sharey=True, squeeze=False, layout="constrained")
@@ -147,7 +148,8 @@ def _plot_relationship(frame: pd.DataFrame, report: dict, out_dir: Path) -> list
                         yerr=[summaries["median"] - summaries["q25"],
                               summaries["q75"] - summaries["median"]],
                         marker="o", color="#2864a5", ecolor="#7a9fca", capsize=2, linewidth=1.5)
-            ax.set(title=f"{period} (n={len(subset):,})", xlabel="impact_load bin center")
+            label = f"cycles {bounds[period]['cycle_min']}-{bounds[period]['cycle_max']}"
+            ax.set(title=f"{label} (n={len(subset):,})", xlabel="impact_load bin center")
             ax.grid(axis="y", alpha=.22)
         axes[0][0].set_ylabel("threat_rank median with middle 50% range")
         path = out_dir / "samuel_impact_bins_by_period.png"
@@ -162,7 +164,7 @@ def _plot_relationship(frame: pd.DataFrame, report: dict, out_dir: Path) -> list
         ax.errorbar(np.arange(len(plot_df)), plot_df["median"],
                     yerr=[plot_df["median"] - plot_df["q25"], plot_df["q75"] - plot_df["median"]],
                     marker="o", color="#2864a5", capsize=3)
-        ax.set_xticks(np.arange(len(plot_df)), plot_df["label"])
+        ax.set_xticks(np.arange(len(plot_df)), [f"{bounds[label]['cycle_min']}-{bounds[label]['cycle_max']}" for label in plot_df['label']])
         ax.set(title="threat_rank distribution by ordered cycle period",
                xlabel="Contiguous period of ordered cycle_code", ylabel="Median and middle 50% range")
         ax.grid(axis="y", alpha=.22)
@@ -180,6 +182,7 @@ def run_eda(root: Path | str | None = None, output_dir: Path | str | None = None
     target_audit = {"status": "UNKNOWN", "reason": "Train/Test/Sample schemas unavailable."}
     report = {
         "status": None,
+        "question_status": "PROVISIONAL_DIAGNOSTIC_NOT_FINAL",
         "question": "How strongly are impact_load and threat_rank associated, and is the descriptive relationship consistent across ordered cycle_code periods?",
         "input_root": ("configured_data_root/regression" if root is not None else
                        "TP2_DATA_DIR/regression" if "TP2_DATA_DIR" in os.environ else
