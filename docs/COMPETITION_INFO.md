@@ -2,6 +2,8 @@
 
 Dikonfirmasi pengguna melalui instruksi Round 1 pada 30 Oktober 2026, berdasarkan halaman resmi kompetisi. Sesi ini memakai konfirmasi tersebut sebagai sumber; tidak mengklaim verifikasi live/login Kaggle baru.
 
+Status terbaru: Classification Round 1 juga telah diotorisasi dan dijalankan sebagai milestone terpisah; metode/hasil berada pada `CLASSIFICATION_ROUND1.md` dan `reports/classification_round1/FINDINGS.md`. Kalimat scope regression-only di bawah adalah catatan saat informasi ini pertama dicatat. Untuk classification, kelas 0 berarti indikasi artefak eksploit publik **tidak teramati**, bukan bukti bahwa artefak pasti tidak ada.
+
 | Task | Target dan makna | Metric | Submission schema |
 |---|---|---|---|
 | Regression | `threat_rank`: indeks prioritas respons kerentanan, skala 0–100 | MAE, lebih rendah lebih baik | `record_id,threat_rank` |

@@ -1,0 +1,363 @@
+{
+  "protocol_id": "samuel-classification-round1-v1",
+  "stage": "DEVELOPMENT_VALIDATION_REVIEW_NO_FINAL_MODEL",
+  "target": "artifact_signal",
+  "positive_meaning": "Indication of public exploit artifact observed; 0 means not observed, not proof of absence.",
+  "primary_metric": "macro_f1",
+  "seed": 42,
+  "thread_limit": 2,
+  "primary_windows": [
+    {
+      "id": "W1",
+      "fit": [
+        47,
+        55
+      ],
+      "validation": [
+        56,
+        59
+      ]
+    },
+    {
+      "id": "W2",
+      "fit": [
+        47,
+        59
+      ],
+      "validation": [
+        60,
+        63
+      ]
+    },
+    {
+      "id": "W3",
+      "fit": [
+        47,
+        63
+      ],
+      "validation": [
+        64,
+        67
+      ]
+    },
+    {
+      "id": "W4",
+      "fit": [
+        47,
+        67
+      ],
+      "validation": [
+        68,
+        71
+      ]
+    },
+    {
+      "id": "W5",
+      "fit": [
+        47,
+        71
+      ],
+      "validation": [
+        72,
+        75
+      ]
+    },
+    {
+      "id": "W6",
+      "fit": [
+        47,
+        75
+      ],
+      "validation": [
+        76,
+        79
+      ]
+    }
+  ],
+  "secondary_windows": [
+    {
+      "id": "H12_E",
+      "fit": [
+        47,
+        55
+      ],
+      "validation": [
+        56,
+        67
+      ]
+    },
+    {
+      "id": "H12_L",
+      "fit": [
+        47,
+        67
+      ],
+      "validation": [
+        68,
+        79
+      ]
+    }
+  ],
+  "inner_threshold": {
+    "last_n_fit_cycles": 4,
+    "minimum_inner_fit_cycles": 3,
+    "minimum_inner_fit_rows": 500,
+    "minimum_inner_validation_rows": 200,
+    "grid": [
+      0.1,
+      0.11,
+      0.12,
+      0.13,
+      0.14,
+      0.15,
+      0.16,
+      0.17,
+      0.18,
+      0.19,
+      0.2,
+      0.21,
+      0.22,
+      0.23,
+      0.24,
+      0.25,
+      0.26,
+      0.27,
+      0.28,
+      0.29,
+      0.3,
+      0.31,
+      0.32,
+      0.33,
+      0.34,
+      0.35,
+      0.36,
+      0.37,
+      0.38,
+      0.39,
+      0.4,
+      0.41,
+      0.42,
+      0.43,
+      0.44,
+      0.45,
+      0.46,
+      0.47,
+      0.48,
+      0.49,
+      0.5,
+      0.51,
+      0.52,
+      0.53,
+      0.54,
+      0.55,
+      0.56,
+      0.57,
+      0.58,
+      0.59,
+      0.6,
+      0.61,
+      0.62,
+      0.63,
+      0.64,
+      0.65,
+      0.66,
+      0.67,
+      0.68,
+      0.69,
+      0.7,
+      0.71,
+      0.72,
+      0.73,
+      0.74,
+      0.75,
+      0.76,
+      0.77,
+      0.78,
+      0.79,
+      0.8,
+      0.81,
+      0.82,
+      0.83,
+      0.84,
+      0.85,
+      0.86,
+      0.87,
+      0.88,
+      0.89,
+      0.9
+    ],
+    "tie_rule": "max pooled Macro F1; within 1e-12 closest to0.5 then lower threshold",
+    "fallback": "0.5 if too few rows/cycles or fewer than two actual classes in inner-fit/inner-validation",
+    "outer_refit": "Refit model on full outer training history after threshold chosen using separate inner model.",
+    "no_outer_label_selection": true
+  },
+  "evaluation": {
+    "policies": [
+      "fixed_0.5",
+      "inner_selected"
+    ],
+    "comparison": "Report both separately on identical validation records; majority only fixed",
+    "labels": [
+      0,
+      1
+    ],
+    "zero_division": 0,
+    "single_class": "Keep two-label macro F1 and flag; AP/balanced accuracy null",
+    "pr_auc": "sklearn average_precision_score (stepwise average precision), not trapezoidal PR integration",
+    "pooled": "Recompute from concatenated predictions; never average cycle/window F1 as pooled",
+    "equal_cycle": "Arithmetic mean of 24 cycle Macro F1, separate from pooled",
+    "calibration": "10 fixed equal-width bins, Brier score; diagnostic only no calibration fits",
+    "impact_subgroups": "Per-outer-fit 1/3 and2/3 quantiles of impact_load, same across model recipes, cutpoints recorded; no label based grouping."
+  },
+  "feature_sets": {
+    "two": [
+      "impact_load",
+      "entry_friction"
+    ],
+    "ef": [
+      "entry_friction"
+    ],
+    "structured": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code"
+    ],
+    "text": [
+      "signal_stream"
+    ],
+    "hybrid": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code",
+      "signal_stream"
+    ]
+  },
+  "excluded_features": [
+    "record_id",
+    "threat_rank",
+    "artifact_signal",
+    "audit_lane",
+    "checksum_hint",
+    "pulse_a",
+    "pulse_b"
+  ],
+  "eligibility": "impact/EF official-user-confirmed. Other structured/text fields supplied scoring schema and course semantics eligible, operational timing provisional. No TP1 label joins.",
+  "lr_parameters": {
+    "C": 1.0,
+    "solver": "liblinear",
+    "max_iter": 2000,
+    "tol": 0.0001,
+    "class_weight": null,
+    "random_state": 42
+  },
+  "hgb_parameters": {
+    "learning_rate": 0.05,
+    "max_iter": 200,
+    "max_leaf_nodes": 15,
+    "min_samples_leaf": 30,
+    "l2_regularization": 1.0,
+    "max_bins": 255,
+    "early_stopping": false,
+    "random_state": 42,
+    "loss": "log_loss"
+  },
+  "tfidf_parameters": {
+    "analyzer": "word",
+    "ngram_range": [
+      1,
+      2
+    ],
+    "min_df": 3,
+    "max_df": 0.995,
+    "max_features": 20000,
+    "sublinear_tf": true,
+    "lowercase": true,
+    "strip_accents": "unicode",
+    "token_pattern": "(?u)\\b\\w\\w+\\b"
+  },
+  "preprocessing": {
+    "numeric": "Reuse regression parsers/imputer read-only; fit-only StandardScaler for linear",
+    "categorical_linear": "OneHotEncoder min_frequency30 max_categories254 infrequent_if_exist; explicit missing category",
+    "categorical_hgb": "Reuse native categorical preprocessing; unknown/missing -1",
+    "text_missing": "Empty zero TFIDF vector plus explicit stream_missing flag, text-only and hybrid",
+    "hybrid_weights": {
+      "structured": 1,
+      "text": 1
+    },
+    "minimum_ef_lookup_support": 30,
+    "class_weight": "None; keep fixed-vs-selected threshold comparison without balancing variant"
+  },
+  "recipes": [
+    {
+      "id": "C0_A",
+      "kind": "majority",
+      "features": "ef",
+      "threshold_selection": false
+    },
+    {
+      "id": "C0_B",
+      "kind": "ef_lookup",
+      "features": "ef",
+      "threshold_selection": true
+    },
+    {
+      "id": "C0_C",
+      "kind": "lr_two",
+      "features": "two",
+      "threshold_selection": true
+    },
+    {
+      "id": "C1_A",
+      "kind": "lr_structured",
+      "features": "structured",
+      "threshold_selection": true
+    },
+    {
+      "id": "C1_B",
+      "kind": "hgb_structured",
+      "features": "structured",
+      "threshold_selection": true
+    },
+    {
+      "id": "C2_A",
+      "kind": "lr_text",
+      "features": "text",
+      "threshold_selection": true
+    },
+    {
+      "id": "C2_B",
+      "kind": "lr_hybrid",
+      "features": "hybrid",
+      "threshold_selection": true
+    }
+  ],
+  "compute": "Reuse same outer fit for W1/H12_E and W4/H12_L, reuse their inner thresholds. 42 distinct outer fits +36 inner fits;56 evaluation jobs. Cache validation probabilities, never model binaries.",
+  "boundaries": [
+    "No official-test predictions/submission",
+    "No final all-Train model",
+    "No Round2/ensemble/search",
+    "No Regression Round1 or TP1 changes",
+    "No outer-validation label based threshold/calibration/feature selection",
+    "No leaderboard optimization",
+    "EDA formal remains Regression"
+  ],
+  "reproduction": "Prespecified representative history end67: seven outer+six inner refits in separate run/report directory; compare validation arrays/thresholds/fitted audit states. Full duplicate training not required."
+}
