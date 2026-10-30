@@ -225,6 +225,18 @@ def run(task: str, data_dir: Path) -> Path:
             raise RuntimeError("Regression Round 1 freeze verification failed")
         model_identity = {"protocol_sha256": current_identity["protocol_sha256"],
                           "freeze_signature": freeze["signature"]}
+    manifest_path = PROJECT_ROOT / "reports/submissions" / f"{task}_initial_manifest.json"
+    prior_kaggle_receipt = None
+    if manifest_path.exists():
+        previous = json.loads(manifest_path.read_text(encoding="utf-8"))
+        if previous.get("submission_sha256") == sha256(output):
+            prior_kaggle_receipt = previous.get("kaggle_submission")
+    kaggle_receipt = prior_kaggle_receipt or {
+        "status": "NOT_SUBMITTED",
+        "one_submission_authorized": True,
+        "submissions_used": 0,
+        "score": None,
+    }
     manifest = {
         "status": "PREPARED_VALIDATED_NOT_SUBMITTED",
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -249,14 +261,8 @@ def run(task: str, data_dir: Path) -> Path:
         },
         "elapsed_seconds": perf_counter() - start,
         "model": audit,
-        "kaggle_submission": {
-            "status": "NOT_SUBMITTED_KAGGLE_CLI_AND_STANDARD_CREDENTIALS_UNAVAILABLE",
-            "one_submission_authorized": True,
-            "submissions_used": 0,
-            "score": None,
-        },
+        "kaggle_submission": kaggle_receipt,
     }
-    manifest_path = PROJECT_ROOT / "reports/submissions" / f"{task}_initial_manifest.json"
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
     write_json(manifest_path, manifest)
     return manifest_path
