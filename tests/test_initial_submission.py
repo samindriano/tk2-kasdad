@@ -44,17 +44,23 @@ class InitialSubmissionTests(unittest.TestCase):
             _submission_frame(self.test, sample, np.array([10., 20., 30.]), "threat_rank", "regression")
 
     def test_model_freeze_failure_precedes_any_fit_or_output_write(self):
-        output = submissions.PROJECT_ROOT / "submissions" / "classification_initial.csv"
-        before_hash = submissions.sha256(output)
         frames = (pd.DataFrame(), pd.DataFrame(), pd.DataFrame(), {})
-        with patch.object(submissions, "_load_inputs", return_value=frames), \
-             patch.object(submissions, "_verify_model_identity", side_effect=RuntimeError("freeze mismatch")) as verify, \
-             patch.object(submissions, "_classification") as fit:
-            with self.assertRaisesRegex(RuntimeError, "freeze mismatch"):
-                submissions.run("classification", Path("unused-data-root"))
-        verify.assert_called_once()
-        fit.assert_not_called()
-        self.assertEqual(submissions.sha256(output), before_hash)
+        with tempfile.TemporaryDirectory() as temp_root:
+            project_root = Path(temp_root)
+            output_dir = project_root / "submissions"
+            output_dir.mkdir()
+            sentinel = output_dir / "existing.csv"
+            sentinel.write_text("preserve me\n", encoding="utf-8")
+            before = {path.name: path.read_bytes() for path in output_dir.iterdir()}
+            with patch.object(submissions, "PROJECT_ROOT", project_root), \
+                 patch.object(submissions, "_load_inputs", return_value=frames), \
+                 patch.object(submissions, "_verify_model_identity", side_effect=RuntimeError("freeze mismatch")) as verify, \
+                 patch.object(submissions, "_classification") as fit:
+                with self.assertRaisesRegex(RuntimeError, "freeze mismatch"):
+                    submissions.run("classification", Path("unused-data-root"))
+            verify.assert_called_once()
+            fit.assert_not_called()
+            self.assertEqual(before, {path.name: path.read_bytes() for path in output_dir.iterdir()})
 
     def test_data_root_defaults_to_tp2_data_dir_environment(self):
         with tempfile.TemporaryDirectory() as temp_root, patch.dict("os.environ", {"TP2_DATA_DIR": temp_root}):

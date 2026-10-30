@@ -299,7 +299,8 @@ def main() -> None:
     for task in tasks:
         print(f"Preparing {task} full-Train submission", flush=True)
         path = run(task, args.data_dir)
-        print(f"{task}: PREPARED; manifest={path}", flush=True)
+        status = json.loads(path.read_text(encoding="utf-8"))["status"]
+        print(f"{task}: {status}; manifest={path}", flush=True)
 
 
 if __name__ == "__main__":
