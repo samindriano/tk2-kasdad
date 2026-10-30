@@ -3,7 +3,7 @@
 Cyber Vulnerability Lifecycle · Semester Ganjil 2026/2027 · Samuel, Rousan, Abhi, Rizky.
 
 Repository independen dan private: [samindriano/tk2-kasdad](https://github.com/samindriano/tk2-kasdad).
-Audit, EDA formal Samuel, Regression Round 1 serta **Classification Round 1 dan Round 2 selesai pada 30 Oktober 2026**. Round 1 menjadi checkpoint yang dipertahankan; Classification Round 2 berhenti untuk review. Belum ada final model atau Kaggle submission.
+Audit, EDA formal Samuel serta **Regression dan Classification Round 1–2 selesai pada 30 Oktober 2026**. Seluruh checkpoint lama dipertahankan. Dua initial Kaggle submissions yang diotorisasi pengguna sudah COMPLETE melalui track terpisah; belum ada model final atau Round 3.
 
 ## Status dan temuan awal
 
@@ -15,8 +15,14 @@ Audit, EDA formal Samuel, Regression Round 1 serta **Classification Round 1 dan 
 | Regression Samuel Round 1 | Selesai; disetujui pengguna untuk progression | 64 fit + 64 refit terpisah; seluruh prediction vectors bit-identical; R1-D memimpin primary, tetapi R1-C sedikit lebih baik pada pooled H12 |
 | Classification Samuel Round 1 | Selesai; disetujui sebagai checkpoint | 7 recipe, 56 evaluation jobs; 78 fits +13 representative refits. Hybrid LR fixed F1 0,8206, dengan missing-stream dan threshold trade-offs |
 | Classification Samuel Round 2 | Selesai; berhenti untuk review | 10 recipe, 4 policies, 80 window jobs, 72 fits +12 representative refits. Fixed HGB fallback route F1 0,8255 primary /0,7968 H12 |
+| Regression Samuel Round 2 | Selesai; berhenti untuk review | 19 recipe, 152 window evaluations, 112 unique fits +19 representative refits. Full recent-8 MAE 13,2172 primary; expanding no-codes MAE 15,0535 H12, dengan trade-off early/late dan high-tail |
+| Initial Kaggle benchmarks | COMPLETE; satu upload per kompetisi | Classification C4_HGB fixed public Macro F1 0,82641; Regression R1-D asli clipped public MAE 13,53473. Tidak dipakai memilih recipe Round 2 |
 
-Milestone terbaru: [notebook Classification Round 2](notebooks/samuel/06_samuel_classification_round2.ipynb), [findings dan rekomendasi](reports/classification_round2/FINDINGS.md), [tabel detail](reports/classification_round2/comparison_tables.md), [protocol/reproduksi](docs/CLASSIFICATION_ROUND2.md), serta [verification receipt](reports/classification_round2/verification.json). Fixed routing memperbaiki missing-stream; dua text weights dan alternatif threshold belum memberi perbaikan universal. Seluruh hasil adalah adaptive development evidence dari validation yang dipakai ulang.
+Milestone terbaru: [notebook Regression Round 2](notebooks/samuel/07_samuel_regression_round2.ipynb), [findings dan rekomendasi](reports/regression_round2/FINDINGS.md), [seluruh kandidat/window/cycle](reports/regression_round2/COMPARISON_TABLES.md), [temporal generalization risk](reports/regression_round2/TEMPORAL_GENERALIZATION.md), [protocol/reproduksi](docs/REGRESSION_ROUND2.md), dan [verification receipt](reports/regression_round2/verification.json). Recency membantu sedikit pada primary tetapi tidak H12; kontribusi kategori/cycle tergantung horizon/history. H12 memakai ulang records primary dan bukan independent replication.
+
+Track submission terpisah: [status dan public scores](reports/submissions/KAGGLE_RESULTS.md), [recipe dan panduan](reports/submissions/INITIAL_SUBMISSIONS.md), [manifest classification](reports/submissions/classification_initial_manifest.json), serta [manifest regression](reports/submissions/regression_initial_manifest.json). Model berasal dari checkpoint sebelum Regression Round 2. CSV lokal tetap ignored; jangan mengulang upload tanpa izin baru.
+
+Checkpoint Classification Round 2: [notebook](notebooks/samuel/06_samuel_classification_round2.ipynb), [findings dan rekomendasi](reports/classification_round2/FINDINGS.md), [tabel detail](reports/classification_round2/comparison_tables.md), [protocol/reproduksi](docs/CLASSIFICATION_ROUND2.md), serta [verification receipt](reports/classification_round2/verification.json). Fixed routing memperbaiki missing-stream; dua text weights dan alternatif threshold belum memberi perbaikan universal. Seluruh hasil adalah adaptive development evidence dari validation yang dipakai ulang.
 
 Checkpoint Classification Round 1: [notebook](notebooks/samuel/05_samuel_classification_round1.ipynb), [hasil dan rekomendasi](reports/classification_round1/FINDINGS.md), [tabel detail](reports/classification_round1/comparison_tables.md), serta [protocol dan reproduksi](docs/CLASSIFICATION_ROUND1.md). Structured/text/hybrid dibandingkan dengan threshold 0,50 dan inner temporal selection. Semua source dan hasil kedua task Round 1 dipertahankan.
 
@@ -26,7 +32,7 @@ Mulai dari [notebook Round 1](notebooks/samuel/04_samuel_regression_round1.ipynb
 - Train cycle 47–79, test 80–91. Makna kalender dan mekanisme `cycle_code` belum dikonfirmasi; perbedaan periode tidak membuktikan causal drift.
 - Missing `org_code`: 5,31% train vs 23,27% test; `module_code`: 7,99% vs 25,14%. Tangani missing dan kategori baru secara eksplisit.
 - Pengguna telah mengonfirmasi `impact_load` dan `entry_friction` sebagai predictor resmi kedua task. Target regression adalah indeks prioritas respons 0–100 dengan MAE; classification adalah indikator artefak eksploit publik 0/1 dengan Macro F1. Provenance/timing rinci fitur lain tetap uncertainty; lihat [otoritas informasi kompetisi](docs/COMPETITION_INFO.md).
-- `scope_pressure` memiliki perbedaan distribusi train/test terbesar di antara fitur numerik non-ID/cycle (KS D = 0,2138). Test dipakai untuk audit skema/distribusi, bukan memilih model.
+- `scope_pressure` memiliki perbedaan distribusi train/test besar (KS D = 0,2138). Round 2 juga menemukan 6.278 Test rows dengan zero scope/spread count dan pressure di bawah minimum Train, tanpa padanan zero-count pada Train. Ini descriptive support risk; Test tidak dipakai memilih recipe.
 
 Lihat [EDA formal Samuel](reports/eda/SAMUEL_FORMAL_EDA.md), [rancangan eksperimen untuk review](docs/REGRESSION_EXPERIMENT_REVIEW.md), [riwayat discovery](reports/eda/REGRESSION_DISCOVERY.md), [riwayat audit awal](reports/audits/FINDINGS.md), [audit classification](reports/audits/classification_audit.md), [audit regression](reports/audits/regression_audit.md), dan [status EDA Samuel](docs/SAMUEL_EDA.md). JSON pendamping menyimpan profil setiap kolom, hash input, dan versi runtime.
 
@@ -38,12 +44,13 @@ Python yang dipakai: 3.13.5. Dari root repository:
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
-python scripts/run_classification_round2.py
-python scripts/build_classification_round2_notebook.py
-python -m unittest tests.test_classification_round2_models tests.test_classification_round2_metrics tests.test_classification_round2_evaluation tests.test_classification_round2_results -v
+python scripts/run_regression_round2.py --stage all
+python scripts/verify_regression_round2.py
+python scripts/build_regression_round2_notebook.py
+python -m unittest tests.test_regression_round2_models tests.test_regression_round2_metrics tests.test_regression_round2_evaluation tests.test_regression_round2_results tests.test_regression_round2_reporting tests.test_round1_models tests.test_round1_evaluation -v
 ```
 
-Round 2 memakai output/cache namespace sendiri dan memverifikasi checkpoint lama. Rincian bootstrap dependency vectors, repeat serta helper compatibility tests ada di panduan Round 2. Reproduksi Regression Round 1 secara terpisah:
+Regression Round 2 memakai output/cache namespace sendiri dan memverifikasi 196 berkas checkpoint lama. Rincian immutable base/interaction receipt dan representative repeat ada di panduan Regression Round 2. Reproduksi checkpoint Regression Round 1 secara terpisah:
 
 ```powershell
 python scripts/run_round1.py

@@ -1,0 +1,432 @@
+{
+  "protocol_id": "samuel-regression-round2-v1",
+  "stage": "ADAPTIVE_DEVELOPMENT_VALIDATION_NO_FINAL_MODEL",
+  "seed": 42,
+  "thread_limit": 2,
+  "target": "threat_rank",
+  "primary_metric": "raw_unclipped_mae",
+  "target_scale": [
+    0,
+    100
+  ],
+  "primary_windows": [
+    {
+      "id": "W1",
+      "fit": [
+        47,
+        55
+      ],
+      "validation": [
+        56,
+        59
+      ]
+    },
+    {
+      "id": "W2",
+      "fit": [
+        47,
+        59
+      ],
+      "validation": [
+        60,
+        63
+      ]
+    },
+    {
+      "id": "W3",
+      "fit": [
+        47,
+        63
+      ],
+      "validation": [
+        64,
+        67
+      ]
+    },
+    {
+      "id": "W4",
+      "fit": [
+        47,
+        67
+      ],
+      "validation": [
+        68,
+        71
+      ]
+    },
+    {
+      "id": "W5",
+      "fit": [
+        47,
+        71
+      ],
+      "validation": [
+        72,
+        75
+      ]
+    },
+    {
+      "id": "W6",
+      "fit": [
+        47,
+        75
+      ],
+      "validation": [
+        76,
+        79
+      ]
+    }
+  ],
+  "secondary_windows": [
+    {
+      "id": "H12_E",
+      "fit": [
+        47,
+        55
+      ],
+      "validation": [
+        56,
+        67
+      ]
+    },
+    {
+      "id": "H12_L",
+      "fit": [
+        47,
+        67
+      ],
+      "validation": [
+        68,
+        79
+      ]
+    }
+  ],
+  "feature_groups": {
+    "cycle": [
+      "cycle_code"
+    ],
+    "codes": [
+      "org_code",
+      "module_code",
+      "pattern_code"
+    ],
+    "scope_spread": [
+      "scope_pressure",
+      "scope_trace",
+      "org_spread",
+      "module_spread"
+    ],
+    "telemetry": [
+      "telemetry_flag"
+    ],
+    "text_load": [
+      "text_load"
+    ]
+  },
+  "feature_sets": {
+    "two": [
+      "impact_load",
+      "entry_friction"
+    ],
+    "full": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code"
+    ],
+    "no_cycle": [
+      "impact_load",
+      "entry_friction",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code"
+    ],
+    "no_codes": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag"
+    ],
+    "no_scope_spread": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "text_load",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code"
+    ],
+    "no_telemetry": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "org_code",
+      "module_code",
+      "pattern_code"
+    ],
+    "no_text_load": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code"
+    ]
+  },
+  "excluded_features": [
+    "record_id",
+    "signal_stream",
+    "audit_lane",
+    "checksum_hint",
+    "pulse_a",
+    "pulse_b",
+    "artifact_signal",
+    "threat_rank"
+  ],
+  "history_policies": {
+    "expanding": {
+      "kind": "expanding"
+    },
+    "recent8": {
+      "kind": "recent",
+      "cycles": 8
+    },
+    "recent12": {
+      "kind": "recent",
+      "cycles": 12
+    },
+    "matched8_s42": {
+      "kind": "matched",
+      "match_cycles": 8,
+      "seed": 42
+    },
+    "matched8_s31415": {
+      "kind": "matched",
+      "match_cycles": 8,
+      "seed": 31415
+    }
+  },
+  "recipes": [
+    {
+      "id": "R1_C",
+      "features": "two",
+      "history": "expanding",
+      "control": "R1_C",
+      "stage": "base"
+    },
+    {
+      "id": "R1_D",
+      "features": "full",
+      "history": "expanding",
+      "control": "R1_D",
+      "stage": "base"
+    },
+    {
+      "id": "A_NO_CYCLE",
+      "features": "no_cycle",
+      "history": "expanding",
+      "control": null,
+      "stage": "base"
+    },
+    {
+      "id": "A_NO_CODES",
+      "features": "no_codes",
+      "history": "expanding",
+      "control": null,
+      "stage": "base"
+    },
+    {
+      "id": "A_NO_SCOPE_SPREAD",
+      "features": "no_scope_spread",
+      "history": "expanding",
+      "control": null,
+      "stage": "base"
+    },
+    {
+      "id": "A_NO_TELEMETRY",
+      "features": "no_telemetry",
+      "history": "expanding",
+      "control": null,
+      "stage": "base"
+    },
+    {
+      "id": "A_NO_TEXT_LOAD",
+      "features": "no_text_load",
+      "history": "expanding",
+      "control": null,
+      "stage": "base"
+    },
+    {
+      "id": "B_C_RECENT8",
+      "features": "two",
+      "history": "recent8",
+      "control": "R1_C",
+      "stage": "base"
+    },
+    {
+      "id": "B_C_RECENT12",
+      "features": "two",
+      "history": "recent12",
+      "control": "R1_C",
+      "stage": "base"
+    },
+    {
+      "id": "B_C_MATCHED8_S42",
+      "features": "two",
+      "history": "matched8_s42",
+      "control": "R1_C",
+      "stage": "base"
+    },
+    {
+      "id": "B_C_MATCHED8_S31415",
+      "features": "two",
+      "history": "matched8_s31415",
+      "control": "R1_C",
+      "stage": "base"
+    },
+    {
+      "id": "B_D_RECENT8",
+      "features": "full",
+      "history": "recent8",
+      "control": "R1_D",
+      "stage": "base"
+    },
+    {
+      "id": "B_D_RECENT12",
+      "features": "full",
+      "history": "recent12",
+      "control": "R1_D",
+      "stage": "base"
+    },
+    {
+      "id": "B_D_MATCHED8_S42",
+      "features": "full",
+      "history": "matched8_s42",
+      "control": "R1_D",
+      "stage": "base"
+    },
+    {
+      "id": "B_D_MATCHED8_S31415",
+      "features": "full",
+      "history": "matched8_s31415",
+      "control": "R1_D",
+      "stage": "base"
+    }
+  ],
+  "hgb_fixed_parameters": {
+    "learning_rate": 0.05,
+    "max_iter": 200,
+    "max_leaf_nodes": 15,
+    "min_samples_leaf": 30,
+    "l2_regularization": 1.0,
+    "max_bins": 255,
+    "early_stopping": false,
+    "random_state": 42,
+    "loss": "absolute_error"
+  },
+  "target_regions": {
+    "low": [
+      0,
+      33.333333333333336
+    ],
+    "middle": [
+      33.333333333333336,
+      66.66666666666667
+    ],
+    "high": [
+      66.66666666666667,
+      100
+    ]
+  },
+  "tail_thresholds": {
+    "low_inclusive": 5,
+    "high_inclusive": 95
+  },
+  "equality_tolerance": 1e-10,
+  "history_contract": {
+    "recent": "Last k observed complete cycles ending at fit cutoff; if fewer use all available. Never split recent cycles.",
+    "matched": "Uniform no-replacement row sample from all expanding past rows; exactly n recent8 rows; sort source positions; RNG SeedSequence([declared_seed, fit_end]); no target/validation access. Two fixed seeds diagnose sample variability. Matched sample can split cycles; not causal recency evidence.",
+    "row_order": "Original official source order preserved after any selection."
+  },
+  "interaction_contract": {
+    "stage": "after base results; immutable selection receipt before any interaction fit",
+    "maximum_feature_sets": 2,
+    "maximum_total_recipes": 4,
+    "eligible_feature_sets": [
+      "no_cycle",
+      "no_codes",
+      "no_scope_spread",
+      "no_telemetry",
+      "no_text_load"
+    ],
+    "eligible_histories": [
+      "recent8",
+      "matched8_s42"
+    ],
+    "rule": "MAIN selects up to two group removals based on substantive primary-vs-H12/history contrast, with numerical rationale/counterexample in immutable selection receipt. No feature combinations, parameter changes or repeated selection. One or both allowed histories per selected group. This stage is explicitly adaptive and is not confirmatory."
+  },
+  "comparison_contract": {
+    "controls": [
+      "R1_C",
+      "R1_D"
+    ],
+    "direction": "negative candidate-minus-control MAE is better",
+    "views": [
+      "row_pooled",
+      "equal_cycle",
+      "each_window",
+      "each_cycle",
+      "EF0_EF1",
+      "target_thirds",
+      "tails_le5_ge95",
+      "all_exact_impact_groups",
+      "known_unknown_category",
+      "fit_runtime",
+      "tree_complexity"
+    ],
+    "acceptance": "No final acceptance or Kaggle optimization. Describe magnitude and consistency versus both controls; no significance claim from reused cycles. Primary and H12 each 38588 records; H12 overlaps primary. State residual subgroup losses even for pooled winner.",
+    "addbacks": "None planned; at most four adaptive interaction recipes already bounded above.",
+    "test_features": "Describe feature shift only after experiment recipes selected; no test-label/prediction access in research runner and no transductive recipe choice."
+  },
+  "boundaries": [
+    "All existing tracked checkpoints except README protected by normalized text/exact binary hashes",
+    "No classification training or changes",
+    "No TP1 changes or label joins",
+    "Train-only preprocess, selected features only, native HGB categories",
+    "No final all-train fit or official-test predictions in research track",
+    "Separate authorized submission branch cannot supply Kaggle outcomes to recipe decisions",
+    "No target transforms, rank calibration, quantile model, text model, ensembles or tuning in R2",
+    "Stop after Round2 review"
+  ],
+  "identity_convention": "Canonical JSON; source/checkpoint text UTF8 LF; raw/binary exact bytes; validation arrays local ignored; source positions hashed as stable little-endian int64."
+}

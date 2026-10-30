@@ -1,0 +1,40 @@
+{
+  "payload": {
+    "freeze_signature": "a94ae9ae44b1dfe9b48a632806df4ed61ff1278d876f1dea2aa0c6e24188f3c3",
+    "base_results_sha256": "e273f0fcc42e1d22bfc548fd24403fa7e3825843adec7619d64c8fd38a7f817e",
+    "selected_at_utc": "2026-10-30T14:35:05.365576+00:00",
+    "recipes": [
+      {
+        "id": "C_NO_CODES_RECENT8",
+        "features": "no_codes",
+        "history": "recent8",
+        "control": null,
+        "stage": "interaction"
+      },
+      {
+        "id": "C_NO_CODES_MATCHED8_S42",
+        "features": "no_codes",
+        "history": "matched8_s42",
+        "control": null,
+        "stage": "interaction"
+      },
+      {
+        "id": "C_NO_CYCLE_RECENT8",
+        "features": "no_cycle",
+        "history": "recent8",
+        "control": null,
+        "stage": "interaction"
+      },
+      {
+        "id": "C_NO_CYCLE_MATCHED8_S42",
+        "features": "no_cycle",
+        "history": "matched8_s42",
+        "control": null,
+        "stage": "interaction"
+      }
+    ],
+    "rationale": "Selected exactly two removals and four history interactions from the predeclared budget. Base expanding R1-D primary/H12 MAE 13.349836/15.577241. Removing codes gives primary 14.078598 but H12 15.053470: early H12 improves 17.795600 to16.132086 while late H12 worsens13.700392 to14.140896 and high-tail errors worsen. This is a substantive feature/history trade-off, not universal robustness. Removing cycle produces the largest primary removal cost (+0.864267) but nearly neutral pooled H12 (+0.004850), with early improvement and late loss, making it the second informative contrast. Full D recent8 primary13.217154 beats expanding13.349836 and matched8 samples13.501782/13.528531 at equal recent8 row count, but H12 worsens to15.794559; recent12 also fails to improve either H12. Interactions test whether category/cycle removal changes that recency-versus-count contrast. No scope/spread, telemetry or text-load addbacks: their primary removal costs are small positive and lack a stronger horizon contrast. All four recipes retain fixed HGB settings, selected-feature parsers and same outer windows. This is adaptive development evidence selected from reused validation outcomes. No official Test feature diagnostics or Kaggle scores were consulted for this selection; no further recipe selection follows these interactions.",
+    "interpretation": "Adaptive development interaction; not independent confirmation."
+  },
+  "signature": "16f4f61ea8ff3be38c3b1ff0525742b4f6d66772e33fb43947cc2a9299715873"
+}

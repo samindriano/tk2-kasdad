@@ -1,0 +1,5 @@
+# Round 2 receipts bind exact saved result bytes. Preserve them across checkouts.
+# Keep these rules narrow so historical checkpoints retain their existing policy.
+/experiments/regression_round2/*.json -text whitespace=cr-at-eol
+/reports/regression_round2/*.json -text whitespace=cr-at-eol
+/reports/regression_round2/fit_audits/*.json -text whitespace=cr-at-eol
