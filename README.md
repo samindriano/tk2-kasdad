@@ -3,7 +3,7 @@
 Cyber Vulnerability Lifecycle · Semester Ganjil 2026/2027 · Samuel, Rousan, Abhi, Rizky.
 
 Repository independen dan private: [samindriano/tk2-kasdad](https://github.com/samindriano/tk2-kasdad).
-Persiapan, audit kedua task, dan discovery regression dijalankan pada **30 Oktober 2026**. Tidak ada training, tuning, atau submission TP2 pada tahap ini.
+Audit, EDA formal Samuel, dan **Regression Round 1 selesai pada 30 Oktober 2026**. Delapan recipe dievaluasi pada enam expanding windows dan dua horizon 12 cycle. Berhenti untuk review; belum ada final model atau Kaggle submission.
 
 ## Status dan temuan awal
 
@@ -11,12 +11,15 @@ Persiapan, audit kedua task, dan discovery regression dijalankan pada **30 Oktob
 |---|---|---|
 | Classification | Audit aktual selesai; bukan sertifikasi bebas leakage | Train 50.608 × 19, test 29.421 × 18; target `artifact_signal` terverifikasi lewat train/test/sample |
 | Regression | Audit aktual selesai | Train 50.608 × 19, test 29.421 × 18; `threat_rank` terverifikasi lewat train/test/sample |
-| EDA Samuel | EDA formal selesai; berhenti pada review modeling | Pertanyaan utama dipilih pengguna; seluruh33cycle, robustness periodisasi, common-support dan EF composition diperiksa |
+| EDA Samuel | EDA formal selesai; pertanyaan tetap | Pertanyaan utama dipilih pengguna; seluruh 33 cycle, robustness periodisasi, common-support dan EF composition diperiksa |
+| Regression Samuel Round 1 | Selesai; menunggu review arah berikutnya | 64 fit + 64 refit terpisah; seluruh prediction vectors bit-identical; R1-D memimpin primary, tetapi R1-C sedikit lebih baik pada pooled H12 |
+
+Mulai dari [notebook Round 1](notebooks/samuel/04_samuel_regression_round1.ipynb), [hasil dan rekomendasi](reports/round1/ROUND1_FINDINGS.md), [seluruh tabel](reports/round1/COMPARISON_TABLES.md), [QA](reports/round1/VALIDATION.md), dan [reproduksi](docs/ROUND1_REPRODUCIBILITY.md). Primary MAE R1-D **13,3498** versus R1-C **15,1490**; pada H12_E R1-D memburuk **17,7956** versus **16,4321**. Kandidat terbaik masih sementara.
 
 - Classification: kelas 0 = 33.038; kelas 1 = 17.570 (34,72%). Tidak ada missing target, duplikasi baris/ID, atau ID overlap antar-split.
 - Train cycle 47–79, test 80–91. Makna kalender dan mekanisme `cycle_code` belum dikonfirmasi; perbedaan periode tidak membuktikan causal drift.
 - Missing `org_code`: 5,31% train vs 23,27% test; `module_code`: 7,99% vs 25,14%. Tangani missing dan kategori baru secara eksplisit.
-- `impact_load` dan `entry_friction` tersedia sebagai fitur classification resmi. Kesamaan dengan target TP1 tidak otomatis membuktikan leakage; provenance dan waktu ketersediaan fitur tetap perlu dikonfirmasi.
+- Pengguna telah mengonfirmasi `impact_load` dan `entry_friction` sebagai predictor resmi kedua task. Target regression adalah indeks prioritas respons 0–100 dengan MAE; classification adalah indikator artefak eksploit publik 0/1 dengan Macro F1. Provenance/timing rinci fitur lain tetap uncertainty; lihat [otoritas informasi kompetisi](docs/COMPETITION_INFO.md).
 - `scope_pressure` memiliki perbedaan distribusi train/test terbesar di antara fitur numerik non-ID/cycle (KS D = 0,2138). Test dipakai untuk audit skema/distribusi, bukan memilih model.
 
 Lihat [EDA formal Samuel](reports/eda/SAMUEL_FORMAL_EDA.md), [rancangan eksperimen untuk review](docs/REGRESSION_EXPERIMENT_REVIEW.md), [riwayat discovery](reports/eda/REGRESSION_DISCOVERY.md), [riwayat audit awal](reports/audits/FINDINGS.md), [audit classification](reports/audits/classification_audit.md), [audit regression](reports/audits/regression_audit.md), dan [status EDA Samuel](docs/SAMUEL_EDA.md). JSON pendamping menyimpan profil setiap kolom, hash input, dan versi runtime.
@@ -29,6 +32,16 @@ Python yang dipakai: 3.13.5. Dari root repository:
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
+python scripts/run_round1.py
+python scripts/build_round1_notebook.py
+python -m unittest discover -s tests -v
+```
+
+Runner memverifikasi receipt freeze yang sudah ada sebelum fit/resume. Notebook memakai validation cache yang diverifikasi atau menjalankan ulang recipe tetap jika cache belum tersedia. Detail repeat run, input hash dan batas environment ada di [panduan reproduksi Round 1](docs/ROUND1_REPRODUCIBILITY.md).
+
+Untuk menjalankan ulang audit/discovery historis secara terpisah:
+
+```powershell
 python scripts/audit_data.py
 python scripts/samuel_eda.py
 python scripts/build_audit_notebook.py
@@ -54,7 +67,7 @@ python scripts/audit_data.py
 
 Tambahkan `Train.csv`, `Test.csv`, dan `SampleSubmission.csv` **resmi** untuk masing-masing task. Nama file dideteksi tanpa membedakan huruf besar/kecil; nama ambigu ditolak. Jangan mengganti regression dengan classification atau menyusun target dari TP1. File raw hanya dibaca dan tidak masuk Git. Provenance lokal sebelumnya menyebut unduhan Kaggle; sesi ini memverifikasi byte/hash lokal, tidak mengautentikasi ulang sumber unduhan.
 
-Panduan rinci: [data/README.md](data/README.md). Definisi domain `threat_rank`, rentang resminya, unit fitur, dan timing pembentukan kolom memerlukan data dictionary/materi resmi. Catatan lama mengenai target/rentang/metric belum dianggap terverifikasi hanya karena ada dalam dokumen.
+Panduan rinci: [data/README.md](data/README.md). Makna/rentang target, metric dan izin impact/EF telah dikonfirmasi pengguna dari halaman resmi; lihat [COMPETITION_INFO.md](docs/COMPETITION_INFO.md). Formula pembentukan target, unit rinci dan timing fitur lain masih memerlukan evidence tambahan. Catatan UNKNOWN dalam laporan lama mencerminkan waktu audit tersebut.
 
 ## Pembagian EDA
 
@@ -65,7 +78,7 @@ Panduan rinci: [data/README.md](data/README.md). Definisi domain `threat_rank`, 
 | Abhi | Regression | Apakah `scope_pressure` memberi informasi tambahan mengenai `threat_rank` setelah mempertimbangkan `impact_load`? |
 | Rizky | Classification | Bagaimana hubungan `telemetry_flag` dengan `artifact_signal`, dan apakah berbeda pada berbagai tingkat `module_spread`? |
 
-Hanya EDA Samuel dikerjakan pada milestone ini. Folder anggota lain adalah placeholder. [Pembagian kerja terbaru](docs/WORK_ALLOCATION.md) mengontrol ruang lingkup sekarang; catatan 27 Oktober dipertahankan sebagai riwayat.
+Milestone modeling ini hanya Regression Samuel. Folder anggota lain adalah placeholder dan pekerjaannya tidak diubah. [Pembagian kerja](docs/WORK_ALLOCATION.md) tetap menjadi referensi EDA; catatan 27 Oktober dipertahankan sebagai riwayat.
 
 ## Struktur
 
@@ -74,12 +87,14 @@ data/                 raw lokal, processed, derived, panduan data
 notebooks/            samuel, rousan, abhi, rizky; audit sebagai companion Samuel
 src/data/             audit dan EDA deskriptif
 src/features/         placeholder
-src/models/           placeholder; belum ada training
+src/models/           recipe, evaluation, behavior diagnostics dan reporting Round 1
 src/utils/            konfigurasi path portable
-scripts/              entry point audit dan builder notebook
+scripts/              entry point audit, training/evaluation dan builder notebook
 reports/audits/       laporan Markdown/JSON, hash dan profil input
 reports/eda/          status/hasil EDA Samuel
-experiments/          aturan pencatatan dan template; belum ada run model
+reports/round1/       aggregate metrics, fit audits, figures, findings dan QA
+experiments/round1/   protocol dan receipt freeze sebelum fit
+experiments/runs/     ignored validation vectors untuk reproduksi lokal
 submissions/          placeholder, output diabaikan Git
 deliverables/individual-final/  placeholder
 tests/                pemeriksaan path, skema, dan konsistensi audit
@@ -93,10 +108,10 @@ Folder `data/derived`, `notebooks/classification`, `notebooks/regression`, dokum
 - Simpan source data utuh; transformasi ke `data/processed/`, artifact besar ke folder ignored. Jangan commit credential, `.env`, dataset, atau model.
 - Gunakan hash input, versi environment, preprocessing, seed, split/cycle, metric dan identitas commit untuk eksperimen berikutnya. Template: [experiments/README.md](experiments/README.md).
 - Pelajari imputasi/encoding/vektor teks hanya dari train fold. Jangan menggabungkan label tambahan TP1 atau memilih konfigurasi berdasarkan test.
-- Belum ada validation split/model TP2 yang dibekukan; konfirmasi rubric dan makna cycle dahulu. Jangan menganggap resep TP1 pasti cocok dengan target TP2.
+- [Protokol Round 1](docs/ROUND1_PROTOCOL.md) dan [feature eligibility](docs/ROUND1_FEATURE_ELIGIBILITY.md) dibekukan sebelum eksperimen. Enam primary windows adalah development validation karena seluruh train sudah dipakai EDA. Recipe TP1 tidak dipindahkan otomatis.
 - [Referensi TP1](docs/TP1_REFERENCE.md) dibaca tanpa perubahan. Ada perbedaan antara ringkasan resep lama dan artifact final yang ditemukan; perbedaannya didokumentasikan.
 
-Langkah berikutnya adalah review validation protocol, metric resmi, fitur allowlist dan eksperimen pertama pada dokumen rancangan. Pertanyaan utama EDA sudah dipilih pengguna dan tidak diganti. Pelajaran distribusi/ekstrem TP1 tetap relevan; recipe multiclass TP1 tidak dipindahkan otomatis. Modeling, tuning dan submission belum dimulai.
+Langkah berikutnya adalah review hasil Round 1 dan memutuskan bersama apakah memperdalam regression atau memulai milestone classification. Pertanyaan EDA tetap. Pelajaran conditional median/ekstrem TP1 tetap relevan; model multiclass TP1 tidak disalin. Round 2 belum dijalankan.
 
 ## Discovery regression terbaru
 
@@ -104,7 +119,7 @@ Arsip regression dipindahkan dari Downloads ke raw lokal; CRC dan SHA-256 diveri
 
 Threat_rank memiliki 34.333 nilai unik, range teramati 0,0428–100, median 50,0282, top-10 nilai hanya 1,08% baris; TP1 impact_load memiliki 80 nilai dan top-10 mencakup 79,10%. Pearson impact–threat 0,6370 dan Spearman 0,6211. Pearson per periode 47–57 / 58–68 / 69–79 adalah 0,4994 / 0,6722 / 0,6964, sementara marginal target hampir tetap. Ini deskriptif dan tidak membuktikan causal drift atau error model TP2.
 
-Notebook discovery: `notebooks/samuel/02_regression_discovery.ipynb`. Perbandingan TP1 opsional memerlukan root raw TP1 via `--tp1-data-dir` atau environment `TP1_DATA_DIR`; TP2 tetap dapat dijalankan tanpa TP1. Definisi cycle terurut tercantum dalam materi lokal TP1 halaman 16; definisi khusus threat_rank belum ditemukan pada materi yang diperiksa.
+Notebook discovery: `notebooks/samuel/02_regression_discovery.ipynb`. Perbandingan TP1 opsional memerlukan root raw TP1 via `--tp1-data-dir` atau environment `TP1_DATA_DIR`; Round 1 hanya membutuhkan raw TP2. Definisi cycle terurut tercantum dalam materi lokal TP1 halaman 16; makna target TP2 kini dikonfirmasi pengguna dan formula rinci tetap belum diketahui.
 
 ## EDA formal dan titik review
 
@@ -112,4 +127,4 @@ Notebook demo utama: `notebooks/samuel/03_samuel_formal_eda.ipynb`; jalankan Res
 
 Hubungan tetap berbeda setelah mix exact impact×EF dibuat sama: Pearson 0,5244 → 0,6617 → 0,6837 pada 33 common cells, coverage96,09%. EF0 datar setelah blok tengah, EF1 masih menguat. Dua kelompok impact dan EF tetap menunjukkan conditional shifts berlawanan. Mean target percycle hampir persis50+50/n, conditional pada geometri average percentile yang teramati; kestabilan marginal tidak membuktikan kestabilan hubungan fitur atau mekanisme sumber.
 
-R0 baseline median dan R1 nonlinear terstruktur direkomendasikan untuk putaran kecil setelah review; seluruh recipe masih usulan. Semua cycle train telah dipakai EDA sehingga validation berikutnya tidak disebut untouched holdout. Lihat `reports/audits/FORMAL_EDA_VALIDATION.md` untuk pemeriksaan dan keterbatasan.
+Usulan R0/R1 dari EDA telah dijalankan pada Round 1 dengan otorisasi pengguna. Semua cycle train telah dipakai EDA sehingga hasil modeling tetap development validation. Lihat `reports/audits/FORMAL_EDA_VALIDATION.md` untuk QA historis EDA dan `reports/round1/VALIDATION.md` untuk QA modeling.

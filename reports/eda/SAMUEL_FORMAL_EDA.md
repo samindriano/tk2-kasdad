@@ -1,5 +1,7 @@
 # EDA formal Samuel — hubungan impact–threat antarcycle
 
+> Status historis sebelum Round1. Pengguna kini mengonfirmasi makna/metric target dan izin impact/EF; lihat `docs/COMPETITION_INFO.md`. Protokol R0/R1 sudah diotorisasi melalui instruksi Round1; model final dan Round2 tetap belum dipilih.
+
 30 Oktober 2026 · Pertanyaan dipilih pengguna: **“Apakah hubungan antara impact_load dan threat_rank mengalami perubahan antarperiode cycle_code, meskipun distribusi threat_rank relatif stabil?”**
 
 **Jawaban:** ya, terdapat perbedaan asosiasi dan distribusi kondisional yang teramati pada train. Pola awal bertahan pada beberapa pembagian periode, pembobotan cycle dan standardisasi komposisi impact×entry_friction. Namun hubungan tidak meningkat monotonik, perubahan tidak satu arah pada semua kelompok, dan bukti ini belum menetapkan structural break, causal drift atau prediction bias TP2.

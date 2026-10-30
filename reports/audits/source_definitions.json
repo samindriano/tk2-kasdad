@@ -20,5 +20,21 @@
       "paraphrase": "TP1 regression target described as a continuous-scale technical-impact index. Actual train has 80 rounded values; scale semantics and observed support are different concepts."
     }
   ],
-  "tp2_threat_rank_semantics": "UNKNOWN: not defined in inspected PDF; observed percentile-rank geometry does not establish upstream generator or official meaning."
+  "tp2_threat_rank_semantics": "CONFIRMED_BY_USER_FROM_OFFICIAL_COMPETITION: vulnerability response-priority index on scale0-100; regression metric MAE.",
+  "prior_pdf_only_statement": "UNKNOWN: not defined in inspected PDF; observed percentile-rank geometry does not establish upstream generator or official meaning.",
+  "round1_official_confirmation": {
+    "source": "User Round1 instruction,30October2026; official pages supplied, no new live Kaggle verification",
+    "regression_url": "https://www.kaggle.com/competitions/tp2-regression-cyber-vulnerability-kasdd-gasal-2026-2027",
+    "classification_url": "https://www.kaggle.com/competitions/tp2-classification-cyber-vulnerability-kasdd-gasal-2026-2027",
+    "classification_target": "artifact_signal",
+    "classification_meaning": "public exploit artifact indicator binary0/1",
+    "classification_metric": "MacroF1",
+    "allowed_added_predictors": [
+      "impact_load",
+      "entry_friction"
+    ],
+    "test": "newer disclosure cycles",
+    "target_generation_formula": "UNKNOWN",
+    "other_feature_operational_timing": "UNKNOWN"
+  }
 }

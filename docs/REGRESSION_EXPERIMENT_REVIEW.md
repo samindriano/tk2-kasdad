@@ -1,5 +1,7 @@
 # Rancangan eksperimen regression — menunggu review pengguna
 
+> Status historis sebelum Round1. Pengguna kini mengonfirmasi makna/metric target dan izin impact/EF; lihat `docs/COMPETITION_INFO.md`. Protokol R0/R1 sudah diotorisasi melalui instruksi Round1; model final dan Round2 tetap belum dipilih.
+
 30 Oktober 2026 · Tidak ada eksperimen model pada dokumen ini yang sudah dijalankan. Pertanyaan EDA utama sudah dipilih pengguna; model final, fitur final, validation protocol dan eksperimen tetap belum diputuskan.
 
 ## Evidence yang memotivasi rancangan

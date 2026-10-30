@@ -1,0 +1,55 @@
+{
+  "protocol_id": "samuel-regression-round1-v1",
+  "stage": "DEVELOPMENT_VALIDATION_NOT_FINAL_MODEL",
+  "seed": 42,
+  "thread_limit": 2,
+  "target": "threat_rank",
+  "target_scale": [0, 100],
+  "primary_metric": "mae",
+  "minimum_lookup_support": 30,
+  "primary_windows": [
+    {"id": "W1", "fit": [47, 55], "validation": [56, 59]},
+    {"id": "W2", "fit": [47, 59], "validation": [60, 63]},
+    {"id": "W3", "fit": [47, 63], "validation": [64, 67]},
+    {"id": "W4", "fit": [47, 67], "validation": [68, 71]},
+    {"id": "W5", "fit": [47, 71], "validation": [72, 75]},
+    {"id": "W6", "fit": [47, 75], "validation": [76, 79]}
+  ],
+  "secondary_windows": [
+    {"id": "H12_E", "fit": [47, 55], "validation": [56, 67]},
+    {"id": "H12_L", "fit": [47, 67], "validation": [68, 79]}
+  ],
+  "target_regions": {"low": [0, 33.333333333333336], "middle": [33.333333333333336, 66.66666666666667], "high": [66.66666666666667, 100]},
+  "tail_thresholds": {"low_inclusive": 5, "high_inclusive": 95},
+  "prediction_equality_tolerance": 1e-10,
+  "primary_predictions": "raw_unclipped",
+  "clipping": "Evaluate clipping to [0,100] separately for every recipe; never replace raw primary comparison.",
+  "selection": "Report primary row-pooled MAE, equal-cycle mean MAE, every window and subgroup tradeoffs. Temporary candidate only, no final selection.",
+  "random_split": "Not run; optional diagnostic omitted to preserve bounded scope.",
+  "feature_sets": {
+    "two": ["impact_load", "entry_friction"],
+    "expanded": ["impact_load", "entry_friction", "cycle_code", "scope_pressure", "text_load", "scope_trace", "org_spread", "module_spread", "telemetry_flag", "org_code", "module_code", "pattern_code"]
+  },
+  "excluded_features": ["record_id", "signal_stream", "audit_lane", "checksum_hint", "pulse_a", "pulse_b", "artifact_signal", "threat_rank"],
+  "preprocessing": {
+    "numeric_imputation": "fit-fold median; deterministic missing/parse/approx/suffix flags",
+    "mixed_count_fields": ["scope_trace", "org_spread", "module_spread"],
+    "telemetry": "casefold mapping 0,false,n,inactive to0 and1,true,y,active to1; missing and invalid flagged",
+    "categorical_fields": ["org_code", "module_code", "pattern_code"],
+    "ordinal_encoder": {"min_frequency": 30, "max_categories": 254, "handle_unknown": "use_encoded_value", "unknown_value": -1, "encoded_missing_value": -1},
+    "categorical_interpretation": "Native HGB categorical mask, never ordinal numeric semantics",
+    "fit_boundary": "All learned transforms fit-fold only; no official test transform or prediction"
+  },
+  "hgb_fixed_parameters": {"learning_rate": 0.05, "max_iter": 200, "max_leaf_nodes": 15, "min_samples_leaf": 30, "l2_regularization": 1.0, "max_bins": 255, "early_stopping": false, "random_state": 42},
+  "recipes": [
+    {"id": "R0_A", "kind": "global_median", "features": "two", "min_support": 30, "params": {}},
+    {"id": "R0_B", "kind": "impact_median", "features": "two", "min_support": 30, "params": {}},
+    {"id": "R0_C", "kind": "joint_median", "features": "two", "min_support": 30, "params": {}},
+    {"id": "R1_A", "kind": "linear", "features": "two", "params": {}},
+    {"id": "R1_B", "kind": "hgb", "features": "two", "params": {"loss": "squared_error"}},
+    {"id": "R1_B_ADD", "kind": "hgb", "features": "two", "params": {"loss": "squared_error", "interaction_cst": "no_interactions"}},
+    {"id": "R1_C", "kind": "hgb", "features": "two", "params": {"loss": "absolute_error"}},
+    {"id": "R1_D", "kind": "hgb", "features": "expanded", "params": {"loss": "absolute_error"}}
+  ],
+  "boundaries": ["No official-test predictions or submissions", "No final model or all-train final refit", "No ensemble or hyperparameter search", "No Round2 or classification pipeline", "No target reranking", "All preprocessing learned only from fit fold", "No early stopping using validation labels"]
+}
