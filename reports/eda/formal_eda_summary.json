@@ -1,0 +1,445 @@
+{
+  "status": "SAMUEL_EDA_MILESTONE_COMPLETE_REVIEW_REQUIRED_BEFORE_MODELING",
+  "research_question": "Apakah hubungan antara impact_load dan threat_rank mengalami perubahan antarperiode cycle_code, meskipun distribusi threat_rank relatif stabil?",
+  "question_selected_by_user": true,
+  "environment": {
+    "python": "3.13.5",
+    "packages": {
+      "pandas": "2.3.3",
+      "numpy": "2.4.2",
+      "scipy": "1.18.0",
+      "matplotlib": "3.10.5",
+      "nbformat": "5.11.1",
+      "nbclient": "0.11.0"
+    }
+  },
+  "train_sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+  "evidence_files": [
+    "temporal_robustness.json",
+    "composition_robustness.json"
+  ],
+  "context": {
+    "missingness_strata": [
+      {
+        "column": "signal_stream",
+        "period": "period_1",
+        "missing": false,
+        "n": 12537,
+        "share_period": 0.9255130665879227,
+        "pearson": 0.5111411770601735,
+        "spearman": 0.4856682648677381
+      },
+      {
+        "column": "signal_stream",
+        "period": "period_1",
+        "missing": true,
+        "n": 1009,
+        "share_period": 0.07448693341207736,
+        "pearson": 0.40139366976196017,
+        "spearman": 0.43972818411889153
+      },
+      {
+        "column": "signal_stream",
+        "period": "period_2",
+        "missing": false,
+        "n": 15664,
+        "share_period": 0.9359464627151052,
+        "pearson": 0.6767126559304644,
+        "spearman": 0.6669694625546675
+      },
+      {
+        "column": "signal_stream",
+        "period": "period_2",
+        "missing": true,
+        "n": 1072,
+        "share_period": 0.06405353728489484,
+        "pearson": 0.5982088742498839,
+        "spearman": 0.6003746441957921
+      },
+      {
+        "column": "signal_stream",
+        "period": "period_3",
+        "missing": false,
+        "n": 19003,
+        "share_period": 0.9349109514907016,
+        "pearson": 0.7028865615428297,
+        "spearman": 0.6858635285425193
+      },
+      {
+        "column": "signal_stream",
+        "period": "period_3",
+        "missing": true,
+        "n": 1323,
+        "share_period": 0.06508904850929843,
+        "pearson": 0.5864149832387893,
+        "spearman": 0.5697865062171422
+      },
+      {
+        "column": "org_code",
+        "period": "period_1",
+        "missing": false,
+        "n": 12558,
+        "share_period": 0.927063339731286,
+        "pearson": 0.5018178720816372,
+        "spearman": 0.48033482242891096
+      },
+      {
+        "column": "org_code",
+        "period": "period_1",
+        "missing": true,
+        "n": 988,
+        "share_period": 0.07293666026871401,
+        "pearson": 0.46726001452288185,
+        "spearman": 0.4377001612227515
+      },
+      {
+        "column": "org_code",
+        "period": "period_2",
+        "missing": false,
+        "n": 15555,
+        "share_period": 0.9294335564053537,
+        "pearson": 0.6730306941926861,
+        "spearman": 0.6641133547206138
+      },
+      {
+        "column": "org_code",
+        "period": "period_2",
+        "missing": true,
+        "n": 1181,
+        "share_period": 0.07056644359464627,
+        "pearson": 0.6609987469813801,
+        "spearman": 0.6498103917130311
+      },
+      {
+        "column": "org_code",
+        "period": "period_3",
+        "missing": false,
+        "n": 19809,
+        "share_period": 0.974564597067795,
+        "pearson": 0.6963059905798842,
+        "spearman": 0.6796810402054888
+      },
+      {
+        "column": "org_code",
+        "period": "period_3",
+        "missing": true,
+        "n": 517,
+        "share_period": 0.02543540293220506,
+        "pearson": 0.7001748733313046,
+        "spearman": 0.6810666048197245
+      },
+      {
+        "column": "module_code",
+        "period": "period_1",
+        "missing": false,
+        "n": 12180,
+        "share_period": 0.8991584231507456,
+        "pearson": 0.4992852544573404,
+        "spearman": 0.4771060298537895
+      },
+      {
+        "column": "module_code",
+        "period": "period_1",
+        "missing": true,
+        "n": 1366,
+        "share_period": 0.10084157684925439,
+        "pearson": 0.5013882585549457,
+        "spearman": 0.4785103924851402
+      },
+      {
+        "column": "module_code",
+        "period": "period_2",
+        "missing": false,
+        "n": 15065,
+        "share_period": 0.9001553537284895,
+        "pearson": 0.6723594149627642,
+        "spearman": 0.6634426503643748
+      },
+      {
+        "column": "module_code",
+        "period": "period_2",
+        "missing": true,
+        "n": 1671,
+        "share_period": 0.09984464627151052,
+        "pearson": 0.670789699060863,
+        "spearman": 0.6607290876944346
+      },
+      {
+        "column": "module_code",
+        "period": "period_3",
+        "missing": false,
+        "n": 19319,
+        "share_period": 0.9504575420643511,
+        "pearson": 0.695754334178699,
+        "spearman": 0.679242860648812
+      },
+      {
+        "column": "module_code",
+        "period": "period_3",
+        "missing": true,
+        "n": 1007,
+        "share_period": 0.049542457935648924,
+        "pearson": 0.7081163051449442,
+        "spearman": 0.6889122189030411
+      }
+    ],
+    "common_support_tail_coverage": [
+      {
+        "retained_common_support": true,
+        "n": 48630,
+        "low_tail_count_le5": 2345,
+        "high_tail_count_ge95": 2499,
+        "mean": 50.24204247172526,
+        "median": 50.2787
+      },
+      {
+        "retained_common_support": false,
+        "n": 1978,
+        "low_tail_count_le5": 182,
+        "high_tail_count_ge95": 61,
+        "mean": 44.88346567239636,
+        "median": 43.4625
+      }
+    ],
+    "rank_geometry_implications": [
+      {
+        "cycle_code": 47,
+        "n": 1342,
+        "rank_implied_mean": 50.03725782414307,
+        "observed_mean_minus_implied": 2.831594642316304e-06,
+        "uniform_ks_implied_by_largest_tie": 0.014157973174366617
+      },
+      {
+        "cycle_code": 48,
+        "n": 977,
+        "rank_implied_mean": 50.05117707267144,
+        "observed_mean_minus_implied": 2.1494370514574257e-06,
+        "uniform_ks_implied_by_largest_tie": 0.021494370522006142
+      },
+      {
+        "cycle_code": 49,
+        "n": 1255,
+        "rank_implied_mean": 50.0398406374502,
+        "observed_mean_minus_implied": -1.2749003914791501e-06,
+        "uniform_ks_implied_by_largest_tie": 0.011553784860557768
+      },
+      {
+        "cycle_code": 50,
+        "n": 1111,
+        "rank_implied_mean": 50.04500450045005,
+        "observed_mean_minus_implied": 1.800179916244815e-07,
+        "uniform_ks_implied_by_largest_tie": 0.00765076507650765
+      },
+      {
+        "cycle_code": 51,
+        "n": 1535,
+        "rank_implied_mean": 50.03257328990228,
+        "observed_mean_minus_implied": 3.908794781182223e-07,
+        "uniform_ks_implied_by_largest_tie": 0.005863192182410423
+      },
+      {
+        "cycle_code": 52,
+        "n": 1565,
+        "rank_implied_mean": 50.031948881789134,
+        "observed_mean_minus_implied": -9.584664582007463e-07,
+        "uniform_ks_implied_by_largest_tie": 0.008945686900958467
+      },
+      {
+        "cycle_code": 53,
+        "n": 1371,
+        "rank_implied_mean": 50.036469730124,
+        "observed_mean_minus_implied": 8.023340569707216e-07,
+        "uniform_ks_implied_by_largest_tie": 0.007293946024799417
+      },
+      {
+        "cycle_code": 54,
+        "n": 1256,
+        "rank_implied_mean": 50.039808917197455,
+        "observed_mean_minus_implied": -5.573248458290436e-07,
+        "uniform_ks_implied_by_largest_tie": 0.004777070063694267
+      },
+      {
+        "cycle_code": 55,
+        "n": 1608,
+        "rank_implied_mean": 50.03109452736319,
+        "observed_mean_minus_implied": 5.597014904878961e-07,
+        "uniform_ks_implied_by_largest_tie": 0.008706467661691543
+      },
+      {
+        "cycle_code": 56,
+        "n": 564,
+        "rank_implied_mean": 50.0886524822695,
+        "observed_mean_minus_implied": 1.7730496892909287e-07,
+        "uniform_ks_implied_by_largest_tie": 0.010638297872340425
+      },
+      {
+        "cycle_code": 57,
+        "n": 962,
+        "rank_implied_mean": 50.05197505197505,
+        "observed_mean_minus_implied": 1.3513513508200958e-06,
+        "uniform_ks_implied_by_largest_tie": 0.011434511434511435
+      },
+      {
+        "cycle_code": 58,
+        "n": 1205,
+        "rank_implied_mean": 50.04149377593361,
+        "observed_mean_minus_implied": -1.3278008310635414e-06,
+        "uniform_ks_implied_by_largest_tie": 0.01037344398340249
+      },
+      {
+        "cycle_code": 59,
+        "n": 1383,
+        "rank_implied_mean": 50.03615328994938,
+        "observed_mean_minus_implied": 4.3383948167274866e-07,
+        "uniform_ks_implied_by_largest_tie": 0.007592190889370932
+      },
+      {
+        "cycle_code": 60,
+        "n": 1478,
+        "rank_implied_mean": 50.03382949932341,
+        "observed_mean_minus_implied": 2.4357239496453076e-06,
+        "uniform_ks_implied_by_largest_tie": 0.011502029769959404
+      },
+      {
+        "cycle_code": 61,
+        "n": 1632,
+        "rank_implied_mean": 50.03063725490196,
+        "observed_mean_minus_implied": 4.901960721781506e-07,
+        "uniform_ks_implied_by_largest_tie": 0.016544117647058824
+      },
+      {
+        "cycle_code": 62,
+        "n": 1500,
+        "rank_implied_mean": 50.03333333333333,
+        "observed_mean_minus_implied": -1.7333333275360019e-06,
+        "uniform_ks_implied_by_largest_tie": 0.022333333333333334
+      },
+      {
+        "cycle_code": 63,
+        "n": 1883,
+        "rank_implied_mean": 50.02655337227828,
+        "observed_mean_minus_implied": -6.903876794694952e-07,
+        "uniform_ks_implied_by_largest_tie": 0.00929368029739777
+      },
+      {
+        "cycle_code": 64,
+        "n": 1807,
+        "rank_implied_mean": 50.027670171555066,
+        "observed_mean_minus_implied": -2.2136137545203383e-07,
+        "uniform_ks_implied_by_largest_tie": 0.013004980630879912
+      },
+      {
+        "cycle_code": 65,
+        "n": 1567,
+        "rank_implied_mean": 50.031908104658584,
+        "observed_mean_minus_implied": 1.1486917657066442e-06,
+        "uniform_ks_implied_by_largest_tie": 0.005424377791959157
+      },
+      {
+        "cycle_code": 66,
+        "n": 1751,
+        "rank_implied_mean": 50.02855511136494,
+        "observed_mean_minus_implied": 1.599086232317859e-06,
+        "uniform_ks_implied_by_largest_tie": 0.00885208452312964
+      },
+      {
+        "cycle_code": 67,
+        "n": 1953,
+        "rank_implied_mean": 50.02560163850487,
+        "observed_mean_minus_implied": 8.704557075134289e-07,
+        "uniform_ks_implied_by_largest_tie": 0.013824884792626729
+      },
+      {
+        "cycle_code": 68,
+        "n": 577,
+        "rank_implied_mean": 50.08665511265165,
+        "observed_mean_minus_implied": -1.7331021950894865e-07,
+        "uniform_ks_implied_by_largest_tie": 0.012131715771230503
+      },
+      {
+        "cycle_code": 69,
+        "n": 1079,
+        "rank_implied_mean": 50.04633920296571,
+        "observed_mean_minus_implied": 1.6682113042065794e-06,
+        "uniform_ks_implied_by_largest_tie": 0.008341056533827619
+      },
+      {
+        "cycle_code": 70,
+        "n": 1605,
+        "rank_implied_mean": 50.03115264797508,
+        "observed_mean_minus_implied": -9.345794467208179e-07,
+        "uniform_ks_implied_by_largest_tie": 0.009034267912772585
+      },
+      {
+        "cycle_code": 71,
+        "n": 1689,
+        "rank_implied_mean": 50.02960331557134,
+        "observed_mean_minus_implied": 1.1841326141848185e-07,
+        "uniform_ks_implied_by_largest_tie": 0.006808762581409118
+      },
+      {
+        "cycle_code": 72,
+        "n": 1811,
+        "rank_implied_mean": 50.02760905577029,
+        "observed_mean_minus_implied": 1.4908890122455887e-06,
+        "uniform_ks_implied_by_largest_tie": 0.013804527885146328
+      },
+      {
+        "cycle_code": 73,
+        "n": 1880,
+        "rank_implied_mean": 50.026595744680854,
+        "observed_mean_minus_implied": 2.446808508693721e-06,
+        "uniform_ks_implied_by_largest_tie": 0.00824468085106383
+      },
+      {
+        "cycle_code": 74,
+        "n": 1814,
+        "rank_implied_mean": 50.02756339581036,
+        "observed_mean_minus_implied": 4.961411264048365e-07,
+        "uniform_ks_implied_by_largest_tie": 0.012403528114663727
+      },
+      {
+        "cycle_code": 75,
+        "n": 1957,
+        "rank_implied_mean": 50.02554931016863,
+        "observed_mean_minus_implied": 7.664793031381123e-07,
+        "uniform_ks_implied_by_largest_tie": 0.009197751660705161
+      },
+      {
+        "cycle_code": 76,
+        "n": 1822,
+        "rank_implied_mean": 50.027442371020854,
+        "observed_mean_minus_implied": -1.0976948345842175e-06,
+        "uniform_ks_implied_by_largest_tie": 0.010153677277716796
+      },
+      {
+        "cycle_code": 77,
+        "n": 2335,
+        "rank_implied_mean": 50.021413276231264,
+        "observed_mean_minus_implied": -8.565311304664647e-08,
+        "uniform_ks_implied_by_largest_tie": 0.015845824411134905
+      },
+      {
+        "cycle_code": 78,
+        "n": 2146,
+        "rank_implied_mean": 50.0232991612302,
+        "observed_mean_minus_implied": -1.0717614173927359e-06,
+        "uniform_ks_implied_by_largest_tie": 0.014212488350419385
+      },
+      {
+        "cycle_code": 79,
+        "n": 2188,
+        "rank_implied_mean": 50.02285191956124,
+        "observed_mean_minus_implied": 1.4625228601516937e-06,
+        "uniform_ks_implied_by_largest_tie": 0.007312614259597806
+      }
+    ]
+  },
+  "guardrails": [
+    "No modeling, tuning, new prediction or submission.",
+    "Rank diagnostic uses target against itself, not a deployable feature.",
+    "Group standardization and mean decomposition are descriptive, not causal adjustment.",
+    "Stable rank marginals do not establish stable conditional relationships or future performance."
+  ],
+  "illustrative_figure": "formal_selected_conditional.png"
+}

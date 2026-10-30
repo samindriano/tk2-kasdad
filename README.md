@@ -11,7 +11,7 @@ Persiapan, audit kedua task, dan discovery regression dijalankan pada **30 Oktob
 |---|---|---|
 | Classification | Audit aktual selesai; bukan sertifikasi bebas leakage | Train 50.608 × 19, test 29.421 × 18; target `artifact_signal` terverifikasi lewat train/test/sample |
 | Regression | Audit aktual selesai | Train 50.608 × 19, test 29.421 × 18; `threat_rank` terverifikasi lewat train/test/sample |
-| EDA Samuel | Discovery dieksekusi; pertanyaan belum final | Target hampir uniform, hubungan impact–threat tidak deterministik, conditional patterns berbeda antarperiode |
+| EDA Samuel | EDA formal selesai; berhenti pada review modeling | Pertanyaan utama dipilih pengguna; seluruh33cycle, robustness periodisasi, common-support dan EF composition diperiksa |
 
 - Classification: kelas 0 = 33.038; kelas 1 = 17.570 (34,72%). Tidak ada missing target, duplikasi baris/ID, atau ID overlap antar-split.
 - Train cycle 47–79, test 80–91. Makna kalender dan mekanisme `cycle_code` belum dikonfirmasi; perbedaan periode tidak membuktikan causal drift.
@@ -19,7 +19,7 @@ Persiapan, audit kedua task, dan discovery regression dijalankan pada **30 Oktob
 - `impact_load` dan `entry_friction` tersedia sebagai fitur classification resmi. Kesamaan dengan target TP1 tidak otomatis membuktikan leakage; provenance dan waktu ketersediaan fitur tetap perlu dikonfirmasi.
 - `scope_pressure` memiliki perbedaan distribusi train/test terbesar di antara fitur numerik non-ID/cycle (KS D = 0,2138). Test dipakai untuk audit skema/distribusi, bukan memilih model.
 
-Lihat [discovery dan rekomendasi pertanyaan Samuel](reports/eda/REGRESSION_DISCOVERY.md), [riwayat audit awal](reports/audits/FINDINGS.md), [audit classification](reports/audits/classification_audit.md), [audit regression](reports/audits/regression_audit.md), dan [status EDA Samuel](docs/SAMUEL_EDA.md). JSON pendamping menyimpan profil setiap kolom, hash input, dan versi runtime.
+Lihat [EDA formal Samuel](reports/eda/SAMUEL_FORMAL_EDA.md), [rancangan eksperimen untuk review](docs/REGRESSION_EXPERIMENT_REVIEW.md), [riwayat discovery](reports/eda/REGRESSION_DISCOVERY.md), [riwayat audit awal](reports/audits/FINDINGS.md), [audit classification](reports/audits/classification_audit.md), [audit regression](reports/audits/regression_audit.md), dan [status EDA Samuel](docs/SAMUEL_EDA.md). JSON pendamping menyimpan profil setiap kolom, hash input, dan versi runtime.
 
 ## Menjalankan ulang
 
@@ -35,6 +35,7 @@ python scripts/build_audit_notebook.py
 python scripts/build_samuel_notebook.py
 python scripts/discover_regression.py --tp1-data-dir "../TK1/tk1-eda-3/data/raw"
 python scripts/build_discovery_notebook.py
+python scripts/build_formal_eda_notebook.py
 python -m unittest discover -s tests -v
 ```
 
@@ -59,12 +60,12 @@ Panduan rinci: [data/README.md](data/README.md). Definisi domain `threat_rank`, 
 
 | Anggota | Task | Pertanyaan yang disepakati |
 |---|---|---|
-| Samuel | Regression | Discovery; pertanyaan belum dikunci. Kandidat dan rekomendasi berbukti ada di laporan discovery. |
+| Samuel | Regression | Apakah hubungan antara impact_load dan threat_rank mengalami perubahan antarperiode cycle_code, meskipun distribusi threat_rank relatif stabil? |
 | Rousan | Classification | Apakah proporsi `artifact_signal` berbeda berdasarkan `entry_friction`, dan bagaimana hubungan berubah pada berbagai tingkat `impact_load`? |
 | Abhi | Regression | Apakah `scope_pressure` memberi informasi tambahan mengenai `threat_rank` setelah mempertimbangkan `impact_load`? |
 | Rizky | Classification | Bagaimana hubungan `telemetry_flag` dengan `artifact_signal`, dan apakah berbeda pada berbagai tingkat `module_spread`? |
 
-Hanya EDA Samuel disiapkan pada tahap ini. Folder anggota lain adalah placeholder. [Pembagian kerja terbaru](docs/WORK_ALLOCATION.md) mengontrol ruang lingkup sekarang; catatan 27 Oktober dipertahankan sebagai riwayat.
+Hanya EDA Samuel dikerjakan pada milestone ini. Folder anggota lain adalah placeholder. [Pembagian kerja terbaru](docs/WORK_ALLOCATION.md) mengontrol ruang lingkup sekarang; catatan 27 Oktober dipertahankan sebagai riwayat.
 
 ## Struktur
 
@@ -95,7 +96,7 @@ Folder `data/derived`, `notebooks/classification`, `notebooks/regression`, dokum
 - Belum ada validation split/model TP2 yang dibekukan; konfirmasi rubric dan makna cycle dahulu. Jangan menganggap resep TP1 pasti cocok dengan target TP2.
 - [Referensi TP1](docs/TP1_REFERENCE.md) dibaca tanpa perubahan. Ada perbedaan antara ringkasan resep lama dan artifact final yang ditemukan; perbedaannya didokumentasikan.
 
-Langkah berikutnya: pilih pertanyaan EDA setelah meninjau 5 kandidat pada laporan discovery, konfirmasi definisi resmi threat_rank dan timing fitur, lalu sepakati validation strategy sebelum modeling. Melanjutkan pelajaran distribusi/ekstrem TP1 relevan sebagai lensa EDA; recipe multiclass TP1 tidak dipindahkan otomatis karena support target TP2 sangat berbeda.
+Langkah berikutnya adalah review validation protocol, metric resmi, fitur allowlist dan eksperimen pertama pada dokumen rancangan. Pertanyaan utama EDA sudah dipilih pengguna dan tidak diganti. Pelajaran distribusi/ekstrem TP1 tetap relevan; recipe multiclass TP1 tidak dipindahkan otomatis. Modeling, tuning dan submission belum dimulai.
 
 ## Discovery regression terbaru
 
@@ -104,3 +105,11 @@ Arsip regression dipindahkan dari Downloads ke raw lokal; CRC dan SHA-256 diveri
 Threat_rank memiliki 34.333 nilai unik, range teramati 0,0428–100, median 50,0282, top-10 nilai hanya 1,08% baris; TP1 impact_load memiliki 80 nilai dan top-10 mencakup 79,10%. Pearson impact–threat 0,6370 dan Spearman 0,6211. Pearson per periode 47–57 / 58–68 / 69–79 adalah 0,4994 / 0,6722 / 0,6964, sementara marginal target hampir tetap. Ini deskriptif dan tidak membuktikan causal drift atau error model TP2.
 
 Notebook discovery: `notebooks/samuel/02_regression_discovery.ipynb`. Perbandingan TP1 opsional memerlukan root raw TP1 via `--tp1-data-dir` atau environment `TP1_DATA_DIR`; TP2 tetap dapat dijalankan tanpa TP1. Definisi cycle terurut tercantum dalam materi lokal TP1 halaman 16; definisi khusus threat_rank belum ditemukan pada materi yang diperiksa.
+
+## EDA formal dan titik review
+
+Notebook demo utama: `notebooks/samuel/03_samuel_formal_eda.ipynb`; jalankan Restart & Run All atau `python scripts/build_formal_eda_notebook.py`. Runner tanpa notebook: `python scripts/run_formal_eda.py`; path default relatif root kode, dengan override `TP2_DATA_DIR` atau `--data-dir`. Pendukung: `temporal_robustness.json`, `composition_robustness.json`, `formal_eda_summary.json` dan lima grafik diagnostik. Notebook lama dipertahankan sebagai sejarah discovery.
+
+Hubungan tetap berbeda setelah mix exact impact×EF dibuat sama: Pearson 0,5244 → 0,6617 → 0,6837 pada 33 common cells, coverage96,09%. EF0 datar setelah blok tengah, EF1 masih menguat. Dua kelompok impact dan EF tetap menunjukkan conditional shifts berlawanan. Mean target percycle hampir persis50+50/n, conditional pada geometri average percentile yang teramati; kestabilan marginal tidak membuktikan kestabilan hubungan fitur atau mekanisme sumber.
+
+R0 baseline median dan R1 nonlinear terstruktur direkomendasikan untuk putaran kecil setelah review; seluruh recipe masih usulan. Semua cycle train telah dipakai EDA sehingga validation berikutnya tidak disebut untouched holdout. Lihat `reports/audits/FORMAL_EDA_VALIDATION.md` untuk pemeriksaan dan keterbatasan.

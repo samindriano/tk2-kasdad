@@ -1,0 +1,5810 @@
+{
+  "status": "OK",
+  "purpose": "Descriptive conditional/composition audit of impact_load and threat_rank across cycle blocks.",
+  "source": {
+    "task": "regression",
+    "train_basename": "Train.csv",
+    "train_sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+    "input_rows": 50608,
+    "analyzable_rows": 50608,
+    "excluded_rows_required_fields_nonfinite_or_invalid_friction": 0,
+    "test_used": false
+  },
+  "variables": {
+    "impact": "impact_load",
+    "target": "threat_rank",
+    "period": "cycle_code sorted into three contiguous blocks of unique observed values",
+    "composition_stratifier": "entry_friction"
+  },
+  "periods": [
+    {
+      "label": "period_1",
+      "cycle_min": 47,
+      "cycle_max": 57,
+      "unique_cycles": 11
+    },
+    {
+      "label": "period_2",
+      "cycle_min": 58,
+      "cycle_max": 68,
+      "unique_cycles": 11
+    },
+    {
+      "label": "period_3",
+      "cycle_min": 69,
+      "cycle_max": 79,
+      "unique_cycles": 11
+    }
+  ],
+  "period_sample_sizes": {
+    "period_1": 13546,
+    "period_2": 16736,
+    "period_3": 20326
+  },
+  "support_selection": {
+    "target_blind": true,
+    "selection_rule": "exact impact level or exact impact x entry_friction cell must have the stated count in every primary period.",
+    "primary_minimum_rows_per_period": 30,
+    "impact_level_count": 80,
+    "common_impact_level_count": 32,
+    "common_impact_levels": [
+      34.0593,
+      42.2906,
+      56.967,
+      58.4951,
+      61.5825,
+      64.7106,
+      66.2896,
+      72.7026,
+      74.3295,
+      75.9658,
+      79.2658,
+      82.6017,
+      85.973,
+      89.379,
+      92.8189,
+      96.2922,
+      98.0411,
+      101.5634,
+      103.3366,
+      105.1176,
+      106.9066,
+      108.7033,
+      110.5078,
+      115.9669,
+      119.644,
+      121.4936,
+      123.3505,
+      130.8506,
+      134.6432,
+      140.3844,
+      150.0892,
+      154.0178
+    ],
+    "impact_sensitivity": [
+      {
+        "minimum_rows_per_impact_period": 20,
+        "supported_impact_level_count": 37,
+        "supported_impact_levels": [
+          34.0593,
+          42.2906,
+          48.0248,
+          56.967,
+          58.4951,
+          61.5825,
+          63.1416,
+          64.7106,
+          66.2896,
+          72.7026,
+          74.3295,
+          75.9658,
+          79.2658,
+          82.6017,
+          85.973,
+          89.379,
+          91.0947,
+          92.8189,
+          96.2922,
+          98.0411,
+          101.5634,
+          103.3366,
+          105.1176,
+          106.9066,
+          108.7033,
+          110.5078,
+          115.9669,
+          119.644,
+          121.4936,
+          123.3505,
+          130.8506,
+          134.6432,
+          140.3844,
+          150.0892,
+          154.0178,
+          155.9919,
+          157.9725
+        ],
+        "excluded_impact_level_count": 43,
+        "excluded_impact_levels": [
+          22.6469,
+          23.854,
+          25.0772,
+          26.316,
+          27.5702,
+          28.8393,
+          30.1231,
+          31.4212,
+          32.7334,
+          35.3988,
+          36.7515,
+          38.1173,
+          39.4959,
+          40.8871,
+          43.7064,
+          45.1341,
+          46.5737,
+          49.4875,
+          50.9614,
+          52.4465,
+          53.9425,
+          55.4494,
+          60.0337,
+          67.8784,
+          69.4769,
+          71.085,
+          77.6112,
+          80.9293,
+          84.283,
+          87.6717,
+          94.5514,
+          99.7982,
+          112.3199,
+          114.1396,
+          117.8017,
+          125.2148,
+          127.0862,
+          128.9648,
+          132.7434,
+          136.55,
+          138.4638,
+          144.2461,
+          146.1871
+        ],
+        "covered_rows_all_periods": 49563,
+        "total_rows_all_periods": 50608,
+        "coverage_all_periods": 0.9793510907366424,
+        "excluded_rows_all_periods": 1045,
+        "by_period": {
+          "period_1": {
+            "covered_rows": 13241,
+            "total_rows": 13546,
+            "coverage": 0.9774841281559132,
+            "excluded_rows": 305
+          },
+          "period_2": {
+            "covered_rows": 16333,
+            "total_rows": 16736,
+            "coverage": 0.9759201720841301,
+            "excluded_rows": 403
+          },
+          "period_3": {
+            "covered_rows": 19989,
+            "total_rows": 20326,
+            "coverage": 0.9834202499262029,
+            "excluded_rows": 337
+          }
+        }
+      },
+      {
+        "minimum_rows_per_impact_period": 30,
+        "supported_impact_level_count": 32,
+        "supported_impact_levels": [
+          34.0593,
+          42.2906,
+          56.967,
+          58.4951,
+          61.5825,
+          64.7106,
+          66.2896,
+          72.7026,
+          74.3295,
+          75.9658,
+          79.2658,
+          82.6017,
+          85.973,
+          89.379,
+          92.8189,
+          96.2922,
+          98.0411,
+          101.5634,
+          103.3366,
+          105.1176,
+          106.9066,
+          108.7033,
+          110.5078,
+          115.9669,
+          119.644,
+          121.4936,
+          123.3505,
+          130.8506,
+          134.6432,
+          140.3844,
+          150.0892,
+          154.0178
+        ],
+        "excluded_impact_level_count": 48,
+        "excluded_impact_levels": [
+          22.6469,
+          23.854,
+          25.0772,
+          26.316,
+          27.5702,
+          28.8393,
+          30.1231,
+          31.4212,
+          32.7334,
+          35.3988,
+          36.7515,
+          38.1173,
+          39.4959,
+          40.8871,
+          43.7064,
+          45.1341,
+          46.5737,
+          48.0248,
+          49.4875,
+          50.9614,
+          52.4465,
+          53.9425,
+          55.4494,
+          60.0337,
+          63.1416,
+          67.8784,
+          69.4769,
+          71.085,
+          77.6112,
+          80.9293,
+          84.283,
+          87.6717,
+          91.0947,
+          94.5514,
+          99.7982,
+          112.3199,
+          114.1396,
+          117.8017,
+          125.2148,
+          127.0862,
+          128.9648,
+          132.7434,
+          136.55,
+          138.4638,
+          144.2461,
+          146.1871,
+          155.9919,
+          157.9725
+        ],
+        "covered_rows_all_periods": 49061,
+        "total_rows_all_periods": 50608,
+        "coverage_all_periods": 0.9694317104015175,
+        "excluded_rows_all_periods": 1547,
+        "by_period": {
+          "period_1": {
+            "covered_rows": 13110,
+            "total_rows": 13546,
+            "coverage": 0.9678133766425513,
+            "excluded_rows": 436
+          },
+          "period_2": {
+            "covered_rows": 16157,
+            "total_rows": 16736,
+            "coverage": 0.9654039196940727,
+            "excluded_rows": 579
+          },
+          "period_3": {
+            "covered_rows": 19794,
+            "total_rows": 20326,
+            "coverage": 0.9738266259962609,
+            "excluded_rows": 532
+          }
+        }
+      },
+      {
+        "minimum_rows_per_impact_period": 50,
+        "supported_impact_level_count": 23,
+        "supported_impact_levels": [
+          42.2906,
+          56.967,
+          58.4951,
+          64.7106,
+          66.2896,
+          72.7026,
+          74.3295,
+          75.9658,
+          82.6017,
+          85.973,
+          92.8189,
+          96.2922,
+          98.0411,
+          101.5634,
+          103.3366,
+          105.1176,
+          106.9066,
+          110.5078,
+          115.9669,
+          121.4936,
+          134.6432,
+          140.3844,
+          154.0178
+        ],
+        "excluded_impact_level_count": 57,
+        "excluded_impact_levels": [
+          22.6469,
+          23.854,
+          25.0772,
+          26.316,
+          27.5702,
+          28.8393,
+          30.1231,
+          31.4212,
+          32.7334,
+          34.0593,
+          35.3988,
+          36.7515,
+          38.1173,
+          39.4959,
+          40.8871,
+          43.7064,
+          45.1341,
+          46.5737,
+          48.0248,
+          49.4875,
+          50.9614,
+          52.4465,
+          53.9425,
+          55.4494,
+          60.0337,
+          61.5825,
+          63.1416,
+          67.8784,
+          69.4769,
+          71.085,
+          77.6112,
+          79.2658,
+          80.9293,
+          84.283,
+          87.6717,
+          89.379,
+          91.0947,
+          94.5514,
+          99.7982,
+          108.7033,
+          112.3199,
+          114.1396,
+          117.8017,
+          119.644,
+          123.3505,
+          125.2148,
+          127.0862,
+          128.9648,
+          130.8506,
+          132.7434,
+          136.55,
+          138.4638,
+          144.2461,
+          146.1871,
+          150.0892,
+          155.9919,
+          157.9725
+        ],
+        "covered_rows_all_periods": 47859,
+        "total_rows_all_periods": 50608,
+        "coverage_all_periods": 0.9456805248182105,
+        "excluded_rows_all_periods": 2749,
+        "by_period": {
+          "period_1": {
+            "covered_rows": 12757,
+            "total_rows": 13546,
+            "coverage": 0.9417540233279197,
+            "excluded_rows": 789
+          },
+          "period_2": {
+            "covered_rows": 15752,
+            "total_rows": 16736,
+            "coverage": 0.9412045889101338,
+            "excluded_rows": 984
+          },
+          "period_3": {
+            "covered_rows": 19350,
+            "total_rows": 20326,
+            "coverage": 0.9519826822788546,
+            "excluded_rows": 976
+          }
+        }
+      },
+      {
+        "minimum_rows_per_impact_period": 100,
+        "supported_impact_level_count": 20,
+        "supported_impact_levels": [
+          42.2906,
+          56.967,
+          58.4951,
+          64.7106,
+          66.2896,
+          72.7026,
+          74.3295,
+          75.9658,
+          82.6017,
+          85.973,
+          92.8189,
+          96.2922,
+          103.3366,
+          105.1176,
+          110.5078,
+          115.9669,
+          121.4936,
+          134.6432,
+          140.3844,
+          154.0178
+        ],
+        "excluded_impact_level_count": 60,
+        "excluded_impact_levels": [
+          22.6469,
+          23.854,
+          25.0772,
+          26.316,
+          27.5702,
+          28.8393,
+          30.1231,
+          31.4212,
+          32.7334,
+          34.0593,
+          35.3988,
+          36.7515,
+          38.1173,
+          39.4959,
+          40.8871,
+          43.7064,
+          45.1341,
+          46.5737,
+          48.0248,
+          49.4875,
+          50.9614,
+          52.4465,
+          53.9425,
+          55.4494,
+          60.0337,
+          61.5825,
+          63.1416,
+          67.8784,
+          69.4769,
+          71.085,
+          77.6112,
+          79.2658,
+          80.9293,
+          84.283,
+          87.6717,
+          89.379,
+          91.0947,
+          94.5514,
+          98.0411,
+          99.7982,
+          101.5634,
+          106.9066,
+          108.7033,
+          112.3199,
+          114.1396,
+          117.8017,
+          119.644,
+          123.3505,
+          125.2148,
+          127.0862,
+          128.9648,
+          130.8506,
+          132.7434,
+          136.55,
+          138.4638,
+          144.2461,
+          146.1871,
+          150.0892,
+          155.9919,
+          157.9725
+        ],
+        "covered_rows_all_periods": 47152,
+        "total_rows_all_periods": 50608,
+        "coverage_all_periods": 0.9317104015175466,
+        "excluded_rows_all_periods": 3456,
+        "by_period": {
+          "period_1": {
+            "covered_rows": 12513,
+            "total_rows": 13546,
+            "coverage": 0.9237413258526502,
+            "excluded_rows": 1033
+          },
+          "period_2": {
+            "covered_rows": 15519,
+            "total_rows": 16736,
+            "coverage": 0.9272825047801148,
+            "excluded_rows": 1217
+          },
+          "period_3": {
+            "covered_rows": 19120,
+            "total_rows": 20326,
+            "coverage": 0.9406671258486667,
+            "excluded_rows": 1206
+          }
+        }
+      }
+    ],
+    "common_impact_x_friction_cell_count": 33,
+    "common_impact_x_friction_cells": [
+      {
+        "impact_load": 34.0593,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 42.2906,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 56.967,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 58.4951,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 61.5825,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 64.7106,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 66.2896,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 72.7026,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 72.7026,
+        "entry_friction": 1
+      },
+      {
+        "impact_load": 74.3295,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 75.9658,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 79.2658,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 82.6017,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 85.973,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 89.379,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 92.8189,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 92.8189,
+        "entry_friction": 1
+      },
+      {
+        "impact_load": 96.2922,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 98.0411,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 101.5634,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 103.3366,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 105.1176,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 106.9066,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 108.7033,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 110.5078,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 110.5078,
+        "entry_friction": 1
+      },
+      {
+        "impact_load": 115.9669,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 119.644,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 121.4936,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 134.6432,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 140.3844,
+        "entry_friction": 1
+      },
+      {
+        "impact_load": 150.0892,
+        "entry_friction": 0
+      },
+      {
+        "impact_load": 154.0178,
+        "entry_friction": 1
+      }
+    ],
+    "common_impact_level_coverage_rows_by_period": {
+      "period_1": 13110,
+      "period_2": 16157,
+      "period_3": 19794
+    },
+    "common_impact_x_friction_coverage_rows_by_period": {
+      "period_1": 12969,
+      "period_2": 16015,
+      "period_3": 19646
+    }
+  },
+  "same_impact_distributions": [
+    {
+      "impact_load": 34.0593,
+      "periods": {
+        "period_1": {
+          "n": 32,
+          "mean": 17.731212499999998,
+          "median": 11.525649999999999,
+          "p10": 0.49015000000000003,
+          "p90": 43.26171000000001,
+          "iqr": 18.0231,
+          "tail_le_5_count": 8,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 32,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_2": {
+          "n": 40,
+          "mean": 5.8213625,
+          "median": 5.0724,
+          "p10": 0.91146,
+          "p90": 13.353090000000002,
+          "iqr": 5.551275,
+          "tail_le_5_count": 20,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 40,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_3": {
+          "n": 39,
+          "mean": 10.522151282051283,
+          "median": 7.5803,
+          "p10": 1.0700000000000003,
+          "p90": 27.09498,
+          "iqr": 12.1517,
+          "tail_le_5_count": 16,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 39,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 42.2906,
+      "periods": {
+        "period_1": {
+          "n": 168,
+          "mean": 25.602763690476188,
+          "median": 14.539,
+          "p10": 1.1496,
+          "p90": 62.68683000000001,
+          "iqr": 50.58525,
+          "tail_le_5_count": 63,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 168,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_2": {
+          "n": 192,
+          "mean": 13.6741484375,
+          "median": 12.5071,
+          "p10": 3.40856,
+          "p90": 25.42577,
+          "iqr": 9.506875,
+          "tail_le_5_count": 35,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 192,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_3": {
+          "n": 148,
+          "mean": 14.096925,
+          "median": 14.09625,
+          "p10": 2.9781299999999997,
+          "p90": 22.914370000000005,
+          "iqr": 9.368349999999998,
+          "tail_le_5_count": 26,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 148,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 56.967,
+      "periods": {
+        "period_1": {
+          "n": 455,
+          "mean": 28.599773186813184,
+          "median": 21.5171,
+          "p10": 2.37392,
+          "p90": 68.98534000000002,
+          "iqr": 33.2424,
+          "tail_le_5_count": 77,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 455,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_2": {
+          "n": 554,
+          "mean": 17.526442779783395,
+          "median": 11.7012,
+          "p10": 2.0463400000000003,
+          "p90": 42.94282,
+          "iqr": 15.6679,
+          "tail_le_5_count": 119,
+          "tail_ge_95_count": 1,
+          "entry_friction_counts": {
+            "0": 554,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_3": {
+          "n": 763,
+          "mean": 21.213871952817826,
+          "median": 15.1874,
+          "p10": 3.73722,
+          "p90": 51.089660000000016,
+          "iqr": 22.3911,
+          "tail_le_5_count": 112,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 763,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 58.4951,
+      "periods": {
+        "period_1": {
+          "n": 111,
+          "mean": 24.08227567567567,
+          "median": 9.393,
+          "p10": 2.6988,
+          "p90": 60.456,
+          "iqr": 35.348099999999995,
+          "tail_le_5_count": 29,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 111,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_2": {
+          "n": 102,
+          "mean": 22.836502941176466,
+          "median": 20.73875,
+          "p10": 5.272000000000002,
+          "p90": 36.5196,
+          "iqr": 25.0888,
+          "tail_le_5_count": 10,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 102,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_3": {
+          "n": 183,
+          "mean": 19.568914754098362,
+          "median": 20.3418,
+          "p10": 11.2302,
+          "p90": 28.025220000000044,
+          "iqr": 6.675800000000002,
+          "tail_le_5_count": 7,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 183,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 61.5825,
+      "periods": {
+        "period_1": {
+          "n": 44,
+          "mean": 26.461747727272726,
+          "median": 18.33625,
+          "p10": 2.6518,
+          "p90": 69.24765000000001,
+          "iqr": 42.562825000000004,
+          "tail_le_5_count": 13,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 44,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_2": {
+          "n": 62,
+          "mean": 21.98065967741935,
+          "median": 19.2496,
+          "p10": 5.429620000000001,
+          "p90": 39.12356,
+          "iqr": 16.475125,
+          "tail_le_5_count": 6,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 62,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_3": {
+          "n": 61,
+          "mean": 27.060416393442623,
+          "median": 26.6224,
+          "p10": 10.5778,
+          "p90": 45.0107,
+          "iqr": 17.9415,
+          "tail_le_5_count": 3,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 61,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 64.7106,
+      "periods": {
+        "period_1": {
+          "n": 262,
+          "mean": 30.513941221374044,
+          "median": 27.671799999999998,
+          "p10": 5.216010000000001,
+          "p90": 57.51064000000001,
+          "iqr": 27.708599999999997,
+          "tail_le_5_count": 25,
+          "tail_ge_95_count": 1,
+          "entry_friction_counts": {
+            "0": 262,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_2": {
+          "n": 453,
+          "mean": 19.340515231788082,
+          "median": 16.0014,
+          "p10": 1.7419,
+          "p90": 38.90288,
+          "iqr": 17.7693,
+          "tail_le_5_count": 96,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 453,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_3": {
+          "n": 767,
+          "mean": 16.351374967405476,
+          "median": 6.9023,
+          "p10": 0.9636,
+          "p90": 47.78394,
+          "iqr": 28.25215,
+          "tail_le_5_count": 344,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 767,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 66.2896,
+      "periods": {
+        "period_1": {
+          "n": 175,
+          "mean": 30.94203085714286,
+          "median": 29.5827,
+          "p10": 6.280120000000001,
+          "p90": 63.935479999999984,
+          "iqr": 31.973,
+          "tail_le_5_count": 14,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 175,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_2": {
+          "n": 112,
+          "mean": 22.464905357142857,
+          "median": 16.27995,
+          "p10": 5.2792900000000005,
+          "p90": 49.6171,
+          "iqr": 23.521150000000002,
+          "tail_le_5_count": 10,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 112,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_3": {
+          "n": 159,
+          "mean": 25.49859371069182,
+          "median": 19.2718,
+          "p10": 8.90746,
+          "p90": 47.61622000000001,
+          "iqr": 19.871650000000002,
+          "tail_le_5_count": 7,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 159,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 72.7026,
+      "periods": {
+        "period_1": {
+          "n": 496,
+          "mean": 53.595473387096774,
+          "median": 53.066050000000004,
+          "p10": 20.710749999999997,
+          "p90": 89.083,
+          "iqr": 33.428650000000005,
+          "tail_le_5_count": 8,
+          "tail_ge_95_count": 18,
+          "entry_friction_counts": {
+            "0": 50,
+            "1": 446
+          },
+          "entry_friction_share": {
+            "0": 0.10080645161290322,
+            "1": 0.8991935483870968
+          }
+        },
+        "period_2": {
+          "n": 514,
+          "mean": 48.072344747081715,
+          "median": 49.38825,
+          "p10": 17.809960000000004,
+          "p90": 75.30337999999999,
+          "iqr": 32.286875,
+          "tail_le_5_count": 8,
+          "tail_ge_95_count": 5,
+          "entry_friction_counts": {
+            "0": 41,
+            "1": 473
+          },
+          "entry_friction_share": {
+            "0": 0.07976653696498054,
+            "1": 0.9202334630350194
+          }
+        },
+        "period_3": {
+          "n": 673,
+          "mean": 53.54468439821694,
+          "median": 54.986,
+          "p10": 28.000040000000002,
+          "p90": 77.75738,
+          "iqr": 25.532000000000004,
+          "tail_le_5_count": 1,
+          "tail_ge_95_count": 13,
+          "entry_friction_counts": {
+            "0": 59,
+            "1": 614
+          },
+          "entry_friction_share": {
+            "0": 0.08766716196136701,
+            "1": 0.912332838038633
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 74.3295,
+      "periods": {
+        "period_1": {
+          "n": 776,
+          "mean": 34.77140953608247,
+          "median": 31.3029,
+          "p10": 5.886749999999999,
+          "p90": 71.5723,
+          "iqr": 30.761300000000002,
+          "tail_le_5_count": 70,
+          "tail_ge_95_count": 1,
+          "entry_friction_counts": {
+            "0": 776,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_2": {
+          "n": 956,
+          "mean": 23.25841579497908,
+          "median": 20.6667,
+          "p10": 2.313,
+          "p90": 44.67700000000001,
+          "iqr": 23.543174999999998,
+          "tail_le_5_count": 166,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 956,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_3": {
+          "n": 1615,
+          "mean": 26.508002848297213,
+          "median": 25.6256,
+          "p10": 3.1886600000000005,
+          "p90": 53.078660000000006,
+          "iqr": 32.851,
+          "tail_le_5_count": 276,
+          "tail_ge_95_count": 1,
+          "entry_friction_counts": {
+            "0": 1615,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 75.9658,
+      "periods": {
+        "period_1": {
+          "n": 909,
+          "mean": 31.84908492849285,
+          "median": 28.3688,
+          "p10": 4.6254,
+          "p90": 74.97512,
+          "iqr": 45.8946,
+          "tail_le_5_count": 111,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 909,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_2": {
+          "n": 958,
+          "mean": 32.982642275574115,
+          "median": 28.6386,
+          "p10": 9.667810000000001,
+          "p90": 65.5712,
+          "iqr": 23.969074999999997,
+          "tail_le_5_count": 45,
+          "tail_ge_95_count": 3,
+          "entry_friction_counts": {
+            "0": 958,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_3": {
+          "n": 1111,
+          "mean": 30.63721404140414,
+          "median": 29.6117,
+          "p10": 9.6277,
+          "p90": 50.1071,
+          "iqr": 19.422349999999998,
+          "tail_le_5_count": 49,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 1111,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 79.2658,
+      "periods": {
+        "period_1": {
+          "n": 30,
+          "mean": 34.78302,
+          "median": 26.63215,
+          "p10": 7.71093,
+          "p90": 78.78546,
+          "iqr": 35.0057,
+          "tail_le_5_count": 1,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 30,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_2": {
+          "n": 36,
+          "mean": 25.390705555555556,
+          "median": 20.758650000000003,
+          "p10": 3.6248,
+          "p90": 53.8031,
+          "iqr": 29.608674999999998,
+          "tail_le_5_count": 6,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 36,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_3": {
+          "n": 45,
+          "mean": 27.72209777777778,
+          "median": 24.3709,
+          "p10": 5.26672,
+          "p90": 53.48932,
+          "iqr": 31.920899999999996,
+          "tail_le_5_count": 5,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 45,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 82.6017,
+      "periods": {
+        "period_1": {
+          "n": 125,
+          "mean": 40.783522399999995,
+          "median": 38.7039,
+          "p10": 5.42114,
+          "p90": 79.33384000000001,
+          "iqr": 49.53939999999999,
+          "tail_le_5_count": 11,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 125,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_2": {
+          "n": 107,
+          "mean": 29.514300000000002,
+          "median": 20.7084,
+          "p10": 4.793280000000001,
+          "p90": 72.4782,
+          "iqr": 33.9765,
+          "tail_le_5_count": 11,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 107,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_3": {
+          "n": 118,
+          "mean": 41.992082203389835,
+          "median": 41.0825,
+          "p10": 13.20692,
+          "p90": 67.57445,
+          "iqr": 32.55564999999999,
+          "tail_le_5_count": 1,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 118,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 85.973,
+      "periods": {
+        "period_1": {
+          "n": 1016,
+          "mean": 36.44760826771654,
+          "median": 34.60665,
+          "p10": 6.47415,
+          "p90": 70.54230000000001,
+          "iqr": 35.68555,
+          "tail_le_5_count": 84,
+          "tail_ge_95_count": 3,
+          "entry_friction_counts": {
+            "0": 1016,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_2": {
+          "n": 1072,
+          "mean": 27.811918003731346,
+          "median": 26.4333,
+          "p10": 3.98313,
+          "p90": 53.66101,
+          "iqr": 31.0152,
+          "tail_le_5_count": 156,
+          "tail_ge_95_count": 1,
+          "entry_friction_counts": {
+            "0": 1072,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_3": {
+          "n": 1633,
+          "mean": 28.688304409063075,
+          "median": 20.011,
+          "p10": 6.2673,
+          "p90": 60.241,
+          "iqr": 37.1156,
+          "tail_le_5_count": 106,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 1633,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 89.379,
+      "periods": {
+        "period_1": {
+          "n": 32,
+          "mean": 45.30175,
+          "median": 47.1554,
+          "p10": 11.16194,
+          "p90": 80.8485,
+          "iqr": 50.83529999999999,
+          "tail_le_5_count": 2,
+          "tail_ge_95_count": 1,
+          "entry_friction_counts": {
+            "0": 32,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_2": {
+          "n": 30,
+          "mean": 42.583996666666664,
+          "median": 31.0893,
+          "p10": 13.672820000000002,
+          "p90": 83.3992,
+          "iqr": 53.005175,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 30,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_3": {
+          "n": 57,
+          "mean": 39.19971052631579,
+          "median": 39.1863,
+          "p10": 12.615179999999999,
+          "p90": 66.92717999999999,
+          "iqr": 27.8723,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 57,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 92.8189,
+      "periods": {
+        "period_1": {
+          "n": 991,
+          "mean": 42.70637769929365,
+          "median": 39.649,
+          "p10": 10.0958,
+          "p90": 80.7968,
+          "iqr": 42.2696,
+          "tail_le_5_count": 32,
+          "tail_ge_95_count": 8,
+          "entry_friction_counts": {
+            "0": 937,
+            "1": 54
+          },
+          "entry_friction_share": {
+            "0": 0.9455095862764884,
+            "1": 0.054490413723511606
+          }
+        },
+        "period_2": {
+          "n": 1277,
+          "mean": 38.05821464369616,
+          "median": 35.5667,
+          "p10": 9.97622,
+          "p90": 71.35886,
+          "iqr": 31.128000000000004,
+          "tail_le_5_count": 49,
+          "tail_ge_95_count": 9,
+          "entry_friction_counts": {
+            "0": 1215,
+            "1": 62
+          },
+          "entry_friction_share": {
+            "0": 0.9514487079091621,
+            "1": 0.0485512920908379
+          }
+        },
+        "period_3": {
+          "n": 1266,
+          "mean": 42.402591548183246,
+          "median": 43.5927,
+          "p10": 14.41095,
+          "p90": 69.32885,
+          "iqr": 34.767975,
+          "tail_le_5_count": 15,
+          "tail_ge_95_count": 2,
+          "entry_friction_counts": {
+            "0": 1178,
+            "1": 88
+          },
+          "entry_friction_share": {
+            "0": 0.9304897314375987,
+            "1": 0.06951026856240126
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 96.2922,
+      "periods": {
+        "period_1": {
+          "n": 162,
+          "mean": 25.800412345679018,
+          "median": 17.33675,
+          "p10": 9.793,
+          "p90": 60.03944000000001,
+          "iqr": 20.179875000000003,
+          "tail_le_5_count": 11,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 162,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_2": {
+          "n": 231,
+          "mean": 46.23988008658009,
+          "median": 53.4461,
+          "p10": 21.1308,
+          "p90": 55.5397,
+          "iqr": 20.0477,
+          "tail_le_5_count": 3,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 231,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_3": {
+          "n": 251,
+          "mean": 33.4116561752988,
+          "median": 35.1811,
+          "p10": 19.4681,
+          "p90": 43.6403,
+          "iqr": 12.331400000000002,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 251,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 98.0411,
+      "periods": {
+        "period_1": {
+          "n": 90,
+          "mean": 38.229236666666665,
+          "median": 34.16675,
+          "p10": 8.04537,
+          "p90": 80.64559,
+          "iqr": 51.5984,
+          "tail_le_5_count": 2,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 90,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_2": {
+          "n": 81,
+          "mean": 35.91843580246913,
+          "median": 30.5134,
+          "p10": 9.2552,
+          "p90": 63.7021,
+          "iqr": 37.4555,
+          "tail_le_5_count": 1,
+          "tail_ge_95_count": 1,
+          "entry_friction_counts": {
+            "0": 81,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_3": {
+          "n": 95,
+          "mean": 39.60327368421053,
+          "median": 39.5717,
+          "p10": 13.255939999999999,
+          "p90": 63.70234000000002,
+          "iqr": 30.920350000000003,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 95,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 101.5634,
+      "periods": {
+        "period_1": {
+          "n": 61,
+          "mean": 48.4868344262295,
+          "median": 47.3377,
+          "p10": 11.6244,
+          "p90": 89.0591,
+          "iqr": 56.9578,
+          "tail_le_5_count": 1,
+          "tail_ge_95_count": 3,
+          "entry_friction_counts": {
+            "0": 61,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_2": {
+          "n": 88,
+          "mean": 49.775671590909084,
+          "median": 51.4547,
+          "p10": 13.773310000000002,
+          "p90": 77.92178,
+          "iqr": 37.616775,
+          "tail_le_5_count": 2,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 88,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_3": {
+          "n": 69,
+          "mean": 40.72505217391304,
+          "median": 40.9989,
+          "p10": 20.50814,
+          "p90": 59.74466000000001,
+          "iqr": 18.430100000000003,
+          "tail_le_5_count": 1,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 69,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 103.3366,
+      "periods": {
+        "period_1": {
+          "n": 151,
+          "mean": 41.43277549668874,
+          "median": 39.4063,
+          "p10": 10.7492,
+          "p90": 80.6133,
+          "iqr": 41.6746,
+          "tail_le_5_count": 7,
+          "tail_ge_95_count": 2,
+          "entry_friction_counts": {
+            "0": 151,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_2": {
+          "n": 130,
+          "mean": 39.88027461538461,
+          "median": 40.08345,
+          "p10": 13.530700000000001,
+          "p90": 62.72707000000007,
+          "iqr": 20.901025000000004,
+          "tail_le_5_count": 2,
+          "tail_ge_95_count": 1,
+          "entry_friction_counts": {
+            "0": 130,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_3": {
+          "n": 147,
+          "mean": 38.82989251700681,
+          "median": 37.5064,
+          "p10": 15.9252,
+          "p90": 66.23484,
+          "iqr": 32.18345,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 147,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 105.1176,
+      "periods": {
+        "period_1": {
+          "n": 311,
+          "mean": 48.90276945337621,
+          "median": 50.0,
+          "p10": 17.6049,
+          "p90": 80.5981,
+          "iqr": 36.744449999999986,
+          "tail_le_5_count": 4,
+          "tail_ge_95_count": 3,
+          "entry_friction_counts": {
+            "0": 309,
+            "1": 2
+          },
+          "entry_friction_share": {
+            "0": 0.9935691318327974,
+            "1": 0.006430868167202572
+          }
+        },
+        "period_2": {
+          "n": 669,
+          "mean": 47.129667115097156,
+          "median": 44.8601,
+          "p10": 20.05226,
+          "p90": 78.15186,
+          "iqr": 18.3061,
+          "tail_le_5_count": 9,
+          "tail_ge_95_count": 2,
+          "entry_friction_counts": {
+            "0": 666,
+            "1": 3
+          },
+          "entry_friction_share": {
+            "0": 0.9955156950672646,
+            "1": 0.004484304932735426
+          }
+        },
+        "period_3": {
+          "n": 525,
+          "mean": 51.91441561904762,
+          "median": 56.4831,
+          "p10": 18.81624,
+          "p90": 76.71076000000001,
+          "iqr": 35.917500000000004,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 1,
+          "entry_friction_counts": {
+            "0": 517,
+            "1": 8
+          },
+          "entry_friction_share": {
+            "0": 0.9847619047619047,
+            "1": 0.015238095238095238
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 106.9066,
+      "periods": {
+        "period_1": {
+          "n": 93,
+          "mean": 46.42504516129032,
+          "median": 40.6375,
+          "p10": 17.14188,
+          "p90": 85.8161,
+          "iqr": 53.1413,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 3,
+          "entry_friction_counts": {
+            "0": 66,
+            "1": 27
+          },
+          "entry_friction_share": {
+            "0": 0.7096774193548387,
+            "1": 0.2903225806451613
+          }
+        },
+        "period_2": {
+          "n": 64,
+          "mean": 44.2397890625,
+          "median": 40.779849999999996,
+          "p10": 11.74467,
+          "p90": 77.27912,
+          "iqr": 41.74375,
+          "tail_le_5_count": 1,
+          "tail_ge_95_count": 1,
+          "entry_friction_counts": {
+            "0": 53,
+            "1": 11
+          },
+          "entry_friction_share": {
+            "0": 0.828125,
+            "1": 0.171875
+          }
+        },
+        "period_3": {
+          "n": 66,
+          "mean": 46.0840393939394,
+          "median": 42.0342,
+          "p10": 19.314799999999998,
+          "p90": 74.43405000000001,
+          "iqr": 31.841,
+          "tail_le_5_count": 1,
+          "tail_ge_95_count": 1,
+          "entry_friction_counts": {
+            "0": 50,
+            "1": 16
+          },
+          "entry_friction_share": {
+            "0": 0.7575757575757576,
+            "1": 0.24242424242424243
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 108.7033,
+      "periods": {
+        "period_1": {
+          "n": 49,
+          "mean": 50.409163265306134,
+          "median": 46.6454,
+          "p10": 17.97344,
+          "p90": 86.86474,
+          "iqr": 42.345,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 49,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_2": {
+          "n": 40,
+          "mean": 41.8822025,
+          "median": 41.80745,
+          "p10": 12.599520000000002,
+          "p90": 85.08393,
+          "iqr": 46.03552500000001,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 40,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_3": {
+          "n": 34,
+          "mean": 54.05617941176471,
+          "median": 58.22305,
+          "p10": 27.423090000000002,
+          "p90": 77.21943999999999,
+          "iqr": 25.877225000000003,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 34,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 110.5078,
+      "periods": {
+        "period_1": {
+          "n": 1594,
+          "mean": 67.23864755332497,
+          "median": 67.1986,
+          "p10": 39.95915,
+          "p90": 95.00251,
+          "iqr": 32.908424999999994,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 160,
+          "entry_friction_counts": {
+            "0": 51,
+            "1": 1543
+          },
+          "entry_friction_share": {
+            "0": 0.031994981179422836,
+            "1": 0.9680050188205772
+          }
+        },
+        "period_2": {
+          "n": 2107,
+          "mean": 67.65800787850023,
+          "median": 68.6887,
+          "p10": 39.91516,
+          "p90": 90.78638000000001,
+          "iqr": 24.091649999999987,
+          "tail_le_5_count": 1,
+          "tail_ge_95_count": 97,
+          "entry_friction_counts": {
+            "0": 66,
+            "1": 2041
+          },
+          "entry_friction_share": {
+            "0": 0.03132415757000474,
+            "1": 0.9686758424299953
+          }
+        },
+        "period_3": {
+          "n": 2283,
+          "mean": 72.85062426631625,
+          "median": 74.366,
+          "p10": 54.1901,
+          "p90": 89.73608,
+          "iqr": 19.96430000000001,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 75,
+          "entry_friction_counts": {
+            "0": 40,
+            "1": 2243
+          },
+          "entry_friction_share": {
+            "0": 0.017520805957074025,
+            "1": 0.9824791940429259
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 115.9669,
+      "periods": {
+        "period_1": {
+          "n": 1500,
+          "mean": 50.277947266666665,
+          "median": 49.453,
+          "p10": 14.886,
+          "p90": 87.6663,
+          "iqr": 53.4922,
+          "tail_le_5_count": 27,
+          "tail_ge_95_count": 27,
+          "entry_friction_counts": {
+            "0": 1500,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_2": {
+          "n": 1475,
+          "mean": 52.082002508474574,
+          "median": 54.9391,
+          "p10": 22.1638,
+          "p90": 79.3235,
+          "iqr": 33.27034999999999,
+          "tail_le_5_count": 4,
+          "tail_ge_95_count": 21,
+          "entry_friction_counts": {
+            "0": 1475,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_3": {
+          "n": 1540,
+          "mean": 45.914314545454545,
+          "median": 46.5494,
+          "p10": 22.66662,
+          "p90": 69.63435000000001,
+          "iqr": 22.797324999999994,
+          "tail_le_5_count": 6,
+          "tail_ge_95_count": 2,
+          "entry_friction_counts": {
+            "0": 1540,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 119.644,
+      "periods": {
+        "period_1": {
+          "n": 37,
+          "mean": 52.284713513513516,
+          "median": 50.3195,
+          "p10": 20.89496,
+          "p90": 91.33613999999999,
+          "iqr": 41.22410000000001,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 1,
+          "entry_friction_counts": {
+            "0": 37,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_2": {
+          "n": 46,
+          "mean": 48.40898260869565,
+          "median": 47.90205,
+          "p10": 20.15145,
+          "p90": 75.5289,
+          "iqr": 24.79705,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 46,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_3": {
+          "n": 56,
+          "mean": 41.28993214285715,
+          "median": 31.33755,
+          "p10": 18.2745,
+          "p90": 79.14779999999999,
+          "iqr": 35.5194,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 56,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 121.4936,
+      "periods": {
+        "period_1": {
+          "n": 298,
+          "mean": 44.650758389261746,
+          "median": 39.61135,
+          "p10": 19.54352,
+          "p90": 85.93673000000001,
+          "iqr": 37.59054999999999,
+          "tail_le_5_count": 5,
+          "tail_ge_95_count": 3,
+          "entry_friction_counts": {
+            "0": 298,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_2": {
+          "n": 226,
+          "mean": 48.22298982300885,
+          "median": 46.9678,
+          "p10": 15.47005,
+          "p90": 89.03139999999999,
+          "iqr": 35.862049999999996,
+          "tail_le_5_count": 2,
+          "tail_ge_95_count": 7,
+          "entry_friction_counts": {
+            "0": 226,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_3": {
+          "n": 252,
+          "mean": 53.80153293650794,
+          "median": 54.4731,
+          "p10": 22.95754,
+          "p90": 79.61323,
+          "iqr": 30.827099999999987,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 252,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 123.3505,
+      "periods": {
+        "period_1": {
+          "n": 39,
+          "mean": 61.95711282051281,
+          "median": 67.8594,
+          "p10": 29.34292,
+          "p90": 94.12034000000001,
+          "iqr": 51.59205,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 4,
+          "entry_friction_counts": {
+            "0": 20,
+            "1": 19
+          },
+          "entry_friction_share": {
+            "0": 0.5128205128205128,
+            "1": 0.48717948717948717
+          }
+        },
+        "period_2": {
+          "n": 70,
+          "mean": 55.84004285714286,
+          "median": 56.140550000000005,
+          "p10": 20.6453,
+          "p90": 92.6951,
+          "iqr": 30.01469999999999,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 4,
+          "entry_friction_counts": {
+            "0": 41,
+            "1": 29
+          },
+          "entry_friction_share": {
+            "0": 0.5857142857142857,
+            "1": 0.4142857142857143
+          }
+        },
+        "period_3": {
+          "n": 76,
+          "mean": 66.87942368421054,
+          "median": 72.35910000000001,
+          "p10": 38.1853,
+          "p90": 91.1991,
+          "iqr": 23.674225000000007,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 1,
+          "entry_friction_counts": {
+            "0": 24,
+            "1": 52
+          },
+          "entry_friction_share": {
+            "0": 0.3157894736842105,
+            "1": 0.6842105263157895
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 130.8506,
+      "periods": {
+        "period_1": {
+          "n": 48,
+          "mean": 74.84835208333332,
+          "median": 79.61785,
+          "p10": 52.68183,
+          "p90": 94.54305000000001,
+          "iqr": 22.461375000000004,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 4,
+          "entry_friction_counts": {
+            "0": 13,
+            "1": 35
+          },
+          "entry_friction_share": {
+            "0": 0.2708333333333333,
+            "1": 0.7291666666666666
+          }
+        },
+        "period_2": {
+          "n": 43,
+          "mean": 71.96158837209303,
+          "median": 75.2451,
+          "p10": 40.02696,
+          "p90": 92.10492,
+          "iqr": 28.569699999999997,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 4,
+          "entry_friction_counts": {
+            "0": 2,
+            "1": 41
+          },
+          "entry_friction_share": {
+            "0": 0.046511627906976744,
+            "1": 0.9534883720930233
+          }
+        },
+        "period_3": {
+          "n": 36,
+          "mean": 77.6088388888889,
+          "median": 79.936,
+          "p10": 59.475300000000004,
+          "p90": 92.7787,
+          "iqr": 17.798199999999994,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 2,
+          "entry_friction_counts": {
+            "0": 8,
+            "1": 28
+          },
+          "entry_friction_share": {
+            "0": 0.2222222222222222,
+            "1": 0.7777777777777778
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 134.6432,
+      "periods": {
+        "period_1": {
+          "n": 1320,
+          "mean": 57.29668992424243,
+          "median": 59.316,
+          "p10": 22.983760000000004,
+          "p90": 90.11345,
+          "iqr": 39.3581,
+          "tail_le_5_count": 2,
+          "tail_ge_95_count": 44,
+          "entry_friction_counts": {
+            "0": 1320,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_2": {
+          "n": 1489,
+          "mean": 57.7834785090665,
+          "median": 58.9862,
+          "p10": 17.38666,
+          "p90": 92.99358000000001,
+          "iqr": 34.562200000000004,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 62,
+          "entry_friction_counts": {
+            "0": 1489,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_3": {
+          "n": 2383,
+          "mean": 55.442694922366755,
+          "median": 58.8912,
+          "p10": 24.522400000000005,
+          "p90": 82.98392000000003,
+          "iqr": 39.64244999999999,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 24,
+          "entry_friction_counts": {
+            "0": 2383,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 140.3844,
+      "periods": {
+        "period_1": {
+          "n": 195,
+          "mean": 72.3007882051282,
+          "median": 72.4124,
+          "p10": 48.0704,
+          "p90": 96.13026,
+          "iqr": 31.89580000000001,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 23,
+          "entry_friction_counts": {
+            "0": 25,
+            "1": 170
+          },
+          "entry_friction_share": {
+            "0": 0.1282051282051282,
+            "1": 0.8717948717948718
+          }
+        },
+        "period_2": {
+          "n": 197,
+          "mean": 71.5639923857868,
+          "median": 74.4097,
+          "p10": 46.0542,
+          "p90": 92.02684,
+          "iqr": 23.31949999999999,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 18,
+          "entry_friction_counts": {
+            "0": 15,
+            "1": 182
+          },
+          "entry_friction_share": {
+            "0": 0.07614213197969544,
+            "1": 0.9238578680203046
+          }
+        },
+        "period_3": {
+          "n": 195,
+          "mean": 79.91076102564102,
+          "median": 82.1184,
+          "p10": 63.75302,
+          "p90": 94.6412,
+          "iqr": 17.466350000000006,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 18,
+          "entry_friction_counts": {
+            "0": 12,
+            "1": 183
+          },
+          "entry_friction_share": {
+            "0": 0.06153846153846154,
+            "1": 0.9384615384615385
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 150.0892,
+      "periods": {
+        "period_1": {
+          "n": 42,
+          "mean": 64.7562261904762,
+          "median": 69.68844999999999,
+          "p10": 30.764180000000003,
+          "p90": 91.86393000000001,
+          "iqr": 36.8321,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 3,
+          "entry_friction_counts": {
+            "0": 42,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_2": {
+          "n": 38,
+          "mean": 71.78358947368422,
+          "median": 76.36355,
+          "p10": 38.52246,
+          "p90": 96.3,
+          "iqr": 34.76155,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 5,
+          "entry_friction_counts": {
+            "0": 38,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_3": {
+          "n": 40,
+          "mean": 73.7271325,
+          "median": 76.7578,
+          "p10": 52.86880000000001,
+          "p90": 92.59155,
+          "iqr": 25.11442500000001,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 2,
+          "entry_friction_counts": {
+            "0": 40,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        }
+      }
+    },
+    {
+      "impact_load": 154.0178,
+      "periods": {
+        "period_1": {
+          "n": 1498,
+          "mean": 79.7513064753004,
+          "median": 83.48595,
+          "p10": 54.4951,
+          "p90": 98.19749,
+          "iqr": 26.24714999999999,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 353,
+          "entry_friction_counts": {
+            "0": 0,
+            "1": 1498
+          },
+          "entry_friction_share": {
+            "0": 0.0,
+            "1": 1.0
+          }
+        },
+        "period_2": {
+          "n": 2698,
+          "mean": 82.48380800593033,
+          "median": 86.25605,
+          "p10": 59.3369,
+          "p90": 98.22498,
+          "iqr": 17.5432,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 596,
+          "entry_friction_counts": {
+            "0": 0,
+            "1": 2698
+          },
+          "entry_friction_share": {
+            "0": 0.0,
+            "1": 1.0
+          }
+        },
+        "period_3": {
+          "n": 3108,
+          "mean": 87.37615016087516,
+          "median": 89.96395000000001,
+          "p10": 71.80503,
+          "p90": 98.34686,
+          "iqr": 14.079925000000003,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 878,
+          "entry_friction_counts": {
+            "0": 0,
+            "1": 3108
+          },
+          "entry_friction_share": {
+            "0": 0.0,
+            "1": 1.0
+          }
+        }
+      }
+    }
+  ],
+  "same_impact_x_friction_distributions": [
+    {
+      "impact_load": 34.0593,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 32,
+          "mean": 17.731212499999998,
+          "median": 11.525649999999999,
+          "p10": 0.49015000000000003,
+          "p90": 43.26171000000001,
+          "iqr": 18.0231,
+          "tail_le_5_count": 8,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 40,
+          "mean": 5.8213625,
+          "median": 5.0724,
+          "p10": 0.91146,
+          "p90": 13.353090000000002,
+          "iqr": 5.551275,
+          "tail_le_5_count": 20,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 39,
+          "mean": 10.522151282051283,
+          "median": 7.5803,
+          "p10": 1.0700000000000003,
+          "p90": 27.09498,
+          "iqr": 12.1517,
+          "tail_le_5_count": 16,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 42.2906,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 168,
+          "mean": 25.602763690476188,
+          "median": 14.539,
+          "p10": 1.1496,
+          "p90": 62.68683000000001,
+          "iqr": 50.58525,
+          "tail_le_5_count": 63,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 192,
+          "mean": 13.6741484375,
+          "median": 12.5071,
+          "p10": 3.40856,
+          "p90": 25.42577,
+          "iqr": 9.506875,
+          "tail_le_5_count": 35,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 148,
+          "mean": 14.096925,
+          "median": 14.09625,
+          "p10": 2.9781299999999997,
+          "p90": 22.914370000000005,
+          "iqr": 9.368349999999998,
+          "tail_le_5_count": 26,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 56.967,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 455,
+          "mean": 28.599773186813184,
+          "median": 21.5171,
+          "p10": 2.37392,
+          "p90": 68.98534000000002,
+          "iqr": 33.2424,
+          "tail_le_5_count": 77,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 554,
+          "mean": 17.526442779783395,
+          "median": 11.7012,
+          "p10": 2.0463400000000003,
+          "p90": 42.94282,
+          "iqr": 15.6679,
+          "tail_le_5_count": 119,
+          "tail_ge_95_count": 1,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 763,
+          "mean": 21.213871952817826,
+          "median": 15.1874,
+          "p10": 3.73722,
+          "p90": 51.089660000000016,
+          "iqr": 22.3911,
+          "tail_le_5_count": 112,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 58.4951,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 111,
+          "mean": 24.08227567567567,
+          "median": 9.393,
+          "p10": 2.6988,
+          "p90": 60.456,
+          "iqr": 35.348099999999995,
+          "tail_le_5_count": 29,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 102,
+          "mean": 22.836502941176466,
+          "median": 20.73875,
+          "p10": 5.272000000000002,
+          "p90": 36.5196,
+          "iqr": 25.0888,
+          "tail_le_5_count": 10,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 183,
+          "mean": 19.568914754098362,
+          "median": 20.3418,
+          "p10": 11.2302,
+          "p90": 28.025220000000044,
+          "iqr": 6.675800000000002,
+          "tail_le_5_count": 7,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 61.5825,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 44,
+          "mean": 26.461747727272726,
+          "median": 18.33625,
+          "p10": 2.6518,
+          "p90": 69.24765000000001,
+          "iqr": 42.562825000000004,
+          "tail_le_5_count": 13,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 62,
+          "mean": 21.98065967741935,
+          "median": 19.2496,
+          "p10": 5.429620000000001,
+          "p90": 39.12356,
+          "iqr": 16.475125,
+          "tail_le_5_count": 6,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 61,
+          "mean": 27.060416393442623,
+          "median": 26.6224,
+          "p10": 10.5778,
+          "p90": 45.0107,
+          "iqr": 17.9415,
+          "tail_le_5_count": 3,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 64.7106,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 262,
+          "mean": 30.513941221374044,
+          "median": 27.671799999999998,
+          "p10": 5.216010000000001,
+          "p90": 57.51064000000001,
+          "iqr": 27.708599999999997,
+          "tail_le_5_count": 25,
+          "tail_ge_95_count": 1,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 453,
+          "mean": 19.340515231788082,
+          "median": 16.0014,
+          "p10": 1.7419,
+          "p90": 38.90288,
+          "iqr": 17.7693,
+          "tail_le_5_count": 96,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 767,
+          "mean": 16.351374967405476,
+          "median": 6.9023,
+          "p10": 0.9636,
+          "p90": 47.78394,
+          "iqr": 28.25215,
+          "tail_le_5_count": 344,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 66.2896,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 175,
+          "mean": 30.94203085714286,
+          "median": 29.5827,
+          "p10": 6.280120000000001,
+          "p90": 63.935479999999984,
+          "iqr": 31.973,
+          "tail_le_5_count": 14,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 112,
+          "mean": 22.464905357142857,
+          "median": 16.27995,
+          "p10": 5.2792900000000005,
+          "p90": 49.6171,
+          "iqr": 23.521150000000002,
+          "tail_le_5_count": 10,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 159,
+          "mean": 25.49859371069182,
+          "median": 19.2718,
+          "p10": 8.90746,
+          "p90": 47.61622000000001,
+          "iqr": 19.871650000000002,
+          "tail_le_5_count": 7,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 72.7026,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 50,
+          "mean": 34.810046,
+          "median": 25.8842,
+          "p10": 3.75891,
+          "p90": 76.47844,
+          "iqr": 55.82567500000001,
+          "tail_le_5_count": 8,
+          "tail_ge_95_count": 1,
+          "entry_friction": 0,
+          "share_within_impact_period": 0.10080645161290322,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 41,
+          "mean": 25.544614634146345,
+          "median": 20.5488,
+          "p10": 3.4311,
+          "p90": 59.8054,
+          "iqr": 31.516900000000003,
+          "tail_le_5_count": 8,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 0.07976653696498054,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 59,
+          "mean": 30.723554237288134,
+          "median": 27.5375,
+          "p10": 12.6812,
+          "p90": 54.385680000000015,
+          "iqr": 24.341549999999998,
+          "tail_le_5_count": 1,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 0.08766716196136701,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 72.7026,
+      "entry_friction": 1,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 446,
+          "mean": 55.70146300448431,
+          "median": 53.8179,
+          "p10": 28.2968,
+          "p90": 89.68055,
+          "iqr": 32.0853,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 17,
+          "entry_friction": 1,
+          "share_within_impact_period": 0.8991935483870968,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 473,
+          "mean": 50.02506553911205,
+          "median": 50.5376,
+          "p10": 22.42876,
+          "p90": 76.13528000000001,
+          "iqr": 30.073300000000003,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 5,
+          "entry_friction": 1,
+          "share_within_impact_period": 0.9202334630350194,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 614,
+          "mean": 55.737594299674264,
+          "median": 56.229150000000004,
+          "p10": 33.134370000000004,
+          "p90": 77.85181999999999,
+          "iqr": 22.832774999999998,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 13,
+          "entry_friction": 1,
+          "share_within_impact_period": 0.912332838038633,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 74.3295,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 776,
+          "mean": 34.77140953608247,
+          "median": 31.3029,
+          "p10": 5.886749999999999,
+          "p90": 71.5723,
+          "iqr": 30.761300000000002,
+          "tail_le_5_count": 70,
+          "tail_ge_95_count": 1,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 956,
+          "mean": 23.25841579497908,
+          "median": 20.6667,
+          "p10": 2.313,
+          "p90": 44.67700000000001,
+          "iqr": 23.543174999999998,
+          "tail_le_5_count": 166,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 1615,
+          "mean": 26.508002848297213,
+          "median": 25.6256,
+          "p10": 3.1886600000000005,
+          "p90": 53.078660000000006,
+          "iqr": 32.851,
+          "tail_le_5_count": 276,
+          "tail_ge_95_count": 1,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 75.9658,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 909,
+          "mean": 31.84908492849285,
+          "median": 28.3688,
+          "p10": 4.6254,
+          "p90": 74.97512,
+          "iqr": 45.8946,
+          "tail_le_5_count": 111,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 958,
+          "mean": 32.982642275574115,
+          "median": 28.6386,
+          "p10": 9.667810000000001,
+          "p90": 65.5712,
+          "iqr": 23.969074999999997,
+          "tail_le_5_count": 45,
+          "tail_ge_95_count": 3,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 1111,
+          "mean": 30.63721404140414,
+          "median": 29.6117,
+          "p10": 9.6277,
+          "p90": 50.1071,
+          "iqr": 19.422349999999998,
+          "tail_le_5_count": 49,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 79.2658,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 30,
+          "mean": 34.78302,
+          "median": 26.63215,
+          "p10": 7.71093,
+          "p90": 78.78546,
+          "iqr": 35.0057,
+          "tail_le_5_count": 1,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 36,
+          "mean": 25.390705555555556,
+          "median": 20.758650000000003,
+          "p10": 3.6248,
+          "p90": 53.8031,
+          "iqr": 29.608674999999998,
+          "tail_le_5_count": 6,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 45,
+          "mean": 27.72209777777778,
+          "median": 24.3709,
+          "p10": 5.26672,
+          "p90": 53.48932,
+          "iqr": 31.920899999999996,
+          "tail_le_5_count": 5,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 82.6017,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 125,
+          "mean": 40.783522399999995,
+          "median": 38.7039,
+          "p10": 5.42114,
+          "p90": 79.33384000000001,
+          "iqr": 49.53939999999999,
+          "tail_le_5_count": 11,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 107,
+          "mean": 29.514300000000002,
+          "median": 20.7084,
+          "p10": 4.793280000000001,
+          "p90": 72.4782,
+          "iqr": 33.9765,
+          "tail_le_5_count": 11,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 118,
+          "mean": 41.992082203389835,
+          "median": 41.0825,
+          "p10": 13.20692,
+          "p90": 67.57445,
+          "iqr": 32.55564999999999,
+          "tail_le_5_count": 1,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 85.973,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 1016,
+          "mean": 36.44760826771654,
+          "median": 34.60665,
+          "p10": 6.47415,
+          "p90": 70.54230000000001,
+          "iqr": 35.68555,
+          "tail_le_5_count": 84,
+          "tail_ge_95_count": 3,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 1072,
+          "mean": 27.811918003731346,
+          "median": 26.4333,
+          "p10": 3.98313,
+          "p90": 53.66101,
+          "iqr": 31.0152,
+          "tail_le_5_count": 156,
+          "tail_ge_95_count": 1,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 1633,
+          "mean": 28.688304409063075,
+          "median": 20.011,
+          "p10": 6.2673,
+          "p90": 60.241,
+          "iqr": 37.1156,
+          "tail_le_5_count": 106,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 89.379,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 32,
+          "mean": 45.30175,
+          "median": 47.1554,
+          "p10": 11.16194,
+          "p90": 80.8485,
+          "iqr": 50.83529999999999,
+          "tail_le_5_count": 2,
+          "tail_ge_95_count": 1,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 30,
+          "mean": 42.583996666666664,
+          "median": 31.0893,
+          "p10": 13.672820000000002,
+          "p90": 83.3992,
+          "iqr": 53.005175,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 57,
+          "mean": 39.19971052631579,
+          "median": 39.1863,
+          "p10": 12.615179999999999,
+          "p90": 66.92717999999999,
+          "iqr": 27.8723,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 92.8189,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 937,
+          "mean": 41.67748399146211,
+          "median": 38.8446,
+          "p10": 9.575160000000002,
+          "p90": 79.49044,
+          "iqr": 41.74979999999999,
+          "tail_le_5_count": 32,
+          "tail_ge_95_count": 4,
+          "entry_friction": 0,
+          "share_within_impact_period": 0.9455095862764884,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 1215,
+          "mean": 36.8643353909465,
+          "median": 35.1965,
+          "p10": 9.711500000000001,
+          "p90": 68.8684,
+          "iqr": 28.891599999999997,
+          "tail_le_5_count": 49,
+          "tail_ge_95_count": 6,
+          "entry_friction": 0,
+          "share_within_impact_period": 0.9514487079091621,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 1178,
+          "mean": 40.61838624787776,
+          "median": 41.4078,
+          "p10": 13.88575,
+          "p90": 66.4454,
+          "iqr": 34.10289999999999,
+          "tail_le_5_count": 15,
+          "tail_ge_95_count": 1,
+          "entry_friction": 0,
+          "share_within_impact_period": 0.9304897314375987,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 92.8189,
+      "entry_friction": 1,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 54,
+          "mean": 60.559588888888875,
+          "median": 59.60965,
+          "p10": 26.55626,
+          "p90": 89.41365,
+          "iqr": 37.152899999999995,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 4,
+          "entry_friction": 1,
+          "share_within_impact_period": 0.054490413723511606,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 62,
+          "mean": 61.45439677419354,
+          "median": 62.8324,
+          "p10": 29.36934,
+          "p90": 91.4,
+          "iqr": 31.272175000000004,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 3,
+          "entry_friction": 1,
+          "share_within_impact_period": 0.0485512920908379,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 88,
+          "mean": 66.2866125,
+          "median": 65.66194999999999,
+          "p10": 44.8024,
+          "p90": 90.5172,
+          "iqr": 23.491699999999994,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 1,
+          "entry_friction": 1,
+          "share_within_impact_period": 0.06951026856240126,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 96.2922,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 162,
+          "mean": 25.800412345679018,
+          "median": 17.33675,
+          "p10": 9.793,
+          "p90": 60.03944000000001,
+          "iqr": 20.179875000000003,
+          "tail_le_5_count": 11,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 231,
+          "mean": 46.23988008658009,
+          "median": 53.4461,
+          "p10": 21.1308,
+          "p90": 55.5397,
+          "iqr": 20.0477,
+          "tail_le_5_count": 3,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 251,
+          "mean": 33.4116561752988,
+          "median": 35.1811,
+          "p10": 19.4681,
+          "p90": 43.6403,
+          "iqr": 12.331400000000002,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 98.0411,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 90,
+          "mean": 38.229236666666665,
+          "median": 34.16675,
+          "p10": 8.04537,
+          "p90": 80.64559,
+          "iqr": 51.5984,
+          "tail_le_5_count": 2,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 81,
+          "mean": 35.91843580246913,
+          "median": 30.5134,
+          "p10": 9.2552,
+          "p90": 63.7021,
+          "iqr": 37.4555,
+          "tail_le_5_count": 1,
+          "tail_ge_95_count": 1,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 95,
+          "mean": 39.60327368421053,
+          "median": 39.5717,
+          "p10": 13.255939999999999,
+          "p90": 63.70234000000002,
+          "iqr": 30.920350000000003,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 101.5634,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 61,
+          "mean": 48.4868344262295,
+          "median": 47.3377,
+          "p10": 11.6244,
+          "p90": 89.0591,
+          "iqr": 56.9578,
+          "tail_le_5_count": 1,
+          "tail_ge_95_count": 3,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 88,
+          "mean": 49.775671590909084,
+          "median": 51.4547,
+          "p10": 13.773310000000002,
+          "p90": 77.92178,
+          "iqr": 37.616775,
+          "tail_le_5_count": 2,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 69,
+          "mean": 40.72505217391304,
+          "median": 40.9989,
+          "p10": 20.50814,
+          "p90": 59.74466000000001,
+          "iqr": 18.430100000000003,
+          "tail_le_5_count": 1,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 103.3366,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 151,
+          "mean": 41.43277549668874,
+          "median": 39.4063,
+          "p10": 10.7492,
+          "p90": 80.6133,
+          "iqr": 41.6746,
+          "tail_le_5_count": 7,
+          "tail_ge_95_count": 2,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 130,
+          "mean": 39.88027461538461,
+          "median": 40.08345,
+          "p10": 13.530700000000001,
+          "p90": 62.72707000000007,
+          "iqr": 20.901025000000004,
+          "tail_le_5_count": 2,
+          "tail_ge_95_count": 1,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 147,
+          "mean": 38.82989251700681,
+          "median": 37.5064,
+          "p10": 15.9252,
+          "p90": 66.23484,
+          "iqr": 32.18345,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 105.1176,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 309,
+          "mean": 49.0197857605178,
+          "median": 50.0,
+          "p10": 17.5292,
+          "p90": 80.7221,
+          "iqr": 36.7663,
+          "tail_le_5_count": 4,
+          "tail_ge_95_count": 3,
+          "entry_friction": 0,
+          "share_within_impact_period": 0.9935691318327974,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 666,
+          "mean": 47.05803588588588,
+          "median": 44.8601,
+          "p10": 20.0231,
+          "p90": 78.1605,
+          "iqr": 17.507900000000006,
+          "tail_le_5_count": 9,
+          "tail_ge_95_count": 2,
+          "entry_friction": 0,
+          "share_within_impact_period": 0.9955156950672646,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 517,
+          "mean": 51.739703481624765,
+          "median": 56.383,
+          "p10": 18.68828,
+          "p90": 76.64584,
+          "iqr": 36.289,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 1,
+          "entry_friction": 0,
+          "share_within_impact_period": 0.9847619047619047,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 105.1176,
+      "entry_friction": 1,
+      "common_support_all_periods": false,
+      "periods": {
+        "period_1": {
+          "n": 2,
+          "mean": 30.823749999999997,
+          "median": 30.823749999999997,
+          "p10": 21.189629999999998,
+          "p90": 40.45787,
+          "iqr": 12.042650000000002,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction": 1,
+          "share_within_impact_period": 0.006430868167202572,
+          "meets_primary_support_threshold": false
+        },
+        "period_2": {
+          "n": 3,
+          "mean": 63.031800000000004,
+          "median": 64.0288,
+          "p10": 56.272400000000005,
+          "p90": 69.3924,
+          "iqr": 8.200000000000003,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction": 1,
+          "share_within_impact_period": 0.004484304932735426,
+          "meets_primary_support_threshold": false
+        },
+        "period_3": {
+          "n": 8,
+          "mean": 63.2051875,
+          "median": 67.17515,
+          "p10": 39.645570000000006,
+          "p90": 77.93627,
+          "iqr": 17.959775,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction": 1,
+          "share_within_impact_period": 0.015238095238095238,
+          "meets_primary_support_threshold": false
+        }
+      }
+    },
+    {
+      "impact_load": 106.9066,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 66,
+          "mean": 40.82940303030303,
+          "median": 28.1275,
+          "p10": 14.50655,
+          "p90": 84.68809999999999,
+          "iqr": 49.07464999999999,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 1,
+          "entry_friction": 0,
+          "share_within_impact_period": 0.7096774193548387,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 53,
+          "mean": 38.92339245283019,
+          "median": 32.924,
+          "p10": 10.97578,
+          "p90": 76.05832000000001,
+          "iqr": 41.028000000000006,
+          "tail_le_5_count": 1,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 0.828125,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 50,
+          "mean": 38.886574,
+          "median": 37.012100000000004,
+          "p10": 18.1615,
+          "p90": 60.67451000000001,
+          "iqr": 23.2624,
+          "tail_le_5_count": 1,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 0.7575757575757576,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 106.9066,
+      "entry_friction": 1,
+      "common_support_all_periods": false,
+      "periods": {
+        "period_1": {
+          "n": 27,
+          "mean": 60.10328148148148,
+          "median": 52.31,
+          "p10": 36.6137,
+          "p90": 90.7253,
+          "iqr": 28.872199999999992,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 2,
+          "entry_friction": 1,
+          "share_within_impact_period": 0.2903225806451613,
+          "meets_primary_support_threshold": false
+        },
+        "period_2": {
+          "n": 11,
+          "mean": 69.85515454545454,
+          "median": 64.9313,
+          "p10": 57.773,
+          "p90": 90.6412,
+          "iqr": 13.078000000000003,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 1,
+          "entry_friction": 1,
+          "share_within_impact_period": 0.171875,
+          "meets_primary_support_threshold": false
+        },
+        "period_3": {
+          "n": 16,
+          "mean": 68.57611875,
+          "median": 64.68425,
+          "p10": 56.6506,
+          "p90": 83.4223,
+          "iqr": 12.037599999999998,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 1,
+          "entry_friction": 1,
+          "share_within_impact_period": 0.24242424242424243,
+          "meets_primary_support_threshold": false
+        }
+      }
+    },
+    {
+      "impact_load": 108.7033,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 49,
+          "mean": 50.409163265306134,
+          "median": 46.6454,
+          "p10": 17.97344,
+          "p90": 86.86474,
+          "iqr": 42.345,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 40,
+          "mean": 41.8822025,
+          "median": 41.80745,
+          "p10": 12.599520000000002,
+          "p90": 85.08393,
+          "iqr": 46.03552500000001,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 34,
+          "mean": 54.05617941176471,
+          "median": 58.22305,
+          "p10": 27.423090000000002,
+          "p90": 77.21943999999999,
+          "iqr": 25.877225000000003,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 110.5078,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 51,
+          "mean": 56.17464117647059,
+          "median": 63.6643,
+          "p10": 16.736,
+          "p90": 86.9323,
+          "iqr": 49.8763,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 1,
+          "entry_friction": 0,
+          "share_within_impact_period": 0.031994981179422836,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 66,
+          "mean": 50.3180893939394,
+          "median": 51.13005,
+          "p10": 11.300350000000002,
+          "p90": 85.131,
+          "iqr": 48.392325,
+          "tail_le_5_count": 1,
+          "tail_ge_95_count": 1,
+          "entry_friction": 0,
+          "share_within_impact_period": 0.03132415757000474,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 40,
+          "mean": 54.149435,
+          "median": 59.26925,
+          "p10": 18.452540000000003,
+          "p90": 88.86727,
+          "iqr": 40.850224999999995,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 1,
+          "entry_friction": 0,
+          "share_within_impact_period": 0.017520805957074025,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 110.5078,
+      "entry_friction": 1,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 1543,
+          "mean": 67.60434057031756,
+          "median": 67.1986,
+          "p10": 40.55386000000001,
+          "p90": 95.0316,
+          "iqr": 32.65709999999999,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 159,
+          "entry_friction": 1,
+          "share_within_impact_period": 0.9680050188205772,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 2041,
+          "mean": 68.21873037726604,
+          "median": 68.9853,
+          "p10": 41.9099,
+          "p90": 91.2478,
+          "iqr": 23.575599999999994,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 96,
+          "entry_friction": 1,
+          "share_within_impact_period": 0.9686758424299953,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 2243,
+          "mean": 73.18412741863575,
+          "median": 74.6039,
+          "p10": 54.4949,
+          "p90": 89.73608,
+          "iqr": 19.816349999999993,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 74,
+          "entry_friction": 1,
+          "share_within_impact_period": 0.9824791940429259,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 115.9669,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 1500,
+          "mean": 50.277947266666665,
+          "median": 49.453,
+          "p10": 14.886,
+          "p90": 87.6663,
+          "iqr": 53.4922,
+          "tail_le_5_count": 27,
+          "tail_ge_95_count": 27,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 1475,
+          "mean": 52.082002508474574,
+          "median": 54.9391,
+          "p10": 22.1638,
+          "p90": 79.3235,
+          "iqr": 33.27034999999999,
+          "tail_le_5_count": 4,
+          "tail_ge_95_count": 21,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 1540,
+          "mean": 45.914314545454545,
+          "median": 46.5494,
+          "p10": 22.66662,
+          "p90": 69.63435000000001,
+          "iqr": 22.797324999999994,
+          "tail_le_5_count": 6,
+          "tail_ge_95_count": 2,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 119.644,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 37,
+          "mean": 52.284713513513516,
+          "median": 50.3195,
+          "p10": 20.89496,
+          "p90": 91.33613999999999,
+          "iqr": 41.22410000000001,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 1,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 46,
+          "mean": 48.40898260869565,
+          "median": 47.90205,
+          "p10": 20.15145,
+          "p90": 75.5289,
+          "iqr": 24.79705,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 56,
+          "mean": 41.28993214285715,
+          "median": 31.33755,
+          "p10": 18.2745,
+          "p90": 79.14779999999999,
+          "iqr": 35.5194,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 121.4936,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 298,
+          "mean": 44.650758389261746,
+          "median": 39.61135,
+          "p10": 19.54352,
+          "p90": 85.93673000000001,
+          "iqr": 37.59054999999999,
+          "tail_le_5_count": 5,
+          "tail_ge_95_count": 3,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 226,
+          "mean": 48.22298982300885,
+          "median": 46.9678,
+          "p10": 15.47005,
+          "p90": 89.03139999999999,
+          "iqr": 35.862049999999996,
+          "tail_le_5_count": 2,
+          "tail_ge_95_count": 7,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 252,
+          "mean": 53.80153293650794,
+          "median": 54.4731,
+          "p10": 22.95754,
+          "p90": 79.61323,
+          "iqr": 30.827099999999987,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 123.3505,
+      "entry_friction": 0,
+      "common_support_all_periods": false,
+      "periods": {
+        "period_1": {
+          "n": 20,
+          "mean": 48.134595000000004,
+          "median": 33.2174,
+          "p10": 24.89439,
+          "p90": 85.20920000000001,
+          "iqr": 48.562375,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 0.5128205128205128,
+          "meets_primary_support_threshold": false
+        },
+        "period_2": {
+          "n": 41,
+          "mean": 45.3037975609756,
+          "median": 42.5471,
+          "p10": 19.9779,
+          "p90": 74.2114,
+          "iqr": 41.3464,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 0.5857142857142857,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 24,
+          "mean": 45.681370833333325,
+          "median": 45.58625,
+          "p10": 20.84714,
+          "p90": 65.45291,
+          "iqr": 24.27205,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 1,
+          "entry_friction": 0,
+          "share_within_impact_period": 0.3157894736842105,
+          "meets_primary_support_threshold": false
+        }
+      }
+    },
+    {
+      "impact_load": 123.3505,
+      "entry_friction": 1,
+      "common_support_all_periods": false,
+      "periods": {
+        "period_1": {
+          "n": 19,
+          "mean": 76.50713157894737,
+          "median": 74.7185,
+          "p10": 50.443,
+          "p90": 96.85802,
+          "iqr": 25.368150000000014,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 4,
+          "entry_friction": 1,
+          "share_within_impact_period": 0.48717948717948717,
+          "meets_primary_support_threshold": false
+        },
+        "period_2": {
+          "n": 29,
+          "mean": 70.73611379310344,
+          "median": 68.4015,
+          "p10": 53.51036,
+          "p90": 95.52002,
+          "iqr": 22.4643,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 4,
+          "entry_friction": 1,
+          "share_within_impact_period": 0.4142857142857143,
+          "meets_primary_support_threshold": false
+        },
+        "period_3": {
+          "n": 52,
+          "mean": 76.66314038461537,
+          "median": 77.8069,
+          "p10": 60.54441,
+          "p90": 91.1991,
+          "iqr": 20.298975,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction": 1,
+          "share_within_impact_period": 0.6842105263157895,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 130.8506,
+      "entry_friction": 0,
+      "common_support_all_periods": false,
+      "periods": {
+        "period_1": {
+          "n": 13,
+          "mean": 66.16232307692307,
+          "median": 67.7316,
+          "p10": 22.656620000000007,
+          "p90": 92.7948,
+          "iqr": 33.192699999999995,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 1,
+          "entry_friction": 0,
+          "share_within_impact_period": 0.2708333333333333,
+          "meets_primary_support_threshold": false
+        },
+        "period_2": {
+          "n": 2,
+          "mean": 41.7819,
+          "median": 41.7819,
+          "p10": 35.35078,
+          "p90": 48.21302,
+          "iqr": 8.038899999999998,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 0.046511627906976744,
+          "meets_primary_support_threshold": false
+        },
+        "period_3": {
+          "n": 8,
+          "mean": 60.0965125,
+          "median": 60.85995,
+          "p10": 52.9049,
+          "p90": 66.81201,
+          "iqr": 3.364975000000001,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 0.2222222222222222,
+          "meets_primary_support_threshold": false
+        }
+      }
+    },
+    {
+      "impact_load": 130.8506,
+      "entry_friction": 1,
+      "common_support_all_periods": false,
+      "periods": {
+        "period_1": {
+          "n": 35,
+          "mean": 78.07459142857145,
+          "median": 80.5348,
+          "p10": 57.34642,
+          "p90": 94.6638,
+          "iqr": 19.102050000000006,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 3,
+          "entry_friction": 1,
+          "share_within_impact_period": 0.7291666666666666,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 41,
+          "mean": 73.43376829268293,
+          "median": 78.8865,
+          "p10": 53.9121,
+          "p90": 92.4737,
+          "iqr": 28.16279999999999,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 4,
+          "entry_friction": 1,
+          "share_within_impact_period": 0.9534883720930233,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 28,
+          "mean": 82.61236071428573,
+          "median": 83.7262,
+          "p10": 70.32054,
+          "p90": 93.46497,
+          "iqr": 9.456700000000012,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 2,
+          "entry_friction": 1,
+          "share_within_impact_period": 0.7777777777777778,
+          "meets_primary_support_threshold": false
+        }
+      }
+    },
+    {
+      "impact_load": 134.6432,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 1320,
+          "mean": 57.29668992424243,
+          "median": 59.316,
+          "p10": 22.983760000000004,
+          "p90": 90.11345,
+          "iqr": 39.3581,
+          "tail_le_5_count": 2,
+          "tail_ge_95_count": 44,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 1489,
+          "mean": 57.7834785090665,
+          "median": 58.9862,
+          "p10": 17.38666,
+          "p90": 92.99358000000001,
+          "iqr": 34.562200000000004,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 62,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 2383,
+          "mean": 55.442694922366755,
+          "median": 58.8912,
+          "p10": 24.522400000000005,
+          "p90": 82.98392000000003,
+          "iqr": 39.64244999999999,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 24,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 140.3844,
+      "entry_friction": 0,
+      "common_support_all_periods": false,
+      "periods": {
+        "period_1": {
+          "n": 25,
+          "mean": 56.96464400000001,
+          "median": 52.0833,
+          "p10": 35.36972,
+          "p90": 86.93544,
+          "iqr": 11.131799999999998,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 0.1282051282051282,
+          "meets_primary_support_threshold": false
+        },
+        "period_2": {
+          "n": 15,
+          "mean": 54.51442,
+          "median": 58.4556,
+          "p10": 14.86996,
+          "p90": 79.12031999999999,
+          "iqr": 28.499049999999997,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 1,
+          "entry_friction": 0,
+          "share_within_impact_period": 0.07614213197969544,
+          "meets_primary_support_threshold": false
+        },
+        "period_3": {
+          "n": 12,
+          "mean": 52.89569166666666,
+          "median": 57.73375,
+          "p10": 21.36423,
+          "p90": 72.34048,
+          "iqr": 30.537475,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 0,
+          "entry_friction": 0,
+          "share_within_impact_period": 0.06153846153846154,
+          "meets_primary_support_threshold": false
+        }
+      }
+    },
+    {
+      "impact_load": 140.3844,
+      "entry_friction": 1,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 170,
+          "mean": 74.55610352941176,
+          "median": 73.39845,
+          "p10": 50.779990000000005,
+          "p90": 96.43671,
+          "iqr": 28.281450000000007,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 23,
+          "entry_friction": 1,
+          "share_within_impact_period": 0.8717948717948718,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 182,
+          "mean": 72.96917692307693,
+          "median": 76.67405,
+          "p10": 49.25758,
+          "p90": 92.82939000000002,
+          "iqr": 22.288624999999996,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 17,
+          "entry_friction": 1,
+          "share_within_impact_period": 0.9238578680203046,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 183,
+          "mean": 81.68224098360656,
+          "median": 83.1033,
+          "p10": 66.66326,
+          "p90": 94.85896000000001,
+          "iqr": 16.704350000000005,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 18,
+          "entry_friction": 1,
+          "share_within_impact_period": 0.9384615384615385,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 150.0892,
+      "entry_friction": 0,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 42,
+          "mean": 64.7562261904762,
+          "median": 69.68844999999999,
+          "p10": 30.764180000000003,
+          "p90": 91.86393000000001,
+          "iqr": 36.8321,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 3,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 38,
+          "mean": 71.78358947368422,
+          "median": 76.36355,
+          "p10": 38.52246,
+          "p90": 96.3,
+          "iqr": 34.76155,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 5,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 40,
+          "mean": 73.7271325,
+          "median": 76.7578,
+          "p10": 52.86880000000001,
+          "p90": 92.59155,
+          "iqr": 25.11442500000001,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 2,
+          "entry_friction": 0,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        }
+      }
+    },
+    {
+      "impact_load": 154.0178,
+      "entry_friction": 1,
+      "common_support_all_periods": true,
+      "periods": {
+        "period_1": {
+          "n": 1498,
+          "mean": 79.7513064753004,
+          "median": 83.48595,
+          "p10": 54.4951,
+          "p90": 98.19749,
+          "iqr": 26.24714999999999,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 353,
+          "entry_friction": 1,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_2": {
+          "n": 2698,
+          "mean": 82.48380800593033,
+          "median": 86.25605,
+          "p10": 59.3369,
+          "p90": 98.22498,
+          "iqr": 17.5432,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 596,
+          "entry_friction": 1,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        },
+        "period_3": {
+          "n": 3108,
+          "mean": 87.37615016087516,
+          "median": 89.96395000000001,
+          "p10": 71.80503,
+          "p90": 98.34686,
+          "iqr": 14.079925000000003,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 878,
+          "entry_friction": 1,
+          "share_within_impact_period": 1.0,
+          "meets_primary_support_threshold": true
+        }
+      }
+    }
+  ],
+  "headline_exact_impact_profiles": [
+    {
+      "impact_load": 154.0178,
+      "periods": {
+        "period_1": {
+          "n": 1498,
+          "mean": 79.7513064753004,
+          "median": 83.48595,
+          "p10": 54.4951,
+          "p90": 98.19749,
+          "iqr": 26.24714999999999,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 353,
+          "entry_friction_counts": {
+            "0": 0,
+            "1": 1498
+          },
+          "entry_friction_share": {
+            "0": 0.0,
+            "1": 1.0
+          }
+        },
+        "period_2": {
+          "n": 2698,
+          "mean": 82.48380800593033,
+          "median": 86.25605,
+          "p10": 59.3369,
+          "p90": 98.22498,
+          "iqr": 17.5432,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 596,
+          "entry_friction_counts": {
+            "0": 0,
+            "1": 2698
+          },
+          "entry_friction_share": {
+            "0": 0.0,
+            "1": 1.0
+          }
+        },
+        "period_3": {
+          "n": 3108,
+          "mean": 87.37615016087516,
+          "median": 89.96395000000001,
+          "p10": 71.80503,
+          "p90": 98.34686,
+          "iqr": 14.079925000000003,
+          "tail_le_5_count": 0,
+          "tail_ge_95_count": 878,
+          "entry_friction_counts": {
+            "0": 0,
+            "1": 3108
+          },
+          "entry_friction_share": {
+            "0": 0.0,
+            "1": 1.0
+          }
+        }
+      },
+      "early_to_late_mean_change": 7.62484368557476,
+      "early_to_late_median_change": 6.478000000000009,
+      "early_to_late_p10_change": 17.30993,
+      "early_to_late_p90_change": 0.14937000000000467,
+      "early_to_late_iqr_change": -12.167224999999988
+    },
+    {
+      "impact_load": 85.973,
+      "periods": {
+        "period_1": {
+          "n": 1016,
+          "mean": 36.44760826771654,
+          "median": 34.60665,
+          "p10": 6.47415,
+          "p90": 70.54230000000001,
+          "iqr": 35.68555,
+          "tail_le_5_count": 84,
+          "tail_ge_95_count": 3,
+          "entry_friction_counts": {
+            "0": 1016,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_2": {
+          "n": 1072,
+          "mean": 27.811918003731346,
+          "median": 26.4333,
+          "p10": 3.98313,
+          "p90": 53.66101,
+          "iqr": 31.0152,
+          "tail_le_5_count": 156,
+          "tail_ge_95_count": 1,
+          "entry_friction_counts": {
+            "0": 1072,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        },
+        "period_3": {
+          "n": 1633,
+          "mean": 28.688304409063075,
+          "median": 20.011,
+          "p10": 6.2673,
+          "p90": 60.241,
+          "iqr": 37.1156,
+          "tail_le_5_count": 106,
+          "tail_ge_95_count": 0,
+          "entry_friction_counts": {
+            "0": 1633,
+            "1": 0
+          },
+          "entry_friction_share": {
+            "0": 1.0,
+            "1": 0.0
+          }
+        }
+      },
+      "early_to_late_mean_change": -7.759303858653464,
+      "early_to_late_median_change": -14.595650000000003,
+      "early_to_late_p10_change": -0.2068500000000002,
+      "early_to_late_p90_change": -10.301300000000012,
+      "early_to_late_iqr_change": 1.4300500000000014
+    }
+  ],
+  "overall_target_by_period": {
+    "period_1": {
+      "n": 13546,
+      "mean": 50.040602856931926,
+      "median": 50.032250000000005,
+      "p10": 9.9813,
+      "p90": 90.02635,
+      "iqr": 49.919200000000004,
+      "tail_le_5_count": 675,
+      "tail_ge_95_count": 685
+    },
+    "period_2": {
+      "n": 16736,
+      "mean": 50.03286360540154,
+      "median": 50.0128,
+      "p10": 10.0333,
+      "p90": 89.99775,
+      "iqr": 49.852675000000005,
+      "tail_le_5_count": 832,
+      "tail_ge_95_count": 847
+    },
+    "period_3": {
+      "n": 20326,
+      "mean": 50.02705937715242,
+      "median": 50.03845,
+      "p10": 10.038499999999999,
+      "p90": 90.01655,
+      "iqr": 49.9968,
+      "tail_le_5_count": 1020,
+      "tail_ge_95_count": 1028
+    }
+  },
+  "impact_only_fixed_distribution_standardized_mean": {
+    "weights": "pooled row shares across all three periods within impact-only common support; target-blind",
+    "common_support_mean_by_period": {
+      "period_1": 51.32008096397935,
+      "period_2": 49.186764264185776,
+      "period_3": 50.758899403715276
+    },
+    "fixed_impact_weights": [
+      {
+        "impact_load": 34.0593,
+        "weight": 0.002262489553820754
+      },
+      {
+        "impact_load": 42.2906,
+        "weight": 0.010354456696765251
+      },
+      {
+        "impact_load": 56.967,
+        "weight": 0.03611830170603942
+      },
+      {
+        "impact_load": 58.4951,
+        "weight": 0.008071584354171338
+      },
+      {
+        "impact_load": 61.5825,
+        "weight": 0.0034039257251177106
+      },
+      {
+        "impact_load": 64.7106,
+        "weight": 0.030207292961823038
+      },
+      {
+        "impact_load": 66.2896,
+        "weight": 0.009090723792829335
+      },
+      {
+        "impact_load": 72.7026,
+        "weight": 0.03430423350522818
+      },
+      {
+        "impact_load": 74.3295,
+        "weight": 0.06822119402376634
+      },
+      {
+        "impact_load": 75.9658,
+        "weight": 0.06069994496647031
+      },
+      {
+        "impact_load": 79.2658,
+        "weight": 0.002262489553820754
+      },
+      {
+        "impact_load": 82.6017,
+        "weight": 0.0071339760706059805
+      },
+      {
+        "impact_load": 85.973,
+        "weight": 0.07584435702492814
+      },
+      {
+        "impact_load": 89.379,
+        "weight": 0.002425551864006033
+      },
+      {
+        "impact_load": 92.8189,
+        "weight": 0.07203277552434724
+      },
+      {
+        "impact_load": 96.2922,
+        "weight": 0.013126515969915004
+      },
+      {
+        "impact_load": 98.0411,
+        "weight": 0.0054218218136605455
+      },
+      {
+        "impact_load": 101.5634,
+        "weight": 0.004443447952548868
+      },
+      {
+        "impact_load": 103.3366,
+        "weight": 0.008723833594912456
+      },
+      {
+        "impact_load": 105.1176,
+        "weight": 0.030676097103605714
+      },
+      {
+        "impact_load": 106.9066,
+        "weight": 0.004545361896414668
+      },
+      {
+        "impact_load": 108.7033,
+        "weight": 0.002507083019098673
+      },
+      {
+        "impact_load": 110.5078,
+        "weight": 0.1219706080185891
+      },
+      {
+        "impact_load": 115.9669,
+        "weight": 0.09202829131081715
+      },
+      {
+        "impact_load": 119.644,
+        "weight": 0.0028332076394692323
+      },
+      {
+        "impact_load": 121.4936,
+        "weight": 0.015817044087972118
+      },
+      {
+        "impact_load": 123.3505,
+        "weight": 0.0037708159230345896
+      },
+      {
+        "impact_load": 130.8506,
+        "weight": 0.0025886141741913128
+      },
+      {
+        "impact_load": 134.6432,
+        "weight": 0.10582743931024642
+      },
+      {
+        "impact_load": 140.3844,
+        "weight": 0.011964697009844887
+      },
+      {
+        "impact_load": 150.0892,
+        "weight": 0.0024459346527791934
+      },
+      {
+        "impact_load": 154.0178,
+        "weight": 0.14887588919916023
+      }
+    ],
+    "quantile_note": "No cell medians are averaged to create pooled quantiles; distribution quantiles are reported per exact stratum."
+  },
+  "correlations": {
+    "by_period": {
+      "period_1": {
+        "pooled": {
+          "n": 13546,
+          "pearson_r": 0.49939347584908866
+        },
+        "entry_friction_strata": {
+          "0": {
+            "n": 9691,
+            "pearson_r": 0.36631612981092043
+          },
+          "1": {
+            "n": 3855,
+            "pearson_r": 0.3855419644688658
+          }
+        }
+      },
+      "period_2": {
+        "pooled": {
+          "n": 16736,
+          "pearson_r": 0.6721779182928238
+        },
+        "entry_friction_strata": {
+          "0": {
+            "n": 11070,
+            "pearson_r": 0.5397037268081221
+          },
+          "1": {
+            "n": 5666,
+            "pearson_r": 0.49661215405816567
+          }
+        }
+      },
+      "period_3": {
+        "pooled": {
+          "n": 20326,
+          "pearson_r": 0.6963912925448407
+        },
+        "entry_friction_strata": {
+          "0": {
+            "n": 13945,
+            "pearson_r": 0.5385007470628698
+          },
+          "1": {
+            "n": 6381,
+            "pearson_r": 0.6251176719620004
+          }
+        }
+      }
+    },
+    "common_impact_ef_distribution_weighted": {
+      "period_1": {
+        "n_rows": 12969,
+        "effective_n": 12556.871394200483,
+        "pearson_r": 0.524395504868126,
+        "common_stratum_count": 33,
+        "support_rows": 12969,
+        "support_coverage_full_period": 0.9574043998228259
+      },
+      "period_2": {
+        "n_rows": 16015,
+        "effective_n": 15795.534428330833,
+        "pearson_r": 0.6617331072650131,
+        "common_stratum_count": 33,
+        "support_rows": 16015,
+        "support_coverage_full_period": 0.9569192160611855
+      },
+      "period_3": {
+        "n_rows": 19646,
+        "effective_n": 19314.967068009137,
+        "pearson_r": 0.6836577625005641,
+        "common_stratum_count": 33,
+        "support_rows": 19646,
+        "support_coverage_full_period": 0.9665453114237922
+      },
+      "weight_definition": "Each common exact impact_load x entry_friction cell receives its pooled share across all three periods; within each period, that cell share is divided equally over its rows. Weights use counts only, not threat_rank.",
+      "fixed_cell_weight_sum": 1.0,
+      "effective_n_by_period": {
+        "period_1": 12556.871394200483,
+        "period_2": 15795.534428330833,
+        "period_3": 19314.967068009137
+      },
+      "largest_fixed_cell_weights": [
+        {
+          "impact_load": 154.0178,
+          "entry_friction": 1,
+          "weight": 0.15019535266296524
+        },
+        {
+          "impact_load": 110.5078,
+          "entry_friction": 1,
+          "weight": 0.11982315443142093
+        },
+        {
+          "impact_load": 134.6432,
+          "entry_friction": 0,
+          "weight": 0.10676537117005963
+        },
+        {
+          "impact_load": 115.9669,
+          "entry_friction": 0,
+          "weight": 0.09284392350400987
+        },
+        {
+          "impact_load": 85.973,
+          "entry_friction": 0,
+          "weight": 0.07651655356775652
+        },
+        {
+          "impact_load": 74.3295,
+          "entry_friction": 0,
+          "weight": 0.06882582767838782
+        },
+        {
+          "impact_load": 92.8189,
+          "entry_friction": 0,
+          "weight": 0.06847624922887106
+        },
+        {
+          "impact_load": 75.9658,
+          "entry_friction": 0,
+          "weight": 0.061237918980053464
+        },
+        {
+          "impact_load": 56.967,
+          "entry_friction": 0,
+          "weight": 0.03643841250257043
+        },
+        {
+          "impact_load": 72.7026,
+          "entry_friction": 1,
+          "weight": 0.031523750771128935
+        }
+      ]
+    }
+  },
+  "mean_decomposition": {
+    "retained_rows": {
+      "period_1": 12969,
+      "period_2": 16015,
+      "period_3": 19646
+    },
+    "retained_coverage_full_period": {
+      "period_1": 0.9574043998228259,
+      "period_2": 0.9569192160611855,
+      "period_3": 0.9665453114237922
+    },
+    "common_support_mean_by_period": {
+      "period_1": 50.12449697740767,
+      "period_2": 50.275889253824545,
+      "period_3": 50.29204711900641
+    },
+    "symmetric_decomposition": {
+      "early_period": "period_1",
+      "late_period": "period_3",
+      "late_minus_early": 0.16755014159874548,
+      "composition_effect": 1.0503585575491787,
+      "within_stratum_effect": -0.8828084159504311,
+      "identity_residual": -2.1094237467877974e-15,
+      "definition": "Delta mean = sum((p_late-p_early)*(mu_early+mu_late)/2) + sum((mu_late-mu_early)*(p_early+p_late)/2), over fixed exact impact_load x entry_friction cells retained by >=30 rows in every block.",
+      "weight_denominator": "For each period, p(cell|period) is cell n divided by all rows in retained common-support cells in that period.",
+      "support_exclusion": "Rows outside the fixed common cells are excluded; support is selected only from covariate cell counts.",
+      "retained_rows": {
+        "period_1": 12969,
+        "period_2": 16015,
+        "period_3": 19646
+      },
+      "largest_positive_within_stratum_contributions": [
+        {
+          "impact_load": 154.0178,
+          "entry_friction": 1,
+          "early_mean": 79.7513064753004,
+          "late_mean": 87.37615016087516,
+          "late_minus_early_mean": 7.62484368557476,
+          "symmetric_within_stratum_contribution": 1.0434840658462987
+        },
+        {
+          "impact_load": 110.5078,
+          "entry_friction": 1,
+          "early_mean": 67.60434057031756,
+          "late_mean": 73.18412741863575,
+          "late_minus_early_mean": 5.579786848318193,
+          "symmetric_within_stratum_contribution": 0.6504548450327043
+        },
+        {
+          "impact_load": 121.4936,
+          "entry_friction": 0,
+          "early_mean": 44.650758389261746,
+          "late_mean": 53.80153293650794,
+          "late_minus_early_mean": 9.150774547246193,
+          "symmetric_within_stratum_contribution": 0.16382132446411254
+        },
+        {
+          "impact_load": 96.2922,
+          "entry_friction": 0,
+          "early_mean": 25.800412345679018,
+          "late_mean": 33.4116561752988,
+          "late_minus_early_mean": 7.611243829619784,
+          "symmetric_within_stratum_contribution": 0.09615841132245807
+        },
+        {
+          "impact_load": 140.3844,
+          "entry_friction": 1,
+          "early_mean": 74.55610352941176,
+          "late_mean": 81.68224098360656,
+          "late_minus_early_mean": 7.126137454194804,
+          "symmetric_within_stratum_contribution": 0.07989488355571596
+        }
+      ],
+      "largest_negative_within_stratum_contributions": [
+        {
+          "impact_load": 85.973,
+          "entry_friction": 0,
+          "early_mean": 36.44760826771654,
+          "late_mean": 28.688304409063075,
+          "late_minus_early_mean": -7.759303858653464,
+          "symmetric_within_stratum_contribution": -0.6264159894943833
+        },
+        {
+          "impact_load": 74.3295,
+          "entry_friction": 0,
+          "early_mean": 34.77140953608247,
+          "late_mean": 26.508002848297213,
+          "late_minus_early_mean": -8.26340668778526,
+          "symmetric_within_stratum_contribution": -0.5868672262047993
+        },
+        {
+          "impact_load": 115.9669,
+          "entry_friction": 0,
+          "early_mean": 50.277947266666665,
+          "late_mean": 45.914314545454545,
+          "late_minus_early_mean": -4.36363272121212,
+          "symmetric_within_stratum_contribution": -0.42337683716634444
+        },
+        {
+          "impact_load": 64.7106,
+          "entry_friction": 0,
+          "early_mean": 30.513941221374044,
+          "late_mean": 16.351374967405476,
+          "late_minus_early_mean": -14.162566253968567,
+          "symmetric_within_stratum_contribution": -0.41951678461637865
+        },
+        {
+          "impact_load": 56.967,
+          "entry_friction": 0,
+          "early_mean": 28.599773186813184,
+          "late_mean": 21.213871952817826,
+          "late_minus_early_mean": -7.385901233995359,
+          "symmetric_within_stratum_contribution": -0.2729869106025569
+        }
+      ]
+    }
+  },
+  "entry_friction_common_support_positivity": {
+    "primary_threshold_per_cell_per_period": 30,
+    "common_impact_levels_with_both_friction_levels_supported_each_period": 3,
+    "common_impact_level_count": 32,
+    "impact_level_diagnostics": [
+      {
+        "impact_load": 34.0593,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 32,
+            "1": 0
+          },
+          "period_2": {
+            "0": 40,
+            "1": 0
+          },
+          "period_3": {
+            "0": 39,
+            "1": 0
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 42.2906,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 168,
+            "1": 0
+          },
+          "period_2": {
+            "0": 192,
+            "1": 0
+          },
+          "period_3": {
+            "0": 148,
+            "1": 0
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 56.967,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 455,
+            "1": 0
+          },
+          "period_2": {
+            "0": 554,
+            "1": 0
+          },
+          "period_3": {
+            "0": 763,
+            "1": 0
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 58.4951,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 111,
+            "1": 0
+          },
+          "period_2": {
+            "0": 102,
+            "1": 0
+          },
+          "period_3": {
+            "0": 183,
+            "1": 0
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 61.5825,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 44,
+            "1": 0
+          },
+          "period_2": {
+            "0": 62,
+            "1": 0
+          },
+          "period_3": {
+            "0": 61,
+            "1": 0
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 64.7106,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 262,
+            "1": 0
+          },
+          "period_2": {
+            "0": 453,
+            "1": 0
+          },
+          "period_3": {
+            "0": 767,
+            "1": 0
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 66.2896,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 175,
+            "1": 0
+          },
+          "period_2": {
+            "0": 112,
+            "1": 0
+          },
+          "period_3": {
+            "0": 159,
+            "1": 0
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 72.7026,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 50,
+            "1": 446
+          },
+          "period_2": {
+            "0": 41,
+            "1": 473
+          },
+          "period_3": {
+            "0": 59,
+            "1": 614
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": true
+      },
+      {
+        "impact_load": 74.3295,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 776,
+            "1": 0
+          },
+          "period_2": {
+            "0": 956,
+            "1": 0
+          },
+          "period_3": {
+            "0": 1615,
+            "1": 0
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 75.9658,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 909,
+            "1": 0
+          },
+          "period_2": {
+            "0": 958,
+            "1": 0
+          },
+          "period_3": {
+            "0": 1111,
+            "1": 0
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 79.2658,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 30,
+            "1": 0
+          },
+          "period_2": {
+            "0": 36,
+            "1": 0
+          },
+          "period_3": {
+            "0": 45,
+            "1": 0
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 82.6017,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 125,
+            "1": 0
+          },
+          "period_2": {
+            "0": 107,
+            "1": 0
+          },
+          "period_3": {
+            "0": 118,
+            "1": 0
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 85.973,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 1016,
+            "1": 0
+          },
+          "period_2": {
+            "0": 1072,
+            "1": 0
+          },
+          "period_3": {
+            "0": 1633,
+            "1": 0
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 89.379,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 32,
+            "1": 0
+          },
+          "period_2": {
+            "0": 30,
+            "1": 0
+          },
+          "period_3": {
+            "0": 57,
+            "1": 0
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 92.8189,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 937,
+            "1": 54
+          },
+          "period_2": {
+            "0": 1215,
+            "1": 62
+          },
+          "period_3": {
+            "0": 1178,
+            "1": 88
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": true
+      },
+      {
+        "impact_load": 96.2922,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 162,
+            "1": 0
+          },
+          "period_2": {
+            "0": 231,
+            "1": 0
+          },
+          "period_3": {
+            "0": 251,
+            "1": 0
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 98.0411,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 90,
+            "1": 0
+          },
+          "period_2": {
+            "0": 81,
+            "1": 0
+          },
+          "period_3": {
+            "0": 95,
+            "1": 0
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 101.5634,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 61,
+            "1": 0
+          },
+          "period_2": {
+            "0": 88,
+            "1": 0
+          },
+          "period_3": {
+            "0": 69,
+            "1": 0
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 103.3366,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 151,
+            "1": 0
+          },
+          "period_2": {
+            "0": 130,
+            "1": 0
+          },
+          "period_3": {
+            "0": 147,
+            "1": 0
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 105.1176,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 309,
+            "1": 2
+          },
+          "period_2": {
+            "0": 666,
+            "1": 3
+          },
+          "period_3": {
+            "0": 517,
+            "1": 8
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 106.9066,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 66,
+            "1": 27
+          },
+          "period_2": {
+            "0": 53,
+            "1": 11
+          },
+          "period_3": {
+            "0": 50,
+            "1": 16
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 108.7033,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 49,
+            "1": 0
+          },
+          "period_2": {
+            "0": 40,
+            "1": 0
+          },
+          "period_3": {
+            "0": 34,
+            "1": 0
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 110.5078,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 51,
+            "1": 1543
+          },
+          "period_2": {
+            "0": 66,
+            "1": 2041
+          },
+          "period_3": {
+            "0": 40,
+            "1": 2243
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": true
+      },
+      {
+        "impact_load": 115.9669,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 1500,
+            "1": 0
+          },
+          "period_2": {
+            "0": 1475,
+            "1": 0
+          },
+          "period_3": {
+            "0": 1540,
+            "1": 0
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 119.644,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 37,
+            "1": 0
+          },
+          "period_2": {
+            "0": 46,
+            "1": 0
+          },
+          "period_3": {
+            "0": 56,
+            "1": 0
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 121.4936,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 298,
+            "1": 0
+          },
+          "period_2": {
+            "0": 226,
+            "1": 0
+          },
+          "period_3": {
+            "0": 252,
+            "1": 0
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 123.3505,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 20,
+            "1": 19
+          },
+          "period_2": {
+            "0": 41,
+            "1": 29
+          },
+          "period_3": {
+            "0": 24,
+            "1": 52
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 130.8506,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 13,
+            "1": 35
+          },
+          "period_2": {
+            "0": 2,
+            "1": 41
+          },
+          "period_3": {
+            "0": 8,
+            "1": 28
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 134.6432,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 1320,
+            "1": 0
+          },
+          "period_2": {
+            "0": 1489,
+            "1": 0
+          },
+          "period_3": {
+            "0": 2383,
+            "1": 0
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 140.3844,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 25,
+            "1": 170
+          },
+          "period_2": {
+            "0": 15,
+            "1": 182
+          },
+          "period_3": {
+            "0": 12,
+            "1": 183
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 150.0892,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 42,
+            "1": 0
+          },
+          "period_2": {
+            "0": 38,
+            "1": 0
+          },
+          "period_3": {
+            "0": 40,
+            "1": 0
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      },
+      {
+        "impact_load": 154.0178,
+        "friction_counts_by_period": {
+          "period_1": {
+            "0": 0,
+            "1": 1498
+          },
+          "period_2": {
+            "0": 0,
+            "1": 2698
+          },
+          "period_3": {
+            "0": 0,
+            "1": 3108
+          }
+        },
+        "both_friction_levels_meet_threshold_each_period": false
+      }
+    ]
+  },
+  "reversal_pair_110_5078_vs_134_6432": [
+    {
+      "period": "period_1",
+      "impact_pair": [
+        110.5078,
+        134.6432
+      ],
+      "by_friction": {
+        "0": {
+          "cells": {
+            "110.508": {
+              "n": 51,
+              "mean": 56.17464117647059,
+              "median": 63.6643,
+              "p10": 16.736,
+              "p90": 86.9323,
+              "iqr": 49.8763,
+              "tail_le_5_count": 0,
+              "tail_ge_95_count": 1
+            },
+            "134.643": {
+              "n": 1320,
+              "mean": 57.29668992424243,
+              "median": 59.316,
+              "p10": 22.983760000000004,
+              "p90": 90.11345,
+              "iqr": 39.3581,
+              "tail_le_5_count": 2,
+              "tail_ge_95_count": 44
+            }
+          },
+          "higher_impact_mean_minus_lower_impact_mean": 1.1220487477718422,
+          "higher_impact_median_minus_lower_impact_median": -4.348299999999995,
+          "both_cells_meet_primary_threshold": true
+        },
+        "1": {
+          "cells": {
+            "110.508": {
+              "n": 1543,
+              "mean": 67.60434057031756,
+              "median": 67.1986,
+              "p10": 40.55386000000001,
+              "p90": 95.0316,
+              "iqr": 32.65709999999999,
+              "tail_le_5_count": 0,
+              "tail_ge_95_count": 159
+            },
+            "134.643": {
+              "n": 0,
+              "mean": null,
+              "median": null,
+              "p10": null,
+              "p90": null,
+              "iqr": null,
+              "tail_le_5_count": 0,
+              "tail_ge_95_count": 0
+            }
+          },
+          "higher_impact_mean_minus_lower_impact_mean": null,
+          "higher_impact_median_minus_lower_impact_median": null,
+          "both_cells_meet_primary_threshold": false
+        }
+      }
+    },
+    {
+      "period": "period_2",
+      "impact_pair": [
+        110.5078,
+        134.6432
+      ],
+      "by_friction": {
+        "0": {
+          "cells": {
+            "110.508": {
+              "n": 66,
+              "mean": 50.3180893939394,
+              "median": 51.13005,
+              "p10": 11.300350000000002,
+              "p90": 85.131,
+              "iqr": 48.392325,
+              "tail_le_5_count": 1,
+              "tail_ge_95_count": 1
+            },
+            "134.643": {
+              "n": 1489,
+              "mean": 57.7834785090665,
+              "median": 58.9862,
+              "p10": 17.38666,
+              "p90": 92.99358000000001,
+              "iqr": 34.562200000000004,
+              "tail_le_5_count": 0,
+              "tail_ge_95_count": 62
+            }
+          },
+          "higher_impact_mean_minus_lower_impact_mean": 7.4653891151270955,
+          "higher_impact_median_minus_lower_impact_median": 7.8561499999999995,
+          "both_cells_meet_primary_threshold": true
+        },
+        "1": {
+          "cells": {
+            "110.508": {
+              "n": 2041,
+              "mean": 68.21873037726604,
+              "median": 68.9853,
+              "p10": 41.9099,
+              "p90": 91.2478,
+              "iqr": 23.575599999999994,
+              "tail_le_5_count": 0,
+              "tail_ge_95_count": 96
+            },
+            "134.643": {
+              "n": 0,
+              "mean": null,
+              "median": null,
+              "p10": null,
+              "p90": null,
+              "iqr": null,
+              "tail_le_5_count": 0,
+              "tail_ge_95_count": 0
+            }
+          },
+          "higher_impact_mean_minus_lower_impact_mean": null,
+          "higher_impact_median_minus_lower_impact_median": null,
+          "both_cells_meet_primary_threshold": false
+        }
+      }
+    },
+    {
+      "period": "period_3",
+      "impact_pair": [
+        110.5078,
+        134.6432
+      ],
+      "by_friction": {
+        "0": {
+          "cells": {
+            "110.508": {
+              "n": 40,
+              "mean": 54.149435,
+              "median": 59.26925,
+              "p10": 18.452540000000003,
+              "p90": 88.86727,
+              "iqr": 40.850224999999995,
+              "tail_le_5_count": 0,
+              "tail_ge_95_count": 1
+            },
+            "134.643": {
+              "n": 2383,
+              "mean": 55.442694922366755,
+              "median": 58.8912,
+              "p10": 24.522400000000005,
+              "p90": 82.98392000000003,
+              "iqr": 39.64244999999999,
+              "tail_le_5_count": 0,
+              "tail_ge_95_count": 24
+            }
+          },
+          "higher_impact_mean_minus_lower_impact_mean": 1.293259922366758,
+          "higher_impact_median_minus_lower_impact_median": -0.3780500000000018,
+          "both_cells_meet_primary_threshold": true
+        },
+        "1": {
+          "cells": {
+            "110.508": {
+              "n": 2243,
+              "mean": 73.18412741863575,
+              "median": 74.6039,
+              "p10": 54.4949,
+              "p90": 89.73608,
+              "iqr": 19.816349999999993,
+              "tail_le_5_count": 0,
+              "tail_ge_95_count": 74
+            },
+            "134.643": {
+              "n": 0,
+              "mean": null,
+              "median": null,
+              "p10": null,
+              "p90": null,
+              "iqr": null,
+              "tail_le_5_count": 0,
+              "tail_ge_95_count": 0
+            }
+          },
+          "higher_impact_mean_minus_lower_impact_mean": null,
+          "higher_impact_median_minus_lower_impact_median": null,
+          "both_cells_meet_primary_threshold": false
+        }
+      }
+    }
+  ],
+  "metadata_missingness_by_period": {
+    "signal_stream": {
+      "period_1": {
+        "missing_rows": 1009,
+        "rows": 13546,
+        "missing_share": 0.07448693341207736
+      },
+      "period_2": {
+        "missing_rows": 1072,
+        "rows": 16736,
+        "missing_share": 0.06405353728489484
+      },
+      "period_3": {
+        "missing_rows": 1323,
+        "rows": 20326,
+        "missing_share": 0.06508904850929843
+      }
+    },
+    "org_code": {
+      "period_1": {
+        "missing_rows": 988,
+        "rows": 13546,
+        "missing_share": 0.07293666026871401
+      },
+      "period_2": {
+        "missing_rows": 1181,
+        "rows": 16736,
+        "missing_share": 0.07056644359464627
+      },
+      "period_3": {
+        "missing_rows": 517,
+        "rows": 20326,
+        "missing_share": 0.02543540293220506
+      }
+    },
+    "module_code": {
+      "period_1": {
+        "missing_rows": 1366,
+        "rows": 13546,
+        "missing_share": 0.10084157684925439
+      },
+      "period_2": {
+        "missing_rows": 1671,
+        "rows": 16736,
+        "missing_share": 0.09984464627151052
+      },
+      "period_3": {
+        "missing_rows": 1007,
+        "rows": 20326,
+        "missing_share": 0.049542457935648924
+      }
+    }
+  },
+  "interpretation_limits": [
+    "These are observed associations and descriptive composition summaries; they do not identify causal effects.",
+    "The three blocks are chronological bins of sorted unique cycle_code values, not tested change points.",
+    "Support exclusions can alter the population represented; coverage is reported alongside all common-support summaries.",
+    "The target distribution is summarized within exact strata; cell medians are not averaged as pooled quantiles.",
+    "No TP2 model errors, drift, or break claims are assessed by this analysis."
+  ],
+  "figures": [
+    "composition_same_impact_distributions.png",
+    "composition_entry_friction_by_impact.png",
+    "composition_mean_decomposition.png"
+  ]
+}

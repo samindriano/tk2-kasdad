@@ -1,5 +1,7 @@
 # Regression TP2 — audit, perbandingan TP1, dan discovery Samuel
 
+> Riwayat discovery sebelum pemilihan pertanyaan. Pengguna sudah memilih pertanyaan utama antarcycle; hasil lanjutan berada di `SAMUEL_FORMAL_EDA.md` dan notebook03. Kandidat di bawah dipertahankan sebagai riwayat.
+
 30 Oktober 2026 · **DISCOVERY: pertanyaan EDA belum dikunci.** Analisis hanya deskriptif pada train berlabel; test untuk audit input. Tidak ada training, tuning, prediksi TP2, atau submission.
 
 ## Kesimpulan yang didukung data
