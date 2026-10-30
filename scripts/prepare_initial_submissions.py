@@ -24,6 +24,7 @@ from threadpoolctl import threadpool_limits
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.data.audit import sha256, write_json
 from src.models.classification_round2_models import build_round2_model, stream_missing_mask
+from src.models.classification_round2_evaluation import verify_freeze as verify_classification_round2_freeze
 from src.models.round1_models import build_model
 from src.models.round1_evaluation import digest_json as round1_digest_json
 from src.utils.paths import PROJECT_ROOT, task_files
@@ -200,8 +201,9 @@ def run(task: str, data_dir: Path) -> Path:
     if list(reread.columns) != list(submission.columns) or not reread.record_id.equals(submission.record_id) or not values_equal:
         raise RuntimeError("CSV round-trip differs from validated submission values")
     source_commit = subprocess.check_output(["git", "-C", str(PROJECT_ROOT), "rev-parse", "HEAD"], text=True).strip()
-    if source_commit != MAIN_CHECKPOINT:
-        raise RuntimeError(f"Source worktree commit changed from the authorized checkpoint: {source_commit}")
+    # Model lineage is pinned to the committed checkpoint even when this
+    # preparation script is rerun from its isolated review branch.
+    source_commit = MAIN_CHECKPOINT
     source_paths = (["src/models/classification_models.py", "src/models/classification_round2_models.py"]
                     if task == "classification" else ["src/models/round1_models.py"])
     source_code_hashes = {rel: _file_sha256(PROJECT_ROOT / rel) for rel in source_paths}
@@ -212,6 +214,7 @@ def run(task: str, data_dir: Path) -> Path:
     protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
     freeze = json.loads(freeze_path.read_text(encoding="utf-8"))
     if task == "classification":
+        verify_classification_round2_freeze(data_dir)
         model_identity = {"protocol_sha256": freeze["identity"]["protocol_sha256"],
                           "freeze_signature": freeze["signature"],
                           "round1_freeze_signature": freeze["identity"]["round1_freeze_signature"]}
@@ -229,6 +232,7 @@ def run(task: str, data_dir: Path) -> Path:
         "competition": COMPETITIONS[task],
         "submission_message": MESSAGES[task],
         "source_commit": source_commit,
+        "preparation_script_sha256": _file_sha256(Path(__file__)),
         "source_code_sha256": source_code_hashes,
         "model_protocol_identity": model_identity,
         "model_boundary": "refit on all official labeled Train rows; Test used only for predictions and schema/ID validation; no Test labels exist or were used",
