@@ -1,0 +1,1192 @@
+{
+  "stage": "shift_diagnostics",
+  "generated_at_utc": "2026-10-30T15:24:42.649695+00:00",
+  "status": "FEATURE_ONLY_DIAGNOSTIC_NO_MODEL_FIT_NO_TEST_LABEL",
+  "freeze_signature": "89cf27f528270d505c07f39f3a91b3090ed4c8d327d9cff9f64148339ce043c1",
+  "protocol": {
+    "purpose": "Feature-only supplied Test shift and Train support diagnostics; not model selection",
+    "train_test_columns": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code",
+      "signal_stream"
+    ],
+    "target_access": {
+      "train_target_loaded": false,
+      "test_target_loaded": false,
+      "test_target_predictions": false,
+      "test_target_based_selection": false
+    },
+    "scope_zero_parser": "Use frozen Round1 numeric/mixed-count parsers; numeric zero remains distinct from missing and parse failure",
+    "feature_only_relationships": {
+      "correlations": "pairwise Pearson and Spearman among impact_load, entry_friction, scope_pressure, and parsed scope counts",
+      "impact_bins": "ten rank-based impact_load bins; feature-only summaries of scope fields and entry_friction support"
+    },
+    "round2_control_comparison": "Read saved results.json only; pair R1_D with A_NO_SCOPE_SPREAD by matching validation position digest; no predictions or refits",
+    "test_batch": "Report supplied rows by cycle only; do not imply real-world source-cycle completeness",
+    "source_authority": "Local course-material audit plus source PDF pages 16-17; no target-generation formula or zero semantics inferred"
+  },
+  "inputs": {
+    "train_path": "official regression Train.csv",
+    "train_sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+    "train_rows": 50608,
+    "test_path": "official regression Test.csv",
+    "test_sha256": "4e6c381d582ed24f92d17f620f4f0ad25e2e0def29eb57a91a5482867f6afe3c",
+    "test_rows": 29421,
+    "loaded_columns": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code",
+      "signal_stream"
+    ],
+    "train_target_column_loaded": false,
+    "test_target_column_loaded": false,
+    "test_predictions_created": false
+  },
+  "feature_summary": {
+    "train": {
+      "impact_load": {
+        "n_valid": 50608,
+        "n_missing": 0,
+        "missing_rate": 0.0,
+        "min": 22.6469,
+        "q01": 42.2906,
+        "median": 110.5078,
+        "q99": 154.0178,
+        "max": 157.9725,
+        "n_zero": 0,
+        "n_negative": 0,
+        "n_parse_invalid": 0
+      },
+      "entry_friction": {
+        "n_valid": 50608,
+        "n_missing": 0,
+        "missing_rate": 0.0,
+        "min": 0.0,
+        "q01": 0.0,
+        "median": 0.0,
+        "q99": 1.0,
+        "max": 1.0,
+        "n_zero": 34706,
+        "n_negative": 0,
+        "n_parse_invalid": 0
+      },
+      "cycle_code": {
+        "n_valid": 50608,
+        "n_missing": 0,
+        "missing_rate": 0.0,
+        "min": 47.0,
+        "q01": 47.0,
+        "median": 65.0,
+        "q99": 79.0,
+        "max": 79.0,
+        "n_zero": 0,
+        "n_negative": 0,
+        "n_parse_invalid": 0
+      },
+      "scope_pressure": {
+        "n_valid": 50608,
+        "n_missing": 0,
+        "missing_rate": 0.0,
+        "min": 68.4148,
+        "q01": 68.4505,
+        "median": 70.0833,
+        "q99": 525.9832100000001,
+        "max": 756.329,
+        "n_zero": 0,
+        "n_negative": 0,
+        "n_parse_invalid": 0
+      },
+      "text_load": {
+        "n_valid": 50608,
+        "n_missing": 0,
+        "missing_rate": 0.0,
+        "min": 16.3429,
+        "q01": 19.930535,
+        "median": 31.3103,
+        "q99": 59.929202000000004,
+        "max": 98.065,
+        "n_zero": 0,
+        "n_negative": 0,
+        "n_parse_invalid": 0
+      },
+      "scope_trace": {
+        "n_valid": 46376,
+        "n_missing": 4232,
+        "missing_rate": 0.08362314258615239,
+        "min": 1.0,
+        "q01": 1.0,
+        "median": 1.0,
+        "q99": 190.0,
+        "max": 1914.0,
+        "n_zero": 0,
+        "n_negative": 0,
+        "n_parse_invalid": 0
+      },
+      "org_spread": {
+        "n_valid": 46250,
+        "n_missing": 4358,
+        "missing_rate": 0.08611286753082517,
+        "min": 1.0,
+        "q01": 1.0,
+        "median": 1.0,
+        "q99": 4.0,
+        "max": 42.0,
+        "n_zero": 0,
+        "n_negative": 0,
+        "n_parse_invalid": 0
+      },
+      "module_spread": {
+        "n_valid": 46449,
+        "n_missing": 4159,
+        "missing_rate": 0.08218068289598482,
+        "min": 1.0,
+        "q01": 1.0,
+        "median": 1.0,
+        "q99": 122.5199999999968,
+        "max": 1914.0,
+        "n_zero": 0,
+        "n_negative": 0,
+        "n_parse_invalid": 0
+      },
+      "telemetry_flag": {
+        "n_valid": 44905,
+        "n_missing": 5703,
+        "missing_rate": 0.11268969332911792,
+        "min": 0.0,
+        "q01": 0.0,
+        "median": 0.0,
+        "q99": 1.0,
+        "max": 1.0,
+        "n_zero": 33811,
+        "n_negative": 0,
+        "n_parse_invalid": 0,
+        "n_unknown_spelling": 0,
+        "unknown_rate": 0.0
+      },
+      "signal_stream": {
+        "n_missing_or_blank": 3404,
+        "missing_or_blank_rate": 0.06726209294973126
+      },
+      "categorical": {
+        "org_code": {
+          "n_missing": 2686,
+          "missing_rate": 0.05307461270945305,
+          "n_nonmissing": 47922,
+          "n_unknown_vs_train": null,
+          "unknown_rate_of_nonmissing": null
+        },
+        "module_code": {
+          "n_missing": 4044,
+          "missing_rate": 0.07990831489092634,
+          "n_nonmissing": 46564,
+          "n_unknown_vs_train": null,
+          "unknown_rate_of_nonmissing": null
+        },
+        "pattern_code": {
+          "n_missing": 8183,
+          "missing_rate": 0.1616938033512488,
+          "n_nonmissing": 42425,
+          "n_unknown_vs_train": null,
+          "unknown_rate_of_nonmissing": null
+        }
+      }
+    },
+    "test": {
+      "impact_load": {
+        "n_valid": 29421,
+        "n_missing": 0,
+        "missing_rate": 0.0,
+        "min": 4.3402,
+        "q01": 42.2906,
+        "median": 92.8189,
+        "q99": 154.0178,
+        "max": 157.9725,
+        "n_zero": 0,
+        "n_negative": 0,
+        "n_parse_invalid": 0
+      },
+      "entry_friction": {
+        "n_valid": 29421,
+        "n_missing": 0,
+        "missing_rate": 0.0,
+        "min": 0.0,
+        "q01": 0.0,
+        "median": 0.0,
+        "q99": 1.0,
+        "max": 1.0,
+        "n_zero": 21981,
+        "n_negative": 0,
+        "n_parse_invalid": 0
+      },
+      "cycle_code": {
+        "n_valid": 29421,
+        "n_missing": 0,
+        "missing_rate": 0.0,
+        "min": 80.0,
+        "q01": 80.0,
+        "median": 86.0,
+        "q99": 91.0,
+        "max": 91.0,
+        "n_zero": 0,
+        "n_negative": 0,
+        "n_parse_invalid": 0
+      },
+      "scope_pressure": {
+        "n_valid": 29421,
+        "n_missing": 0,
+        "missing_rate": 0.0,
+        "min": -0.8996,
+        "q01": -0.80652,
+        "median": 69.5406,
+        "q99": 463.15691999999984,
+        "max": 779.5182,
+        "n_zero": 0,
+        "n_negative": 3194,
+        "n_parse_invalid": 0
+      },
+      "text_load": {
+        "n_valid": 29421,
+        "n_missing": 0,
+        "missing_rate": 0.0,
+        "min": 16.9557,
+        "q01": 21.08096,
+        "median": 33.8464,
+        "q99": 89.22855999999993,
+        "max": 99.5935,
+        "n_zero": 0,
+        "n_negative": 0,
+        "n_parse_invalid": 0
+      },
+      "scope_trace": {
+        "n_valid": 26987,
+        "n_missing": 2434,
+        "missing_rate": 0.08273002277284933,
+        "min": 0.0,
+        "q01": 0.0,
+        "median": 1.0,
+        "q99": 102.0,
+        "max": 2434.0,
+        "n_zero": 5771,
+        "n_negative": 0,
+        "n_parse_invalid": 0
+      },
+      "org_spread": {
+        "n_valid": 26953,
+        "n_missing": 2468,
+        "missing_rate": 0.08388565990279052,
+        "min": 0.0,
+        "q01": 0.0,
+        "median": 1.0,
+        "q99": 3.0,
+        "max": 13.0,
+        "n_zero": 5741,
+        "n_negative": 0,
+        "n_parse_invalid": 0
+      },
+      "module_spread": {
+        "n_valid": 26920,
+        "n_missing": 2501,
+        "missing_rate": 0.08500730770538051,
+        "min": 0.0,
+        "q01": 0.0,
+        "median": 1.0,
+        "q99": 40.0,
+        "max": 776.0,
+        "n_zero": 5752,
+        "n_negative": 0,
+        "n_parse_invalid": 0
+      },
+      "telemetry_flag": {
+        "n_valid": 26151,
+        "n_missing": 3270,
+        "missing_rate": 0.11114510043846232,
+        "min": 0.0,
+        "q01": 0.0,
+        "median": 0.0,
+        "q99": 1.0,
+        "max": 1.0,
+        "n_zero": 19318,
+        "n_negative": 0,
+        "n_parse_invalid": 0,
+        "n_unknown_spelling": 0,
+        "unknown_rate": 0.0
+      },
+      "signal_stream": {
+        "n_missing_or_blank": 1062,
+        "missing_or_blank_rate": 0.036096665646986846
+      },
+      "categorical": {
+        "org_code": {
+          "n_missing": 6846,
+          "missing_rate": 0.23269093504639543,
+          "n_nonmissing": 22575,
+          "n_unknown_vs_train": 4732,
+          "unknown_rate_of_nonmissing": 0.2096124031007752
+        },
+        "module_code": {
+          "n_missing": 7397,
+          "missing_rate": 0.2514190544169131,
+          "n_nonmissing": 22024,
+          "n_unknown_vs_train": 8099,
+          "unknown_rate_of_nonmissing": 0.3677351979658554
+        },
+        "pattern_code": {
+          "n_missing": 2532,
+          "missing_rate": 0.08606097685326808,
+          "n_nonmissing": 26889,
+          "n_unknown_vs_train": 189,
+          "unknown_rate_of_nonmissing": 0.0070288965748075425
+        }
+      }
+    }
+  },
+  "zero_support": {
+    "count_fields": [
+      "scope_trace",
+      "org_spread",
+      "module_spread"
+    ],
+    "train": {
+      "rows": 50608,
+      "any_count_zero_n": 0,
+      "all_three_count_zero_n": 0,
+      "any_count_missing_n": 11749,
+      "joint_any_zero_and_pressure_below_train_min_n": 0,
+      "scope_pressure_train_min": 68.4148,
+      "scope_pressure_train_max": 756.329
+    },
+    "test": {
+      "rows": 29421,
+      "any_count_zero_n": 6278,
+      "any_count_zero_rate": 0.21338499711090717,
+      "all_three_count_zero_n": 4835,
+      "all_three_count_zero_rate": 0.16433839774310866,
+      "any_count_missing_n": 6808,
+      "joint_any_zero_and_pressure_below_train_min_n": 6278,
+      "pressure_below_train_min_n": 6283,
+      "pressure_above_train_max_n": 1,
+      "scope_pressure_min": -0.8996,
+      "scope_pressure_max": 779.5182,
+      "cohort_cause": "UNKNOWN: genuine low scope, missing-coded values, and source/representation shift cannot be distinguished from supplied data",
+      "target_behavior": "UNKNOWN: no labeled zero-count Train analogue exists"
+    },
+    "test_by_supplied_cycle": [
+      {
+        "cycle_code": 80,
+        "provided_rows": 1060,
+        "any_count_zero_n": 0,
+        "all_three_count_zero_n": 0,
+        "any_count_missing_n": 245,
+        "scope_pressure_below_train_min_n": 0
+      },
+      {
+        "cycle_code": 81,
+        "provided_rows": 1618,
+        "any_count_zero_n": 15,
+        "all_three_count_zero_n": 10,
+        "any_count_missing_n": 348,
+        "scope_pressure_below_train_min_n": 15
+      },
+      {
+        "cycle_code": 82,
+        "provided_rows": 2474,
+        "any_count_zero_n": 446,
+        "all_three_count_zero_n": 340,
+        "any_count_missing_n": 562,
+        "scope_pressure_below_train_min_n": 446
+      },
+      {
+        "cycle_code": 83,
+        "provided_rows": 2823,
+        "any_count_zero_n": 796,
+        "all_three_count_zero_n": 614,
+        "any_count_missing_n": 661,
+        "scope_pressure_below_train_min_n": 797
+      },
+      {
+        "cycle_code": 84,
+        "provided_rows": 2763,
+        "any_count_zero_n": 746,
+        "all_three_count_zero_n": 581,
+        "any_count_missing_n": 640,
+        "scope_pressure_below_train_min_n": 746
+      },
+      {
+        "cycle_code": 85,
+        "provided_rows": 2338,
+        "any_count_zero_n": 469,
+        "all_three_count_zero_n": 352,
+        "any_count_missing_n": 563,
+        "scope_pressure_below_train_min_n": 469
+      },
+      {
+        "cycle_code": 86,
+        "provided_rows": 2616,
+        "any_count_zero_n": 455,
+        "all_three_count_zero_n": 336,
+        "any_count_missing_n": 597,
+        "scope_pressure_below_train_min_n": 456
+      },
+      {
+        "cycle_code": 87,
+        "provided_rows": 2472,
+        "any_count_zero_n": 289,
+        "all_three_count_zero_n": 221,
+        "any_count_missing_n": 593,
+        "scope_pressure_below_train_min_n": 289
+      },
+      {
+        "cycle_code": 88,
+        "provided_rows": 2242,
+        "any_count_zero_n": 241,
+        "all_three_count_zero_n": 184,
+        "any_count_missing_n": 519,
+        "scope_pressure_below_train_min_n": 241
+      },
+      {
+        "cycle_code": 89,
+        "provided_rows": 3051,
+        "any_count_zero_n": 682,
+        "all_three_count_zero_n": 518,
+        "any_count_missing_n": 705,
+        "scope_pressure_below_train_min_n": 682
+      },
+      {
+        "cycle_code": 90,
+        "provided_rows": 3317,
+        "any_count_zero_n": 1068,
+        "all_three_count_zero_n": 844,
+        "any_count_missing_n": 771,
+        "scope_pressure_below_train_min_n": 1071
+      },
+      {
+        "cycle_code": 91,
+        "provided_rows": 2647,
+        "any_count_zero_n": 1071,
+        "all_three_count_zero_n": 835,
+        "any_count_missing_n": 604,
+        "scope_pressure_below_train_min_n": 1071
+      }
+    ],
+    "test_cycle_completeness": "Counts describe rows in the provided Test file per cycle; completeness of the real-world disclosure/source universe is UNKNOWN."
+  },
+  "train_feature_relationships": {
+    "description": "Train-only feature relationships; target was not loaded",
+    "pairwise_correlations": {
+      "impact_load__entry_friction": {
+        "n": 50608,
+        "pearson": 0.5076774554571223,
+        "spearman": 0.4647141007422142
+      },
+      "impact_load__scope_pressure": {
+        "n": 50608,
+        "pearson": -0.010175399691523652,
+        "spearman": 0.02492966329885558
+      },
+      "impact_load__scope_trace": {
+        "n": 46376,
+        "pearson": -0.0017613735358953193,
+        "spearman": 0.029030909174694745
+      },
+      "impact_load__org_spread": {
+        "n": 46250,
+        "pearson": -0.02818398586764836,
+        "spearman": -0.022672382422923347
+      },
+      "impact_load__module_spread": {
+        "n": 46449,
+        "pearson": 0.014250271816304245,
+        "spearman": 0.09020314192294637
+      },
+      "entry_friction__scope_pressure": {
+        "n": 50608,
+        "pearson": -0.002216195919006966,
+        "spearman": 0.01096737846598662
+      },
+      "entry_friction__scope_trace": {
+        "n": 46376,
+        "pearson": 0.001931631693903272,
+        "spearman": 0.011338604697172084
+      },
+      "entry_friction__org_spread": {
+        "n": 46250,
+        "pearson": -0.03079913281705842,
+        "spearman": -0.04898712473548802
+      },
+      "entry_friction__module_spread": {
+        "n": 46449,
+        "pearson": 0.0022717814783010846,
+        "spearman": 0.04218472906423667
+      },
+      "scope_pressure__scope_trace": {
+        "n": 46376,
+        "pearson": 0.6414329340108638,
+        "spearman": 0.9166167090225142
+      },
+      "scope_pressure__org_spread": {
+        "n": 46250,
+        "pearson": 0.2596373650772834,
+        "spearman": 0.3667031156158295
+      },
+      "scope_pressure__module_spread": {
+        "n": 46449,
+        "pearson": 0.5138617740903798,
+        "spearman": 0.703662107697671
+      },
+      "scope_trace__org_spread": {
+        "n": 42367,
+        "pearson": 0.0447165225108541,
+        "spearman": 0.3988683025103098
+      },
+      "scope_trace__module_spread": {
+        "n": 42560,
+        "pearson": 0.8657736462985635,
+        "spearman": 0.7678468900311638
+      },
+      "org_spread__module_spread": {
+        "n": 42431,
+        "pearson": 0.03653491825086964,
+        "spearman": 0.5163241637473938
+      }
+    },
+    "scope_by_entry_friction": {
+      "0": {
+        "n": 34706,
+        "scope_pressure": {
+          "n_valid": 34706,
+          "n_missing": 0,
+          "median": 70.04935,
+          "q25": 69.22635,
+          "q75": 160.531,
+          "zero_rate_all_rows": 0.0
+        },
+        "scope_trace": {
+          "n_valid": 31853,
+          "n_missing": 2853,
+          "median": 1.0,
+          "q25": 1.0,
+          "q75": 4.0,
+          "zero_rate_all_rows": 0.0
+        },
+        "org_spread": {
+          "n_valid": 31682,
+          "n_missing": 3024,
+          "median": 1.0,
+          "q25": 1.0,
+          "q75": 1.0,
+          "zero_rate_all_rows": 0.0
+        },
+        "module_spread": {
+          "n_valid": 31831,
+          "n_missing": 2875,
+          "median": 1.0,
+          "q25": 1.0,
+          "q75": 2.0,
+          "zero_rate_all_rows": 0.0
+        }
+      },
+      "1": {
+        "n": 15902,
+        "scope_pressure": {
+          "n_valid": 15902,
+          "n_missing": 0,
+          "median": 70.16305,
+          "q25": 69.294,
+          "q75": 139.34155,
+          "zero_rate_all_rows": 0.0
+        },
+        "scope_trace": {
+          "n_valid": 14523,
+          "n_missing": 1379,
+          "median": 1.0,
+          "q25": 1.0,
+          "q75": 3.0,
+          "zero_rate_all_rows": 0.0
+        },
+        "org_spread": {
+          "n_valid": 14568,
+          "n_missing": 1334,
+          "median": 1.0,
+          "q25": 1.0,
+          "q75": 1.0,
+          "zero_rate_all_rows": 0.0
+        },
+        "module_spread": {
+          "n_valid": 14618,
+          "n_missing": 1284,
+          "median": 1.0,
+          "q25": 1.0,
+          "q75": 2.0,
+          "zero_rate_all_rows": 0.0
+        }
+      }
+    },
+    "scope_support_by_impact_decile": [
+      {
+        "impact_bin": 1,
+        "impact_load_min": 22.6469,
+        "impact_load_max": 64.7106,
+        "n": 5053,
+        "entry_friction_0_n": 5053,
+        "entry_friction_1_n": 0,
+        "scope": {
+          "scope_pressure": {
+            "n_valid": 5053,
+            "n_missing": 0,
+            "median": 69.8889,
+            "zero_n": 0
+          },
+          "scope_trace": {
+            "n_valid": 4628,
+            "n_missing": 425,
+            "median": 1.0,
+            "zero_n": 0
+          },
+          "org_spread": {
+            "n_valid": 4624,
+            "n_missing": 429,
+            "median": 1.0,
+            "zero_n": 0
+          },
+          "module_spread": {
+            "n_valid": 4611,
+            "n_missing": 442,
+            "median": 1.0,
+            "zero_n": 0
+          }
+        }
+      },
+      {
+        "impact_bin": 2,
+        "impact_load_min": 66.2896,
+        "impact_load_max": 74.3295,
+        "n": 5554,
+        "entry_friction_0_n": 4021,
+        "entry_friction_1_n": 1533,
+        "scope": {
+          "scope_pressure": {
+            "n_valid": 5554,
+            "n_missing": 0,
+            "median": 69.76185,
+            "zero_n": 0
+          },
+          "scope_trace": {
+            "n_valid": 5101,
+            "n_missing": 453,
+            "median": 1.0,
+            "zero_n": 0
+          },
+          "org_spread": {
+            "n_valid": 5047,
+            "n_missing": 507,
+            "median": 1.0,
+            "zero_n": 0
+          },
+          "module_spread": {
+            "n_valid": 5080,
+            "n_missing": 474,
+            "median": 1.0,
+            "zero_n": 0
+          }
+        }
+      },
+      {
+        "impact_bin": 3,
+        "impact_load_min": 75.9658,
+        "impact_load_max": 84.283,
+        "n": 3538,
+        "entry_friction_0_n": 3518,
+        "entry_friction_1_n": 20,
+        "scope": {
+          "scope_pressure": {
+            "n_valid": 3538,
+            "n_missing": 0,
+            "median": 110.2507,
+            "zero_n": 0
+          },
+          "scope_trace": {
+            "n_valid": 3255,
+            "n_missing": 283,
+            "median": 2.0,
+            "zero_n": 0
+          },
+          "org_spread": {
+            "n_valid": 3226,
+            "n_missing": 312,
+            "median": 1.0,
+            "zero_n": 0
+          },
+          "module_spread": {
+            "n_valid": 3236,
+            "n_missing": 302,
+            "median": 1.0,
+            "zero_n": 0
+          }
+        }
+      },
+      {
+        "impact_bin": 4,
+        "impact_load_min": 85.973,
+        "impact_load_max": 92.8189,
+        "n": 7508,
+        "entry_friction_0_n": 7304,
+        "entry_friction_1_n": 204,
+        "scope": {
+          "scope_pressure": {
+            "n_valid": 7508,
+            "n_missing": 0,
+            "median": 69.88050000000001,
+            "zero_n": 0
+          },
+          "scope_trace": {
+            "n_valid": 6882,
+            "n_missing": 626,
+            "median": 1.0,
+            "zero_n": 0
+          },
+          "org_spread": {
+            "n_valid": 6856,
+            "n_missing": 652,
+            "median": 1.0,
+            "zero_n": 0
+          },
+          "module_spread": {
+            "n_valid": 6923,
+            "n_missing": 585,
+            "median": 1.0,
+            "zero_n": 0
+          }
+        }
+      },
+      {
+        "impact_bin": 5,
+        "impact_load_min": 94.5514,
+        "impact_load_max": 108.7033,
+        "n": 3462,
+        "entry_friction_0_n": 3395,
+        "entry_friction_1_n": 67,
+        "scope": {
+          "scope_pressure": {
+            "n_valid": 3462,
+            "n_missing": 0,
+            "median": 109.51509999999999,
+            "zero_n": 0
+          },
+          "scope_trace": {
+            "n_valid": 3188,
+            "n_missing": 274,
+            "median": 2.0,
+            "zero_n": 0
+          },
+          "org_spread": {
+            "n_valid": 3167,
+            "n_missing": 295,
+            "median": 1.0,
+            "zero_n": 0
+          },
+          "module_spread": {
+            "n_valid": 3159,
+            "n_missing": 303,
+            "median": 1.0,
+            "zero_n": 0
+          }
+        }
+      },
+      {
+        "impact_bin": 6,
+        "impact_load_min": 110.5078,
+        "impact_load_max": 110.5078,
+        "n": 5984,
+        "entry_friction_0_n": 157,
+        "entry_friction_1_n": 5827,
+        "scope": {
+          "scope_pressure": {
+            "n_valid": 5984,
+            "n_missing": 0,
+            "median": 109.5606,
+            "zero_n": 0
+          },
+          "scope_trace": {
+            "n_valid": 5468,
+            "n_missing": 516,
+            "median": 2.0,
+            "zero_n": 0
+          },
+          "org_spread": {
+            "n_valid": 5474,
+            "n_missing": 510,
+            "median": 1.0,
+            "zero_n": 0
+          },
+          "module_spread": {
+            "n_valid": 5513,
+            "n_missing": 471,
+            "median": 1.0,
+            "zero_n": 0
+          }
+        }
+      },
+      {
+        "impact_bin": 7,
+        "impact_load_min": 112.3199,
+        "impact_load_max": 115.9669,
+        "n": 4611,
+        "entry_friction_0_n": 4611,
+        "entry_friction_1_n": 0,
+        "scope": {
+          "scope_pressure": {
+            "n_valid": 4611,
+            "n_missing": 0,
+            "median": 110.5649,
+            "zero_n": 0
+          },
+          "scope_trace": {
+            "n_valid": 4213,
+            "n_missing": 398,
+            "median": 2.0,
+            "zero_n": 0
+          },
+          "org_spread": {
+            "n_valid": 4217,
+            "n_missing": 394,
+            "median": 1.0,
+            "zero_n": 0
+          },
+          "module_spread": {
+            "n_valid": 4249,
+            "n_missing": 362,
+            "median": 1.0,
+            "zero_n": 0
+          }
+        }
+      },
+      {
+        "impact_bin": 8,
+        "impact_load_min": 117.8017,
+        "impact_load_max": 134.6432,
+        "n": 6522,
+        "entry_friction_0_n": 6313,
+        "entry_friction_1_n": 209,
+        "scope": {
+          "scope_pressure": {
+            "n_valid": 6522,
+            "n_missing": 0,
+            "median": 70.03735,
+            "zero_n": 0
+          },
+          "scope_trace": {
+            "n_valid": 5976,
+            "n_missing": 546,
+            "median": 1.0,
+            "zero_n": 0
+          },
+          "org_spread": {
+            "n_valid": 5946,
+            "n_missing": 576,
+            "median": 1.0,
+            "zero_n": 0
+          },
+          "module_spread": {
+            "n_valid": 6009,
+            "n_missing": 513,
+            "median": 1.0,
+            "zero_n": 0
+          }
+        }
+      },
+      {
+        "impact_bin": 9,
+        "impact_load_min": 136.55,
+        "impact_load_max": 150.0892,
+        "n": 898,
+        "entry_friction_0_n": 257,
+        "entry_friction_1_n": 641,
+        "scope": {
+          "scope_pressure": {
+            "n_valid": 898,
+            "n_missing": 0,
+            "median": 70.04044999999999,
+            "zero_n": 0
+          },
+          "scope_trace": {
+            "n_valid": 834,
+            "n_missing": 64,
+            "median": 1.0,
+            "zero_n": 0
+          },
+          "org_spread": {
+            "n_valid": 828,
+            "n_missing": 70,
+            "median": 1.0,
+            "zero_n": 0
+          },
+          "module_spread": {
+            "n_valid": 825,
+            "n_missing": 73,
+            "median": 1.0,
+            "zero_n": 0
+          }
+        }
+      },
+      {
+        "impact_bin": 10,
+        "impact_load_min": 154.0178,
+        "impact_load_max": 157.9725,
+        "n": 7478,
+        "entry_friction_0_n": 77,
+        "entry_friction_1_n": 7401,
+        "scope": {
+          "scope_pressure": {
+            "n_valid": 7478,
+            "n_missing": 0,
+            "median": 69.99340000000001,
+            "zero_n": 0
+          },
+          "scope_trace": {
+            "n_valid": 6831,
+            "n_missing": 647,
+            "median": 1.0,
+            "zero_n": 0
+          },
+          "org_spread": {
+            "n_valid": 6865,
+            "n_missing": 613,
+            "median": 1.0,
+            "zero_n": 0
+          },
+          "module_spread": {
+            "n_valid": 6844,
+            "n_missing": 634,
+            "median": 1.0,
+            "zero_n": 0
+          }
+        }
+      }
+    ]
+  },
+  "round2_scope_ablation": {
+    "source": "saved reports/regression_round2/results.json; no fitting or prediction was run",
+    "results_sha256": "75e7d54ed58f414a271409481a59337fd030bb391e6d65941137dff67f0345ac",
+    "comparison": "R1_D versus A_NO_SCOPE_SPREAD; same saved validation positions verified by digest at every window",
+    "interpretation_limit": "Predictive ablation under prior in-support temporal validation only; not causal importance and not an estimate of Test zero-cohort error.",
+    "aggregates": {
+      "primary": {
+        "n": 38588,
+        "same_rows": true,
+        "full_r1_d_mae": 13.349836350894211,
+        "no_scope_spread_mae": 13.391396157064909,
+        "paired_mae_delta_no_scope_minus_full": 0.041559806170697655,
+        "full_equal_cycle_mae": 13.589656896216091,
+        "no_scope_spread_equal_cycle_mae": 13.63417794282101,
+        "equal_cycle_mae_delta_no_scope_minus_full": 0.044521046604918624,
+        "subgroups": {
+          "EF0": {
+            "n": 26048,
+            "full_r1_d_mae": 14.573468885753105,
+            "no_scope_spread_mae": 14.610661579022423,
+            "paired_mae_delta_no_scope_minus_full": 0.03719269326931851
+          },
+          "EF1": {
+            "n": 12540,
+            "full_r1_d_mae": 10.808115436380298,
+            "no_scope_spread_mae": 10.858746578823329,
+            "paired_mae_delta_no_scope_minus_full": 0.0506311424430308
+          },
+          "tail_low_le5": {
+            "n": 1928,
+            "full_r1_d_mae": 18.22137196307018,
+            "no_scope_spread_mae": 18.33719764284172,
+            "paired_mae_delta_no_scope_minus_full": 0.11582567977153957
+          },
+          "tail_high_ge95": {
+            "n": 1955,
+            "full_r1_d_mae": 11.51481523385122,
+            "no_scope_spread_mae": 11.61101492086285,
+            "paired_mae_delta_no_scope_minus_full": 0.09619968701163017
+          }
+        },
+        "per_cycle_delta_summary": {
+          "cycles": 24,
+          "cycles_no_scope_lower_mae": 10,
+          "cycles_no_scope_higher_mae": 14,
+          "minimum_delta": -0.25075670796072025,
+          "maximum_delta": 0.24536427346073175
+        }
+      },
+      "secondary": {
+        "n": 38588,
+        "same_rows": true,
+        "full_r1_d_mae": 15.577240029210992,
+        "no_scope_spread_mae": 15.61612271628298,
+        "paired_mae_delta_no_scope_minus_full": 0.03888268707198783,
+        "full_equal_cycle_mae": 15.58831400220022,
+        "no_scope_spread_equal_cycle_mae": 15.639667264562837,
+        "equal_cycle_mae_delta_no_scope_minus_full": 0.05135326236261761,
+        "subgroups": {
+          "EF0": {
+            "n": 26048,
+            "full_r1_d_mae": 17.22361131428145,
+            "no_scope_spread_mae": 17.284603845636813,
+            "paired_mae_delta_no_scope_minus_full": 0.060992531355363866
+          },
+          "EF1": {
+            "n": 12540,
+            "full_r1_d_mae": 12.157409149345343,
+            "no_scope_spread_mae": 12.150365423028706,
+            "paired_mae_delta_no_scope_minus_full": -0.007043726316636523
+          },
+          "tail_low_le5": {
+            "n": 1928,
+            "full_r1_d_mae": 22.34914315746584,
+            "no_scope_spread_mae": 22.33547942360777,
+            "paired_mae_delta_no_scope_minus_full": -0.013663733858070515
+          },
+          "tail_high_ge95": {
+            "n": 1955,
+            "full_r1_d_mae": 13.14667966119229,
+            "no_scope_spread_mae": 13.196505036588395,
+            "paired_mae_delta_no_scope_minus_full": 0.04982537539610554
+          }
+        },
+        "per_cycle_delta_summary": {
+          "cycles": 24,
+          "cycles_no_scope_lower_mae": 11,
+          "cycles_no_scope_higher_mae": 13,
+          "minimum_delta": -0.12048659163419728,
+          "maximum_delta": 0.45039589379684486
+        }
+      }
+    },
+    "windows": [
+      {
+        "family": "primary",
+        "window": "W1",
+        "n": 4114,
+        "same_validation_positions": true,
+        "validation_positions_sha256": "e460f67316b47cade6c40036894e01cebeaf5f840f981ffebebace5437f9bc48",
+        "full_r1_d_mae": 16.883415140678085,
+        "no_scope_spread_mae": 17.071100678537057,
+        "paired_mae_delta_no_scope_minus_full": 0.18768553785897168
+      },
+      {
+        "family": "primary",
+        "window": "W2",
+        "n": 6493,
+        "same_validation_positions": true,
+        "validation_positions_sha256": "c30a4445e9bda0ef8dad1fb28ddc81781703d9626cf70e182df15d7bce137e6d",
+        "full_r1_d_mae": 12.944584042680543,
+        "no_scope_spread_mae": 12.894684416506228,
+        "paired_mae_delta_no_scope_minus_full": -0.04989962617431409
+      },
+      {
+        "family": "primary",
+        "window": "W3",
+        "n": 7078,
+        "same_validation_positions": true,
+        "validation_positions_sha256": "55da25f1a20f08a2cb52863003c2528d3af162257ff49ab4ca66965358bdda2a",
+        "full_r1_d_mae": 13.993824921093251,
+        "no_scope_spread_mae": 13.994513196984654,
+        "paired_mae_delta_no_scope_minus_full": 0.0006882758914024123
+      },
+      {
+        "family": "primary",
+        "window": "W4",
+        "n": 4950,
+        "same_validation_positions": true,
+        "validation_positions_sha256": "415497f94b2541ea35c4d429644177ada7dc024c42abaa10b6b99ab42e53c439",
+        "full_r1_d_mae": 13.06197629095699,
+        "no_scope_spread_mae": 13.056060079614728,
+        "paired_mae_delta_no_scope_minus_full": -0.0059162113422619456
+      },
+      {
+        "family": "primary",
+        "window": "W5",
+        "n": 7462,
+        "same_validation_positions": true,
+        "validation_positions_sha256": "b6e78245afd13f45f95e6838b98e1c97a66e98df51af1ae3548b791a4ce198bd",
+        "full_r1_d_mae": 12.688481053668179,
+        "no_scope_spread_mae": 12.684308694785923,
+        "paired_mae_delta_no_scope_minus_full": -0.004172358882255978
+      },
+      {
+        "family": "primary",
+        "window": "W6",
+        "n": 8491,
+        "same_validation_positions": true,
+        "validation_positions_sha256": "90d2c53157abdf97367b909335151bf728f36a21740ffaffb90a4a5012bcef94",
+        "full_r1_d_mae": 12.159864559677812,
+        "no_scope_spread_mae": 12.302500002131833,
+        "paired_mae_delta_no_scope_minus_full": 0.14263544245402038
+      },
+      {
+        "family": "secondary",
+        "window": "H12_E",
+        "n": 17685,
+        "same_validation_positions": true,
+        "validation_positions_sha256": "aca4054e5b32b98e2de800a24cc8beb38d4b7d86f66f7f4f7e7ed723408136b6",
+        "full_r1_d_mae": 17.79560419346799,
+        "no_scope_spread_mae": 17.919022644512303,
+        "paired_mae_delta_no_scope_minus_full": 0.12341845104431215
+      },
+      {
+        "family": "secondary",
+        "window": "H12_L",
+        "n": 20903,
+        "same_validation_positions": true,
+        "validation_positions_sha256": "9ead64310afbcc9fd5ef149b46a920a7dd2062debc58cfec29cd01c5f5b30781",
+        "full_r1_d_mae": 13.700391239808274,
+        "no_scope_spread_mae": 13.667752375626824,
+        "paired_mae_delta_no_scope_minus_full": -0.032638864181450344
+      }
+    ]
+  },
+  "source": {
+    "audit_file": "reports/audits/source_definitions.json",
+    "audit_scope": "Local course material describes TP1 and shared dataset columns, not an authoritative TP2 threat_rank definition",
+    "audited_pdf_name": "TP KASDAD Ganjil 2026_2027.pdf",
+    "audited_pdf_sha256": "386fa63541cc3e9b36b56ee8f8f6c479b3bbaa7753b9482d60763326f4465c0a",
+    "audited_pdf_pages": 57,
+    "local_course_pdf_path": "../TK1/TP 1 KASDAD Ganjil 2026_2027.pdf",
+    "local_course_pdf_sha256": "349860738eae2dc5ca2e515da819f1583b28e6a2f3160bd70a21f729947f9da0",
+    "local_course_pdf_matches_audit": false,
+    "pages_used": [
+      16,
+      17
+    ],
+    "provenance_note": "The accessible sibling TP1 PDF is 44 pages and its SHA-256 differs from the tracked 57-page audit source. Its pp. 16-17 are cited as a separately identified local course copy, not as the byte-identical audited PDF.",
+    "documented_features": {
+      "cycle_code": "Page 16: disclosure-cycle order; larger is newer, not an absolute calendar.",
+      "scope_trace": "Page 16: affected-configuration count or coverage indicator; mixed numeric/text/estimated format.",
+      "org_spread": "Page 17: organization/ecosystem spread indicator; formatting is inconsistent.",
+      "module_spread": "Page 17: module/component spread indicator; formatting is inconsistent.",
+      "scope_pressure": "Page 17: nonlinear scope/impact intensity indicator."
+    },
+    "zero_semantics": "Not specified in the cited pages or source audit.",
+    "threat_rank_generation_formula": "UNKNOWN per docs/COMPETITION_INFO.md and reports/audits/source_definitions.json."
+  },
+  "unknowns": [
+    "Whether zero counts mean genuine zero scope or a missing-coded/source convention is unknown.",
+    "There are no zero-count Train labels to validate Test zero-cohort target behavior.",
+    "Provided Test rows per cycle do not prove completeness of the real-world source universe.",
+    "Threat-rank generation formula and timestamp-certified availability of added features are unknown."
+  ]
+}
