@@ -26,8 +26,8 @@ from src.data.audit import sha256, write_json
 from src.models.classification_round2_models import build_round2_model, stream_missing_mask
 from src.models.classification_round2_evaluation import verify_freeze as verify_classification_round2_freeze
 from src.models.round1_models import build_model
-from src.models.round1_evaluation import digest_json as round1_digest_json
-from src.utils.paths import PROJECT_ROOT, task_files
+from src.models.round1_evaluation import verify_freeze as verify_regression_round1_freeze
+from src.utils.paths import PROJECT_ROOT, data_root, task_files
 
 
 MAIN_CHECKPOINT = "12b515c7b93ba7b6c3ff88b1c8b068e347fb0e36"
@@ -54,18 +54,17 @@ EXPECTED_HASHES = {
 }
 
 
-def _json_digest(value: object) -> str:
-    raw = json.dumps(value, sort_keys=True, ensure_ascii=False, allow_nan=False,
-                      separators=(",", ":")).encode("utf-8")
-    return hashlib.sha256(raw).hexdigest()
-
-
 def _file_sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def _load_inputs(task: str, data_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, dict[str, str]]:
-    paths = task_files(task, data_dir)
+def resolve_data_dir(data_dir: Path | None = None) -> Path:
+    """Use an explicit root, otherwise honor TP2_DATA_DIR/default project data."""
+    return Path(data_dir).expanduser().resolve() if data_dir is not None else data_root()
+
+
+def _load_inputs(task: str, data_dir: Path | None = None) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, dict[str, str]]:
+    paths = task_files(task, resolve_data_dir(data_dir))
     if not all(paths.values()):
         raise FileNotFoundError(f"Required official {task} Train/Test/Sample CSV is missing")
     hashes = {role: sha256(path) for role, path in paths.items()}
@@ -108,6 +107,41 @@ def _submission_frame(test: pd.DataFrame, sample: pd.DataFrame, predictions: np.
     if len(result) != len(test) or result.isna().any().any():
         raise ValueError("Submission must have exactly one complete row per official test row")
     return result
+
+
+def _verify_model_identity(task: str, data_dir: Path | None) -> dict[str, str]:
+    """Fail closed on the original frozen recipe/input identity before fitting."""
+    if task == "classification":
+        receipt = verify_classification_round2_freeze(data_dir)
+        identity = receipt["identity"]
+        return {
+            "protocol_sha256": identity["protocol_sha256"],
+            "freeze_signature": receipt["signature"],
+            "round1_freeze_signature": identity["round1_freeze_signature"],
+        }
+    if task == "regression":
+        receipt = verify_regression_round1_freeze(data_dir)
+        identity = receipt["identity"]
+        return {"protocol_sha256": identity["protocol_sha256"], "freeze_signature": receipt["signature"]}
+    raise ValueError(f"Unknown submission task: {task}")
+
+
+def _prior_kaggle_receipt(manifest_path: Path, submission_hash: str) -> dict[str, object] | None:
+    if not manifest_path.exists():
+        return None
+    previous = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if previous.get("submission_sha256") == submission_hash:
+        receipt = previous.get("kaggle_submission")
+        return receipt if isinstance(receipt, dict) else None
+    return None
+
+
+def _preparation_status(kaggle_receipt: dict[str, object] | None) -> str:
+    if kaggle_receipt and kaggle_receipt.get("status") == "COMPLETE" and kaggle_receipt.get("reference"):
+        return "KAGGLE_SUBMISSION_COMPLETE"
+    if kaggle_receipt and kaggle_receipt.get("status") == "PENDING" and kaggle_receipt.get("reference"):
+        return "KAGGLE_SUBMISSION_PENDING"
+    return "PREPARED_VALIDATED_NOT_SUBMITTED"
 
 
 def _classification(train: pd.DataFrame, test: pd.DataFrame) -> tuple[np.ndarray, dict[str, object]]:
@@ -179,8 +213,13 @@ def _regression(train: pd.DataFrame, test: pd.DataFrame) -> tuple[np.ndarray, di
     }
 
 
-def run(task: str, data_dir: Path) -> Path:
+def run(task: str, data_dir: Path | None = None) -> Path:
     train, test, sample, input_hashes = _load_inputs(task, data_dir)
+    # Frozen recipe/source/data identity is verified before fitting or writing.
+    model_identity = _verify_model_identity(task, data_dir)
+    execution_git_head = subprocess.check_output(
+        ["git", "-C", str(PROJECT_ROOT), "rev-parse", "HEAD"], text=True
+    ).strip()
     start = perf_counter()
     if task == "classification":
         predictions, audit = _classification(train, test)
@@ -192,7 +231,14 @@ def run(task: str, data_dir: Path) -> Path:
     output_dir = PROJECT_ROOT / "submissions"
     output_dir.mkdir(parents=True, exist_ok=True)
     output = output_dir / f"{task}_initial.csv"
-    submission.to_csv(output, index=False, float_format="%.17g")
+    serialized_csv = submission.to_csv(index=False, float_format="%.17g")
+    serialized_bytes = serialized_csv.encode("utf-8")
+    expected_submission_hash = hashlib.sha256(serialized_bytes).hexdigest()
+    if output.exists():
+        if sha256(output) != expected_submission_hash:
+            raise RuntimeError("Existing initial submission differs; refusing to overwrite its accepted artifact")
+    else:
+        output.write_bytes(serialized_bytes)
     # Read back the exact deliverable and independently recheck its file representation.
     reread = pd.read_csv(output, float_precision="round_trip")
     values_equal = (reread[target].equals(submission[target]) if task == "classification"
@@ -200,37 +246,11 @@ def run(task: str, data_dir: Path) -> Path:
                                         submission[target].to_numpy(dtype=float)))
     if list(reread.columns) != list(submission.columns) or not reread.record_id.equals(submission.record_id) or not values_equal:
         raise RuntimeError("CSV round-trip differs from validated submission values")
-    source_commit = subprocess.check_output(["git", "-C", str(PROJECT_ROOT), "rev-parse", "HEAD"], text=True).strip()
-    # Model lineage is pinned to the committed checkpoint even when this
-    # preparation script is rerun from its isolated review branch.
-    source_commit = MAIN_CHECKPOINT
     source_paths = (["src/models/classification_models.py", "src/models/classification_round2_models.py"]
                     if task == "classification" else ["src/models/round1_models.py"])
     source_code_hashes = {rel: _file_sha256(PROJECT_ROOT / rel) for rel in source_paths}
-    protocol_path = (PROJECT_ROOT / "experiments/classification_round2/protocol.json" if task == "classification"
-                     else PROJECT_ROOT / "experiments/round1/protocol.json")
-    freeze_path = (PROJECT_ROOT / "experiments/classification_round2/freeze.json" if task == "classification"
-                   else PROJECT_ROOT / "experiments/round1/freeze.json")
-    protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
-    freeze = json.loads(freeze_path.read_text(encoding="utf-8"))
-    if task == "classification":
-        verify_classification_round2_freeze(data_dir)
-        model_identity = {"protocol_sha256": freeze["identity"]["protocol_sha256"],
-                          "freeze_signature": freeze["signature"],
-                          "round1_freeze_signature": freeze["identity"]["round1_freeze_signature"]}
-    else:
-        from src.models.round1_evaluation import identity as r1_identity
-        current_identity = r1_identity(data_dir)
-        if current_identity != freeze["identity"]:
-            raise RuntimeError("Regression Round 1 freeze verification failed")
-        model_identity = {"protocol_sha256": current_identity["protocol_sha256"],
-                          "freeze_signature": freeze["signature"]}
     manifest_path = PROJECT_ROOT / "reports/submissions" / f"{task}_initial_manifest.json"
-    prior_kaggle_receipt = None
-    if manifest_path.exists():
-        previous = json.loads(manifest_path.read_text(encoding="utf-8"))
-        if previous.get("submission_sha256") == sha256(output):
-            prior_kaggle_receipt = previous.get("kaggle_submission")
+    prior_kaggle_receipt = _prior_kaggle_receipt(manifest_path, sha256(output))
     kaggle_receipt = prior_kaggle_receipt or {
         "status": "NOT_SUBMITTED",
         "one_submission_authorized": True,
@@ -238,12 +258,13 @@ def run(task: str, data_dir: Path) -> Path:
         "score": None,
     }
     manifest = {
-        "status": "PREPARED_VALIDATED_NOT_SUBMITTED",
+        "status": _preparation_status(kaggle_receipt),
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "task": task,
         "competition": COMPETITIONS[task],
         "submission_message": MESSAGES[task],
-        "source_commit": source_commit,
+        "execution_git_head": execution_git_head,
+        "model_source_checkpoint": MAIN_CHECKPOINT,
         "preparation_script_sha256": _file_sha256(Path(__file__)),
         "source_code_sha256": source_code_hashes,
         "model_protocol_identity": model_identity,
@@ -271,8 +292,8 @@ def run(task: str, data_dir: Path) -> Path:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--task", choices=["classification", "regression", "both"], default="both")
-    parser.add_argument("--data-dir", type=Path,
-                        default=Path(r"C:\Users\Sam\OneDrive\Documents\KASDAD\TP 2\data\raw"))
+    parser.add_argument("--data-dir", type=Path, default=None,
+                        help="Raw data root; defaults to TP2_DATA_DIR or this repository's data/raw")
     args = parser.parse_args()
     tasks = ["classification", "regression"] if args.task == "both" else [args.task]
     for task in tasks:

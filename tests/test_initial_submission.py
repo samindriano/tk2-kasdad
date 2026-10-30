@@ -1,9 +1,14 @@
 """Format and boundary checks for the authorized initial-submission path."""
 import unittest
+import json
+from pathlib import Path
+import tempfile
+from unittest.mock import patch
 
 import numpy as np
 import pandas as pd
 
+from scripts import prepare_initial_submissions as submissions
 from scripts.prepare_initial_submissions import _submission_frame
 
 
@@ -37,6 +42,35 @@ class InitialSubmissionTests(unittest.TestCase):
         sample = self.sample.iloc[::-1].rename(columns={"prediction": "threat_rank"})
         with self.assertRaises(ValueError):
             _submission_frame(self.test, sample, np.array([10., 20., 30.]), "threat_rank", "regression")
+
+    def test_model_freeze_failure_precedes_any_fit_or_output_write(self):
+        output = submissions.PROJECT_ROOT / "submissions" / "classification_initial.csv"
+        before_hash = submissions.sha256(output)
+        frames = (pd.DataFrame(), pd.DataFrame(), pd.DataFrame(), {})
+        with patch.object(submissions, "_load_inputs", return_value=frames), \
+             patch.object(submissions, "_verify_model_identity", side_effect=RuntimeError("freeze mismatch")) as verify, \
+             patch.object(submissions, "_classification") as fit:
+            with self.assertRaisesRegex(RuntimeError, "freeze mismatch"):
+                submissions.run("classification", Path("unused-data-root"))
+        verify.assert_called_once()
+        fit.assert_not_called()
+        self.assertEqual(submissions.sha256(output), before_hash)
+
+    def test_data_root_defaults_to_tp2_data_dir_environment(self):
+        with tempfile.TemporaryDirectory() as temp_root, patch.dict("os.environ", {"TP2_DATA_DIR": temp_root}):
+            self.assertEqual(submissions.resolve_data_dir(), Path(temp_root).resolve())
+
+    def test_matching_complete_kaggle_receipt_survives_status_derivation(self):
+        receipt = {"status": "COMPLETE", "reference": 12345, "public_score": 0.5, "submissions_used": 1}
+        with tempfile.TemporaryDirectory() as temp_dir:
+            manifest = Path(temp_dir) / "manifest.json"
+            manifest.write_text(
+                '{"submission_sha256":"same-hash","kaggle_submission":' +
+                json.dumps(receipt) + '}', encoding="utf-8"
+            )
+            preserved = submissions._prior_kaggle_receipt(manifest, "same-hash")
+        self.assertEqual(preserved, receipt)
+        self.assertEqual(submissions._preparation_status(preserved), "KAGGLE_SUBMISSION_COMPLETE")
 
 
 if __name__ == "__main__":
