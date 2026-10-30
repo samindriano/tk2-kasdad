@@ -3,7 +3,7 @@
 Cyber Vulnerability Lifecycle · Semester Ganjil 2026/2027 · Samuel, Rousan, Abhi, Rizky.
 
 Repository independen dan private: [samindriano/tk2-kasdad](https://github.com/samindriano/tk2-kasdad).
-Audit, EDA formal Samuel serta **Regression dan Classification Round 1–2 selesai pada 30 Oktober 2026**. Seluruh checkpoint lama dipertahankan. Dua initial Kaggle submissions yang diotorisasi pengguna sudah COMPLETE melalui track terpisah; belum ada model final atau Round 3.
+Audit, EDA formal Samuel, Regression/Classification Round 1–2, serta **autonomous Regression research selesai pada 30 Oktober 2026**. Seluruh checkpoint lama dipertahankan. Regression public MAE terbaik **11,71363**, mengalahkan baseline yang diberikan pengguna **12,23275** dan stretch goal <12. Kandidat masih provisional; belum ada model final permanen.
 
 ## Status dan temuan awal
 
@@ -17,8 +17,11 @@ Audit, EDA formal Samuel serta **Regression dan Classification Round 1–2 seles
 | Classification Samuel Round 2 | Selesai; berhenti untuk review | 10 recipe, 4 policies, 80 window jobs, 72 fits +12 representative refits. Fixed HGB fallback route F1 0,8255 primary /0,7968 H12 |
 | Regression Samuel Round 2 | Selesai; berhenti untuk review | 19 recipe, 152 window evaluations, 112 unique fits +19 representative refits. Full recent-8 MAE 13,2172 primary; expanding no-codes MAE 15,0535 H12, dengan trade-off early/late dan high-tail |
 | Initial Kaggle benchmarks | COMPLETE; satu upload per kompetisi | Classification C4_HGB fixed public Macro F1 0,82641; Regression R1-D asli clipped public MAE 13,53473. Tidak dipakai memilih recipe Round 2 |
+| Autonomous Regression research | Selesai; strong provisional candidate | LightGBM MAE + TF-IDF/SVD32 + inner-selected rank blend: primary 11,9316 / H12 14,7040; public 11,71363. Empat dari enam additional submissions dipakai |
 
-Milestone terbaru: [notebook Regression Round 2](notebooks/samuel/07_samuel_regression_round2.ipynb), [findings dan rekomendasi](reports/regression_round2/FINDINGS.md), [seluruh kandidat/window/cycle](reports/regression_round2/COMPARISON_TABLES.md), [temporal generalization risk](reports/regression_round2/TEMPORAL_GENERALIZATION.md), [protocol/reproduksi](docs/REGRESSION_ROUND2.md), dan [verification receipt](reports/regression_round2/verification.json). Recency membantu sedikit pada primary tetapi tidak H12; kontribusi kategori/cycle tergantung horizon/history. H12 memakai ulang records primary dan bukan independent replication.
+Milestone terbaru: [notebook autonomous Regression research](notebooks/samuel/08_samuel_regression_research.ipynb), [hasil, kegagalan dan rekomendasi](reports/regression_research/FINDINGS.md), [seluruh perbandingan](reports/regression_research/COMPARISON_TABLES.md), [Kaggle log dan refs](reports/regression_research/KAGGLE_LOG.md), [best provisional manifest pointer](reports/regression_research/best_candidate.json), serta [protocol/reproduksi](docs/REGRESSION_RESEARCH.md). Text menambah informasi; pure percentile mapping tidak otomatis membantu. Hybrid Ridge tetap leader pooled H12 (13,9381), sedangkan LightGBM+text terbaik primary/public. H12 early risk dan adaptive validation bias tetap berlaku.
+
+Checkpoint Regression Round 2: [notebook](notebooks/samuel/07_samuel_regression_round2.ipynb), [findings dan rekomendasi](reports/regression_round2/FINDINGS.md), [seluruh kandidat/window/cycle](reports/regression_round2/COMPARISON_TABLES.md), [temporal generalization risk](reports/regression_round2/TEMPORAL_GENERALIZATION.md), [protocol/reproduksi](docs/REGRESSION_ROUND2.md), dan [verification receipt](reports/regression_round2/verification.json). Recency membantu sedikit pada primary tetapi tidak H12; kontribusi kategori/cycle tergantung horizon/history. H12 memakai ulang records primary dan bukan independent replication.
 
 Track submission terpisah: [status dan public scores](reports/submissions/KAGGLE_RESULTS.md), [recipe dan panduan](reports/submissions/INITIAL_SUBMISSIONS.md), [manifest classification](reports/submissions/classification_initial_manifest.json), serta [manifest regression](reports/submissions/regression_initial_manifest.json). Model berasal dari checkpoint sebelum Regression Round 2. CSV lokal tetap ignored; jangan mengulang upload tanpa izin baru.
 
@@ -43,14 +46,13 @@ Python yang dipakai: 3.13.5. Dari root repository:
 ```powershell
 python -m venv .venv
 .venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-python scripts/run_regression_round2.py --stage all
-python scripts/verify_regression_round2.py
-python scripts/build_regression_round2_notebook.py
-python -m unittest tests.test_regression_round2_models tests.test_regression_round2_metrics tests.test_regression_round2_evaluation tests.test_regression_round2_results tests.test_regression_round2_reporting tests.test_round1_models tests.test_round1_evaluation -v
+python -m pip install -r requirements-research.txt
+python scripts/reproduce_regression_research.py --stage models
+python scripts/verify_regression_research.py --stage all
+python scripts/build_regression_research_notebook.py
 ```
 
-Regression Round 2 memakai output/cache namespace sendiri dan memverifikasi 196 berkas checkpoint lama. Rincian immutable base/interaction receipt dan representative repeat ada di panduan Regression Round 2. Reproduksi checkpoint Regression Round 1 secara terpisah:
+Research memakai namespace sendiri dan menjaga historical report bytes melalui reproduction wrapper. Stage1 ranking memerlukan cache kontrol Regression Round 2; panduan research menjelaskan fresh-checkout prerequisites dan scoped tests. Tidak ada upload di notebook/reproduction wrapper. Reproduksi checkpoint Regression Round 1 secara terpisah:
 
 ```powershell
 python scripts/run_round1.py
