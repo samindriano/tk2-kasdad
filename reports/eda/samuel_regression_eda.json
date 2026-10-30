@@ -1,0 +1,34 @@
+{
+  "status": "BLOCKED_MISSING_REGRESSION_DATA",
+  "question": "How strongly are impact_load and threat_rank associated, and is the descriptive relationship consistent across ordered cycle_code periods?",
+  "input_root": "data/raw/regression",
+  "expected_files": [
+    "Train.csv",
+    "Test.csv",
+    "SampleSubmission.csv"
+  ],
+  "files": {
+    "train": null,
+    "test": null,
+    "sample": null
+  },
+  "target_verification": {
+    "status": "UNKNOWN",
+    "reason": "Train/Test/Sample schemas unavailable."
+  },
+  "limitations": [
+    "cycle_code ordering is treated as chronological for grouping; its domain meaning is not independently established.",
+    "Associations are descriptive and do not establish causation, drift, or statistical significance.",
+    "No predictive model is fitted and no Kaggle test target is inferred."
+  ],
+  "versions": {
+    "pandas": "2.3.3",
+    "numpy": "2.4.2"
+  },
+  "missing_files": [
+    "Train.csv",
+    "Test.csv",
+    "SampleSubmission.csv"
+  ],
+  "next_action": "Place the official regression Train.csv, Test.csv, and SampleSubmission.csv in data/raw/regression/ (or TP2_DATA_DIR/regression/), then rerun."
+}
