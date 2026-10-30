@@ -18,6 +18,13 @@ from scripts.research_regression_models import select_inner,state_of
 from scripts.submit_regression_research import ordered_ids_sha256
 
 
+def candidate_model(kind, param):
+    if kind in {'svd128','svd_noscope32','structured_ridge'}:
+        from src.models.regression_research_refinement import build_refinement
+        return build_refinement(kind)
+    return build_tabular(param)if kind=='lgb_inner'else build_text_model(kind)
+
+
 def prepare(decision_path):
     decision_path=Path(decision_path).resolve()
     if not decision_path.is_relative_to(CONFIG.resolve()):raise ValueError('Approval must live in research configuration root.')
@@ -27,8 +34,8 @@ def prepare(decision_path):
     if not re.fullmatch(r'[a-z0-9_]{1,60}',candidate):raise ValueError('Invalid candidate ID')
     if not d['main_approval']['approved']:raise ValueError('MAIN approval required')
     stage=verify_stage(d['stage']);kind=d['recipe']['kind']
-    if kind not in {'text_ridge','hybrid_ridge','svd_hgb','lgb_inner'}:raise ValueError('Unregistered candidate family')
-    if d['stage']!='stage23_models':raise ValueError('Wrong model-stage identity')
+    if kind not in {'text_ridge','hybrid_ridge','svd_hgb','lgb_inner','svd128','svd_noscope32','structured_ridge'}:raise ValueError('Unregistered candidate family')
+    if d['stage']not in {'stage23_models','stage4_refinement'}:raise ValueError('Wrong model-stage identity')
     files=task_files('regression');train=pd.read_csv(files['train']);test=pd.read_csv(files['test']);sample=pd.read_csv(files['sample'])
     if len(train)!=50608 or len(test)!=29421 or not test.record_id.is_unique or test.record_id.isna().any():raise ValueError('Official row contract differs')
     if list(sample.columns)!=['record_id','threat_rank']or not sample.record_id.equals(test.record_id):raise ValueError('Official sample/test IDs differ')
@@ -40,17 +47,20 @@ def prepare(decision_path):
         # Full-training selection is the same frozen past-only scheme, now 47..75->76..79.
         choices=[]
         for p in (['base','regularized','deeper']if kind=='lgb_inner'else['base']):
-            label=f'model__{kind}__{p}__fit75__to79';meta_path=CACHE/(label+'.json');vec_path=CACHE/(label+'.npz')
+            label=f'refine__{kind}__fit75__to79'if d['stage']=='stage4_refinement'else f'model__{kind}__{p}__fit75__to79'
+            meta_path=CACHE/(label+'.json');vec_path=CACHE/(label+'.npz')
             fit=np.flatnonzero(train.cycle_code.between(47,75));val=np.flatnonzero(train.cycle_code.between(76,79))
             if meta_path.exists()and vec_path.exists():
                 meta=json.loads(meta_path.read_text(encoding='utf-8'))
                 with np.load(vec_path,allow_pickle=False)as z:
                     if not np.array_equal(z['fit_rows'],fit)or not np.array_equal(z['validation_rows'],val):raise RuntimeError('Inner cache positions mismatch')
                     pred=z['prediction'].copy()
-                expected=digest_json({'freeze':stage['signature'],'kind':kind,'param':p,'fit':positions_digest(fit),'validation':positions_digest(val)})
+                key={'freeze':stage['signature'],'kind':kind,'fit':positions_digest(fit),'validation':positions_digest(val)}
+                if d['stage']=='stage23_models':key['param']=p
+                expected=digest_json(key)
                 if meta['key']!=expected or meta['prediction_sha256']!=array_digest(pred):raise RuntimeError('Inner cache identity mismatch')
             else:
-                model=build_tabular(p)if kind=='lgb_inner'else build_text_model(kind)
+                model=candidate_model(kind,p)
                 with threadpool_limits(limits=2):
                     model.fit(train.iloc[fit][list(model.feature_names)],train.iloc[fit].threat_rank.to_numpy())
                     pred=model.predict(train.iloc[val][list(model.feature_names)])
@@ -60,7 +70,7 @@ def prepare(decision_path):
         selected=select_inner(choices);param,weight=selected['param'],selected['rank_weight']
     else:
         choices=[];selected={'param':param,'rank_weight':weight}
-    model=build_tabular(param)if kind=='lgb_inner'else build_text_model(kind)
+    model=candidate_model(kind,param)
     start=perf_counter()
     with threadpool_limits(limits=2):
         features=list(model.feature_names)
