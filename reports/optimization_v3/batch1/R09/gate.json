@@ -1,0 +1,142 @@
+{
+  "card_id": "R09",
+  "checks": {
+    "W1_MAE_harm_max": true,
+    "W4_MAE_harm_max": true,
+    "pilot_H12_MAE_harm_max": false,
+    "pilot_primary_MAE_gain_min": false,
+    "supported_tail_or_missing_harm_max": false
+  },
+  "decision_basis": "Predeclared temporal metrics and support-passing group guards; no Test or Kaggle evidence.",
+  "profile": "STANDARD",
+  "status": "RETIRE",
+  "supported_group_failures": [
+    {
+      "baseline_mae": 21.512208387237514,
+      "candidate_mae": 23.493165279901177,
+      "candidate_minus_baseline_mae": 1.980956892663663,
+      "field": "target_le_5",
+      "guard_applies": true,
+      "n": 205,
+      "supported": true,
+      "view": "W1"
+    },
+    {
+      "baseline_mae": 10.95190538014284,
+      "candidate_mae": 13.75767212327788,
+      "candidate_minus_baseline_mae": 2.80576674313504,
+      "field": "target_ge_95",
+      "guard_applies": true,
+      "n": 213,
+      "supported": true,
+      "view": "W1"
+    },
+    {
+      "baseline_mae": 9.740550072150272,
+      "candidate_mae": 13.073706927554,
+      "candidate_minus_baseline_mae": 3.333156855403727,
+      "field": "target_le_5",
+      "guard_applies": true,
+      "n": 244,
+      "supported": true,
+      "view": "W4"
+    },
+    {
+      "baseline_mae": 7.354027536026501,
+      "candidate_mae": 10.225984067280903,
+      "candidate_minus_baseline_mae": 2.871956531254402,
+      "field": "target_ge_95",
+      "guard_applies": true,
+      "n": 249,
+      "supported": true,
+      "view": "W4"
+    },
+    {
+      "baseline_mae": 15.115137944294784,
+      "candidate_mae": 17.830920651899596,
+      "candidate_minus_baseline_mae": 2.715782707604813,
+      "field": "target_le_5",
+      "guard_applies": true,
+      "n": 449,
+      "supported": true,
+      "view": "primary"
+    },
+    {
+      "baseline_mae": 9.012789399222996,
+      "candidate_mae": 11.854229859331458,
+      "candidate_minus_baseline_mae": 2.841440460108462,
+      "field": "target_ge_95",
+      "guard_applies": true,
+      "n": 462,
+      "supported": true,
+      "view": "primary"
+    },
+    {
+      "baseline_mae": 15.47074152305708,
+      "candidate_mae": 18.091138088331665,
+      "candidate_minus_baseline_mae": 2.620396565274584,
+      "field": "target_le_5",
+      "guard_applies": true,
+      "n": 1928,
+      "supported": true,
+      "view": "H12"
+    },
+    {
+      "baseline_mae": 10.242197755462715,
+      "candidate_mae": 12.902767696537927,
+      "candidate_minus_baseline_mae": 2.6605699410752113,
+      "field": "target_ge_95",
+      "guard_applies": true,
+      "n": 1955,
+      "supported": true,
+      "view": "H12"
+    },
+    {
+      "baseline_mae": 22.849141746817015,
+      "candidate_mae": 24.872816238889495,
+      "candidate_minus_baseline_mae": 2.0236744920724803,
+      "field": "target_le_5",
+      "guard_applies": true,
+      "n": 880,
+      "supported": true,
+      "view": "H12_E"
+    },
+    {
+      "baseline_mae": 13.636034398681975,
+      "candidate_mae": 16.082819727750913,
+      "candidate_minus_baseline_mae": 2.4467853290689376,
+      "field": "target_ge_95",
+      "guard_applies": true,
+      "n": 898,
+      "supported": true,
+      "view": "H12_E"
+    },
+    {
+      "baseline_mae": 9.27513828173195,
+      "candidate_mae": 12.396599183283106,
+      "candidate_minus_baseline_mae": 3.1214609015511563,
+      "field": "target_le_5",
+      "guard_applies": true,
+      "n": 1048,
+      "supported": true,
+      "view": "H12_L"
+    },
+    {
+      "baseline_mae": 7.35888147768514,
+      "candidate_mae": 10.201077323757168,
+      "candidate_minus_baseline_mae": 2.8421958460720287,
+      "field": "target_ge_95",
+      "guard_applies": true,
+      "n": 1057,
+      "supported": true,
+      "view": "H12_L"
+    }
+  ],
+  "thresholds": {
+    "individual_pilot_view_MAE_harm_max": 0.5,
+    "pilot_H12_MAE_harm_max": 0.05,
+    "pilot_primary_MAE_gain_min": 0.03,
+    "supported_group_n_min": 100.0,
+    "supported_tail_or_missing_MAE_harm_max": 0.25
+  }
+}
