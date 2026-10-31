@@ -1,0 +1,475 @@
+{
+  "created_at_utc": "2026-10-31T23:51:11.755166+00:00",
+  "identity": {
+    "baseline_manifest_sha256": "6e7c2cb50fe6d0ee4767a44c40f152b6538b933fab6cf7082659b16d791f7d1e",
+    "card": {
+      "card_path": "reports/optimization_v3/research_backlog/cards/C01.md",
+      "change": "Recompose current sparse25 present probabilities with historical C1_B missing probabilities; threshold0.50. No new model or route threshold.",
+      "condition": "No additional dependency",
+      "evaluation": "CACHE_SIX",
+      "family": "route_missing",
+      "id": "C01",
+      "name": "Cached alternative missing expert",
+      "pilot_predictor_fits": 0,
+      "policy": "C_CACHE",
+      "priority": "P2",
+      "status": "PLANNED_NOT_RUN",
+      "task": "classification"
+    },
+    "evaluation_views": {
+      "H12": [
+        [
+          55,
+          56,
+          67
+        ],
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "H12_E": [
+        [
+          55,
+          56,
+          67
+        ]
+      ],
+      "H12_L": [
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "W1": [
+        [
+          55,
+          56,
+          59
+        ]
+      ],
+      "W2": [
+        [
+          59,
+          60,
+          63
+        ]
+      ],
+      "W3": [
+        [
+          63,
+          64,
+          67
+        ]
+      ],
+      "W4": [
+        [
+          67,
+          68,
+          71
+        ]
+      ],
+      "W5": [
+        [
+          71,
+          72,
+          75
+        ]
+      ],
+      "W6": [
+        [
+          75,
+          76,
+          79
+        ]
+      ],
+      "primary": [
+        [
+          55,
+          56,
+          59
+        ],
+        [
+          59,
+          60,
+          63
+        ],
+        [
+          63,
+          64,
+          67
+        ],
+        [
+          67,
+          68,
+          71
+        ],
+        [
+          71,
+          72,
+          75
+        ],
+        [
+          75,
+          76,
+          79
+        ]
+      ]
+    },
+    "feature_names": [
+      "cycle_code"
+    ],
+    "input_sha256": {
+      "C1_B_fit55_audit": "1a6c84022dbbb806b635e9548020428fd2202a4cff7e7c1e12fe61915aed6074",
+      "C1_B_fit55_cache": "8b7132f5e275f67c6336b8327577b4416fcd74f4ea7464f6da9445b3b68a126a",
+      "C1_B_fit59_audit": "3d8cb593f0856e8bc571c502879237433279bff6285e2aa99cb21eb43d8a3000",
+      "C1_B_fit59_cache": "b23bac0c6e66a0d2256d7860051210ff1e620c4e08c5ae136ed5dc4376d19c0e",
+      "C1_B_fit63_audit": "a832387823bceb6d8e3de0a01345ef6b9d9ebd2852c43efffe1b870efcc041ee",
+      "C1_B_fit63_cache": "ce812751b6b28998997b129fa2b7b6397c028bae1684bd848338dd43c08b009e",
+      "C1_B_fit67_audit": "a854215f01672733b64b1adf3c778fd653342dcbd7abc960a0fe9c0ca1330a2a",
+      "C1_B_fit67_cache": "52aa9c0bc7850828b7a58f324e8b5c50d76fcd4e1a1feab966cb612991f9bd8e",
+      "C1_B_fit71_audit": "ac6999446374638f848a054c46f59b8528aea717df139880d849504897833df3",
+      "C1_B_fit71_cache": "5db3f24e4f61d92f8a4044a1b531ed6cfeb8cfaa351c128425f1873a26d84caa",
+      "C1_B_fit75_audit": "428a8f1530e0eadf288303721519e521ee9b14fc65bff84faf09aae5a08d4e2b",
+      "C1_B_fit75_cache": "ca829d3d5f8a6becc6ea08436f8e04aa9b58067b0ebc7fceb23dd6630a9df5e6",
+      "C2_B_fit55_cache": "ce49c6b471f4b9eca8be1c24fa37b487d9a688b28dc543e3faa1a8b6fc7d177c",
+      "C2_B_fit59_cache": "77f052f1023fef44d3700662d1bc75898c856e5fd22544d3699c67ea1a4196e5",
+      "C2_B_fit63_cache": "dab6d76924259d523caaf0606a7fa21b1ef22dede59605a0ab5dd758986b1261",
+      "C2_B_fit67_cache": "853a8c44ac2b3ea50fc1824fec78f63948aee6b1c47678dc1ddc8ecb505ecdea",
+      "C2_B_fit71_cache": "13a9e468c4d072e18c2c3fc00d8278f3317bd809b179e82c894d71df5acb52bf",
+      "C2_B_fit75_cache": "226d81383de01240c1ae532f572361e0d339b47c1d086d32c7ee548794719eab",
+      "CatBoost_fit55_cache": "0cda97c481aef51495e3fd4a23c43b0a906f23ffc9080e91194250e7be4d046a",
+      "CatBoost_fit55_receipt": "eeadc3f3db6c29137a1d0028ed4f08aea0d7b5e40b01af3c217ca003ab293ef8",
+      "CatBoost_fit59_cache": "a31808368652e3533c15c4b9047dfca02681ada516948e9e064d1fd41e4a688f",
+      "CatBoost_fit59_receipt": "18d66ae9a12479ea3b4a723639e291d891d9eb838e78d95a997ed803b4682b09",
+      "CatBoost_fit63_cache": "2c3f58a20da87533182efeca9b821bbbf6740883205ee90428e5934d95d6a4c0",
+      "CatBoost_fit63_receipt": "711b7673779f31a714af738aa8bb274d6dca7931313bb01e67f567dbb4e7ac04",
+      "CatBoost_fit67_cache": "4b63070ac665e2ed2a9f567fb5c945f640da1eace5533af8d87d7df1a66ead59",
+      "CatBoost_fit67_receipt": "df1b7a8d434767c723f98a65ae7a8442c418692fecccffdc6ef9b11dbeb6a538",
+      "CatBoost_fit71_cache": "7713680bf004a3de1c64cecdc097550e0bb8384ae22a32ff0d0ab41c406b062a",
+      "CatBoost_fit71_receipt": "b3544827a707b417a687b5dc6406dfc1b2c36b219b634bcc49856290c7fb960c",
+      "CatBoost_fit75_cache": "44b5520854e2c392f93878776cc3e5b9dbc5fd25404d53777593db619d19f429",
+      "CatBoost_fit75_receipt": "15654b13c4859f03cf58a3723c46c31633a3570a3b37a7179c8d84bf2b3e14b2",
+      "accepted_sparse25_manifest": "6e7c2cb50fe6d0ee4767a44c40f152b6538b933fab6cf7082659b16d791f7d1e",
+      "card": "3f749ec6e63f836240fb44414d93a7e80266c6898c6ff5826b29bc9cb310c13f",
+      "official_classification_train": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+      "queue": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+      "sparse25_fit55_cache": "0efbfd81ac9489c29c9ae1e06922e8769dbc1227a7242a1bb779940cfe682f5b",
+      "sparse25_fit55_receipt": "764fbfcd6ee191e90d9519561ea591b042bdef2845f62452ba055d6dcf884551",
+      "sparse25_fit59_cache": "6d6f0a4563fda0d4ef7cd2ecad3903f86493af8726d2869c603a17dc6e620756",
+      "sparse25_fit59_receipt": "e8a5d40849a762e4b4c2b220f7e4b36ee0081bad2998b3801cc75414f8efe068",
+      "sparse25_fit63_cache": "d8beb033e1e1d987e369da076c8f53db480c95acb57b94242d71839c9f5a44a8",
+      "sparse25_fit63_receipt": "c7b5f7bac04de42a6835aa31e9ee4ff36932d28644fe1f5222a553635cbd90b9",
+      "sparse25_fit67_cache": "61232d3fdcadbbd6923154bc53302f56cdbab7c9d3255055441fa10abf077af4",
+      "sparse25_fit67_receipt": "6427f9a9bbf9bbcc35f6ef85ac5ab4d5875315cc902d17cb650dadb02cdb3ffc",
+      "sparse25_fit71_cache": "9bc46234dbc99ed5148cabd8627074ac969d71743f1b727fe3a72731651c86d9",
+      "sparse25_fit71_receipt": "5505569bfd3514d2b48f430f27f2ee054df9c12011fd3f77c1325dcb1865cbca",
+      "sparse25_fit75_cache": "2da27bb61821d3e6de26dfdaf6775f9afaaa2a39e7ccf9f95b858aae2a6bb8cd",
+      "sparse25_fit75_receipt": "02863aff2cd11778fde902b733770d810199ece59e56b97e7aefb49a841a80d7",
+      "sparse_fullsix_freeze": "9d2c63e0a25ef0b3c2d9bf0b3c26e862380514d6c1e1ef1b335a52861a160689",
+      "sparse_fullsix_protocol": "94a0dd8573c954eca1e4a736e036959a941f227df5ea6059cc5cc41b8bee3612",
+      "sparse_fullsix_report": "09097787e3b0c8bb3dbd5661b990ac768c9e9ab46cf3f32db7ae7a4e9e95929a",
+      "sparse_fullsix_verification": "8d93d596351f9fd078d166b5384527bd59d56ccb741571479d3b2e2ca1d50af7",
+      "sparse_pilot_freeze": "18f49d3e235bc4fe8ff2fcd1e550bef09cc8b681f9420b103aca1080fdda8910",
+      "sparse_pilot_protocol": "2cc006183d89ce6a21ffb740e5e9bf38afc3bfb4f5014fc57e83b9c701f0a635",
+      "sparse_pilot_report": "893256cc76aded8606d00a922dc7a275914468184fad9ae3e7c33d2678040392",
+      "sparse_pilot_verification": "63c8c259c4dfcc6720b5d776e4cb495428c60924c6d63085c08019c112d30b20"
+    },
+    "kaggle_access": false,
+    "package_versions": {
+      "catboost": "1.2.8",
+      "lightgbm": "4.6.0",
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.8.0",
+      "scipy": "1.18.0",
+      "threadpoolctl": "3.6.0"
+    },
+    "python_version": "3.13.5",
+    "recipe_sha256": "4ad96b688aff0a13aa7171fc27a29e251dd6b122a36f6eabd2b8a9b8e70bccf7",
+    "schema_version": 1,
+    "source_lineage": {
+      "all_six_C1_B_lineages_validated": true,
+      "all_six_adapter_control_bridges_validated": true,
+      "all_six_availability_masks_reconstructed": true,
+      "all_six_cutoffs_aligned": true,
+      "all_six_sparse25_incumbents_reconstructed": true,
+      "baseline_manifest_sha256": "6e7c2cb50fe6d0ee4767a44c40f152b6538b933fab6cf7082659b16d791f7d1e",
+      "fullsix_prediction_source_signature": "9b679e1a4a17b12e6ee6e418334c5a50e652c49935b5e1c22d170ed87ffb58e5",
+      "fullsix_verification_status": "PASS",
+      "kaggle_access": false,
+      "pilot_prediction_source_signature": "59104d95490adc147c07cfa18559074dae71599530fc1d0a7a5d948ae26a2d33",
+      "pilot_verification_status": "PASS",
+      "source_lineage_by_cutoff": {
+        "55": {
+          "C1_B": {
+            "audit_sha256": "1a6c84022dbbb806b635e9548020428fd2202a4cff7e7c1e12fe61915aed6074",
+            "cache_sha256": "8b7132f5e275f67c6336b8327577b4416fcd74f4ea7464f6da9445b3b68a126a",
+            "fit_rows": 12020,
+            "probability_sha256": "719943909943de3b0057ed2293f8469f8d9101babd48a278f3e6aae3b07d3fd2"
+          },
+          "C1_B_audit_fit_cycles": [
+            47,
+            55
+          ],
+          "C1_B_audit_validation_prediction_cycles": [
+            56,
+            67
+          ],
+          "C1_B_fit_scope_validated_by_Round1_audit": true,
+          "C1_B_outer_validation_labels_passed_to_fit_or_selection": false,
+          "C2_B_cache_sha256": "ce49c6b471f4b9eca8be1c24fa37b487d9a688b28dc543e3faa1a8b6fc7d177c",
+          "CatBoost_cache_sha256": "0cda97c481aef51495e3fd4a23c43b0a906f23ffc9080e91194250e7be4d046a",
+          "current_sparse25_route_reconstructed": true,
+          "fit_cutoff": 55,
+          "fit_rows": 12020,
+          "horizon": 67,
+          "missing_rows": 1203,
+          "present_rows": 16482,
+          "record_ids_sha256": "31a50f35369d3acce51584f3997416149a58143fac90418c3c59052f47029d3b",
+          "row_positions_sha256": "aca4054e5b32b98e2de800a24cc8beb38d4b7d86f66f7f4f7e7ed723408136b6",
+          "score_cycles": [
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            65,
+            66,
+            67
+          ],
+          "score_rows": 17685,
+          "sparse25_cache_sha256": "0efbfd81ac9489c29c9ae1e06922e8769dbc1227a7242a1bb779940cfe682f5b",
+          "sparse25_freeze_signature": "59104d95490adc147c07cfa18559074dae71599530fc1d0a7a5d948ae26a2d33",
+          "sparse25_receipt_sha256": "764fbfcd6ee191e90d9519561ea591b042bdef2845f62452ba055d6dcf884551"
+        },
+        "59": {
+          "C1_B": {
+            "audit_sha256": "3d8cb593f0856e8bc571c502879237433279bff6285e2aa99cb21eb43d8a3000",
+            "cache_sha256": "b23bac0c6e66a0d2256d7860051210ff1e620c4e08c5ae136ed5dc4376d19c0e",
+            "fit_rows": 16134,
+            "probability_sha256": "804ce99d5b49953ecc127485d97d7df3ec80652820cafa0888733c60736bda96"
+          },
+          "C1_B_audit_fit_cycles": [
+            47,
+            59
+          ],
+          "C1_B_audit_validation_prediction_cycles": [
+            60,
+            63
+          ],
+          "C1_B_fit_scope_validated_by_Round1_audit": true,
+          "C1_B_outer_validation_labels_passed_to_fit_or_selection": false,
+          "C2_B_cache_sha256": "77f052f1023fef44d3700662d1bc75898c856e5fd22544d3699c67ea1a4196e5",
+          "CatBoost_cache_sha256": "a31808368652e3533c15c4b9047dfca02681ada516948e9e064d1fd41e4a688f",
+          "current_sparse25_route_reconstructed": true,
+          "fit_cutoff": 59,
+          "fit_rows": 16134,
+          "horizon": 63,
+          "missing_rows": 369,
+          "present_rows": 6124,
+          "record_ids_sha256": "7ea3b7c5df36da80adba6125ccb1f1427c424dd912bdd3dd500f4ae6763101e7",
+          "row_positions_sha256": "c30a4445e9bda0ef8dad1fb28ddc81781703d9626cf70e182df15d7bce137e6d",
+          "score_cycles": [
+            60,
+            61,
+            62,
+            63
+          ],
+          "score_rows": 6493,
+          "sparse25_cache_sha256": "6d6f0a4563fda0d4ef7cd2ecad3903f86493af8726d2869c603a17dc6e620756",
+          "sparse25_freeze_signature": "9b679e1a4a17b12e6ee6e418334c5a50e652c49935b5e1c22d170ed87ffb58e5",
+          "sparse25_receipt_sha256": "e8a5d40849a762e4b4c2b220f7e4b36ee0081bad2998b3801cc75414f8efe068"
+        },
+        "63": {
+          "C1_B": {
+            "audit_sha256": "a832387823bceb6d8e3de0a01345ef6b9d9ebd2852c43efffe1b870efcc041ee",
+            "cache_sha256": "ce812751b6b28998997b129fa2b7b6397c028bae1684bd848338dd43c08b009e",
+            "fit_rows": 22627,
+            "probability_sha256": "b2c11b761c7308974dc7223c3632141c7519d80375cb81e6c983828b2e894372"
+          },
+          "C1_B_audit_fit_cycles": [
+            47,
+            63
+          ],
+          "C1_B_audit_validation_prediction_cycles": [
+            64,
+            67
+          ],
+          "C1_B_fit_scope_validated_by_Round1_audit": true,
+          "C1_B_outer_validation_labels_passed_to_fit_or_selection": false,
+          "C2_B_cache_sha256": "dab6d76924259d523caaf0606a7fa21b1ef22dede59605a0ab5dd758986b1261",
+          "CatBoost_cache_sha256": "2c3f58a20da87533182efeca9b821bbbf6740883205ee90428e5934d95d6a4c0",
+          "current_sparse25_route_reconstructed": true,
+          "fit_cutoff": 63,
+          "fit_rows": 22627,
+          "horizon": 67,
+          "missing_rows": 442,
+          "present_rows": 6636,
+          "record_ids_sha256": "eb09f6944bdbe9b9c4aed5b60c6d29d88d3775a8458463656fc08611494afe5d",
+          "row_positions_sha256": "55da25f1a20f08a2cb52863003c2528d3af162257ff49ab4ca66965358bdda2a",
+          "score_cycles": [
+            64,
+            65,
+            66,
+            67
+          ],
+          "score_rows": 7078,
+          "sparse25_cache_sha256": "d8beb033e1e1d987e369da076c8f53db480c95acb57b94242d71839c9f5a44a8",
+          "sparse25_freeze_signature": "9b679e1a4a17b12e6ee6e418334c5a50e652c49935b5e1c22d170ed87ffb58e5",
+          "sparse25_receipt_sha256": "c7b5f7bac04de42a6835aa31e9ee4ff36932d28644fe1f5222a553635cbd90b9"
+        },
+        "67": {
+          "C1_B": {
+            "audit_sha256": "a854215f01672733b64b1adf3c778fd653342dcbd7abc960a0fe9c0ca1330a2a",
+            "cache_sha256": "52aa9c0bc7850828b7a58f324e8b5c50d76fcd4e1a1feab966cb612991f9bd8e",
+            "fit_rows": 29705,
+            "probability_sha256": "f95d9c715dabfc13fad3a678b2a5e9b03417def62abef2748ab8ac7b95310698"
+          },
+          "C1_B_audit_fit_cycles": [
+            47,
+            67
+          ],
+          "C1_B_audit_validation_prediction_cycles": [
+            68,
+            79
+          ],
+          "C1_B_fit_scope_validated_by_Round1_audit": true,
+          "C1_B_outer_validation_labels_passed_to_fit_or_selection": false,
+          "C2_B_cache_sha256": "853a8c44ac2b3ea50fc1824fec78f63948aee6b1c47678dc1ddc8ecb505ecdea",
+          "CatBoost_cache_sha256": "4b63070ac665e2ed2a9f567fb5c945f640da1eace5533af8d87d7df1a66ead59",
+          "current_sparse25_route_reconstructed": true,
+          "fit_cutoff": 67,
+          "fit_rows": 29705,
+          "horizon": 79,
+          "missing_rows": 1375,
+          "present_rows": 19528,
+          "record_ids_sha256": "e63c72f954b16a018af4f970ae41306425a22a376147d6a8c5ea82b59d7490f5",
+          "row_positions_sha256": "9ead64310afbcc9fd5ef149b46a920a7dd2062debc58cfec29cd01c5f5b30781",
+          "score_cycles": [
+            68,
+            69,
+            70,
+            71,
+            72,
+            73,
+            74,
+            75,
+            76,
+            77,
+            78,
+            79
+          ],
+          "score_rows": 20903,
+          "sparse25_cache_sha256": "61232d3fdcadbbd6923154bc53302f56cdbab7c9d3255055441fa10abf077af4",
+          "sparse25_freeze_signature": "59104d95490adc147c07cfa18559074dae71599530fc1d0a7a5d948ae26a2d33",
+          "sparse25_receipt_sha256": "6427f9a9bbf9bbcc35f6ef85ac5ab4d5875315cc902d17cb650dadb02cdb3ffc"
+        },
+        "71": {
+          "C1_B": {
+            "audit_sha256": "ac6999446374638f848a054c46f59b8528aea717df139880d849504897833df3",
+            "cache_sha256": "5db3f24e4f61d92f8a4044a1b531ed6cfeb8cfaa351c128425f1873a26d84caa",
+            "fit_rows": 34655,
+            "probability_sha256": "c19982adad5858c59fb7220c005fd09480871a32058b342789c338f6fd8286b2"
+          },
+          "C1_B_audit_fit_cycles": [
+            47,
+            71
+          ],
+          "C1_B_audit_validation_prediction_cycles": [
+            72,
+            75
+          ],
+          "C1_B_fit_scope_validated_by_Round1_audit": true,
+          "C1_B_outer_validation_labels_passed_to_fit_or_selection": false,
+          "C2_B_cache_sha256": "13a9e468c4d072e18c2c3fc00d8278f3317bd809b179e82c894d71df5acb52bf",
+          "CatBoost_cache_sha256": "7713680bf004a3de1c64cecdc097550e0bb8384ae22a32ff0d0ab41c406b062a",
+          "current_sparse25_route_reconstructed": true,
+          "fit_cutoff": 71,
+          "fit_rows": 34655,
+          "horizon": 75,
+          "missing_rows": 507,
+          "present_rows": 6955,
+          "record_ids_sha256": "921788fe49ec49c4b017e9af7360cdf74f5f7364e479f57e60b019cd49f7307c",
+          "row_positions_sha256": "b6e78245afd13f45f95e6838b98e1c97a66e98df51af1ae3548b791a4ce198bd",
+          "score_cycles": [
+            72,
+            73,
+            74,
+            75
+          ],
+          "score_rows": 7462,
+          "sparse25_cache_sha256": "9bc46234dbc99ed5148cabd8627074ac969d71743f1b727fe3a72731651c86d9",
+          "sparse25_freeze_signature": "9b679e1a4a17b12e6ee6e418334c5a50e652c49935b5e1c22d170ed87ffb58e5",
+          "sparse25_receipt_sha256": "5505569bfd3514d2b48f430f27f2ee054df9c12011fd3f77c1325dcb1865cbca"
+        },
+        "75": {
+          "C1_B": {
+            "audit_sha256": "428a8f1530e0eadf288303721519e521ee9b14fc65bff84faf09aae5a08d4e2b",
+            "cache_sha256": "ca829d3d5f8a6becc6ea08436f8e04aa9b58067b0ebc7fceb23dd6630a9df5e6",
+            "fit_rows": 42117,
+            "probability_sha256": "a21ba8ffa0396afe9f8d7ee78bbcccc5d6024ade0037f1cb708ddc208f613095"
+          },
+          "C1_B_audit_fit_cycles": [
+            47,
+            75
+          ],
+          "C1_B_audit_validation_prediction_cycles": [
+            76,
+            79
+          ],
+          "C1_B_fit_scope_validated_by_Round1_audit": true,
+          "C1_B_outer_validation_labels_passed_to_fit_or_selection": false,
+          "C2_B_cache_sha256": "226d81383de01240c1ae532f572361e0d339b47c1d086d32c7ee548794719eab",
+          "CatBoost_cache_sha256": "44b5520854e2c392f93878776cc3e5b9dbc5fd25404d53777593db619d19f429",
+          "current_sparse25_route_reconstructed": true,
+          "fit_cutoff": 75,
+          "fit_rows": 42117,
+          "horizon": 79,
+          "missing_rows": 526,
+          "present_rows": 7965,
+          "record_ids_sha256": "9f911aa7853035180ed0ade92f25ee01a6135fcf97944efee34bfc1e62e30ce3",
+          "row_positions_sha256": "90d2c53157abdf97367b909335151bf728f36a21740ffaffb90a4a5012bcef94",
+          "score_cycles": [
+            76,
+            77,
+            78,
+            79
+          ],
+          "score_rows": 8491,
+          "sparse25_cache_sha256": "2da27bb61821d3e6de26dfdaf6775f9afaaa2a39e7ccf9f95b858aae2a6bb8cd",
+          "sparse25_freeze_signature": "9b679e1a4a17b12e6ee6e418334c5a50e652c49935b5e1c22d170ed87ffb58e5",
+          "sparse25_receipt_sha256": "02863aff2cd11778fde902b733770d810199ece59e56b97e7aefb49a841a80d7"
+        }
+      },
+      "test_data_used": false
+    },
+    "source_sha256": {
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v2_classification.py": "b15dbe65b62954f854dd65a18ffe5ec36e4024997b8a9b1cc8cb2575c524d6d7",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_c01.py": "7813653d24b531df1b133e99e13f9c3e24e1ba41d9e8de27a0d06eca03ed0343",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_sparse_classification.py": "a629b4aeb3e6ea564b61449502d2f8f712daf517d95ed041652d3866a2f27c1b",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_sparse_classification_fullsix.py": "7b7e7425eeb497c9f9d5c1f55e2483c113ae8fe4502b1a43eee6e4573bc74c97",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_verify_sparse_classification.py": "683f073bad4dac04728fcf0045cd3d39b0f1a1e790352f9c0174ecb36a867699",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_verify_sparse_classification_fullsix.py": "acf3be75189f832af5d6ccc310326d1b0797c0e3d54eec6a1f7037ee0833d474",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\research_campaign_classification_stage2.py": "1a78b419e2b02c5187696f82823c2f8f96c7fa5c329846eff44ac52bbead1126",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\classification_round2_models.py": "239008f056c6f5e004e84d2b9df9f5bfb20695ccfad90eed4deec3463c7d4575",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1.py": "d21ac914d0d1f516a93e431116556dabdbe7313a21fd2b1b04a73371bd56f420",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1_c01.py": "58d6987508d48d1cc20846ad420c6c2835f8d5e4123878e3c1628d8167771462",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_sparse_classification.py": "fb5b013fa59d0b748a3386dae90cb14789a0b4cbd9a5c7a115d5ddc3c443d5a3",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\round1_evaluation.py": "be26992ee5c75190eb8a412fa6635dabd242eee1609fad0380023bfe3a1e300f",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\utils\\paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555"
+    },
+    "test_data_used": false,
+    "validation_labels_passed_to_adapter": false
+  },
+  "signature": "30827e23a4c43fe3c4ffbfbceb1e6cb48690e5e75f606b63f1bb535ae5b8afa4"
+}
