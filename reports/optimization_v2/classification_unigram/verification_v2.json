@@ -1,0 +1,111 @@
+{
+  "status": "PASS",
+  "verified_at_utc": "2026-10-31T10:13:11.146688+00:00",
+  "freeze_signature": "ab315de1d94e3ffd421aee49f0563e869533147ba003a32c52948884d97d3e19",
+  "independent_metric_recalculation": "PASS",
+  "fit_count": 4,
+  "cutoffs": [
+    55,
+    67
+  ],
+  "candidate_variants": [
+    "unigram_counts",
+    "unigram_binary"
+  ],
+  "all_rows_through_cutoff_fit_verified": true,
+  "training_fingerprint_and_feature_allowlist_verified": true,
+  "fit_only_text_state_audit_present": true,
+  "official_test_or_sample_opened": false,
+  "threshold": 0.5,
+  "route_invariants": "PASS: candidate computed only on present rows; archived CB_MISSING retained exactly on missing/blank rows; incumbent C2_B retained exactly on present rows.",
+  "control_input_hashes": {
+    "official_classification_train": {
+      "path": "data/raw/classification/Train.csv",
+      "sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c"
+    },
+    "round1_catboost_freeze": {
+      "path": "experiments/dual_campaign/classification/catboost_freeze.json",
+      "sha256": "9049c1a7247b0e55c3700b58f1f380dabb9849bc0e8c8fdab0b3c318aa4d1114"
+    },
+    "fit55/round1_c2b_cache": {
+      "path": "experiments/runs/classification_round1_v1/fit55__C2_B.npz",
+      "sha256": "ce49c6b471f4b9eca8be1c24fa37b487d9a688b28dc543e3faa1a8b6fc7d177c"
+    },
+    "fit55/round1_fit_audit": {
+      "path": "reports/classification_round1/fit_audits/fit55.json",
+      "sha256": "1a6c84022dbbb806b635e9548020428fd2202a4cff7e7c1e12fe61915aed6074"
+    },
+    "fit55/round1_catboost_cache": {
+      "path": "experiments/runs/dual_cls_catboost_v1/fit55.npz",
+      "sha256": "0cda97c481aef51495e3fd4a23c43b0a906f23ffc9080e91194250e7be4d046a"
+    },
+    "fit55/round1_catboost_metadata": {
+      "path": "experiments/runs/dual_cls_catboost_v1/fit55.json",
+      "sha256": "eeadc3f3db6c29137a1d0028ed4f08aea0d7b5e40b01af3c217ca003ab293ef8"
+    },
+    "fit67/round1_c2b_cache": {
+      "path": "experiments/runs/classification_round1_v1/fit67__C2_B.npz",
+      "sha256": "853a8c44ac2b3ea50fc1824fec78f63948aee6b1c47678dc1ddc8ecb505ecdea"
+    },
+    "fit67/round1_fit_audit": {
+      "path": "reports/classification_round1/fit_audits/fit67.json",
+      "sha256": "a854215f01672733b64b1adf3c778fd653342dcbd7abc960a0fe9c0ca1330a2a"
+    },
+    "fit67/round1_catboost_cache": {
+      "path": "experiments/runs/dual_cls_catboost_v1/fit67.npz",
+      "sha256": "4b63070ac665e2ed2a9f567fb5c945f640da1eace5533af8d87d7df1a66ead59"
+    },
+    "fit67/round1_catboost_metadata": {
+      "path": "experiments/runs/dual_cls_catboost_v1/fit67.json",
+      "sha256": "df1b7a8d434767c723f98a65ae7a8442c418692fecccffdc6ef9b11dbeb6a538"
+    }
+  },
+  "candidate_cache_hashes": {
+    "fit55/unigram_counts": "81ba9ea060d92f23c9dbdf2a83c8c94e20de16ec43ea6e6f2b8c44fdfd7ed99b",
+    "fit67/unigram_counts": "f1db37eb1d359cbae9c80d72057eb736163d22fa6185d1f84ca2ba6934ea8b91",
+    "fit55/unigram_binary": "8597acadb3ef905196404201bee6ce5ab14e106abdf78bbd99bfe3fa9a1cfe50",
+    "fit67/unigram_binary": "d706b0bdf9dd9c9f92ceaf2c989a9339aad9f28a18d30e2a388e6ed34a7608c8"
+  },
+  "pilot_gate": {
+    "unigram_counts": {
+      "pooled_primary_delta_macro_f1": -0.01198818125346135,
+      "pooled_h12_delta_macro_f1": -0.011518073537702511,
+      "individual_view_delta_macro_f1": {
+        "W1": -0.008459463000612621,
+        "W4": -0.014959166230523846,
+        "H12_E": -0.007661381920066601,
+        "H12_L": -0.014949561961037583
+      },
+      "pooled_improvement_gate": false,
+      "individual_guardrail_gate": false,
+      "pilot_gate_pass": false,
+      "next_action": "Retire this family; no additional fits are authorized by this pilot."
+    },
+    "unigram_binary": {
+      "pooled_primary_delta_macro_f1": -0.009559278367833768,
+      "pooled_h12_delta_macro_f1": -0.0093711133700346,
+      "individual_view_delta_macro_f1": {
+        "W1": -0.0038766506694438707,
+        "W4": -0.014308995446981831,
+        "H12_E": -0.004444053686818772,
+        "H12_L": -0.01383807940087678
+      },
+      "pooled_improvement_gate": false,
+      "individual_guardrail_gate": false,
+      "pilot_gate_pass": false,
+      "next_action": "Retire this family; no additional fits are authorized by this pilot."
+    }
+  },
+  "verification_context": {
+    "status": "REPORT_ONLY_VERIFIER_CONTEXT_CORRECTION",
+    "freeze_signature": "ab315de1d94e3ffd421aee49f0563e869533147ba003a32c52948884d97d3e19",
+    "original_frozen_verifier_code_sha256": "795922dd3038426ef51356dd5d98e270c58910ee6647d649b55a96d5ddc121c0",
+    "corrected_verifier_code_sha256": "29f0e5df0c10b021b64621ac05fe745af07a29e9f2f47c0e11a75bc79db5c0d6",
+    "versioned_verifier_path": "scripts/optimization_v2_verify_unigram_v2.py",
+    "versioned_verifier_code_sha256": "431814d77e6b9fa4185f302443b4a5ec8c03f16c0565cb28198cb9109df2035a",
+    "preserved_failure_receipt_sha256": "7d07820f076fcfce5591605c5ce57214c3d6d4c59247b46eccb532cb63496a2a",
+    "other_frozen_code_input_runtime_identities_unchanged": true,
+    "reason": "Corrected the independent verifier to use the ClassificationModel compact canonical JSON digest for its fitted-state check. This changes no fit code, protocol, Train/control input, model, score, or fit count.",
+    "additional_fits": 0
+  }
+}

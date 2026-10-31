@@ -1,0 +1,68 @@
+{
+  "id": "optimization_v2_classification_unigram_pilot_v1",
+  "status": "FROZEN_BEFORE_REAL_FITS",
+  "source_head_observed_at_assignment": "6bd52501fcd963bc3154ad3a2ccd7e359d0f9714",
+  "hypothesis": "The C2_B word (1,2) representation may spend capacity on rare pair co-occurrences that do not transfer across future cycles; unigram-only or unigram binary-presence TF-IDF may be more stable.",
+  "target": "artifact_signal",
+  "metric": "Macro F1 using fixed labels [0,1] and threshold 0.50",
+  "fit_boundary": "Official Classification Train only. At cutoffs 55 and 67, fit every row with 47 <= cycle_code <= cutoff, including blank/missing streams. No validation labels enter fitting or selection.",
+  "source_boundary": "Official Train is the only dataset opened. Official Test and SampleSubmission are not read.",
+  "base": {
+    "recipe": "C2_B",
+    "structured": "Reuse ClassificationModel C2_B expanded structured preprocessing, fit-only scaling, fit-only one-hot encoding, sparse design, and missing-stream indicator.",
+    "logistic_regression": "Unchanged C2_B LogisticRegression parameters: C=1.0, solver=liblinear, max_iter=2000, tol=0.0001, class_weight=null, random_state=42.",
+    "fit_population": "All past official Train rows, including blank/missing signal_stream rows.",
+    "only_change": "Present expert word TF-IDF vectorizer configuration; no structured preprocessing or logistic-regression change."
+  },
+  "variants": [
+    {
+      "id": "unigram_counts",
+      "ngram_range": [1, 1],
+      "binary": false,
+      "sublinear_tf": true,
+      "other_original_tfidf_parameters_unchanged": true
+    },
+    {
+      "id": "unigram_binary",
+      "ngram_range": [1, 1],
+      "binary": true,
+      "sublinear_tf": false,
+      "other_original_tfidf_parameters_unchanged": true
+    }
+  ],
+  "inherited_tfidf_parameters": {
+    "min_df": 3,
+    "max_df": 0.995,
+    "max_features": 20000,
+    "lowercase": true,
+    "strip_accents": "unicode",
+    "dtype": "float64"
+  },
+  "controls": {
+    "current_champion": "Exact archived C2_B predictions on present rows plus exact archived CB_MISSING predictions on blank/missing rows.",
+    "c2b_fit_scope": "All official Train rows through each cutoff.",
+    "cb_missing_fit_scope": "All official Train rows through each cutoff; stream availability selects its prediction branch only.",
+    "threshold": 0.5
+  },
+  "pilot": {
+    "fit_cutoffs": [55, 67],
+    "fit55_views": {"W1": [56, 59], "H12_E": [56, 67]},
+    "fit67_views": {"W4": [68, 71], "H12_L": [68, 79]},
+    "pooled_views": ["W1+W4", "H12_E+H12_L"],
+    "fit_count": 4,
+    "no_additional_fits_after_pilot": true
+  },
+  "continuation_gate": {
+    "improvement": "At least one pooled view (W1+W4 primary or H12_E+H12_L) has Macro F1 strictly above the exact current champion route.",
+    "guardrail": "For each individual W1, W4, H12_E, and H12_L view, candidate Macro F1 is no more than 0.005 below the exact current champion route.",
+    "stop": "Regardless of gate outcome, stop after pilot and independent verification for Main review."
+  },
+  "known_champion_reference": {
+    "recipe": "C2_B present + CB_MISSING missing",
+    "source": "experiments/optimization_v2/milestone.json at assignment",
+    "primary_macro_f1": 0.8276464066947868,
+    "h12_macro_f1": 0.798983661037366,
+    "interpretation": "Historical six-window values are context only; the pilot gate compares candidate and incumbent on identical pilot rows."
+  },
+  "forbidden": ["Test data", "Kaggle API or upload", "threshold tuning", "calibration", "LR-C", "additional lexical variants", "hyperparameter search", "full-six continuation", "notebook or EDA edits"]
+}

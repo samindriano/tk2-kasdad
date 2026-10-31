@@ -1,0 +1,66 @@
+{
+  "id": "optimization_v2_catboost_native_text_pilot_v1",
+  "status": "PRE_REGISTERED_PILOT",
+  "source_head_observed_at_assignment": "6bd52501fcd963bc3154ad3a2ccd7e359d0f9714",
+  "objective": "Replace only the present-stream C2_B branch with a fixed CatBoost native-text expert; retain exact cached CatBoost missing-stream scores.",
+  "scope": {
+    "new_fit_cutoffs": [55, 67],
+    "fit_rows": "All official Classification Train rows with 47 <= cycle_code <= cutoff, including rows whose signal_stream is missing or blank.",
+    "evaluation_rows": {
+      "fit55": "cycles 56-67 for H12_E, with cycles 56-59 reported as W1",
+      "fit67": "cycles 68-79 for H12_L, with cycles 68-71 reported as W4"
+    },
+    "routing": "The original stream availability mask is computed before any text sentinel normalization. For validation rows, preserve the exact cached CB_MISSING probability on missing/blank streams and replace only present-stream C2_B probabilities with the candidate. The candidate's own probability is only requested for present validation rows.",
+    "controls": "Current champion is C2_B on present rows plus exact Round 1 CatBoost CB_MISSING cache on missing/blank rows. C4_HGB is not used.",
+    "target": "artifact_signal",
+    "threshold": 0.50,
+    "forbidden_inputs": ["record_id", "artifact_signal", "threat_rank"],
+    "test_data": "Do not read Test data or labels."
+  },
+  "model": {
+    "class": "CatBoostClassifier",
+    "loss_function": "Logloss",
+    "iterations": 500,
+    "depth": 6,
+    "learning_rate": 0.05,
+    "random_seed": 42,
+    "thread_count": 2,
+    "eval_set": null,
+    "early_stopping": false,
+    "use_best_model": false,
+    "structured_features": "Frozen expanded parser and native categorical design from the existing CatBoost missing expert; preprocessing fit on all fold-training rows.",
+    "native_text": {
+      "text_column": "signal_stream",
+      "tokenizer": {
+        "tokenizer_id": "Space",
+        "delimiter": " ",
+        "separator_type": "ByDelimiter",
+        "lowercasing": "false"
+      },
+      "dictionary": {
+        "dictionary_id": "Unigram",
+        "gram_order": 1,
+        "occurence_lower_bound": 3,
+        "max_dictionary_size": 20000,
+        "option_spelling_note": "CatBoost 1.2.8 official Python Dictionary API spells this setting occurence_lower_bound."
+      },
+      "feature_calcers": ["BoW", "NaiveBayes"],
+      "blank_stream_handling": {
+        "sentinel": "__KASDAD_EMPTY_STREAM__",
+        "applies_to": "Only missing/blank signal_stream cells passed to model fit/predict after the original availability mask is separately retained.",
+        "fit_scope": "Sentinel and vocabulary statistics are constructed only within each fold's official Train fit rows."
+      }
+    }
+  },
+  "pilot_acceptance_gate": {
+    "improvement": "At least one of pooled W1+W4 primary Macro F1 or pooled H12 Macro F1 must exceed the current champion.",
+    "view_guardrail": "No individual W1, W4, H12_E, or H12_L Macro F1 may be more than 0.01 below the current champion.",
+    "next_step": "Report pilot to Main and stop. Do not begin cutoffs 59, 63, 71, or 75 without Main's explicit continuation decision."
+  },
+  "reporting": {
+    "metrics": ["Macro F1", "per-class precision/recall/F1/support", "confusion matrix", "average precision", "Brier score"],
+    "subgroups": ["stream_present", "stream_missing_or_blank", "entry_friction"],
+    "controls": ["exact missing-branch equality", "exact current-champion-present control", "row and prediction hashes", "frozen input/cache identities"],
+    "no_tuning": "No parameter sweep, threshold calibration, score calibration, blending, or Kaggle use."
+  }
+}

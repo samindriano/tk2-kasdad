@@ -1,0 +1,77 @@
+{
+  "status": "FROZEN_BEFORE_REAL_FITS",
+  "frozen_at_utc": "2026-10-31T09:51:27.756159+00:00",
+  "source_head_observed_at_assignment": "6bd52501fcd963bc3154ad3a2ccd7e359d0f9714",
+  "identity": {
+    "protocol_sha256": "7a243263127540534cb073cebb8e6e9f689c43456d30c69d9e970f60e64f6165",
+    "source_code_sha256": {
+      "src/models/optimization_v2_catboost_text.py": "294e36b5bf85e256bf75383030bcc22cc833b6cc4c49154dbf904c12b7c8bd46",
+      "scripts/optimization_v2_catboost_text.py": "ef1aa0eb5726755b5a3216e0b359cf2dceb9494c7d375eb32b2e8cee91a1bc06",
+      "scripts/optimization_v2_verify_catboost_text.py": "7aad79de955e79c86f8959c39834d5b76ca7f54ed0ad55a6624ccee1f2d63894",
+      "tests/test_optimization_v2_catboost_text.py": "8f661f048510aa4405cd1d84f0758d0cdfc15afc9559a04c7b310cb66263f95e",
+      "src/models/campaign_classification_catboost.py": "5aa480703fd99b28b2343df8a09d68661107995f2b446d3773c735b211d9c3c5",
+      "src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+      "src/models/classification_metrics.py": "db77dd99210835006f96db1659bf4e87213179962b8f692d181af831b6539563",
+      "src/models/classification_round2_models.py": "239008f056c6f5e004e84d2b9df9f5bfb20695ccfad90eed4deec3463c7d4575",
+      "src/models/round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+      "src/models/round1_evaluation.py": "be26992ee5c75190eb8a412fa6635dabd242eee1609fad0380023bfe3a1e300f",
+      "src/data/audit.py": "79cb10c7a1f0795a9c1263c6bbe81a548268e73e38f670068794dc19b2fb9479",
+      "src/utils/paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555",
+      "scripts/research_campaign_classification.py": "1a6f5979c1e1194225356bbd224f34d468114f1c71170e67180f90a70602bcbf",
+      "scripts/research_campaign_classification_stage2.py": "1a78b419e2b02c5187696f82823c2f8f96c7fa5c329846eff44ac52bbead1126"
+    },
+    "input_files": {
+      "official_classification_train": {
+        "path": "data/raw/classification/Train.csv",
+        "sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c"
+      },
+      "round1_catboost_freeze": {
+        "path": "experiments/dual_campaign/classification/catboost_freeze.json",
+        "sha256": "9049c1a7247b0e55c3700b58f1f380dabb9849bc0e8c8fdab0b3c318aa4d1114"
+      },
+      "fit55/round1_c2b_cache": {
+        "path": "experiments/runs/classification_round1_v1/fit55__C2_B.npz",
+        "sha256": "ce49c6b471f4b9eca8be1c24fa37b487d9a688b28dc543e3faa1a8b6fc7d177c"
+      },
+      "fit55/round1_fit_audit": {
+        "path": "reports/classification_round1/fit_audits/fit55.json",
+        "sha256": "1a6c84022dbbb806b635e9548020428fd2202a4cff7e7c1e12fe61915aed6074"
+      },
+      "fit55/round1_catboost_cache": {
+        "path": "experiments/runs/dual_cls_catboost_v1/fit55.npz",
+        "sha256": "0cda97c481aef51495e3fd4a23c43b0a906f23ffc9080e91194250e7be4d046a"
+      },
+      "fit55/round1_catboost_metadata": {
+        "path": "experiments/runs/dual_cls_catboost_v1/fit55.json",
+        "sha256": "eeadc3f3db6c29137a1d0028ed4f08aea0d7b5e40b01af3c217ca003ab293ef8"
+      },
+      "fit67/round1_c2b_cache": {
+        "path": "experiments/runs/classification_round1_v1/fit67__C2_B.npz",
+        "sha256": "853a8c44ac2b3ea50fc1824fec78f63948aee6b1c47678dc1ddc8ecb505ecdea"
+      },
+      "fit67/round1_fit_audit": {
+        "path": "reports/classification_round1/fit_audits/fit67.json",
+        "sha256": "a854215f01672733b64b1adf3c778fd653342dcbd7abc960a0fe9c0ca1330a2a"
+      },
+      "fit67/round1_catboost_cache": {
+        "path": "experiments/runs/dual_cls_catboost_v1/fit67.npz",
+        "sha256": "4b63070ac665e2ed2a9f567fb5c945f640da1eace5533af8d87d7df1a66ead59"
+      },
+      "fit67/round1_catboost_metadata": {
+        "path": "experiments/runs/dual_cls_catboost_v1/fit67.json",
+        "sha256": "df1b7a8d434767c723f98a65ae7a8442c418692fecccffdc6ef9b11dbeb6a538"
+      }
+    },
+    "python": "3.13.5",
+    "packages": {
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.8.0",
+      "catboost": "1.2.8",
+      "threadpoolctl": "3.6.0"
+    }
+  },
+  "signature": "fbb609f5ae36dfbb027dcb865f45747104c1d4148b07936c040d7ea675f348e6",
+  "source_boundary": "Official Classification Train and the exact archived C2_B / CB_MISSING controls only; no Test read.",
+  "fit_boundary": "Only fit cutoffs 55 and 67; both candidate models fit every row through the cutoff, including blank streams."
+}

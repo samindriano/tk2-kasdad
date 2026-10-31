@@ -1,0 +1,31 @@
+{
+  "status": "PASS",
+  "recorded_at_utc": "2026-10-31T11:30:39.356700+00:00",
+  "observed_execution": {
+    "command": "python -m pytest tests/test_optimization_v2_classification.py tests/test_optimization_v2_stack.py tests/test_optimization_v2_preparation.py tests/test_optimization_v2_regression.py tests/test_optimization_v2_unigram.py tests/test_campaign_submission.py -q",
+    "result": "15 passed, 1 warning in 3.53s",
+    "warning": "LightGBM sklearn feature-name UserWarning; no failure"
+  },
+  "separate_native_text_test": {
+    "test_file": "tests/test_optimization_v2_catboost_text.py",
+    "result": "1 passed",
+    "evidence": "reports/optimization_v2/classification_text/pilot_summary_v2.md"
+  },
+  "compilation": {
+    "result": "PASS",
+    "v2_source_files": 32
+  },
+  "figures_opened_by_MAIN": [
+    "reports/optimization_v2/regression_repr/fullsix_window_delta.png",
+    "reports/optimization_v2/regression_repr/fullsix_tail_missing_delta.png",
+    "reports/optimization_v2/classification_policy_deltas.png"
+  ],
+  "unit_test_file_sha256": {
+    "tests/test_optimization_v2_catboost_text.py": "8f661f048510aa4405cd1d84f0758d0cdfc15afc9559a04c7b310cb66263f95e",
+    "tests/test_optimization_v2_classification.py": "5fbfbdc997518dcb1da9e4624b15450e8a8187e197d2418e2ab1c23cf2faa386",
+    "tests/test_optimization_v2_preparation.py": "346884ed3820c4fc889192cbde83f8f890c8300db6deda8e7c92ade45497e643",
+    "tests/test_optimization_v2_regression.py": "55a2b13a3db93461474292ed4ab75fa2dbd0ae9829fe2da765e635dbd3ecdffb",
+    "tests/test_optimization_v2_stack.py": "de7026a9b365e09fe6ef06aa5c305748a14f6c92de9fe8c762564f2fd200aa8d",
+    "tests/test_optimization_v2_unigram.py": "5238fb5167c08862aa7b76195ad5290708b48e55db898a0cdd96defa6d4afcd5"
+  }
+}

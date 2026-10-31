@@ -1,0 +1,53 @@
+{
+  "at_utc": "2026-10-31T10:28:32.498098+00:00",
+  "status": "RECOMMENDED_COMPETITION_CHAMPIONS",
+  "classification": {
+    "candidate": "C2_B present + CatBoost structured missing",
+    "ref": "57833406",
+    "public_macro_f1": 0.82701,
+    "primary_macro_f1": 0.8276464066947868,
+    "H12_macro_f1": 0.798983661037366,
+    "action": "retain",
+    "manifest": "reports/dual_campaign/kaggle/dc_cls_cb_missing_v1.json"
+  },
+  "regression": {
+    "candidate": "75%Ridge25 +25%sparse LGB L1",
+    "ref": "57835122",
+    "public_MAE": 11.3597,
+    "primary_MAE": 11.559390078665364,
+    "H12_MAE": 14.04753258299653,
+    "action": "promote for competition research",
+    "recipe": {
+      "kind": "regression_component_blend",
+      "components": [
+        {
+          "model": "lgb",
+          "params_id": "base",
+          "rank_weight": 0.5,
+          "weight": 0.5625
+        },
+        {
+          "model": "ridge",
+          "rank_weight": 0.75,
+          "weight": 0.1875
+        },
+        {
+          "model": "lgbm_sparse_l1",
+          "rank_weight": 0.5,
+          "weight": 0.25
+        }
+      ]
+    },
+    "manifest": "reports/optimization_v2/kaggle/v2_reg_sparse_lgb25.json",
+    "manifest_sha256": "dd166e92089f24978244496a9a0afabc0d06551dbdc326579a7c898a8844e19a",
+    "training_source_commit": "3e86b173f035afca0bbc636964e367ae21b32c27",
+    "fallback": {
+      "ref": "57832438",
+      "public_MAE": 11.64134,
+      "manifest": "reports/dual_campaign/kaggle/dc_reg_ridge_25_v1.json"
+    }
+  },
+  "academic_models_changed": false,
+  "private_scores_known": false,
+  "Kaggle_final_selection_settings_changed": false
+}

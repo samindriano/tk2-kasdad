@@ -1,0 +1,84 @@
+{
+  "status": "FROZEN_BEFORE_REAL_FITS",
+  "frozen_at_utc": "2026-10-31T10:10:30.693616+00:00",
+  "source_head_observed_at_assignment": "6bd52501fcd963bc3154ad3a2ccd7e359d0f9714",
+  "identity": {
+    "protocol_sha256": "522e96fa9823f92b17cc7af83b25dd1503aa4fcb48243f5c21749d52bd1b0fb5",
+    "source_code_sha256": {
+      "experiments/optimization_v2/classification_unigram/protocol.json": "522e96fa9823f92b17cc7af83b25dd1503aa4fcb48243f5c21749d52bd1b0fb5",
+      "src/models/optimization_v2_unigram.py": "061355a0664a0fa26bd376beed1d72d0331a9a924718f8fb47a40db7b1870292",
+      "scripts/optimization_v2_unigram.py": "ec99b2007e172465b79419f43dff5effcf15310beda665161ad7f4d4b5074174",
+      "scripts/optimization_v2_verify_unigram.py": "795922dd3038426ef51356dd5d98e270c58910ee6647d649b55a96d5ddc121c0",
+      "tests/test_optimization_v2_unigram.py": "5238fb5167c08862aa7b76195ad5290708b48e55db898a0cdd96defa6d4afcd5",
+      "src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+      "src/models/classification_round2_models.py": "239008f056c6f5e004e84d2b9df9f5bfb20695ccfad90eed4deec3463c7d4575",
+      "src/models/classification_metrics.py": "db77dd99210835006f96db1659bf4e87213179962b8f692d181af831b6539563",
+      "src/models/round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+      "src/models/round1_evaluation.py": "be26992ee5c75190eb8a412fa6635dabd242eee1609fad0380023bfe3a1e300f",
+      "src/models/campaign_classification_catboost.py": "5aa480703fd99b28b2343df8a09d68661107995f2b446d3773c735b211d9c3c5",
+      "src/utils/paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555",
+      "src/data/audit.py": "79cb10c7a1f0795a9c1263c6bbe81a548268e73e38f670068794dc19b2fb9479",
+      "scripts/research_campaign_classification.py": "1a6f5979c1e1194225356bbd224f34d468114f1c71170e67180f90a70602bcbf",
+      "scripts/research_campaign_classification_stage2.py": "1a78b419e2b02c5187696f82823c2f8f96c7fa5c329846eff44ac52bbead1126",
+      "scripts/research_campaign_classification_catboost.py": "7fdaa61628d5314539f81ac563f941dd89d511009973f1770a2864a42813abfa",
+      "experiments/classification_round1/protocol.json": "d6843e91b71425efe2a09f0a7b9e0e722414bf3a0ebe0dba0a33c125e6b8ad90",
+      "experiments/classification_round1/freeze.json": "2c5743b11aa9aa88a89e1979e7786fd41803ba816b66734644163131df626d32",
+      "experiments/dual_campaign/classification/catboost_protocol.json": "6b1b6f96497bb52fff3576b5fa55c32afc511ca0017a531f9617ebd6d0a5d7b7",
+      "experiments/dual_campaign/classification/catboost_freeze.json": "9049c1a7247b0e55c3700b58f1f380dabb9849bc0e8c8fdab0b3c318aa4d1114"
+    },
+    "input_files": {
+      "official_classification_train": {
+        "path": "data/raw/classification/Train.csv",
+        "sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c"
+      },
+      "round1_catboost_freeze": {
+        "path": "experiments/dual_campaign/classification/catboost_freeze.json",
+        "sha256": "9049c1a7247b0e55c3700b58f1f380dabb9849bc0e8c8fdab0b3c318aa4d1114"
+      },
+      "fit55/round1_c2b_cache": {
+        "path": "experiments/runs/classification_round1_v1/fit55__C2_B.npz",
+        "sha256": "ce49c6b471f4b9eca8be1c24fa37b487d9a688b28dc543e3faa1a8b6fc7d177c"
+      },
+      "fit55/round1_fit_audit": {
+        "path": "reports/classification_round1/fit_audits/fit55.json",
+        "sha256": "1a6c84022dbbb806b635e9548020428fd2202a4cff7e7c1e12fe61915aed6074"
+      },
+      "fit55/round1_catboost_cache": {
+        "path": "experiments/runs/dual_cls_catboost_v1/fit55.npz",
+        "sha256": "0cda97c481aef51495e3fd4a23c43b0a906f23ffc9080e91194250e7be4d046a"
+      },
+      "fit55/round1_catboost_metadata": {
+        "path": "experiments/runs/dual_cls_catboost_v1/fit55.json",
+        "sha256": "eeadc3f3db6c29137a1d0028ed4f08aea0d7b5e40b01af3c217ca003ab293ef8"
+      },
+      "fit67/round1_c2b_cache": {
+        "path": "experiments/runs/classification_round1_v1/fit67__C2_B.npz",
+        "sha256": "853a8c44ac2b3ea50fc1824fec78f63948aee6b1c47678dc1ddc8ecb505ecdea"
+      },
+      "fit67/round1_fit_audit": {
+        "path": "reports/classification_round1/fit_audits/fit67.json",
+        "sha256": "a854215f01672733b64b1adf3c778fd653342dcbd7abc960a0fe9c0ca1330a2a"
+      },
+      "fit67/round1_catboost_cache": {
+        "path": "experiments/runs/dual_cls_catboost_v1/fit67.npz",
+        "sha256": "4b63070ac665e2ed2a9f567fb5c945f640da1eace5533af8d87d7df1a66ead59"
+      },
+      "fit67/round1_catboost_metadata": {
+        "path": "experiments/runs/dual_cls_catboost_v1/fit67.json",
+        "sha256": "df1b7a8d434767c723f98a65ae7a8442c418692fecccffdc6ef9b11dbeb6a538"
+      }
+    },
+    "python": "3.13.5",
+    "packages": {
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "scipy": "1.18.0",
+      "scikit-learn": "1.8.0",
+      "threadpoolctl": "3.6.0"
+    }
+  },
+  "signature": "ab315de1d94e3ffd421aee49f0563e869533147ba003a32c52948884d97d3e19",
+  "hash_convention": "Training source is UTF-8 LF-normalized; protocol and input/control artifacts are byte-hashed; Train is exact official CSV bytes.",
+  "source_boundary": "Official Classification Train only; Test and SampleSubmission were not opened.",
+  "fit_boundary": "Four fixed model fits only: variants unigram_counts/unigram_binary at cutoffs 55 and 67."
+}

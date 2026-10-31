@@ -1,0 +1,55 @@
+{
+  "id": "optimization_v2_catboost_native_text_pilot_v2",
+  "status": "VERSIONED_PREFIT_CONTROLLER_AMENDMENT",
+  "source_head_observed_at_assignment": "6bd52501fcd963bc3154ad3a2ccd7e359d0f9714",
+  "supersedes_protocol": "protocol.json",
+  "supersedes_freeze_signature": "fbb609f5ae36dfbb027dcb865f45747104c1d4148b07936c040d7ea675f348e6",
+  "preserved_prefit_failure": "reports/optimization_v2/classification_text/prefit_failure_v1.json",
+  "amendment_reason": "The v1 runner incorrectly validated archived CB_MISSING fit_rows against the missing-stream subset. Archived controls were trained on all rows through each cutoff and routed only on missing-stream validation rows.",
+  "amendment_changes_only": [
+    "Validate archived CB_MISSING training fingerprint against all official Train rows with 47 <= cycle_code <= cutoff.",
+    "Validate C2_B and CB_MISSING controls at both cutoffs 55 and 67 completely before the first new native-text fit.",
+    "Use a new v2 freeze and cache namespace; preserve all v1 source, freeze, and failure evidence."
+  ],
+  "unchanged_candidate_protocol": {
+    "fit_cutoffs": [55, 67],
+    "fit_rows": "All official Classification Train rows with 47 <= cycle_code <= cutoff, including rows whose signal_stream is missing or blank.",
+    "evaluation_views": {
+      "fit55": "cycles 56-67 for H12_E, with cycles 56-59 reported as W1",
+      "fit67": "cycles 68-79 for H12_L, with cycles 68-71 reported as W4",
+      "pooled": ["W1+W4", "H12_E+H12_L"]
+    },
+    "target": "artifact_signal",
+    "threshold": 0.50,
+    "candidate": "CatBoostClassifier with frozen expanded structured/native categorical parser plus raw signal_stream native text; replaces only present-stream C2_B at prediction time.",
+    "control_fit_scope": "Both archived C2_B and CB_MISSING components were fitted on all official Train rows through each cutoff. Stream availability selects the validation-time branch only.",
+    "routing": "Compute original stream availability mask before text sentinel normalization. Missing/blank validation rows retain exact archived CB_MISSING scores. Present validation rows use the native-text candidate. The current champion remains C2_B present plus CB_MISSING missing.",
+    "model_parameters": {
+      "loss_function": "Logloss",
+      "iterations": 500,
+      "depth": 6,
+      "learning_rate": 0.05,
+      "random_seed": 42,
+      "thread_count": 2,
+      "eval_set": null,
+      "early_stopping": false,
+      "use_best_model": false
+    },
+    "native_text": {
+      "tokenizer": "Space tokenizer; split on a single space with ByDelimiter; lowercasing false",
+      "dictionary": "Unigram; gram_order 1; CatBoost Python API spelling occurence_lower_bound=3; max_dictionary_size=20000",
+      "feature_calcers": ["BoW", "NaiveBayes"],
+      "blank_stream_sentinel": "__KASDAD_EMPTY_STREAM__",
+      "sentinel_collision_on_official_train": 0,
+      "fit_only": "Text dictionary/calcer state is learned internally from all rows supplied to model.fit; no eval_set or external text corpus."
+    },
+    "forbidden_inputs": ["record_id", "artifact_signal", "threat_rank"],
+    "forbidden_actions": ["Test read", "Kaggle API/upload", "parameter sweep", "threshold calibration", "score calibration", "blending", "additional fit cutoffs"],
+    "pilot_gate": {
+      "improvement": "At least one pooled view (W1+W4 Primary or H12_E+H12_L) must improve current-champion Macro F1.",
+      "guardrail": "No individual W1, W4, H12_E, or H12_L Macro F1 may be more than 0.01 below current champion.",
+      "stop": "Report pilot and stop for Main review; full-six continuation requires explicit Main decision."
+    },
+    "reporting": ["per-class precision/recall/F1/support", "confusion matrix", "average precision", "Brier score", "stream-present/missing", "entry_friction", "exact branch invariants", "original cache hashes"]
+  }
+}
