@@ -1,0 +1,256 @@
+{
+  "status": "POSTFIT_SUMMARY_OF_PREEXISTING_FROZEN_RECIPE",
+  "card_id": "R02",
+  "task": "regression",
+  "freeze_signature": "6a485f4c4ec1b0d157e759a31faebab9b7765e63ac7c49cf125334767a743d87",
+  "card": {
+    "card_path": "reports/optimization_v3/research_backlog/cards/R02.md",
+    "change": "Original sparse L1 hybrid model; only max_features20000Ã¢â€ â€™60000, retaining regression min_df2 and other parameters.",
+    "condition": "No additional dependency",
+    "evaluation": "STANDARD",
+    "evidence": [
+      "reports/optimization_v2/regression_repr/fullsix.json",
+      "reports/optimization_v3/research_backlog/feasibility.json"
+    ],
+    "family": "vocab_width",
+    "id": "R02",
+    "implementation": "NOT_IMPLEMENTED",
+    "in_priority_prefix": true,
+    "name": "Wider word vocabulary",
+    "new_results": null,
+    "pilot_predictor_fits": 2,
+    "policy": "R_SPARSE_REPLACE",
+    "preflight_checks": [
+      "Task-specific regression vocabulary occupancy; class scan is motivation only"
+    ],
+    "priority": "P1",
+    "queue_order": 4,
+    "rationale": "Cap dapat membuang identitas token. Audit Classification menemukan 93.338 unigram; besarnya vocabulary Regression tetap harus diperiksa di fit task sendiri.",
+    "status": "PLANNED_NOT_RUN",
+    "task": "regression"
+  },
+  "feature_allowlist": [
+    "impact_load",
+    "entry_friction",
+    "cycle_code",
+    "scope_pressure",
+    "text_load",
+    "scope_trace",
+    "org_spread",
+    "module_spread",
+    "telemetry_flag",
+    "org_code",
+    "module_code",
+    "pattern_code",
+    "signal_stream"
+  ],
+  "evaluation_views": {
+    "H12": [
+      [
+        55,
+        56,
+        67
+      ],
+      [
+        67,
+        68,
+        79
+      ]
+    ],
+    "W1": [
+      [
+        55,
+        56,
+        59
+      ]
+    ],
+    "W4": [
+      [
+        67,
+        68,
+        71
+      ]
+    ],
+    "primary": [
+      [
+        55,
+        56,
+        59
+      ],
+      [
+        67,
+        68,
+        71
+      ]
+    ]
+  },
+  "recipe_delta": {
+    "all_other_tfidf_parameters_unchanged": true,
+    "base_tfidf_max_features": 20000,
+    "candidate_tfidf_max_features": 60000,
+    "policy": "clip(0.75*Ridge25 + 0.25*rank50(new raw sparse prediction),0,100)",
+    "rank_ties": "average",
+    "sparse_lgb_parameters": {
+      "boosting_type": "gbdt",
+      "colsample_bytree": 1.0,
+      "deterministic": true,
+      "force_col_wise": true,
+      "learning_rate": 0.05,
+      "max_depth": -1,
+      "min_child_samples": 40,
+      "min_child_weight": 0.001,
+      "n_estimators": 400,
+      "n_jobs": 2,
+      "num_leaves": 31,
+      "objective": "regression_l1",
+      "random_state": 42,
+      "reg_alpha": 0.0,
+      "reg_lambda": 1.0,
+      "subsample": 1.0,
+      "subsample_freq": 0,
+      "verbosity": -1
+    }
+  },
+  "model": {
+    "id": "V3_BATCH1_R02_WIDE_VOCAB_SPARSE_L1",
+    "estimator": "LightGBM LGBMRegressor objective=regression_l1",
+    "base_tfidf_max_features": 20000,
+    "candidate_tfidf_max_features": 60000,
+    "all_other_tfidf_parameters_unchanged": true,
+    "tfidf_parameters_from_fit_state": {
+      "dtype": "float64",
+      "effective_default_norm": "l2",
+      "max_features": 60000,
+      "min_df": 2,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "sublinear_tf": true
+    },
+    "structured_features": "Inherited V2 sparse-hybrid structured/OHE features plus fit-only TF-IDF; missing-stream indicator retained.",
+    "policy": "clip(0.75*Ridge25 + 0.25*rank50(new raw sparse prediction), 0, 100)",
+    "rank50": "Within each complete future cycle; average ties; percentile=100*rank/n; rank50=0.5*raw+0.5*percentile.",
+    "fit_transforms": "Fit independently on each temporal training prefix only.",
+    "parameters_from_fit_state": {
+      "boosting_type": "gbdt",
+      "colsample_bytree": 1.0,
+      "deterministic": true,
+      "force_col_wise": true,
+      "learning_rate": 0.05,
+      "max_depth": -1,
+      "min_child_samples": 40,
+      "min_child_weight": 0.001,
+      "n_estimators": 400,
+      "n_jobs": 2,
+      "num_leaves": 31,
+      "objective": "regression_l1",
+      "random_state": 42,
+      "reg_alpha": 0.0,
+      "reg_lambda": 1.0,
+      "subsample": 1.0,
+      "subsample_freq": 0,
+      "verbosity": -1
+    }
+  },
+  "fits": {
+    "55": {
+      "fit_cycles": [
+        47,
+        55
+      ],
+      "score_cycles": [
+        56,
+        67
+      ],
+      "fit_rows": 12020,
+      "score_rows": 17685,
+      "fit_seconds": 12.619487699994352,
+      "fit_data_sha256": "cc878c3ca823660046318c5844f8806525750f676351860639bc6b54a387ea06",
+      "target_sha256": "521085136ddee2ce75de31d6dd87602a2935ae23304125cdd0989531e5f466bd",
+      "model_sha256": "3397bfbcc4f6683553e00cc60b61292ffcb879fc5d4014c281eb856a7b8f84b2",
+      "tfidf_vocabulary_size": 45374,
+      "tfidf_width": 45374,
+      "design_shape": [
+        12020,
+        45551
+      ],
+      "design_nnz": 1021221,
+      "missing_stream_fit_rows": 826,
+      "fit_predictor_count": 1,
+      "bundle_npz_sha256": "cf583fd976707d429615e57338c086530d42da4f77b4ecae1c5ba367d70aebf1",
+      "bundle_identity_sha256": "53998dc5666e070bc2626b1e9006d5c193163169a9a06e8b30271b9d4527768d",
+      "lightgbm_version": "4.6.0",
+      "scikit_learn_version": "1.8.0"
+    },
+    "67": {
+      "fit_cycles": [
+        47,
+        67
+      ],
+      "score_cycles": [
+        68,
+        79
+      ],
+      "fit_rows": 29705,
+      "score_rows": 20903,
+      "fit_seconds": 27.23215739999432,
+      "fit_data_sha256": "6358100e2d0a3d3c9ac924d3dc7c48391c8a055afeb562fec3371757bf20d2ba",
+      "target_sha256": "9c01de2816f3e18defb388a49c2713884705c91c086fb40bb99cdf777fb7b85e",
+      "model_sha256": "dec580792bf13199f80ddae9f79c841894034e650873521a519266fc5a1e6682",
+      "tfidf_vocabulary_size": 60000,
+      "tfidf_width": 60000,
+      "design_shape": [
+        29705,
+        60285
+      ],
+      "design_nnz": 2414639,
+      "missing_stream_fit_rows": 2029,
+      "fit_predictor_count": 1,
+      "bundle_npz_sha256": "8dadb3c2b30b62b8758fb82606808a22ac13ae2e397ecf4eb1a54b9f54b6657d",
+      "bundle_identity_sha256": "a9f346fb1ef5ca0b57df4fc919ff9ecea80570c389e57250612f49a52f6c03a1",
+      "lightgbm_version": "4.6.0",
+      "scikit_learn_version": "1.8.0"
+    }
+  },
+  "train_sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+  "input_sha256": {
+    "accepted_regression_manifest": "dd166e92089f24978244496a9a0afabc0d06551dbdc326579a7c898a8844e19a",
+    "cache_only_diagnostics": "8d634debd1dbc6a3eed5250593b9c213570b4fb139b0b9a623a8d704159916df",
+    "canonical_card": "52df72ef188fb4429cfa4dd110ce55a1206dae9a3ec89967d09ba163dead78aa",
+    "canonical_queue": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+    "official_regression_train": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+    "paired_lgb_ridge_cache": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516",
+    "regression_fullsix_report": "a9686473998722b8f86a0f6a4489b4e3a75a6b6ba20c661ac564e6a5e61aea48",
+    "regression_subgroup_diagnostics": "6954fbdd9eb1c95794787ff54cf8a9b8c88dc97373ad9a8bf8e0aefdcaf1551e",
+    "sparse_regression_fullsix_cache": "4b87b0da34069ea3d75490233c574fbd92283f8b6472a43d8c654a20a4b904c9",
+    "sparse_regression_pilot_cache": "eae6bea2dd6933de59ac0f63f54cc08124b59d4bcba91bbe05a7c5ec3dab9ff6"
+  },
+  "source_sha256": {
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1.py": "c93dd71ed2b512f32bf8916f59b0af56bff212934efb8825b0e8a680da72e969",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_r02.py": "30e8d5324f66f30d02176f37d006d6461608839d697259bcd8636dcb67b8ffbe",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_reg_diagnostics.py": "e2af49bb45353fca5bf0c14093be9b0f0b02afe24289a1b5c30dfb584bbd3f55",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v2_regression.py": "b235cfd93c8cc0a207cfcea79892b925f9dfdfe515491a459d6ca1b6142cb590",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1.py": "d21ac914d0d1f516a93e431116556dabdbe7313a21fd2b1b04a73371bd56f420",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1_r02.py": "9ec87ca8d52f1b645013fec6570c19e871e681b477196fd450c2994d759ccd76",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_research_tabular.py": "674d7e52c485583729b8fe999dc133c39aae8dd85abd005a598e2caea9af99f9",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_round2_models.py": "f56f7ee2c337acdf2cbe7160719faf62b1e3d3470a7f656b044ce0890d677e09",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\utils\\paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555"
+  },
+  "package_versions": {
+    "lightgbm": "4.6.0",
+    "numpy": "2.4.2",
+    "pandas": "2.3.3",
+    "psutil": "7.0.0",
+    "scikit-learn": "1.8.0",
+    "scipy": "1.18.0",
+    "threadpoolctl": "3.6.0"
+  },
+  "python_version": "3.13.5",
+  "test_data_used": false,
+  "provenance": "Summary materialized from the immutable pre-fit freeze and verified per-fit sidecars; freeze.json is authoritative."
+}

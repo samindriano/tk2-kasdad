@@ -79,3 +79,12 @@ determines retirement. Independent QA verified row IDs, present-only
 fingerprints, controls, hashes and metrics. The sparse prediction path emitted
 two scikit-learn feature-name warnings; row, probability and routing checks
 passed. See [`C02/RESULTS.md`](C02/RESULTS.md). No Test or Kaggle result was used.
+
+## R02 pilot
+
+R02 is **RETIRE**. The two wider-vocabulary sparse regression fits improved W1,
+W4, primary, and H12, but primary MAE gain was +0.022196 against the frozen
++0.03 minimum. H12 gain was +0.010084; all supported entry-friction,
+stream-presence, and target-tail diagnostics passed. Independent row/control/
+metric QA returned `PASS`. See [`R02/RESULTS.md`](R02/RESULTS.md). No Test or
+Kaggle result was used.
