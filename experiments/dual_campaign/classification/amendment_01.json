@@ -1,0 +1,16 @@
+{
+  "amendment_id": "samuel-dual-campaign-classification-amendment-01",
+  "status": "FROZEN_BEFORE_SUCCESSFUL_CANDIDATE_SCORE",
+  "parent_protocol": "samuel-dual-campaign-classification-v1",
+  "parent_freeze_signature": "168a7149b1a4cb19749788f9a20a04a17c15c19af1f7cebfc0875b4f8c40485e",
+  "failed_pre_score_attempt": "reports/dual_campaign/classification/stage1_attempt.json",
+  "reason": "The first DC_SVC fit on cycles 47-55 raised sklearn ConvergenceWarning with max_iter=5000, tol=1e-4. The process stopped before writing any candidate prediction, score, or cache.",
+  "single_change": {
+    "component": "DC_SVC LinearSVC max_iter",
+    "before": 5000,
+    "after": 20000,
+    "why": "Allow the same prespecified linear SVM objective sufficient solver iterations to converge.",
+    "unchanged": ["C=1.0", "tol=0.0001", "squared_hinge", "L2 penalty", "dual=auto", "random_state=42", "same C2_B feature geometry", "fixed decision margin 0", "all other recipe settings"]
+  },
+  "interpretation": "This is a numerical convergence-budget adjustment made before any successful candidate scoring. The original freeze and failed attempt remain preserved. All resulting comparisons remain adaptive development evidence."
+}

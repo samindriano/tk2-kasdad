@@ -1,0 +1,53 @@
+{
+  "protocol_id": "samuel-classification-catboost-missing-expert-v1",
+  "status": "FROZEN_BEFORE_CATBOOST_FITS",
+  "parent_classification_text_report": "reports/dual_campaign/classification/FINDINGS.md",
+  "question": "Does a fixed CatBoost structured expert improve artifact_signal classification for stream-missing records when the present-stream C2_B expert is left unchanged?",
+  "target": "artifact_signal",
+  "candidate_expert": "CatBoostClassifier on expanded structured features, trained on all rows in each past-only fit fold, routed only to stream-missing validation rows.",
+  "control_route": "C4_HGB = archived C2_B for stream-present rows and archived C1_B for stream-missing rows.",
+  "candidate_route": "C2_B remains unchanged for stream-present rows; CatBoost replaces C1_B only when signal_stream is blank or missing.",
+  "preprocessing": {
+    "feature_allowlist": "EXPANDED_FEATURES only; no signal_stream, record_id, target, or threat_rank.",
+    "numeric_and_count_fields": "Reuse fit-only expanded parsing, numeric indicators, and median imputation from the verified _HGBPreprocessor.",
+    "categorical_fields": ["org_code", "module_code", "pattern_code"],
+    "category_input": "Pass nonmissing raw categories as strings and missing values as a dedicated string sentinel to CatBoost native categorical processing. The expanded preprocessor's ordinal state is retained in the fit audit but not fed as ordinal numeric data to CatBoost."
+  },
+  "fixed_catboost_parameters": {
+    "loss_function": "Logloss",
+    "iterations": 500,
+    "depth": 6,
+    "learning_rate": 0.05,
+    "random_seed": 42,
+    "thread_count": 2,
+    "verbose": false,
+    "allow_writing_files": false,
+    "use_best_model": false,
+    "early_stopping": false,
+    "eval_set": null
+  },
+  "threshold": 0.5,
+  "metric": "fixed-label [0,1] Macro F1 at fixed threshold 0.50",
+  "fit_cutoffs": [55, 59, 63, 67, 71, 75],
+  "primary_windows": {
+    "W1": {"fit": [47, 55], "validation": [56, 59]},
+    "W2": {"fit": [47, 59], "validation": [60, 63]},
+    "W3": {"fit": [47, 63], "validation": [64, 67]},
+    "W4": {"fit": [47, 67], "validation": [68, 71]},
+    "W5": {"fit": [47, 71], "validation": [72, 75]},
+    "W6": {"fit": [47, 75], "validation": [76, 79]}
+  },
+  "h12_windows": {
+    "H12_E": {"fit": [47, 55], "validation": [56, 67]},
+    "H12_L": {"fit": [47, 67], "validation": [68, 79]}
+  },
+  "registered_new_fit_count": 6,
+  "paired_missing_branch_diagnostics": "Compare CatBoost and C1_B predictions at fixed 0.50 over the same stream-missing primary validation rows; report candidate-only correct, C1_B-only correct, net difference, and subgroup Macro F1/AP/Brier.",
+  "optional_fixed_blend": {
+    "gate": "Evaluate only if, on all stream-missing primary validation rows, CatBoost-only correct >= 25, C1_B-only correct >= 25, and CatBoost net correct-count delta >= 0.",
+    "blend": "One 0.50 CatBoost / 0.50 C1_B probability blend on missing-stream rows only, threshold 0.50; present-stream C2_B remains unchanged. No blend or threshold search."
+  },
+  "reporting": "Pooled and equal-cycle Macro F1, six per-window and per-cycle results, confusion matrix, fixed-label per-class precision/recall/F1, AP, Brier, present/missing subgroup coverage. Public Test/Kaggle are not used.",
+  "adaptation_warning": "Cycles 56-79 were previously used in model development. All comparisons are adaptive development evidence, not an untouched holdout.",
+  "official_test_policy": "Do not read, fit, predict, score, or submit official Test data."
+}

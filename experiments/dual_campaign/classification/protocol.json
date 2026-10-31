@@ -1,0 +1,51 @@
+{
+  "protocol_id": "samuel-dual-campaign-classification-v1",
+  "status": "FROZEN_INITIAL_TEXT_REPRESENTATION_SCREEN",
+  "target": "artifact_signal",
+  "official_source": "Classification Train only; cycle 47-79",
+  "metric": "fixed-label [0,1] Macro F1 at a prespecified decision cutoff of 0.50",
+  "threshold_policy": "No outer-label threshold tuning; C2_B logistic recipes use probability >= 0.50; DC_SVC uses LinearSVC margin >= 0 (expit(margin) is an uncalibrated monotone view).",
+  "availability_routing": {
+    "stream_present_expert": "candidate based on C2_B",
+    "stream_missing_expert": "C1_B prediction reused from verified Round 1 cache",
+    "control": "C4_HGB = C2_B when stream present, C1_B when blank/missing"
+  },
+  "fixed_base": {
+    "recipe": "C2_B",
+    "structured_transform": "C2_B Round 1 expanded structured preprocessing and fit-only transforms",
+    "word_tfidf": "C2_B Round 1 frozen word TF-IDF parameters",
+    "missing_indicator": true,
+    "logistic_regression": "C2_B Round 1 frozen parameters unless recipe is DC_SVC"
+  },
+  "recipes": [
+    {
+      "id": "DC_SVC",
+      "change": "Replace LogisticRegression with sparse LinearSVC on the unchanged C2_B structured + word-TF-IDF + stream-missing design.",
+      "parameters": {"C": 1.0, "class_weight": null, "dual": "auto", "fit_intercept": true, "loss": "squared_hinge", "max_iter": 5000, "penalty": "l2", "random_state": 42, "tol": 0.0001},
+      "decision": "Fixed decision margin 0. No calibration fit. expit(margin) only adapts the interface to a 0.50 probability-equivalent rule."
+    },
+    {
+      "id": "DC_NBSVM",
+      "change": "Multiply fit-only C2_B word TF-IDF columns by a smoothed L1-normalized document-presence log-count ratio, then fit the unchanged C2_B LogisticRegression.",
+      "parameters": {"document_presence_smoothing_alpha": 1.0, "normalization": "L1 over each class's smoothed word-presence counts", "logistic_regression": "C2_B Round 1 frozen parameters"},
+      "scope": "Ratio p_j=(df_positive,j+alpha)/sum_j(df_positive,j+alpha), q_j analogously; r_j=log(p_j)-log(q_j), learned from training-fold labels only. This is an NB-SVM-inspired weighted-TF-IDF + LR variant, not the literal binarized NB-SVM model in Wang and Manning (2012, P12-2018, Eq. 2). Structured columns and missing indicator are not reweighted."
+    },
+    {
+      "id": "DC_WORD_CHAR",
+      "change": "Append a character TF-IDF block to the unchanged C2_B structured + word-TF-IDF + stream-missing design.",
+      "parameters": {"analyzer": "char_wb", "ngram_range": [3, 5], "min_df": 3, "max_features": 30000, "sublinear_tf": true, "lowercase": true, "strip_accents": "unicode", "logistic_regression": "C2_B Round 1 frozen parameters"}
+    }
+  ],
+  "stage_1": {
+    "fit_cutoffs": [55, 67],
+    "outer_ranges": {"55": [56, 67], "67": [68, 79]},
+    "diagnostic_windows": {"55": {"primary": [56, 59], "h12": [56, 67]}, "67": {"primary": [68, 71], "h12": [68, 79]}},
+    "retirement_gate": "A candidate may be retired early only if it trails C4_HGB by at least 0.02 Macro F1 on both H12_E and H12_L. This is a triage rule, not a final selection rule.",
+    "adaptive_development_warning": "Cycles 56-79 have prior-use history. All results are adaptive development evidence, not independent holdout results or a generalization guarantee."
+  },
+  "full_primary_schedule_for_possible_stage_2": [55, 59, 63, 67, 71, 75],
+  "h12_windows_for_possible_stage_2": {"H12_E": [56, 67], "H12_L": [68, 79]},
+  "thread_limit": 2,
+  "seed": 42,
+  "test_policy": "The official Test is not read, fitted, scored, or predicted by this campaign lane. No Kaggle submissions are made."
+}

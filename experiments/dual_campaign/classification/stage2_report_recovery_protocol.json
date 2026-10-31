@@ -1,0 +1,12 @@
+{
+  "protocol_id": "samuel-dual-campaign-classification-stage2-report-recovery-v1",
+  "status": "FROZEN_BEFORE_REPORT_REASSEMBLY_NO_REFITS",
+  "parent_stage2_freeze_signature": "ffd7253540244ea4f2373adf543540d2bf03d856dd38f88de96e00455700e186",
+  "failure_receipt": "reports/dual_campaign/classification/stage2_report_recovery_note.json",
+  "reason": "The frozen fit runner completed all 12 registered fits and wrote the candidate caches, then stopped before writing a report because its plot helper read nested score fields as flat fields.",
+  "scope": "Re-validate saved fit receipts and prediction caches, independently recompute the registered metrics and fixed complementarity gate from those predictions, and generate the report/plots. No model fit, prediction, threshold, blend, or recipe changes.",
+  "reused_inputs": ["official Classification Train", "Stage 1 frozen and independently verified fit55/fit67 artifacts", "12 Stage 2 fit59/fit63/fit71/fit75 artifacts", "archived Round 1 C1_B/C2_B control caches for six cutoffs"],
+  "metric_protocol": "Reuse Stage 2 protocol exactly: fixed 0.50 threshold, pooled and equal-cycle Macro F1, per-window/per-cycle/per-class confusion and P/R/F1, AP for ranking, Brier descriptive only for SVC expit margin, full-stream and availability subgroups.",
+  "blend_policy": "Apply the already frozen 0.50 blend diagnostic only when the fixed paired-complementarity gate in the parent Stage 2 protocol passes; do not tune anything.",
+  "source_boundary": "Do not read official Test or use Kaggle/leaderboard outputs."
+}

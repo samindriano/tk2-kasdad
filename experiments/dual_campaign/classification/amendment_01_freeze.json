@@ -1,0 +1,64 @@
+{
+  "status": "CONVERGENCE_BUDGET_AMENDMENT_FROZEN_BEFORE_SCORE",
+  "frozen_at_utc": "2026-10-31T08:08:27.829009+00:00",
+  "source_commit": "14cd13135da8e627c43828e54080ced12c17a62f",
+  "identity": {
+    "parent_freeze_signature": "168a7149b1a4cb19749788f9a20a04a17c15c19af1f7cebfc0875b4f8c40485e",
+    "initial_protocol_sha256": "a6e7dd265c4bf9fcde93184ee4bc686513e58f3c05b8dea1805b667349e84ef4",
+    "amendment_sha256": "726f30a5daa1ef459ef2e0b961928d69ca55b0b4fa3ea171e17ebc33e6b640ff",
+    "failed_attempt_sha256": "e6944866c1c6ee968552ea88b30e69790dba747b351d2539489fc0ef1411fd03",
+    "code_sha256": {
+      "experiments/dual_campaign/classification/protocol.json": "aca40f1caa8e8a471bbfe0c4a39fb8ea5f26d3614d02b0cfe105f214f644bbc4",
+      "experiments/dual_campaign/classification/amendment_01.json": "6c3a9dd0887b69fec571f34d9d9c89543be523138c9abbae7bff251e4b9e533c",
+      "src/models/campaign_classification.py": "f2c400945a04b6bee6183927983d5a6cb94c9b1c7769ef953a72c0a19859e160",
+      "scripts/research_campaign_classification.py": "1a6f5979c1e1194225356bbd224f34d468114f1c71170e67180f90a70602bcbf",
+      "scripts/verify_campaign_classification.py": "647abd7cd898c1e9c61276d323829826cd78bba1747d8820ac3718ee37a46e15",
+      "tests/test_campaign_classification.py": "d89ebad79b0ee96c4250d1f799bb239620e976af45a91ccee6cb46ae20bed4c1",
+      "src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+      "src/models/classification_round2_models.py": "239008f056c6f5e004e84d2b9df9f5bfb20695ccfad90eed4deec3463c7d4575",
+      "src/models/classification_metrics.py": "db77dd99210835006f96db1659bf4e87213179962b8f692d181af831b6539563",
+      "src/models/round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+      "src/models/round1_evaluation.py": "be26992ee5c75190eb8a412fa6635dabd242eee1609fad0380023bfe3a1e300f",
+      "src/utils/paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555",
+      "src/data/audit.py": "79cb10c7a1f0795a9c1263c6bbe81a548268e73e38f670068794dc19b2fb9479",
+      "experiments/classification_round1/protocol.json": "d6843e91b71425efe2a09f0a7b9e0e722414bf3a0ebe0dba0a33c125e6b8ad90",
+      "experiments/classification_round1/freeze.json": "2c5743b11aa9aa88a89e1979e7786fd41803ba816b66734644163131df626d32",
+      "scripts/run_classification_round1.py": "7b7a5be17a18c3b01f6091b7e9406679d26eac3aec2542821b151b1d0a84b994"
+    },
+    "classification_train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "round1_control_inputs": {
+      "55": {
+        "C1_B": {
+          "cache_sha256": "8b7132f5e275f67c6336b8327577b4416fcd74f4ea7464f6da9445b3b68a126a",
+          "audit_sha256": "1a6c84022dbbb806b635e9548020428fd2202a4cff7e7c1e12fe61915aed6074"
+        },
+        "C2_B": {
+          "cache_sha256": "ce49c6b471f4b9eca8be1c24fa37b487d9a688b28dc543e3faa1a8b6fc7d177c",
+          "audit_sha256": "1a6c84022dbbb806b635e9548020428fd2202a4cff7e7c1e12fe61915aed6074"
+        }
+      },
+      "67": {
+        "C1_B": {
+          "cache_sha256": "52aa9c0bc7850828b7a58f324e8b5c50d76fcd4e1a1feab966cb612991f9bd8e",
+          "audit_sha256": "a854215f01672733b64b1adf3c778fd653342dcbd7abc960a0fe9c0ca1330a2a"
+        },
+        "C2_B": {
+          "cache_sha256": "853a8c44ac2b3ea50fc1824fec78f63948aee6b1c47678dc1ddc8ecb505ecdea",
+          "audit_sha256": "a854215f01672733b64b1adf3c778fd653342dcbd7abc960a0fe9c0ca1330a2a"
+        }
+      }
+    },
+    "python": "3.13.5",
+    "packages": {
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "scipy": "1.18.0",
+      "scikit-learn": "1.8.0",
+      "threadpoolctl": "3.6.0"
+    }
+  },
+  "signature": "681a90111f133be06e8e28e221fc36affe422a075b28c1633f93785408360a06",
+  "parent_freeze_signature": "168a7149b1a4cb19749788f9a20a04a17c15c19af1f7cebfc0875b4f8c40485e",
+  "change_summary": "Only DC_SVC LinearSVC max_iter changed from 5000 to 20000 after a failed fit and before any score; all other recipe definitions remain fixed.",
+  "hash_convention": "Canonical JSON; repository source normalized to UTF-8 LF; official Train and archived controls hashed byte-for-byte."
+}

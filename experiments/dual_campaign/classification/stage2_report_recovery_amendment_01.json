@@ -1,0 +1,9 @@
+{
+  "amendment_id": "samuel-dual-campaign-stage2-report-recovery-amendment-01",
+  "status": "FROZEN_BEFORE_REPORT_OUTPUT_NO_REFITS",
+  "parent_report_recovery_freeze_signature": "ce9c7ababf7bc4a5c6e3af46b9bfc3b530cfcf057368f05a5a05317de3deb3a9",
+  "failure_note": "reports/dual_campaign/classification/stage2_report_recovery_attempt_01.json",
+  "single_change": "Correct the report-only plot accessor to read nested candidate/C4 metric fields. No score, row, model, recipe, threshold, blend gate, or input changes.",
+  "scope": "Run the parent report assembler in memory with the corrected plot function after checking its frozen parent receipt. Recompute report from already-written fit probabilities only; perform zero fitting and zero new prediction.",
+  "verification": "After assembly, run the already frozen independent Stage 2 verifier against the final report and verify every new fit/cache and reused window."
+}

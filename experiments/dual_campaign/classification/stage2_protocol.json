@@ -1,0 +1,40 @@
+{
+  "protocol_id": "samuel-dual-campaign-classification-full-six-v1",
+  "status": "FROZEN_BEFORE_FOUR_REMAINING_CUTOFFS",
+  "parent_amendment_freeze_signature": "681a90111f133be06e8e28e221fc36affe422a075b28c1633f93785408360a06",
+  "objective": "Complete the prespecified six-cutoff temporal schedule for the same three fixed Stage 1 text representation candidates; no new recipe or parameter search.",
+  "reused_without_refit": {
+    "fit_end_55_primary_window": [56, 59],
+    "fit_end_67_primary_window": [68, 71],
+    "fit_end_55_h12": [56, 67],
+    "fit_end_67_h12": [68, 79]
+  },
+  "new_fit_cutoffs": [59, 63, 71, 75],
+  "new_validation_windows": {
+    "59": [60, 63],
+    "63": [64, 67],
+    "71": [72, 75],
+    "75": [76, 79]
+  },
+  "new_fit_count_maximum": 12,
+  "candidate_recipes": ["DC_SVC", "DC_NBSVM", "DC_WORD_CHAR"],
+  "primary_metric": "fixed-label [0,1] Macro F1 at fixed route threshold 0.50",
+  "primary_aggregate": "Pooled Macro F1 over cycles 56-79 and equal-cycle mean of the 24 per-cycle Macro F1 values; also report all six four-cycle windows.",
+  "ranking_and_score_diagnostics": {
+    "average_precision": "Report for route candidate and C4 on identical validation rows as a ranking metric.",
+    "brier_score": "Report as a descriptive probability score; DC_SVC expit(margin) is explicitly uncalibrated and Brier is not interpreted as calibration evidence.",
+    "class_metrics": "Fixed-label [0,1] precision, recall, F1, support, and confusion matrix; include stream-present and stream-missing coverage."
+  },
+  "missing_stream_policy": "C1_B predictions reused from verified Round 1 caches; candidate replaces C2_B only for stream-present rows. No missing-branch refits.",
+  "complementarity": {
+    "comparison_population": "All stream-present primary validation rows from cycles 56-79, paired to C4_HGB predictions at the same rows.",
+    "definitions": "candidate_only_correct = C4 incorrect and candidate correct; C4_only_correct = candidate incorrect and C4 correct.",
+    "fixed_blend_gate": "Choose the highest full-six pooled Macro F1 candidate. Compute one fixed 0.50 candidate/C4 probability blend only if candidate_only_correct >= 25, C4_only_correct >= 25, and candidate_only_correct - C4_only_correct >= 0. Otherwise do not evaluate a blend.",
+    "blend_rule": "If gate passes, blend positive scores at weight 0.50, apply fixed threshold 0.50, and retain the unchanged C1_B route for missing-stream rows. No blend search or threshold tuning. This is adaptive development evidence."
+  },
+  "stopping_rule": "After all three full-six candidates, paired error diagnostics, and the single gated 0.50 blend (if eligible), stop the new classification recipe family if no candidate shows material, repeatable improvement; root decides any later research direction.",
+  "test_policy": "Do not read/predict/score official Test. No Kaggle submission or leaderboard use.",
+  "thread_limit": 2,
+  "seed": 42,
+  "adaptation_warning": "All cycles 56-79 were used by earlier work; this full-six comparison is adaptive development evidence, not an independent holdout or untouched generalization estimate."
+}
