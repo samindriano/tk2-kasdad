@@ -1,0 +1,339 @@
+{
+  "created_at_utc": "2026-10-31T20:50:15.406998+00:00",
+  "identity": {
+    "accepted_manifest_sha256": "6e7c2cb50fe6d0ee4767a44c40f152b6538b933fab6cf7082659b16d791f7d1e",
+    "card": {
+      "card_path": "reports/optimization_v3/research_backlog/cards/C07.md",
+      "change": "Append fit-only log1p category count and count<30 flag for each of org/module/pattern (six columns); missing explicit, unseen count0; unchanged sparse classifier. No target rates.",
+      "condition": "No additional dependency",
+      "evaluation": "STANDARD",
+      "evidence": [
+        "reports/optimization_v3/classification_diagnostics/audit.json"
+      ],
+      "family": "category_frequency",
+      "id": "C07",
+      "implementation": "NOT_IMPLEMENTED",
+      "in_priority_prefix": true,
+      "name": "Category frequency/rarity features",
+      "new_results": null,
+      "pilot_predictor_fits": 2,
+      "policy": "C_SPARSE_REPLACE",
+      "preflight_checks": [
+        "Do not use validation/Test category counts; verify nonconstant training columns"
+      ],
+      "priority": "P2",
+      "queue_order": 5,
+      "rationale": "Dukungan kategori memberi ukuran kelangkaan tanpa target encoding atau asumsi jarak ordinal.",
+      "status": "PLANNED_NOT_RUN",
+      "task": "classification"
+    },
+    "category_frequency_preflight": {
+      "55": {
+        "category_support": {
+          "module_code": {
+            "categories_below_30": 4105,
+            "category_count_map_sha256": "fa6f2dc2bb3bb1ce9ac2f27c5111d986fe8f78bc9a5052121d1317ad5dbec1b7",
+            "distinct_fit_categories_including_missing": 4129,
+            "distinct_nonmissing_fit_categories": 4128,
+            "fit_rows": 12020,
+            "missing_fit_rows": 1223
+          },
+          "module_code__fit_count_lt_30": {
+            "fit_max": 1.0,
+            "fit_min": 0.0,
+            "training_nonconstant": true,
+            "unique_fit_values": 2
+          },
+          "module_code__fit_log1p_count": {
+            "fit_max": 7.1098794630722715,
+            "fit_min": 0.6931471805599453,
+            "training_nonconstant": true,
+            "unique_fit_values": 50
+          },
+          "org_code": {
+            "categories_below_30": 2354,
+            "category_count_map_sha256": "8dba076aebd053ae3c4842858fe3e364999153db0ae1d9136934e9f58e9613b2",
+            "distinct_fit_categories_including_missing": 2403,
+            "distinct_nonmissing_fit_categories": 2402,
+            "fit_rows": 12020,
+            "missing_fit_rows": 869
+          },
+          "org_code__fit_count_lt_30": {
+            "fit_max": 1.0,
+            "fit_min": 0.0,
+            "training_nonconstant": true,
+            "unique_fit_values": 2
+          },
+          "org_code__fit_log1p_count": {
+            "fit_max": 6.76849321164863,
+            "fit_min": 0.6931471805599453,
+            "training_nonconstant": true,
+            "unique_fit_values": 69
+          },
+          "pattern_code": {
+            "categories_below_30": 211,
+            "category_count_map_sha256": "632d84f5f768d1dd44cf6ad275f82d08cfd665d26f057bd108df962d6ea08cc7",
+            "distinct_fit_categories_including_missing": 275,
+            "distinct_nonmissing_fit_categories": 274,
+            "fit_rows": 12020,
+            "missing_fit_rows": 2636
+          },
+          "pattern_code__fit_count_lt_30": {
+            "fit_max": 1.0,
+            "fit_min": 0.0,
+            "training_nonconstant": true,
+            "unique_fit_values": 2
+          },
+          "pattern_code__fit_log1p_count": {
+            "fit_max": 7.877397186353287,
+            "fit_min": 0.6931471805599453,
+            "training_nonconstant": true,
+            "unique_fit_values": 78
+          }
+        },
+        "fit_rows": 12020,
+        "target_rates_used": false,
+        "training_columns_nonconstant": {
+          "module_code__fit_count_lt_30": true,
+          "module_code__fit_log1p_count": true,
+          "org_code__fit_count_lt_30": true,
+          "org_code__fit_log1p_count": true,
+          "pattern_code__fit_count_lt_30": true,
+          "pattern_code__fit_log1p_count": true
+        },
+        "validation_category_counts_used": false
+      },
+      "67": {
+        "category_support": {
+          "module_code": {
+            "categories_below_30": 8528,
+            "category_count_map_sha256": "025fa35abe6381a648df2f04118956dd2a38bd86d49a97f0847cc6af1756bde9",
+            "distinct_fit_categories_including_missing": 8579,
+            "distinct_nonmissing_fit_categories": 8578,
+            "fit_rows": 29705,
+            "missing_fit_rows": 3013
+          },
+          "module_code__fit_count_lt_30": {
+            "fit_max": 1.0,
+            "fit_min": 0.0,
+            "training_nonconstant": true,
+            "unique_fit_values": 2
+          },
+          "module_code__fit_log1p_count": {
+            "fit_max": 8.01102337918644,
+            "fit_min": 0.6931471805599453,
+            "training_nonconstant": true,
+            "unique_fit_values": 72
+          },
+          "org_code": {
+            "categories_below_30": 4995,
+            "category_count_map_sha256": "48e568655c9b8a8c5aa22474cdb1486ea3778bf3ae85bcba314bddf68c714a51",
+            "distinct_fit_categories_including_missing": 5092,
+            "distinct_nonmissing_fit_categories": 5091,
+            "fit_rows": 29705,
+            "missing_fit_rows": 2159
+          },
+          "org_code__fit_count_lt_30": {
+            "fit_max": 1.0,
+            "fit_min": 0.0,
+            "training_nonconstant": true,
+            "unique_fit_values": 2
+          },
+          "org_code__fit_log1p_count": {
+            "fit_max": 7.67786350067821,
+            "fit_min": 0.6931471805599453,
+            "training_nonconstant": true,
+            "unique_fit_values": 93
+          },
+          "pattern_code": {
+            "categories_below_30": 291,
+            "category_count_map_sha256": "c48bcf0b99a3075cb2e1b7e17182c0d1d3ed86012cf16e9e328ca888d75e2115",
+            "distinct_fit_categories_including_missing": 388,
+            "distinct_nonmissing_fit_categories": 387,
+            "fit_rows": 29705,
+            "missing_fit_rows": 5731
+          },
+          "pattern_code__fit_count_lt_30": {
+            "fit_max": 1.0,
+            "fit_min": 0.0,
+            "training_nonconstant": true,
+            "unique_fit_values": 2
+          },
+          "pattern_code__fit_log1p_count": {
+            "fit_max": 8.653819788948063,
+            "fit_min": 0.6931471805599453,
+            "training_nonconstant": true,
+            "unique_fit_values": 111
+          }
+        },
+        "fit_rows": 29705,
+        "target_rates_used": false,
+        "training_columns_nonconstant": {
+          "module_code__fit_count_lt_30": true,
+          "module_code__fit_log1p_count": true,
+          "org_code__fit_count_lt_30": true,
+          "org_code__fit_log1p_count": true,
+          "pattern_code__fit_count_lt_30": true,
+          "pattern_code__fit_log1p_count": true
+        },
+        "validation_category_counts_used": false
+      }
+    },
+    "control_records": {
+      "55": {
+        "c2b_control": {
+          "audit_sha256": "1a6c84022dbbb806b635e9548020428fd2202a4cff7e7c1e12fe61915aed6074",
+          "cache_sha256": "ce49c6b471f4b9eca8be1c24fa37b487d9a688b28dc543e3faa1a8b6fc7d177c",
+          "fit_rows": 12020,
+          "probability_sha256": "45b5a44456316b2f03d7df6043f880a4b14be7c4d96c455bc7bb46c6f60cec82"
+        },
+        "catboost_cache_sha256": "0cda97c481aef51495e3fd4a23c43b0a906f23ffc9080e91194250e7be4d046a",
+        "catboost_prediction_sha256": "3f94a46c139987888bc42230d9c51bbb3807bf5f0d26dc84b418e5b96c23d7a3",
+        "score_rows": 17685,
+        "sparse_pilot_cache_sha256": "0efbfd81ac9489c29c9ae1e06922e8769dbc1227a7242a1bb779940cfe682f5b",
+        "sparse_pilot_freeze_signature": "59104d95490adc147c07cfa18559074dae71599530fc1d0a7a5d948ae26a2d33",
+        "stream_missing_rows": 1203,
+        "stream_present_rows": 16482
+      },
+      "67": {
+        "c2b_control": {
+          "audit_sha256": "a854215f01672733b64b1adf3c778fd653342dcbd7abc960a0fe9c0ca1330a2a",
+          "cache_sha256": "853a8c44ac2b3ea50fc1824fec78f63948aee6b1c47678dc1ddc8ecb505ecdea",
+          "fit_rows": 29705,
+          "probability_sha256": "3f46b2f168aeb6901416959bb7c24a0114443ff876ab871978d0042727609745"
+        },
+        "catboost_cache_sha256": "4b63070ac665e2ed2a9f567fb5c945f640da1eace5533af8d87d7df1a66ead59",
+        "catboost_prediction_sha256": "cc8d2fd670c462d0907fb33a7ee2ecc59885c72f05283f7366fa3767d84da9d2",
+        "score_rows": 20903,
+        "sparse_pilot_cache_sha256": "61232d3fdcadbbd6923154bc53302f56cdbab7c9d3255055441fa10abf077af4",
+        "sparse_pilot_freeze_signature": "59104d95490adc147c07cfa18559074dae71599530fc1d0a7a5d948ae26a2d33",
+        "stream_missing_rows": 1375,
+        "stream_present_rows": 19528
+      }
+    },
+    "evaluation_views": {
+      "H12": [
+        [
+          55,
+          56,
+          67
+        ],
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "W1": [
+        [
+          55,
+          56,
+          59
+        ]
+      ],
+      "W4": [
+        [
+          67,
+          68,
+          71
+        ]
+      ],
+      "primary": [
+        [
+          55,
+          56,
+          59
+        ],
+        [
+          67,
+          68,
+          71
+        ]
+      ]
+    },
+    "feature_names": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code",
+      "signal_stream"
+    ],
+    "input_sha256": {
+      "accepted_v3_sparse25_manifest": "6e7c2cb50fe6d0ee4767a44c40f152b6538b933fab6cf7082659b16d791f7d1e",
+      "c2b_round1_55_audit": "1a6c84022dbbb806b635e9548020428fd2202a4cff7e7c1e12fe61915aed6074",
+      "c2b_round1_55_npz": "ce49c6b471f4b9eca8be1c24fa37b487d9a688b28dc543e3faa1a8b6fc7d177c",
+      "c2b_round1_67_audit": "a854215f01672733b64b1adf3c778fd653342dcbd7abc960a0fe9c0ca1330a2a",
+      "c2b_round1_67_npz": "853a8c44ac2b3ea50fc1824fec78f63948aee6b1c47678dc1ddc8ecb505ecdea",
+      "card": "4cc9f22d9e2412fa351467362d15fb4f25580a32f3a7fb3e2bbe906344d7e530",
+      "catboost_55_npz": "0cda97c481aef51495e3fd4a23c43b0a906f23ffc9080e91194250e7be4d046a",
+      "catboost_55_sidecar": "eeadc3f3db6c29137a1d0028ed4f08aea0d7b5e40b01af3c217ca003ab293ef8",
+      "catboost_67_npz": "4b63070ac665e2ed2a9f567fb5c945f640da1eace5533af8d87d7df1a66ead59",
+      "catboost_67_sidecar": "df1b7a8d434767c723f98a65ae7a8442c418692fecccffdc6ef9b11dbeb6a538",
+      "classification_diagnostic_evidence": "c26218e0e90715a30b7b92584ddbf6c6d0eac2b3c71ecb5d4c2473c42fe4dc67",
+      "frozen_sparse_pilot_freeze": "18f49d3e235bc4fe8ff2fcd1e550bef09cc8b681f9420b103aca1080fdda8910",
+      "frozen_sparse_pilot_protocol": "2cc006183d89ce6a21ffb740e5e9bf38afc3bfb4f5014fc57e83b9c701f0a635",
+      "official_classification_train": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+      "queue": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+      "sparse_pilot_55_npz": "0efbfd81ac9489c29c9ae1e06922e8769dbc1227a7242a1bb779940cfe682f5b",
+      "sparse_pilot_55_sidecar": "764fbfcd6ee191e90d9519561ea591b042bdef2845f62452ba055d6dcf884551",
+      "sparse_pilot_67_npz": "61232d3fdcadbbd6923154bc53302f56cdbab7c9d3255055441fa10abf077af4",
+      "sparse_pilot_67_sidecar": "6427f9a9bbf9bbcc35f6ef85ac5ab4d5875315cc902d17cb650dadb02cdb3ffc",
+      "sparse_pilot_report": "893256cc76aded8606d00a922dc7a275914468184fad9ae3e7c33d2678040392",
+      "sparse_pilot_verification": "63c8c259c4dfcc6720b5d776e4cb495428c60924c6d63085c08019c112d30b20"
+    },
+    "package_versions": {
+      "lightgbm": "4.6.0",
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "psutil": "7.0.0",
+      "scikit-learn": "1.8.0",
+      "scipy": "1.18.0",
+      "threadpoolctl": "3.6.0"
+    },
+    "python_version": "3.13.5",
+    "resource_preflight_recipe": {
+      "cap_gib": 6.0,
+      "concurrent_fit_jobs": 1,
+      "estimate_method": "fit-only word n-gram upper bound, sparse storage x3 plus six compact float columns and 1.5GiB fixed",
+      "estimated_peak_job_gib": 1.6059173047542572,
+      "minimum_free_ram_gib": 4.0,
+      "reserve_gib": 2.0,
+      "threads": 2
+    },
+    "schema_version": 1,
+    "source_sha256": {
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1.py": "c93dd71ed2b512f32bf8916f59b0af56bff212934efb8825b0e8a680da72e969",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_c07.py": "e8f07757c7b4c70353fabc918220276e36cbd2df19e7dc3c60b9a529b5d52a36",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_sparse_classification.py": "a629b4aeb3e6ea564b61449502d2f8f712daf517d95ed041652d3866a2f27c1b",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_sparse_classification_fullsix.py": "7b7e7425eeb497c9f9d5c1f55e2483c113ae8fe4502b1a43eee6e4573bc74c97",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_verify_sparse_classification.py": "683f073bad4dac04728fcf0045cd3d39b0f1a1e790352f9c0174ecb36a867699",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\research_campaign_classification.py": "1a6f5979c1e1194225356bbd224f34d468114f1c71170e67180f90a70602bcbf",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\research_campaign_classification_stage2.py": "1a78b419e2b02c5187696f82823c2f8f96c7fa5c329846eff44ac52bbead1126",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\campaign_classification_catboost.py": "5aa480703fd99b28b2343df8a09d68661107995f2b446d3773c735b211d9c3c5",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\classification_metrics.py": "db77dd99210835006f96db1659bf4e87213179962b8f692d181af831b6539563",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\classification_round2_models.py": "239008f056c6f5e004e84d2b9df9f5bfb20695ccfad90eed4deec3463c7d4575",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1.py": "d21ac914d0d1f516a93e431116556dabdbe7313a21fd2b1b04a73371bd56f420",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1_c07.py": "b9f0842aad87505838dbbf339f35e4f01d6591c513992d81d8f906e7c4560a6a",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_sparse_classification.py": "fb5b013fa59d0b748a3386dae90cb14789a0b4cbd9a5c7a115d5ddc3c443d5a3",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_round2_models.py": "f56f7ee2c337acdf2cbe7160719faf62b1e3d3470a7f656b044ce0890d677e09",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\round1_evaluation.py": "be26992ee5c75190eb8a412fa6635dabd242eee1609fad0380023bfe3a1e300f",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\utils\\paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555"
+    },
+    "sparse_pilot_freeze_signature": "59104d95490adc147c07cfa18559074dae71599530fc1d0a7a5d948ae26a2d33",
+    "test_data_used": false,
+    "validation_labels_passed_to_adapter": false
+  },
+  "signature": "07852ccd497cc7aa4018a6d14a9ec788d97790ba2c8326261e46b656fdf19e5a"
+}

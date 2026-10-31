@@ -88,3 +88,12 @@ W4, primary, and H12, but primary MAE gain was +0.022196 against the frozen
 stream-presence, and target-tail diagnostics passed. Independent row/control/
 metric QA returned `PASS`. See [`R02/RESULTS.md`](R02/RESULTS.md). No Test or
 Kaggle result was used.
+
+## C07 pilot
+
+C07 is **RETIRE**. The fit-only category-count features produced primary Macro
+F1 gain −0.000181 against a +0.0005 minimum; H12 gain was +0.000216. W1
+improved by +0.000902 while W4 declined by −0.001085. All supported primary
+subgroup guards passed. Independent route/metric QA is recorded with the pilot.
+See [`C07/RESULTS.md`](C07/RESULTS.md). No Test, SampleSubmission, or Kaggle
+result was used.
