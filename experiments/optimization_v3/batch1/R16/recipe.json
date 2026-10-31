@@ -1,0 +1,192 @@
+{
+  "accepted_fullsix_control_metrics": {
+    "H12_mae": 14.04753258299653,
+    "primary_mae": 11.559390078665364
+  },
+  "card_id": "R16",
+  "estimator": {
+    "class": "lightgbm.LGBMRegressor",
+    "early_stopping": false,
+    "objective": "regression_l1",
+    "parameters": {
+      "boosting_type": "gbdt",
+      "colsample_bytree": 1.0,
+      "deterministic": true,
+      "force_col_wise": true,
+      "learning_rate": 0.05,
+      "max_depth": -1,
+      "min_child_samples": 40,
+      "min_child_weight": 0.001,
+      "n_estimators": 400,
+      "n_jobs": 2,
+      "num_leaves": 31,
+      "objective": "regression_l1",
+      "random_state": 42,
+      "reg_alpha": 0.0,
+      "reg_lambda": 1.0,
+      "subsample": 1.0,
+      "subsample_freq": 0,
+      "verbosity": -1
+    },
+    "sample_weight": {
+      "affects": "LightGBM estimator fit only",
+      "formula": "2**(-(cutoff-cycle_code)/8)",
+      "normalization": "divide by arithmetic mean so mean weight equals 1",
+      "scope": "fit rows only; all rows with cycle_code <= cutoff retained"
+    }
+  },
+  "evaluation": {
+    "cutoffs": [
+      55,
+      67
+    ],
+    "denominators": {
+      "H12": 38588,
+      "H12_E": 17685,
+      "H12_L": 20903,
+      "W1": 4114,
+      "W4": 4950,
+      "primary": 9064
+    },
+    "fit_rows": {
+      "55": 12020,
+      "67": 29705
+    },
+    "minimum_group_support": 100,
+    "predictor_fits": 2,
+    "profile": "STANDARD",
+    "views": {
+      "H12": [
+        [
+          55,
+          56,
+          67
+        ],
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "W1": [
+        [
+          55,
+          56,
+          59
+        ]
+      ],
+      "W4": [
+        [
+          67,
+          68,
+          71
+        ]
+      ],
+      "primary": [
+        [
+          55,
+          56,
+          59
+        ],
+        [
+          67,
+          68,
+          71
+        ]
+      ]
+    }
+  },
+  "feature_allowlist": [
+    "impact_load",
+    "entry_friction",
+    "cycle_code",
+    "scope_pressure",
+    "text_load",
+    "scope_trace",
+    "org_spread",
+    "module_spread",
+    "telemetry_flag",
+    "org_code",
+    "module_code",
+    "pattern_code",
+    "signal_stream"
+  ],
+  "feature_role": {
+    "record_id": "identity_only",
+    "threat_rank": "target_only"
+  },
+  "gate": {
+    "individual_pilot_view_MAE_harm_max": 0.5,
+    "pilot_H12_MAE_harm_max": 0.05,
+    "pilot_primary_MAE_gain_min": 0.03,
+    "supported_group_n_min": 100,
+    "supported_tail_or_missing_MAE_harm_max": 0.25
+  },
+  "kaggle_access": false,
+  "pilot_row_matched_control_metrics": {
+    "H12_mae": 14.04753258299653,
+    "primary_mae": 13.464395831218011
+  },
+  "prediction_policy": {
+    "baseline": "clip(.5625*frozen mapped SVD32 LGB+.1875*frozen mapped Ridge+.25*frozen sparse rank50,0,100)",
+    "candidate": "clip(.5625*rank50(new SVD32 LGB)+.1875*frozen mapped Ridge+.25*frozen sparse rank50,0,100)",
+    "rank50": "clip(.5*raw + .5*(100*average_rank(raw)/n_cycle),0,100)",
+    "ranking_population": "all score rows in each cycle supplied by the cutoff; pilot cutoffs score complete 12-cycle horizons",
+    "ties": "average"
+  },
+  "preprocessing": {
+    "inherited_model": "RegressionResearchLGBText(params_id=base)",
+    "missing_stream_indicator": true,
+    "preprocessing_sample_weighted": false,
+    "structured": "_SelectedPreprocessor fit on all rows <= cutoff; no score rows passed to fit",
+    "svd": {
+      "algorithm": "randomized",
+      "n_components_requested": 32,
+      "n_iter": 7,
+      "random_state": 42
+    },
+    "svd_fit_scope": "all fit rows at each cutoff only",
+    "text": {
+      "dtype": "float64",
+      "max_features": 20000,
+      "min_df": 2,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "sublinear_tf": true
+    },
+    "tfidf_fit_scope": "all fit rows at each cutoff only"
+  },
+  "queue_recipe": {
+    "card_path": "reports/optimization_v3/research_backlog/cards/R16.md",
+    "change": "Refit only SVD32 LGB using fit-only sample_weight=2^(-(cutoff-cycle)/8), normalize mean1. Keep all past rows/transforms and original hyperparameters. Replace only weight0.5625 incumbent component using inherited rank50.",
+    "condition": "No additional dependency",
+    "evaluation": "STANDARD",
+    "evidence": [
+      "reports/optimization_v3/regression_diagnostics/diagnostics.json",
+      "reports/regression_round2/FINDINGS.md"
+    ],
+    "family": "recency",
+    "id": "R16",
+    "implementation": "NOT_IMPLEMENTED",
+    "in_priority_prefix": true,
+    "name": "All-past exponentially weighted component",
+    "new_results": null,
+    "pilot_predictor_fits": 2,
+    "policy": "R_SVD_REPLACE",
+    "preflight_checks": [],
+    "priority": "P1",
+    "queue_order": 10,
+    "rationale": "Bias H12 awal/akhir berlawanan; pembobotan halus seluruh history berbeda dari membuang history.",
+    "status": "PLANNED_NOT_RUN",
+    "task": "regression"
+  },
+  "resource_policy": {
+    "concurrent_jobs": 1,
+    "free_memory_reserve_bytes": 2147483648,
+    "job_memory_cap_bytes": 6442450944,
+    "threads": 2
+  },
+  "test_data_used": false
+}
