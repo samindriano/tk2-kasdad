@@ -1,0 +1,174 @@
+{
+  "accepted_fullsix_control_metrics": {
+    "H12_macro_f1": 0.8029655654017788,
+    "primary_macro_f1": 0.8299435476765076
+  },
+  "base_c1_b_hgb_parameters": {
+    "early_stopping": false,
+    "l2_regularization": 1.0,
+    "learning_rate": 0.05,
+    "loss": "log_loss",
+    "max_bins": 255,
+    "max_iter": 200,
+    "max_leaf_nodes": 15,
+    "min_samples_leaf": 30,
+    "random_state": 42
+  },
+  "card_id": "C13",
+  "categorical_mask_contract": "all SVD columns and final missing indicator are noncategorical; only inherited C1_B native category columns are categorical",
+  "evaluation_views": {
+    "H12": [
+      [
+        55,
+        56,
+        67
+      ],
+      [
+        67,
+        68,
+        79
+      ]
+    ],
+    "W1": [
+      [
+        55,
+        56,
+        59
+      ]
+    ],
+    "W4": [
+      [
+        67,
+        68,
+        71
+      ]
+    ],
+    "primary": [
+      [
+        55,
+        56,
+        59
+      ],
+      [
+        67,
+        68,
+        71
+      ]
+    ]
+  },
+  "feature_allowlist": [
+    "impact_load",
+    "entry_friction",
+    "cycle_code",
+    "scope_pressure",
+    "text_load",
+    "scope_trace",
+    "org_spread",
+    "module_spread",
+    "telemetry_flag",
+    "org_code",
+    "module_code",
+    "pattern_code",
+    "signal_stream"
+  ],
+  "feature_concatenation_order": [
+    "32 fit-only word TF-IDF SVD columns",
+    "C1_B native structured columns",
+    "binary signal_stream missing indicator"
+  ],
+  "fit_population": "all official Classification Train rows with 47 <= cycle_code <= cutoff; no row weights or downsampling",
+  "hist_gradient_boosting_parameters": {
+    "early_stopping": false,
+    "l2_regularization": 1.0,
+    "learning_rate": 0.05,
+    "loss": "log_loss",
+    "max_bins": 255,
+    "max_iter": 200,
+    "max_leaf_nodes": 15,
+    "min_samples_leaf": 30,
+    "random_state": 42
+  },
+  "kaggle_access": false,
+  "pilot_gate": {
+    "full_H12_harm_max": 0.001,
+    "full_nonnegative_windows_min": 4,
+    "full_primary_gain_min": 0.0005,
+    "individual_pilot_view_harm_max": 0.005,
+    "pilot_H12_harm_max": 0.001,
+    "pilot_primary_gain_min": 0.0005,
+    "positive_and_negative_per_group_min": 30,
+    "positive_class_recall_harm_max": 0.02,
+    "supported_group_F1_harm_max": 0.01,
+    "supported_group_n_min": 200
+  },
+  "prediction_policy": {
+    "baseline": "fixed v3_cls_sparse25: 0.75 frozen C2_B + 0.25 original sparse expert on present; frozen CatBoost on missing",
+    "classification_threshold": 0.5,
+    "missing_stream": "frozen CatBoost missing-stream probability, unchanged",
+    "present_stream": "0.75 * frozen C2_B probability + 0.25 * new C13 SVD32+structured HGB probability"
+  },
+  "queue_recipe": {
+    "change": "Classification word TF-IDF\u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122fit-only SVD32 using existing n_iter7/seed42; append fit-only native structured representation and missing indicator. HGB classifier copies original C1_B hyperparameters, no early stopping.",
+    "condition": "No additional dependency",
+    "evaluation": "STANDARD",
+    "family": "dense_nonlinear",
+    "id": "C13",
+    "name": "SVD32 + structured HGB",
+    "pilot_predictor_fits": 2,
+    "policy": "C_AUX25",
+    "priority": "P2",
+    "task": "classification"
+  },
+  "resource_policy": {
+    "concurrent_training_jobs": 1,
+    "free_memory_reserve_bytes": 2147483648,
+    "job_memory_cap_bytes": 6442450944,
+    "threads": 2
+  },
+  "row_matched_control_metrics": {
+    "H12": {
+      "macro_f1": 0.8029655654017788,
+      "rows": 38588
+    },
+    "W1": {
+      "macro_f1": 0.8031600548696844,
+      "rows": 4114
+    },
+    "W4": {
+      "macro_f1": 0.8414177014153625,
+      "rows": 4950
+    },
+    "primary": {
+      "macro_f1": 0.8239724981677496,
+      "rows": 9064
+    }
+  },
+  "scoring_population": "STANDARD cutoff-55/67 views, row-aligned by saved Train row positions and record_id",
+  "source_model": "C1_B native structured preprocessing + fit-only word TF-IDF/SVD32 + HistGradientBoostingClassifier",
+  "structured_recipe": "ClassificationModel C1_B native expanded HGB preprocessing; fit only on current cutoff's past rows",
+  "subgroup_support_rule": "guard n>=200 and each class count>=30; smaller or single-class groups descriptive only",
+  "svd": {
+    "algorithm": "randomized",
+    "n_components": 32,
+    "n_iter": 7,
+    "random_state": 42
+  },
+  "test_data_used": false,
+  "text_recipe": {
+    "missing_stream": "empty document plus explicit binary missing column",
+    "parameters": {
+      "dtype": "float64",
+      "lowercase": true,
+      "max_df": 0.995,
+      "max_features": 20000,
+      "min_df": 3,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "strip_accents": "unicode",
+      "sublinear_tf": true
+    },
+    "vectorizer": "sklearn.feature_extraction.text.TfidfVectorizer"
+  }
+}
