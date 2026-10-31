@@ -57,7 +57,7 @@ will not enter continuation or full-six evaluation.
 
 ## R01 pilot
 
-R01 is also **RETIRE**. The two LinearSVR fits converged without warnings
+R01 is **RETIRE**. The two LinearSVR fits converged without warnings
 (14,437 and 14,949 iterations). Primary MAE gain was +0.034940 against a +0.03
 minimum, H12 improved by +0.076438, and the W1/W4 window harms stayed within
 their limits. The supported W4 high-target tail (`threat_rank >= 95`, n=249)
@@ -66,6 +66,16 @@ gate. Independent QA verified both fits, row IDs, controls, hashes, metrics and
 the RETIRE decision.
 
 A supplemental, post-fit entry_friction diagnostic is saved separately. It is
-descriptive and does not change the frozen R01 gate. R01 will not enter
-continuation or full-six evaluation. See [`R01/RESULTS.md`](R01/RESULTS.md).
-No Test or Kaggle result was used.
+descriptive and does not change the frozen R01 gate. See [`R01/RESULTS.md`](R01/RESULTS.md).
+R01 will not enter continuation or full-six evaluation. No Test or Kaggle
+result was used.
+
+## C02 pilot
+
+C02 is **RETIRE**. Both fits used only present-stream rows and kept both classes.
+The primary Macro F1 gain was −0.000534 against a +0.0005 minimum; H12 gain was
++0.000089. All supported subgroup guards passed, so the primary gate alone
+determines retirement. Independent QA verified row IDs, present-only
+fingerprints, controls, hashes and metrics. The sparse prediction path emitted
+two scikit-learn feature-name warnings; row, probability and routing checks
+passed. See [`C02/RESULTS.md`](C02/RESULTS.md). No Test or Kaggle result was used.
