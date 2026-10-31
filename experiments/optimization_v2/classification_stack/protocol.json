@@ -1,0 +1,12 @@
+{
+  "id": "expanding_forward_OOF_text_structured_stack_v1",
+  "hypothesis": "Structured CatBoost can supply conditional nonlinear information beyond C2B text/structured linear score. Expanding OOF score calibration reduces variance of last-four-cycle heads.",
+  "heads": [
+    "expanding_base (calibration-only control)",
+    "expanding_stack_cb (two logit scores)"
+  ],
+  "policy": "C1 lbfgs LogisticRegression with intercept; .50 fixed threshold; no grid. All available disjoint past four-cycle OOF blocks52..E for outerE; base models end before their own block. OuterC2B/CB both fit47..E. Missing rows keep same exact CB output.",
+  "new_fits": "Only structuredCatBoost fit47..51 predicts52..55. C2B51 reused from first frozen V2 experiment; all other component scores from original frozen caches.",
+  "leakage": "No outer labels or Test for head fitting, feature scaling, parameter choice. Repeated outcomes previously used in research; adaptive development not untouched holdout.",
+  "context": "Recent-four calibration of base/NB failed primary; this is a distinct predictor and more stable expanding OOF support, no tuning of failed recent heads."
+}

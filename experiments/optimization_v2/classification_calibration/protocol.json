@@ -1,0 +1,20 @@
+{
+  "id": "v2_present_past_only_calibration_stack",
+  "hypothesis": "NB-weighted word LR improves ranking but not fixed-.5 F1; past-only sigmoid heads or a two-score stack can use ranking information without selecting threshold on outer labels.",
+  "heads": [
+    "calibrated_base",
+    "calibrated_nb",
+    "stack_base_nb"
+  ],
+  "head_design": "clipped probability logits, C1 lbfgs regularized LogisticRegression; one/two slopes + intercept, fixed .50 cutoff.",
+  "fit_boundary": "For outer cutoffE, base score models fit47..E-4, calibration on present rows E-3..E, outer scores come from models fit47..E. Six E55/59/63/67/71/75. Only fit51 C2B/NB is new; all other frozen score vectors reused.",
+  "missing": "Exact existing CatBoost missing expert outputs, unchanged.",
+  "comparison": "Current champion C2B present + CatBoost missing, not older C4_HGB.",
+  "metric": "MacroF1 plus equal-cycle/H12/P-R/per-class/AP/Brier, groups, fold direction.",
+  "forbidden": "No Test, no other-task labels, no threshold/regularization/public search, no academic edits.",
+  "references": [
+    "https://scikit-learn.org/stable/modules/calibration",
+    "https://scikit-learn.org/stable/modules/ensemble"
+  ],
+  "adaptation": "Prior NB ranking and cycles seen. New nested temporal experiment frozen before score, not independent holdout."
+}
