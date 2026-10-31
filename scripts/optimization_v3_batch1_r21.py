@@ -548,6 +548,21 @@ def _prepare(card: Mapping[str, Any], queue: Mapping[str, Any]) -> dict[str, Any
     views_for_identity["H12_E"] = [(55, 56, 67)]
     views_for_identity["H12_L"] = [(67, 68, 79)]
     recipe = _recipe(card, views_for_identity, CARD_SHA256)
+    resource_policy_identity = {
+        str(cutoff): {
+            "fit_rows": EXPECTED_FIT_ROWS[cutoff],
+            "feature_width_upper_bound": item["feature_width_upper_bound"],
+            "estimated_peak_bytes": item["estimated_peak_bytes"],
+            "estimated_peak_is_observed": False,
+            "histogram_buffer_allowance_bytes": item["histogram_buffer_allowance_bytes"],
+            "fixed_overhead_bytes": item["xgboost_and_transform_fixed_overhead_bytes"],
+            "free_memory_reserve_bytes": FREE_RAM_RESERVE_BYTES,
+            "job_cap_bytes": JOB_CAP_BYTES,
+            "threads": THREADS,
+            "concurrent_training_jobs": 1,
+        }
+        for cutoff, item in ((55, resources["55"]), (67, resources["67"]))
+    }
     identity = make_freeze_identity(
         card=card, feature_names=FEATURE_NAMES, input_files=input_files,
         source_files=source_files, evaluation_views=views_for_identity,
@@ -566,8 +581,12 @@ def _prepare(card: Mapping[str, Any], queue: Mapping[str, Any]) -> dict[str, Any
                         for name, item in control_views.items()},
         },
         "pre_freeze_support_denominators": group_support,
-        "resource_preflight": resources,
-        "fit_budget_preflight": budget,
+        "resource_preflight_policy": resource_policy_identity,
+        "candidate_fit_budget_policy": {
+            "pilot_predictor_fits": int(card["pilot_predictor_fits"]),
+            "global_successful_fit_cap": MAX_SUCCESSFUL_FITS,
+            "reservation_before_first_fit": True,
+        },
         "python_version": platform.python_version(),
         "official_test_read": False,
         "validation_labels_passed_to_adapter": False,
