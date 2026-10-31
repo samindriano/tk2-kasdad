@@ -1,0 +1,10 @@
+{
+  "hypothesis": "Character ngrams can capture token form/subword regularities missed by wordvocab and SVD; Regression has not evaluated this channel, and prior Classificationchar failure does not answer Regressioncomplementarity.",
+  "fit": "Existing hybridRidge structured/scaled/OHE alpha10lsqr +char_wb3to5 TFIDFmin_df3 max30000sublinearTF, allpastTrainonly. Wordtextfeatures replaced, no extra externalcorpus.",
+  "policies": [
+    "Fixedrank50 standalone",
+    "Fixed25%rank50charRidge +75%current3componentchampion"
+  ],
+  "pilot": "55/67 W1/W4/H12_E/L. Continueonly if pooledpilotprimary OR H12MAEimproves with maxindividualviewharm<=.5. No newalpha/ngram/weightgrid.",
+  "constraints": "No Test/Kaggle/academicedits, fit-only vocabIDF, no publicscoretuning."
+}

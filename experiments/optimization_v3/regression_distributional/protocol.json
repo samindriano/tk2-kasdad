@@ -1,0 +1,11 @@
+{
+  "hypothesis": "Current L1ensemble still overpredicts lowtail and underpredicts hightail across all eras. A fixed distributional objective may represent skewed conditionaloutcomes differently; does not assume proven multimodality.",
+  "fit": "Train-only structured native+TFIDF/SVD32; LightGBM multiclass10binsfixed0..100 width10,250trees15leaves30minchildreg3lr.05seed42threads2. Alltenclasses required. No outerevalset/earlystop.",
+  "prediction": "Find conditionalCDFmedian, interpolatelinearly within selectedfixedbin. Explicit uniformwithinbin approximation; no targetre-ranking or target leakage.",
+  "policies": [
+    "RawCDFmedian direct",
+    "Fixed25%CDFmedian +75%current3componentchampion"
+  ],
+  "pilot": "cut55/67, W1/W4/H12_E/L. Continuepolicy only if primarypilot OR H12 MAEimproves and noindividualviewharm>.5. No model/bin/weight/ranksearch.",
+  "boundary": "OnlyofficialTrain; frozen knowncycledevelopment adaptive, no Test/Kaggle. Rootdecision afterindependentverification."
+}

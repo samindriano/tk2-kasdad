@@ -1,0 +1,31 @@
+{
+  "experiment_id": "optimization_v3_regression_cache_only_diagnostics",
+  "mode": "cache-only descriptive reaggregation",
+  "input_paths": [
+    "data/raw/regression/Train.csv",
+    "experiments/runs/dual_reg_v1/stage1_paired_blends.npz",
+    "experiments/runs/optimization_v2_regression_repr/pilot_predictions.npz",
+    "experiments/runs/optimization_v2_regression_repr/fullsix_predictions.npz",
+    "reports/optimization_v2/regression_repr/fullsix.json",
+    "reports/optimization_v2/regression_repr/fullsix_subgroup_diagnostics.json",
+    "experiments/runs/regression_research_v1/lgbtext__base__fit51__to55.npz",
+    "experiments/runs/regression_research_v1/model__hybrid_ridge__base__fit51__to55.npz"
+  ],
+  "input_sha256": {
+    "data/raw/regression/Train.csv": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+    "experiments/runs/dual_reg_v1/stage1_paired_blends.npz": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516",
+    "experiments/runs/optimization_v2_regression_repr/pilot_predictions.npz": "eae6bea2dd6933de59ac0f63f54cc08124b59d4bcba91bbe05a7c5ec3dab9ff6",
+    "experiments/runs/optimization_v2_regression_repr/fullsix_predictions.npz": "4b87b0da34069ea3d75490233c574fbd92283f8b6472a43d8c654a20a4b904c9",
+    "reports/optimization_v2/regression_repr/fullsix.json": "a9686473998722b8f86a0f6a4489b4e3a75a6b6ba20c661ac564e6a5e61aea48",
+    "reports/optimization_v2/regression_repr/fullsix_subgroup_diagnostics.json": "6954fbdd9eb1c95794787ff54cf8a9b8c88dc97373ad9a8bf8e0aefdcaf1551e",
+    "experiments/runs/regression_research_v1/lgbtext__base__fit51__to55.npz": "0e6767c515971a96d9335a26a10d785ea097a30df6285f6e44fed2a7b5b3fa04",
+    "experiments/runs/regression_research_v1/model__hybrid_ridge__base__fit51__to55.npz": "4529f9989282c6ee749555650bef604fe5c8145c8ff5880b790e907136d14f88"
+  },
+  "fit_count": 0,
+  "test_access": false,
+  "group_support_minimum": 100,
+  "quantile_rule": "per outer fold, fit rows only; empirical 5-quantiles",
+  "category_novelty_rule": "exact nonmissing raw category unseen in outer fit; missing separated",
+  "target_tails": "target <= 5 and >= 95; descriptive after scoring only; not a routing rule",
+  "stop_point": "handoff residual diagnostics and reuse recommendations to MAIN; no candidate selection"
+}
