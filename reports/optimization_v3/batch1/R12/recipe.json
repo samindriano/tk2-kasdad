@@ -1,0 +1,183 @@
+{
+  "accepted_control": {
+    "H12_mae": 14.04753258299653,
+    "control_reconstruction": {
+      "accepted_fullsix_metrics": {
+        "h12": {
+          "mae": 14.04753258299653,
+          "rows": 38588
+        },
+        "primary": {
+          "mae": 11.559390078665364,
+          "rows": 38588
+        }
+      },
+      "exact_component_reconstruction": true,
+      "fit_rows_by_cutoff": {
+        "55": 12020,
+        "67": 29705
+      },
+      "pilot_H12_rows": 38588,
+      "pilot_primary_rows": 9064,
+      "views": {
+        "H12": {
+          "baseline": 14.04753258299653,
+          "rows": 38588
+        },
+        "W1": {
+          "baseline": 15.882111974427762,
+          "rows": 4114
+        },
+        "W4": {
+          "baseline": 11.455005081083685,
+          "rows": 4950
+        },
+        "primary": {
+          "baseline": 13.464395831218011,
+          "rows": 9064
+        }
+      }
+    },
+    "manifest": "reports\\optimization_v2\\kaggle\\v2_reg_sparse_lgb25.json",
+    "manifest_sha256": "dd166e92089f24978244496a9a0afabc0d06551dbdc326579a7c898a8844e19a",
+    "primary_mae": 11.559390078665364,
+    "route": ".5625 rank50 LightGBM SVD32 + .1875 rank75 Hybrid Ridge + .25 rank50 sparse LGB"
+  },
+  "canonical_queue_sha256": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+  "card_id": "R12",
+  "card_sha256": "e858f45c14a50ae0ceee186766fadce2037fba39c44a61a9ff84b50b9e704557",
+  "estimator": {
+    "class": "lightgbm.LGBMRanker",
+    "group_order": "stable cycle sort; labels and CSR rows sorted identically",
+    "parameters_base": {
+      "boosting_type": "gbdt",
+      "colsample_bytree": 1.0,
+      "deterministic": true,
+      "force_col_wise": true,
+      "learning_rate": 0.05,
+      "max_depth": -1,
+      "min_child_samples": 40,
+      "min_child_weight": 0.001,
+      "n_estimators": 200,
+      "n_jobs": 2,
+      "num_leaves": 15,
+      "objective": "lambdarank",
+      "random_state": 42,
+      "reg_alpha": 0.0,
+      "reg_lambda": 3.0,
+      "subsample": 1.0,
+      "subsample_freq": 0,
+      "verbosity": -1
+    },
+    "parameters_per_fit": {
+      "label_gain": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "lambdarank_truncation_level": "maximum group size among fit cycles"
+    },
+    "query_definition": "one stable contiguous query per exact fit cycle",
+    "score_inverse_mapping": "stable-sort score rows by cycle then inverse-map to original row positions",
+    "target_grade": "clip(floor(threat_rank / 10), 0, 9)"
+  },
+  "evaluation_views": {
+    "H12": [
+      [
+        55,
+        56,
+        67
+      ],
+      [
+        67,
+        68,
+        79
+      ]
+    ],
+    "W1": [
+      [
+        55,
+        56,
+        59
+      ]
+    ],
+    "W4": [
+      [
+        67,
+        68,
+        71
+      ]
+    ],
+    "primary": [
+      [
+        55,
+        56,
+        59
+      ],
+      [
+        67,
+        68,
+        71
+      ]
+    ]
+  },
+  "features": [
+    "impact_load",
+    "entry_friction",
+    "cycle_code",
+    "scope_pressure",
+    "text_load",
+    "scope_trace",
+    "org_spread",
+    "module_spread",
+    "telemetry_flag",
+    "org_code",
+    "module_code",
+    "pattern_code",
+    "signal_stream"
+  ],
+  "gates": {
+    "individual_pilot_view_MAE_harm_max": 0.5,
+    "pilot_H12_MAE_harm_max": 0.05,
+    "pilot_primary_MAE_gain_min": 0.03,
+    "supported_group_n_min": 100,
+    "supported_tail_or_missing_MAE_harm_max": 0.25
+  },
+  "metric": "MAE; positive gain = exact champion MAE - candidate MAE",
+  "pilot_predictor_fit_count": 2,
+  "policy": "clip(0.75 * exact three-component champion + 0.25 * (100 * average rank / complete future-cycle n), 0, 100)",
+  "preprocessing": {
+    "categorical_max_categories": 254,
+    "categorical_min_frequency": 30,
+    "full_word_design_densified": false,
+    "missing_stream_indicator": true,
+    "sparse_design": true,
+    "structured": "RegressionTextModel._structured_fit/_structured_transform; fit-prefix numeric imputation/scaling and rare-category OHE",
+    "svd": false,
+    "text": {
+      "dtype": "float64",
+      "max_features": 20000,
+      "min_df": 2,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "sublinear_tf": true
+    },
+    "text_vectorizer_fit_scope": "fit rows at each cutoff only"
+  },
+  "status": "FROZEN_RECIPE_BEFORE_PILOT",
+  "support": {
+    "H12_rows": 38588,
+    "pilot_primary_rows": 9064,
+    "supported_group_n_min": 100
+  },
+  "test_data_used": false
+}
