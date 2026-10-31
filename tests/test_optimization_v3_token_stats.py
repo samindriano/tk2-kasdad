@@ -13,3 +13,24 @@ def test_unknown_fallback_and_predict_state_immutability():
     out=model.transform(['brandnewtoken','alpha',''])
     assert np.isfinite(out).all()and model.audit_state()==state
     assert out[0,0]==.5 and out[0,5]==0 and model.counts.get('brandnewtoken')is None
+
+def test_feature_digest_is_stable_across_python_hash_seeds():
+    import os
+    import subprocess
+    import sys
+    code = """
+import hashlib
+import numpy as np
+from src.models.optimization_v3_token_stats import OrderedTokenStats
+words=['tok'+str(i) for i in range(41)]
+texts=[' '.join(w for j,w in enumerate(words) if (i+j)%7!=0) for i in range(84)]
+cycles=np.repeat(np.arange(47,54),12)
+y=np.array([(i*13%97)/97 for i in range(84)])
+m=OrderedTokenStats();features=m.fit_transform(texts,cycles,y)
+print(m.audit_state()['training_features_sha256'])
+print(hashlib.sha256(m.transform([' '.join(words)]).tobytes()).hexdigest())
+"""
+    outputs = [subprocess.check_output([sys.executable, '-c', code],
+               env={**os.environ, 'PYTHONHASHSEED': seed}, text=True)
+               for seed in ('1', '17')]
+    assert outputs[0] == outputs[1]

@@ -15,7 +15,7 @@ class OrderedTokenStats:
         return set(self.analyzer(str(text)))
     def _encode(self,tokens):
         prior=self.target_sum/self.total if self.total else .5
-        eligible=[t for t in tokens if self.counts.get(t,0)>=3]
+        eligible=[t for t in sorted(tokens) if self.counts.get(t,0)>=3]
         n=np.array([self.counts[t]for t in eligible],float)
         values=np.array([(self.sums[t]+self.smoothing*prior)/(self.counts[t]+self.smoothing)for t in eligible])
         if len(values):return [values.mean(),values.min(),values.max(),values.std(),np.quantile(values,.75),len(eligible)/max(len(tokens),1),np.log1p(len(tokens)),np.log1p(n.mean())]
