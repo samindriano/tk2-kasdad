@@ -473,7 +473,7 @@ def _prepare(card: Mapping[str, Any], queue: Mapping[str, Any]) -> dict[str, Any
         raise BatchIntegrityError("Existing R16 recipe differs from current canonical preflight recipe")
     if FREEZE_PATH.exists():
         frozen = _read_json(FREEZE_PATH)
-        if frozen.get("identity") != identity or frozen.get("signature") != signature:
+        if not _freeze_matches(frozen, identity):
             raise BatchIntegrityError("Existing R16 freeze differs from current source/input/recipe identity")
     memory_pass = all(value.get("status") == "PASS" for value in memory.values())
     status = "PREFLIGHT_PASS" if memory_pass and ledger.get("status") == "PASS" else "BLOCKED_RESOURCE_OR_BUDGET"
@@ -511,6 +511,16 @@ def _prepare(card: Mapping[str, Any], queue: Mapping[str, Any]) -> dict[str, Any
     return {"public": public, "identity": identity, "recipe": recipe,
             "frame": frame, "target": target, "cycles": cycles,
             "views": views, "controls": controls, "train_path": train_path}
+
+
+def _freeze_matches(frozen: Mapping[str, Any], identity: Mapping[str, Any]) -> bool:
+    """Compare freeze identity after the JSON round-trip normalizes mapping keys."""
+    expected = json_sha256(identity)
+    try:
+        return (frozen.get("signature") == expected
+                and json_sha256(frozen.get("identity")) == expected)
+    except (TypeError, ValueError):
+        return False
 
 
 def _control_loader(context: Mapping[str, Any]):
@@ -869,7 +879,7 @@ def run_card(card: Mapping[str, Any], queue: Mapping[str, Any], *,
         if frozen is None:
             from src.models.optimization_v3_batch1 import ensure_frozen
             ensure_frozen(FREEZE_PATH, identity)
-        elif frozen.get("identity") != identity or frozen.get("signature") != json_sha256(identity):
+        elif not _freeze_matches(frozen, identity):
             raise BatchIntegrityError("Existing R16 freeze differs; refusing overwrite")
         result = dict(context["public"])
         result.update({"status": "FROZEN_READY", "freeze_written": True,

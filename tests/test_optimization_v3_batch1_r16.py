@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import json
+
 import numpy as np
 import pandas as pd
 import pytest
-import json
 
 from scripts import optimization_v3_batch1_r16 as r16_runner
 from src.models.optimization_v3_batch1 import json_sha256, write_bundle_exclusive
@@ -14,6 +15,16 @@ from src.models.optimization_v3_batch1_r16 import (
     rank50_prediction,
     replace_svd_component,
 )
+
+
+def test_freeze_match_survives_json_normalizing_integer_mapping_keys() -> None:
+    identity = {"expected_fit_rows": {55: 12_020, 67: 29_705}}
+    signature = json_sha256(identity)
+    persisted = json.loads(json.dumps(identity))
+
+    assert persisted != identity
+    assert r16_runner._freeze_matches({"identity": persisted, "signature": signature}, identity)
+    assert not r16_runner._freeze_matches({"identity": persisted, "signature": "wrong"}, identity)
 
 
 def test_recency_weights_keep_all_rows_and_have_mean_one() -> None:
