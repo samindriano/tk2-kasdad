@@ -1,0 +1,140 @@
+{
+  "status": "PASS_FINAL_NOTEBOOK_REVIEW_CHECKPOINT",
+  "evidence_base_commit": "783473427a550ee5f31f208c9a87f2187d47abe0",
+  "isolated_source_copy": true,
+  "cache_dependencies_present": false,
+  "input_sha256": {
+    "regression/train": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+    "classification/train": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c"
+  },
+  "environment": "Currently installed dependencies; fresh kernels, not a fresh dependency installation",
+  "full_train_inference_executed": false,
+  "kaggle_uploads": 0,
+  "notebooks": {
+    "regression": {
+      "cells": 19,
+      "executed_code_cells": 8,
+      "errors": 0,
+      "embedded_figures": 2,
+      "local_figure_paths": [
+        "C:\\Users\\Sam\\AppData\\Local\\Temp\\tp2-modeling-final-3bh23qx_\\artifacts\\samuel_final\\figures\\regression_9_1.png",
+        "C:\\Users\\Sam\\AppData\\Local\\Temp\\tp2-modeling-final-3bh23qx_\\artifacts\\samuel_final\\figures\\regression_14_2.png"
+      ],
+      "core_recomputed": {
+        "task": "regression",
+        "fit_cycles": [
+          47,
+          75
+        ],
+        "validation_cycles": [
+          76,
+          79
+        ],
+        "fit_rows": 42117,
+        "validation_rows": 8491,
+        "inner_choice": {
+          "param": "base",
+          "rank_weight": 0.5
+        },
+        "metrics": {
+          "n": 8491,
+          "MAE": 10.303425218611173,
+          "RMSE": 14.193911908446832,
+          "bias pred-actual": -0.4619403639722759
+        },
+        "prediction_sha256": "5c7eadad8122fbc6c2576d369fc1d54c96a768142a267ab57341b57ee6b7072e",
+        "matches_historical_predictions": true,
+        "historical_primary_mae": 11.931600241417073,
+        "historical_h12_mae": 14.704040710404005,
+        "kaggle_public_mae": 11.71363,
+        "fit_preprocessing_only_train": true,
+        "test_used_in_core": false,
+        "baseline_metrics": [
+          {
+            "recipe": "R0_A",
+            "MAE W6": 25.00000064774467
+          },
+          {
+            "recipe": "R0_C",
+            "MAE W6": 14.969652838299375
+          }
+        ]
+      },
+      "seconds": 58.9959944000002,
+      "notebook_sha256": "21cf3e7b26828f7bf3bc20298ec096e46bbb760c9b60e889cc3fbdd53ad2df22",
+      "reviewed_figures": [
+        "reports/samuel_final/figures/regression_9_1.png",
+        "reports/samuel_final/figures/regression_14_2.png"
+      ]
+    },
+    "classification": {
+      "cells": 25,
+      "executed_code_cells": 12,
+      "errors": 0,
+      "embedded_figures": 5,
+      "local_figure_paths": [
+        "C:\\Users\\Sam\\AppData\\Local\\Temp\\tp2-modeling-final-3bh23qx_\\artifacts\\samuel_final\\figures\\classification_5_1.png",
+        "C:\\Users\\Sam\\AppData\\Local\\Temp\\tp2-modeling-final-3bh23qx_\\artifacts\\samuel_final\\figures\\classification_7_1.png",
+        "C:\\Users\\Sam\\AppData\\Local\\Temp\\tp2-modeling-final-3bh23qx_\\artifacts\\samuel_final\\figures\\classification_10_1.png",
+        "C:\\Users\\Sam\\AppData\\Local\\Temp\\tp2-modeling-final-3bh23qx_\\artifacts\\samuel_final\\figures\\classification_16_2.png",
+        "C:\\Users\\Sam\\AppData\\Local\\Temp\\tp2-modeling-final-3bh23qx_\\artifacts\\samuel_final\\figures\\classification_18_2.png"
+      ],
+      "core_recomputed": {
+        "task": "classification",
+        "fit_cycles": [
+          47,
+          75
+        ],
+        "validation_cycles": [
+          76,
+          79
+        ],
+        "fit_rows": 42117,
+        "validation_rows": 8491,
+        "threshold": 0.5,
+        "metrics": {
+          "C1_B": 0.703700351612718,
+          "C2_B": 0.8055709115215474,
+          "C4_HGB": 0.810383724597016
+        },
+        "probability_sha256": {
+          "C1_B": "a21ba8ffa0396afe9f8d7ee78bbcccc5d6024ade0037f1cb708ddc208f613095",
+          "C2_B": "01a886bb391728b58cb3504946d620efabc4859ea55585d36b76028793feb1f4",
+          "C4_HGB": "fc83ef0c5be271e1f952c24e9d196f85144ada3c701a1c0a793767733b9d1130"
+        },
+        "matches_historical_predictions": true,
+        "historical_primary_macro_f1": 0.8254807111314647,
+        "historical_h12_macro_f1": 0.7968102588689854,
+        "kaggle_public_macro_f1": 0.82641,
+        "fit_preprocessing_only_train": true,
+        "test_used_in_core": false
+      },
+      "seconds": 35.90344840002945,
+      "notebook_sha256": "6f3c5a6cd91355304f1babcdbbe4f6f7948af2d871f1b508d853c9b8691851a5",
+      "reviewed_figures": [
+        "reports/samuel_final/figures/classification_5_1.png",
+        "reports/samuel_final/figures/classification_7_1.png",
+        "reports/samuel_final/figures/classification_10_1.png",
+        "reports/samuel_final/figures/classification_16_2.png",
+        "reports/samuel_final/figures/classification_18_2.png"
+      ]
+    }
+  },
+  "preserved_historical_files": 423,
+  "approved_eda11_unchanged": true,
+  "seconds": 95.275503700017,
+  "local_review_copy": "C:\\Users\\Sam\\AppData\\Local\\Temp\\tp2-modeling-final-3bh23qx_",
+  "visual_review": {
+    "status": "PASS_ALL_7_PNGS",
+    "basis": "Main inspected each executed PNG at reading size; labels, scales, legends and confusion counts checked against outputs.",
+    "full_page_gui_layout_inspected": false,
+    "limit": "Notebook tables/output structure checked; no claim of whole-page browser layout certification."
+  },
+  "unit_tests": {
+    "command": "python -m unittest tests.test_classification_models tests.test_classification_round2_models tests.test_classification_round2_metrics tests.test_round1_models tests.test_regression_research_lgb_text tests.test_regression_research_selection tests.test_samuel_eda_a -q",
+    "count": 40,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 6.79
+  }
+}
