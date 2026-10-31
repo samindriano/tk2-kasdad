@@ -1,0 +1,24 @@
+{
+  "status": "FROZEN_BEFORE_FIRST_ABLATION_FIT",
+  "frozen_at_utc": "2026-10-31T03:25:39.437055+00:00",
+  "protocol_sha256": "68a35b25101bfe82e36babf9379b3c48666ef168c444456ec263a3571ac4c04c",
+  "code_sha256": {
+    "src/models/classification_ttr_ablation.py": "569669e90bcf92f88aa3db59cf5348be85675028c518ab60ab2b0d77f7cf90b0",
+    "scripts/run_classification_ttr_ablation.py": "3b4e6ca404e62153dc4771f95f4de4e4c178b994a644d0276e4c89a32eb0be23",
+    "tests/test_classification_ttr.py": "8ebcf4a3472174144da93a1d4b408e1841a0456af6a40fa4eb82db98320b21cf"
+  },
+  "signature": "02f90ae13dbb1c884e3566dab82f2c2c61eaa6f44c3d68a7b377ca272d33a52c",
+  "reporting_code_amendment": {
+    "at_utc": "2026-10-31T03:28:09.934020+00:00",
+    "before_ablation_outcomes_inspected": true,
+    "reason": "Normalize only threshold metadata in historical aggregate identity check: old aggregate represents fixed 0.5 as threshold=null and threshold_range=[0.5,0.5]. No fitted recipe, feature, cutoff, prediction, score, selection gate or cache key changes. Original freeze signature remains the fit identity.",
+    "code_sha256": {
+      "scripts/run_classification_ttr_ablation.py": "ae6062ba06632e5da174840a90b482be836967235aa12606e02ac8b545ecf5da"
+    },
+    "previous_reporting_sha256": {
+      "scripts/run_classification_ttr_ablation.py": "f25d7bbd4f940d08a61c0d4facefb801622bec517aa9642c1348bbf93d005f8e"
+    },
+    "revised_at_utc": "2026-10-31T03:31:18.894267+00:00",
+    "additional_reason": "Historical aggregate order produces 1e-17 differences in mean probability/Brier. Require absolute difference <1e-15 for those two reductions only; all other score fields exact after threshold metadata normalization. Source probability hashes remain bit-identical. Identified on H0 control before any ablation outcomes inspected."
+  }
+}
