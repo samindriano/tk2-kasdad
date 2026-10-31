@@ -1,0 +1,130 @@
+{
+  "experiment_id": "optimization_v3_regression_residual_head_E67",
+  "purpose": "One frozen temporal pilot of a shallow L1 residual correction head on the V2 three-component champion.",
+  "model": {
+    "class": "src.models.optimization_v3_residual.OOFResidualHead",
+    "task": "regression",
+    "score_names": [
+      "champion",
+      "lgb_svd",
+      "ridge",
+      "lgb_sparse"
+    ],
+    "input_features": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code"
+    ],
+    "utility_fixed_parameters": {
+      "objective": "regression_l1",
+      "n_estimators": 200,
+      "num_leaves": 7,
+      "min_child_samples": 80,
+      "reg_lambda": 10.0,
+      "learning_rate": 0.03,
+      "random_state": 42,
+      "n_jobs": 2,
+      "shrinkage": 0.5
+    },
+    "fit_count": 1,
+    "fit_cutoff": 67
+  },
+  "incumbent": {
+    "recipe": "0.5625 LGB SVD32 + 0.1875 Hybrid Ridge + 0.25 sparse LGB rank50",
+    "source": "original row-exact mapped component caches; no end-51 synthetic champion",
+    "sparse_policy": "within-cycle average-rank blend 0.5 raw + 0.5 percentile, clipped [0,100]",
+    "base_policy": "cached past-only component mappings and fixed Ridge25 blend, verified row-by-row"
+  },
+  "temporal_protocol": {
+    "correction_train": {
+      "cycles": [
+        56,
+        67
+      ],
+      "blocks": [
+        {
+          "fit_cutoff": 55,
+          "cycles": [
+            56,
+            59
+          ]
+        },
+        {
+          "fit_cutoff": 59,
+          "cycles": [
+            60,
+            63
+          ]
+        },
+        {
+          "fit_cutoff": 63,
+          "cycles": [
+            64,
+            67
+          ]
+        }
+      ],
+      "rows": 17685,
+      "all_component_scores_out_of_fit": true
+    },
+    "primary_fallback_W1": {
+      "fit_cutoff": 55,
+      "cycles": [
+        56,
+        59
+      ],
+      "corrected": false
+    },
+    "long_horizon_fallback_H12_E": {
+      "fit_cutoff": 55,
+      "cycles": [
+        56,
+        67
+      ],
+      "corrected": false
+    },
+    "primary_eval_W4": {
+      "fit_cutoff": 67,
+      "cycles": [
+        68,
+        71
+      ],
+      "corrected": true
+    },
+    "long_horizon_eval_H12_L": {
+      "fit_cutoff": 67,
+      "cycles": [
+        68,
+        79
+      ],
+      "corrected": true
+    },
+    "pilot_primary_pooled": "W1 unchanged plus W4 corrected; disjoint rows, non-consecutive windows, report as two-window policy summary only",
+    "pilot_H12_pooled": "H12_E unchanged plus H12_L corrected; overlapping temporal views and not independent replication",
+    "W2_W3": "training blocks for the one E67 head; report incumbent/baseline only, do not evaluate corrected outputs on training labels"
+  },
+  "score_labels": "threat_rank minus incumbent prediction is the head training residual; prediction is incumbent + 0.5 * learned correction, clipped [0,100].",
+  "selection_gate": {
+    "improvement": "at least one of pilot_primary_pooled or pilot_H12_pooled has candidate MAE lower than baseline",
+    "harm_guard": "W4 and H12_L candidate MAE harm must each be <= 0.5",
+    "subgroups": "report bias, EF, stream availability, and target tails descriptively; no tail routing"
+  },
+  "boundaries": {
+    "official_train_only": true,
+    "test_read": false,
+    "kaggle": false,
+    "candidate_search": false,
+    "rank_weight_search": false,
+    "rank_policy_52_55_reuse": false,
+    "early_oof_boundary": "end-51 component caches are raw predecessor predictions; their rank policy used 52-55 labels and no sparse-LGB component exists at cutoff51, so they are excluded from head fit."
+  }
+}

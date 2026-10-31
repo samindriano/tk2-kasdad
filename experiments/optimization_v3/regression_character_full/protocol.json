@@ -1,0 +1,34 @@
+{
+  "experiment_id": "optimization_v3_regression_character_ridge_fullsix",
+  "purpose": "Continue only the root-pilot fixed character-Ridge blend to the four remaining primary temporal windows.",
+  "pilot_signature": "371bc80936d4f279097c8d0a42ba35f4d45209f75eba56a6e123081f4cdb69de",
+  "model": "Existing CharacterRidge recipe: hybrid structured preprocessing + char_wb TF-IDF ngrams 3-5, min_df 3, max_features 30000, sublinear_tf, Ridge alpha and solver unchanged from the existing hybrid_ridge recipe.",
+  "rank_mapping": "Within each validation cycle, average rank (ties=average) maps to 100*rank/n. rank50=clip(0.5*raw_character_prediction + 0.5*rank_percentile, 0, 100).",
+  "blend": "candidate=clip(0.75*current_three_component_champion + 0.25*rank50, 0, 100).",
+  "fit_cutoffs": {
+    "reused": [55, 67],
+    "new": [59, 63, 71, 75]
+  },
+  "primary_windows": {
+    "W1": [55, 56, 59],
+    "W2": [59, 60, 63],
+    "W3": [63, 64, 67],
+    "W4": [67, 68, 71],
+    "W5": [71, 72, 75],
+    "W6": [75, 76, 79]
+  },
+  "h12": "Reuse cutoff 55 character predictions for cycles 56-67 and cutoff 67 predictions for cycles 68-79. Do not refit.",
+  "control": "Reconstruct the frozen V3 champion from the original row-aligned V2 caches through scripts/optimization_v3_reg_diagnostics.py:_build_view; preserve its 0.5625 LGB-SVD32 + 0.1875 Hybrid Ridge + 0.25 sparse-LGB rank50 recipe.",
+  "evaluation": "Report MAE, RMSE, signed bias, equal-cycle MAE, per-cycle metrics, tails, EF0/EF1, stream-present/missing, fit-defined numeric/category groups, subgroup MAE harm, and fit-defined character vocabulary size.",
+  "guardrail": "No supported subgroup (n>=100) may have candidate MAE harm over 0.25, across each reported primary/H12 view. Smaller groups remain visible and descriptive.",
+  "boundaries": {
+    "official_train_only": true,
+    "test_read": false,
+    "kaggle_access": false,
+    "new_parameters_or_weights": false,
+    "new_rank_mapping": false,
+    "outer_target_used_for_fit_or_rank": false,
+    "new_fits": 4
+  },
+  "interpretation": "All temporal cycles have been used in adaptive development; report results as comparative development evidence, not an untouched holdout estimate. Target-defined tails are post-prediction diagnostics only."
+}

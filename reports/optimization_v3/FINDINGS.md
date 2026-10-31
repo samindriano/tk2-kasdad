@@ -33,9 +33,13 @@ Pilot primary is only W1+W4, 9,064 rows; it must not be confused with the six-wi
 | Ten-bin CDF median alone | +0.733931 | +0.827221 | No |
 | 25% CDF median +75% incumbent | +0.005787 | +0.024628 | No |
 | Character Ridge rank50 alone | +0.241089 | +0.117908 | No |
-| 25% character-Ridge rank50 +75% incumbent | −0.098709 | −0.130071 | Yes; four remaining fits pending |
+| 25% character-Ridge rank50 +75% incumbent | −0.098709 | −0.130071 | Advanced; six-window result fails below |
 
 The distributional model's linear interpolation inside fixed bins assumes an approximate uniform conditional density within each ten-point bin. Its failure does not identify the true target generator. Both distributional and character pilots passed independent fingerprint, rank/CDF/mixture and metric reconciliation. No Regression upload has occurred in V3 yet.
+
+The character continuation now reproduces **primary MAE11.717761 / H12 MAE13.917462**. Only two of six windows improve; primary worsens0.158371. There are57 subgroup comparisons above0.25 MAE harm among365 supported comparisons, with worst harm0.837118. The H12 improvement does not justify promotion or a Kaggle upload. MAIN opened the figure and independently repeated all14,478 numerical checks against the preserved verification receipt. Its exclusive receipt writer correctly rejects overwriting; the second audit compared the in-memory result instead.
+
+The Regression OOF residual head also fails its pilot: pooled W1+W4 MAE13.551210 and H12 MAE14.128414, both worse than the unchanged incumbent. W1/H12_E stay exact fallback; only the cutoff67 head was trained on actual prior OOF blocks56–67. This family is retired without further fits or upload. The active verifier is `optimization_v3_verify_reg_residual_v5.py`; versions1–4 and their amendments preserve the original failures. V5 fixes only verifier fixtures/schema/positive-and-negative flag assertions, with a pre-check amendment and zero refits. Source, model outputs and metrics were not altered to obtain PASS.
 
 ## Validation and reproduction boundaries
 

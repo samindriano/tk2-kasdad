@@ -1,0 +1,69 @@
+{
+  "experiment_id": "optimization_v3_regression_residual_head_E67",
+  "amendment_type": "root_versioned_zero_fit_verifier_v5",
+  "written_before_official_metric_recheck": true,
+  "metrics_recomputed_before_v4": false,
+  "original_frozen_verifier": {
+    "path": "scripts/optimization_v3_verify_reg_residual.py",
+    "prefit_sha256": "c285fc4ca09d7daf7764aa33c7c5e4e6e8324b6100d65420280a4df5eb449a4a",
+    "restored_byte_exact_to_freeze": true
+  },
+  "prior_versioned_sources": [
+    {
+      "path": "scripts/optimization_v3_verify_reg_residual_v2.py",
+      "sha256": "29ede3432168ff75a550adbd0aad5a1d664b9329e6402ee762da2c2a4f13800f"
+    },
+    {
+      "path": "scripts/optimization_v3_verify_reg_residual_v3.py",
+      "sha256": "f84b1e63fa4fecd7caa13f5709f2e35a2711d5cd579605122fc057f7eba62f82"
+    },
+    {
+      "path": "scripts/optimization_v3_verify_reg_residual_v4.py",
+      "sha256": "dc13494be326351c0ba612e15b6b20c8f1a75e27a9467f5e35604405129529b5"
+    }
+  ],
+  "versioned_corrected_verifier": {
+    "path": "scripts/optimization_v3_verify_reg_residual_v5.py",
+    "sha256": "4c0837d6579604e9aa237c09e997944e11718d978064e2baff2e4a5cf57630f5",
+    "change": "Root fixes overlapping syntheticgroup counts and distinguishes expected-false no-Test/no-Kaggle flags from positive checks. Other verification calculations retained. No candidate/source/model/output change."
+  },
+  "v1_failure": {
+    "failure": "UnboundLocalError: w4mask referenced before assignment.",
+    "failed_before_metric_recheck": true,
+    "model_fit_count": 0
+  },
+  "v2_failure": {
+    "failure": "Amendment schema was read as a flat key although original_frozen_verifier.prefit_sha256 is nested.",
+    "failed_before_metric_recheck": true,
+    "model_fit_count": 0
+  },
+  "v3_preflight_failure": {
+    "failure": "Synthetic targets [10,20,30] omitted tail groups while the preflight asserted complete subgroup support.",
+    "failed_before_official_metric_recheck": true,
+    "model_fit_count": 0
+  },
+  "v4_preflight_expectations": {
+    "synthetic_targets": [
+      0,
+      50,
+      100
+    ],
+    "all_seven_groups_supported": true,
+    "empty_group_schema": {
+      "n": 0,
+      "baseline": null,
+      "candidate": null
+    },
+    "model_fit_count": 0,
+    "official_metric_recheck": false
+  },
+  "original_freeze_modified": false,
+  "runner_protocol_training_data_and_fitted_outputs_changed": false,
+  "at_utc": "2026-10-31T12:08:30.671450+00:00",
+  "metrics_recomputed_before_v5": false,
+  "v4_preflight_failure": {
+    "failure": "Overlapping syntheticgroups expected to each contain1; EF0/missing correctly contain2.",
+    "official_metric_recheck_started": false,
+    "fit_count": 0
+  }
+}

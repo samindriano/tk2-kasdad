@@ -1,0 +1,35 @@
+{
+  "experiment_id": "optimization_v3_regression_residual_head_E67",
+  "amendment_type": "versioned_zero_fit_verifier",
+  "written_before_v3_metric_recheck": true,
+  "original_frozen_verifier": {
+    "path": "scripts/optimization_v3_verify_reg_residual.py",
+    "prefit_sha256": "c285fc4ca09d7daf7764aa33c7c5e4e6e8324b6100d65420280a4df5eb449a4a",
+    "restored_byte_exact_to_freeze": true
+  },
+  "versioned_corrected_verifier": {
+    "path": "scripts/optimization_v3_verify_reg_residual_v3.py",
+    "sha256": "f84b1e63fa4fecd7caa13f5709f2e35a2711d5cd579605122fc057f7eba62f82",
+    "change": "V3 binds nested amendment fields, fixes the W4 mask ordering, verifies original cache row IDs and score/target fingerprints, validates saved output hash and recomputes metrics with zero estimator fits."
+  },
+  "prior_versioned_source": {
+    "path": "scripts/optimization_v3_verify_reg_residual_v2.py",
+    "sha256": "29ede3432168ff75a550adbd0aad5a1d664b9329e6402ee762da2c2a4f13800f"
+  },
+  "v1_failure": {
+    "source": "the frozen V1 verifier above",
+    "failure": "UnboundLocalError: w4mask referenced before assignment in W4 base-row comparison.",
+    "failed_before_metric_recheck": true,
+    "model_fit_count": 0
+  },
+  "v2_failure": {
+    "source": "the V2 verifier above",
+    "failure": "AssertionError: amendment verifier expected a flat key while the amendment schema stores original_frozen_verifier.prefit_sha256.",
+    "failed_before_metric_recheck": true,
+    "model_fit_count": 0
+  },
+  "metrics_recomputed_before_v3": false,
+  "v3_verification_model_fit_count": 0,
+  "original_freeze_modified": false,
+  "runner_protocol_training_data_and_fitted_outputs_changed": false
+}
