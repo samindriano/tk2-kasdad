@@ -1,0 +1,124 @@
+{
+  "card_id": "R16",
+  "cutoffs": [
+    55,
+    67
+  ],
+  "decision": "RETIRE",
+  "fit_predictor_count": 2,
+  "freeze_signature": "6503999dac3df6843da06abdced8372e79c2022c07d03b8b361a2504b7b062c8",
+  "gate_checks": {
+    "H12_harm_at_most_0_05": true,
+    "each_pilot_window_harm_at_most_0_5": true,
+    "primary_gain_at_least_0_03": false,
+    "supported_tail_missing_harm_at_most_0_25": true
+  },
+  "gate_definition": {
+    "individual_pilot_view_MAE_harm_max": 0.5,
+    "pilot_H12_MAE_harm_max": 0.05,
+    "pilot_primary_MAE_gain_min": 0.03,
+    "supported_group_n_min": 100,
+    "supported_tail_or_missing_MAE_harm_max": 0.25
+  },
+  "groups": {
+    "H12_E": {
+      "stream_missing": {
+        "baseline_mae": 14.676051957433712,
+        "candidate_mae": 14.887839005103281,
+        "harm": 0.2117870476695689,
+        "n": 1203,
+        "supported": true
+      },
+      "target_ge_95": {
+        "baseline_mae": 13.636034398681975,
+        "candidate_mae": 13.565756631770315,
+        "harm": -0.07027776691166032,
+        "n": 898,
+        "supported": true
+      },
+      "target_le_5": {
+        "baseline_mae": 22.849141746817015,
+        "candidate_mae": 21.544360370675786,
+        "harm": -1.3047813761412286,
+        "n": 880,
+        "supported": true
+      }
+    },
+    "H12_L": {
+      "stream_missing": {
+        "baseline_mae": 14.018108843153694,
+        "candidate_mae": 13.922993365088825,
+        "harm": -0.09511547806486931,
+        "n": 1375,
+        "supported": true
+      },
+      "target_ge_95": {
+        "baseline_mae": 7.35888147768514,
+        "candidate_mae": 7.514281340174847,
+        "harm": 0.15539986248970727,
+        "n": 1057,
+        "supported": true
+      },
+      "target_le_5": {
+        "baseline_mae": 9.27513828173195,
+        "candidate_mae": 8.907489156310492,
+        "harm": -0.3676491254214582,
+        "n": 1048,
+        "supported": true
+      }
+    },
+    "primary": {
+      "stream_missing": {
+        "baseline_mae": 13.845691180212624,
+        "candidate_mae": 14.064048979640367,
+        "harm": 0.2183577994277428,
+        "n": 734,
+        "supported": true
+      },
+      "target_ge_95": {
+        "baseline_mae": 9.012789399222996,
+        "candidate_mae": 9.130544534652437,
+        "harm": 0.11775513542944083,
+        "n": 462,
+        "supported": true
+      },
+      "target_le_5": {
+        "baseline_mae": 15.115137944294784,
+        "candidate_mae": 14.291492424285709,
+        "harm": -0.8236455200090749,
+        "n": 449,
+        "supported": true
+      }
+    }
+  },
+  "kaggle_access": false,
+  "maximum_supported_group_harm": 0.2183577994277428,
+  "status": "INDEPENDENT_QA_PASS",
+  "test_data_used": false,
+  "views": {
+    "H12": {
+      "baseline_mae": 14.04753258299653,
+      "candidate_mae": 14.030359412000374,
+      "gain_positive_is_better": 0.017173170996155562,
+      "rows": 38588
+    },
+    "W1": {
+      "baseline_mae": 15.882111974427762,
+      "candidate_mae": 15.927292813953493,
+      "gain_positive_is_better": -0.04518083952573093,
+      "rows": 4114
+    },
+    "W4": {
+      "baseline_mae": 11.455005081083685,
+      "candidate_mae": 11.388653904964542,
+      "gain_positive_is_better": 0.06635117611914332,
+      "rows": 4950
+    },
+    "primary": {
+      "baseline_mae": 13.464395831218011,
+      "candidate_mae": 13.448667196180404,
+      "gain_positive_is_better": 0.015728635037607575,
+      "rows": 9064
+    }
+  }
+}
