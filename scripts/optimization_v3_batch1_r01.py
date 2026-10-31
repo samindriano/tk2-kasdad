@@ -477,7 +477,13 @@ def _recipe(card: dict[str, Any], views: dict[str, list[tuple[int, int, int]]]) 
             "structured": "RegressionTextModel._structured_fit/_structured_transform; fold-fit imputers, scaling and rare-category OHE",
             "categorical_min_frequency": 30,
             "categorical_max_categories": 254,
-            "text": {key: list(value) if isinstance(value, tuple) else value for key, value in _TFIDF_PARAMS.items()},
+            "text": {
+                key: (list(value) if isinstance(value, tuple)
+                      else value.__name__ if isinstance(value, type)
+                      else value.item() if isinstance(value, np.generic)
+                      else value)
+                for key, value in _TFIDF_PARAMS.items()
+            },
             "text_and_structured_fit_scope": "fit rows of each cutoff only",
             "missing_signal_stream_indicator": True,
             "sparse_design": True,
