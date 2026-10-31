@@ -1,0 +1,172 @@
+{
+  "measurement": {
+    "missing_rule": "NaN or blank signal_stream is missing; no-token nonblank streams are present but not TTR-analyzable",
+    "normalization": "lowercase before tokenization",
+    "token_pattern": "[A-Za-z0-9]+",
+    "ttr": "number of unique tokens / token count"
+  },
+  "method": {
+    "assumptions_and_limits": [
+      "A single linear within-cell slope is summarized across supported cells; real slopes may vary by length or cycle.",
+      "Cells contribute in proportion to within-cell TTR variance (sum of squared deviations), not equal cell weight.",
+      "This slope estimand differs from the original high-vs-low TTR quartile prevalence gap.",
+      "The binary outcome makes the cell-centered slope descriptive and does not imply causation or semantic quality.",
+      "Support gates can exclude sparse or TTR-constant cells; the result describes retained support only."
+    ],
+    "cell": "exact token_count x exact cycle_code",
+    "constant_outcome_cells_retained": true,
+    "feature_only_support_selection": true,
+    "formula": "within-cell beta = sum_cell sum((TTR-cell_mean_TTR)*(artifact-cell_mean_artifact)) / sum_cell sum((TTR-cell_mean_TTR)^2)",
+    "interpretation": "descriptive common linear within-cell association; beta*0.1 is the fitted artifact-probability difference per 0.1 TTR within this supported sample"
+  },
+  "source": {
+    "granular_export_minimum_cell_n": 5,
+    "model_fits": 0,
+    "raw_text_exported": false,
+    "record_ids_exported": false,
+    "rows": 50608,
+    "scope": "official classification Train only; cycles 47-79",
+    "sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "test_used": false,
+    "train_file": "classification/Train.csv"
+  },
+  "support": {
+    "all_exact_length_x_cycle_cells": 3976,
+    "all_train_rows": 50608,
+    "missing_or_blank_stream_rows": 3404,
+    "nonblank_but_no_token_rows": 0,
+    "nonblank_stream_rows": 47204,
+    "tokenizable_rows": 47204
+  },
+  "support_gate_results": {
+    "10": {
+      "all_joint_cells": 3976,
+      "cell_direction": {
+        "negative_cells": 494,
+        "negative_rows": 11294,
+        "negative_sxx_share": 0.2723182081944441,
+        "positive_cells": 996,
+        "positive_rows": 26907,
+        "positive_sxx_share": 0.720001474731524,
+        "zero_cells": 22,
+        "zero_rows": 312,
+        "zero_sxx_share": 0.007680317074032038
+      },
+      "common_within_cell_slope_per_0_1_ttr": 0.07733615744914699,
+      "common_within_cell_slope_per_ttr_unit": 0.7733615744914698,
+      "coverage_of_all_train_rows": 0.7610061650331963,
+      "coverage_of_nonblank_rows": 0.8158842470977036,
+      "coverage_of_tokenizable_rows": 0.8158842470977036,
+      "cycle_concentration": {
+        "cycles_with_eligible_cells": 33,
+        "loco_slopes_negative_cycles": 0,
+        "loco_slopes_positive_cycles": 33,
+        "loco_slopes_zero_cycles": 0,
+        "max_cycle_sxx_share": 0.06275344373441816,
+        "negative_cycle_slopes": 3,
+        "positive_cycle_slopes": 30,
+        "top_3_cycle_sxx_share": 0.16953368921034662,
+        "zero_cycle_slopes": 0
+      },
+      "eligibility_rule": "cell n >= minimum and at least 2 distinct TTR values; target variation is not an eligibility condition",
+      "eligible_cells": 1512,
+      "eligible_support_rows": 38513,
+      "excluded_both_small_n_and_insufficient_ttr_variation_cells": 626,
+      "excluded_insufficient_ttr_variation_cells": 628,
+      "excluded_insufficient_ttr_variation_only_cells": 2,
+      "excluded_small_n_cells": 2462,
+      "excluded_small_n_only_cells": 1836,
+      "minimum_cell_n": 10,
+      "sum_within_cell_sxx": 140.86790781170583,
+      "sum_within_cell_sxy": 108.94182698058005,
+      "total_excluded_cells": 2464,
+      "weighted_within_cell_correlation": 0.10384293271388638
+    },
+    "2": {
+      "all_joint_cells": 3976,
+      "cell_direction": {
+        "negative_cells": 842,
+        "negative_rows": 13055,
+        "negative_sxx_share": 0.25158616987882465,
+        "positive_cells": 1761,
+        "positive_rows": 30684,
+        "positive_sxx_share": 0.6876778563635957,
+        "zero_cells": 745,
+        "zero_rows": 2723,
+        "zero_sxx_share": 0.060735973757579616
+      },
+      "common_within_cell_slope_per_0_1_ttr": 0.08253643202593476,
+      "common_within_cell_slope_per_ttr_unit": 0.8253643202593476,
+      "coverage_of_all_train_rows": 0.9180761934871957,
+      "coverage_of_nonblank_rows": 0.9842809931361749,
+      "coverage_of_tokenizable_rows": 0.9842809931361749,
+      "cycle_concentration": {
+        "cycles_with_eligible_cells": 33,
+        "loco_slopes_negative_cycles": 0,
+        "loco_slopes_positive_cycles": 33,
+        "loco_slopes_zero_cycles": 0,
+        "max_cycle_sxx_share": 0.055076890661682885,
+        "negative_cycle_slopes": 2,
+        "positive_cycle_slopes": 31,
+        "top_3_cycle_sxx_share": 0.14989894360258146,
+        "zero_cycle_slopes": 0
+      },
+      "eligibility_rule": "cell n >= minimum and at least 2 distinct TTR values; target variation is not an eligibility condition",
+      "eligible_cells": 3348,
+      "eligible_support_rows": 46462,
+      "excluded_both_small_n_and_insufficient_ttr_variation_cells": 583,
+      "excluded_insufficient_ttr_variation_cells": 628,
+      "excluded_insufficient_ttr_variation_only_cells": 45,
+      "excluded_small_n_cells": 583,
+      "excluded_small_n_only_cells": 0,
+      "minimum_cell_n": 2,
+      "sum_within_cell_sxx": 174.48990105853576,
+      "sum_within_cell_sxy": 144.0177385792992,
+      "total_excluded_cells": 628,
+      "weighted_within_cell_correlation": 0.11518558704912907
+    },
+    "5": {
+      "all_joint_cells": 3976,
+      "cell_direction": {
+        "negative_cells": 680,
+        "negative_rows": 12553,
+        "negative_sxx_share": 0.26300390652807654,
+        "positive_cells": 1401,
+        "positive_rows": 29600,
+        "positive_sxx_share": 0.7070188311478156,
+        "zero_cells": 165,
+        "zero_rows": 1180,
+        "zero_sxx_share": 0.02997726232410773
+      },
+      "common_within_cell_slope_per_0_1_ttr": 0.07988321635749253,
+      "common_within_cell_slope_per_ttr_unit": 0.7988321635749253,
+      "coverage_of_all_train_rows": 0.8562480240278217,
+      "coverage_of_nonblank_rows": 0.9179942377764596,
+      "coverage_of_tokenizable_rows": 0.9179942377764596,
+      "cycle_concentration": {
+        "cycles_with_eligible_cells": 33,
+        "loco_slopes_negative_cycles": 0,
+        "loco_slopes_positive_cycles": 33,
+        "loco_slopes_zero_cycles": 0,
+        "max_cycle_sxx_share": 0.05710979001339085,
+        "negative_cycle_slopes": 2,
+        "positive_cycle_slopes": 31,
+        "top_3_cycle_sxx_share": 0.1561863246817069,
+        "zero_cycle_slopes": 0
+      },
+      "eligibility_rule": "cell n >= minimum and at least 2 distinct TTR values; target variation is not an eligibility condition",
+      "eligible_cells": 2246,
+      "eligible_support_rows": 43333,
+      "excluded_both_small_n_and_insufficient_ttr_variation_cells": 620,
+      "excluded_insufficient_ttr_variation_cells": 628,
+      "excluded_insufficient_ttr_variation_only_cells": 8,
+      "excluded_small_n_cells": 1722,
+      "excluded_small_n_only_cells": 1102,
+      "minimum_cell_n": 5,
+      "sum_within_cell_sxx": 162.111138596787,
+      "sum_within_cell_sxy": 129.49959158486593,
+      "total_excluded_cells": 1730,
+      "weighted_within_cell_correlation": 0.1096744547368126
+    }
+  }
+}
