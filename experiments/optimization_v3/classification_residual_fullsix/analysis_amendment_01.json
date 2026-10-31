@@ -1,0 +1,18 @@
+{
+  "status": "PREDECLARED_POSTFIT_AGGREGATION_AMENDMENT",
+  "created_at_utc": "2026-10-31T12:18:10Z",
+  "fit_freeze_signature": "f056a1a0531cd12230b2c01144fb39110a48f835c26139973a22df53ad863b94",
+  "fit_outputs": [
+    "experiments/runs/optimization_v3_cls_residual_fullsix/fit59_A_base_structured.npz",
+    "experiments/runs/optimization_v3_cls_residual_fullsix/fit63_A_base_structured.npz",
+    "experiments/runs/optimization_v3_cls_residual_fullsix/fit71_A_base_structured.npz",
+    "experiments/runs/optimization_v3_cls_residual_fullsix/fit75_A_base_structured.npz"
+  ],
+  "observed_issue": "The frozen report aggregator required strictly increasing fit-only Q1/Q2/Q3 edges. entry_friction has repeated raw quartiles [0,0,1] at each cutoff, so report generation stopped after fitting and saving all four designated heads.",
+  "amendment_scope": "Post-fit evaluation aggregation only. The original frozen fit source, frozen protocol, feature design, OOF boundaries, model outputs, thresholds, route, and comparator predictions remain unchanged.",
+  "handling": "Preserve the raw fit-period empirical quantile edges including ties. Apply the same right-inclusive numpy digitize convention to finite values. Empty quantile bins remain explicit with n=0; the tied cutpoints are not perturbed or replaced.",
+  "fit_action": "No fit or refit is performed by the analysis adapter.",
+  "authorized_by": "root agent explicit message in current task thread",
+  "test_read": false,
+  "kaggle_access": false
+}

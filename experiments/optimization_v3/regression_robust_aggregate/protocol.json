@@ -1,0 +1,20 @@
+{
+  "hypothesis": "A coordinatewise median may limit an extreme component forecast better than a weighted mean.",
+  "component_inputs": "Original mapped LGB SVD32, mapped Hybrid Ridge, and independently rank50-mapped sparse LGB.",
+  "policies": {
+    "median3": "median of three mapped component forecasts",
+    "median25": "0.75 fixed current champion + 0.25 median3"
+  },
+  "champion": "0.5625 mapped LGB + 0.1875 mapped Ridge + 0.25 mapped sparse LGB",
+  "gate": {
+    "minimum_primary_MAE_gain": 0.03,
+    "maximum_H12_MAE_harm": 0.05,
+    "minimum_nonnegative_windows": 4,
+    "maximum_supported_tail_or_missing_harm": 0.25,
+    "minimum_subgroup_support": 100
+  },
+  "new_model_fits": 0,
+  "Test_read": false,
+  "Kaggle_access": false,
+  "selection_caveat": "Reused adaptive Train development outcomes, not an untouched holdout. No aggregation weight search."
+}

@@ -1,0 +1,58 @@
+{
+  "experiment_id": "optimization_v3_classification_oof_residual_pilot",
+  "status": "FIXED_TWO_HEAD_PILOT",
+  "source_boundary": "Official Classification Train only; never read Test or Kaggle outputs.",
+  "source_commit_context": "78d6c67f6a243e91f91a4a23bfb1de2781538f03",
+  "target": "artifact_signal",
+  "route": "Present signal_stream rows use the fitted residual head; missing stream rows keep the archived CB_MISSING probability exactly.",
+  "threshold": 0.5,
+  "outer_fits": [55, 67],
+  "outer_horizons": {
+    "55": {"cycles": [56, 67], "primary_window": [56, 59], "h12_view": "H12_E"},
+    "67": {"cycles": [68, 79], "primary_window": [68, 71], "h12_view": "H12_L"}
+  },
+  "meta_training": {
+    "outer_cutoff_55": {"oof_cycles": [52, 55], "base_fit_cutoffs": [51]},
+    "outer_cutoff_67": {"oof_cycles": [52, 67], "base_fit_cutoffs": [51, 55, 59, 63]},
+    "block_rule": "Each OOF block is exactly the next four cycles after its base-fit cutoff; blocks are disjoint and ordered.",
+    "fit_population": "Only stream-present OOF rows from cycles 52 through the outer cutoff; no outer labels are passed to the head.",
+    "features": "src.models.round1_models.EXPANDED_FEATURES, fit-only preprocessing inside OOFResidualHead.",
+    "score_heads": {
+      "A_base_structured": ["C2_B"],
+      "B_base_structured_plus_CB_ablation": ["C2_B", "CB_MISSING"]
+    }
+  },
+  "head": {
+    "implementation": "src.models.optimization_v3_residual.OOFResidualHead",
+    "task": "classification",
+    "parameters": {
+      "learning_rate": 0.03,
+      "n_estimators": 200,
+      "num_leaves": 7,
+      "min_child_samples": 80,
+      "reg_lambda": 10.0,
+      "random_state": 42,
+      "n_jobs": 2,
+      "verbosity": -1,
+      "deterministic": true,
+      "force_col_wise": true
+    },
+    "init_margin": "logit(C2_B OOF probability)",
+    "correction_shrinkage": 0.5,
+    "threshold": 0.5,
+    "no_early_stopping_or_outer_tuning": true
+  },
+  "evaluation_views": ["W1", "W4", "W1_plus_W4_pilot_slice", "H12_E", "H12_L", "H12_pooled"],
+  "acceptance_gate": {
+    "finite_present_meta_and_corrected_probabilities": true,
+    "missing_route_exact_match": true,
+    "at_least_one_pooled_primary_slice_or_H12_view_improves_macro_f1": true,
+    "no_individual_outer_view_macro_f1_harm_over": 0.01,
+    "outer_labels_used_for_training_or_selection": false
+  },
+  "prohibitions": [
+    "No new model family or feature search.",
+    "No changes to the shared OOFResidualHead utility.",
+    "No full-six continuation, Kaggle submission, Test read, Git commit, or changes to prior research/academic/team files."
+  ]
+}

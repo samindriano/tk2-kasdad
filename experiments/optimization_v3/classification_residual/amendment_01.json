@@ -1,0 +1,10 @@
+{
+  "amendment_id": "optimization_v3_classification_oof_residual_freeze_serialization_01",
+  "status": "ENGINEERING_CORRECTION_BEFORE_ANY_MODEL_FIT",
+  "parent_freeze_signature": "e5d93a84cdd32ce6a1ee7bf82113f760201727ba014b359ad7448f154a1282ce",
+  "reason": "The original freeze recorded outer_fits with integer keys. JSON serialization canonicalized those keys to strings, so a direct Python dictionary equality check failed despite identical canonical JSON digest and unchanged inputs.",
+  "change": "Compare the amended freeze using canonical identities and represent outer_fits keys as strings in the identity payload.",
+  "protocol_or_inputs_changed": false,
+  "model_fit_or_prediction_occurred_before_correction": false,
+  "original_freeze_preserved": "freeze.json"
+}

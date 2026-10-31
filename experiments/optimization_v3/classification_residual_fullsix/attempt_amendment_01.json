@@ -1,0 +1,27 @@
+{
+  "status": "RECOVERY_AUTHORIZED_BEFORE_RESUMED_CANDIDATE_FIT",
+  "created_at_utc": "2026-10-31T12:15:53Z",
+  "parent_freeze_signature": "f056a1a0531cd12230b2c01144fb39110a48f835c26139973a22df53ad863b94",
+  "failed_attempt_receipt": "experiments/runs/optimization_v3_cls_residual_fullsix/attempt_01_cutoff59_failure.json",
+  "failure": {
+    "cutoff": 59,
+    "candidate_configuration": "A_base_structured",
+    "fit_invocation_completed_in_memory": true,
+    "model_or_prediction_artifact_persisted": false,
+    "failure_stage": "np.savez_compressed output creation",
+    "cause": "The ignored fullsix run directory did not exist; no model, cache, prediction, or metric was persisted.",
+    "source_or_data_integrity_failure": false
+  },
+  "authorized_recovery": {
+    "authorizer": "root agent explicit message in current task thread",
+    "action": "Create the ignored run directory before resuming; retry the same frozen cutoff 59 and then run 63, 71, 75.",
+    "candidate_attempt_accounting": "Four required distinct cutoff fits remain; record one unsaved cutoff-59 execution attempt separately. No new configuration or hyperparameter trial is introduced.",
+    "source_change": false,
+    "protocol_or_input_change": false
+  },
+  "frozen_source_sha256": "3fff53e6dcdb7c37a829645e8aa408c4ebc2994b073b2a3c8a99a671e175ff66",
+  "frozen_protocol_sha256": "66d384036fbd84bdded4eec1bd7e8c2ba53f03e2e55e45ecd5e90768c1f6fc64",
+  "parent_fit_freeze_signature_unchanged": true,
+  "test_read": false,
+  "kaggle_access": false
+}

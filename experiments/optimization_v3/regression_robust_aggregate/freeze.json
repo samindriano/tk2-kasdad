@@ -1,0 +1,37 @@
+{
+  "at_utc": "2026-10-31T12:20:29.557305+00:00",
+  "identity": {
+    "protocol": {
+      "hypothesis": "A coordinatewise median may limit an extreme component forecast better than a weighted mean.",
+      "component_inputs": "Original mapped LGB SVD32, mapped Hybrid Ridge, and independently rank50-mapped sparse LGB.",
+      "policies": {
+        "median3": "median of three mapped component forecasts",
+        "median25": "0.75 fixed current champion + 0.25 median3"
+      },
+      "champion": "0.5625 mapped LGB + 0.1875 mapped Ridge + 0.25 mapped sparse LGB",
+      "gate": {
+        "minimum_primary_MAE_gain": 0.03,
+        "maximum_H12_MAE_harm": 0.05,
+        "minimum_nonnegative_windows": 4,
+        "maximum_supported_tail_or_missing_harm": 0.25,
+        "minimum_subgroup_support": 100
+      },
+      "new_model_fits": 0,
+      "Test_read": false,
+      "Kaggle_access": false,
+      "selection_caveat": "Reused adaptive Train development outcomes, not an untouched holdout. No aggregation weight search."
+    },
+    "source_sha256": {
+      "scripts/optimization_v3_robust_aggregate.py": "6b216f7ab4e64fad6d0247c087d607d7442608025929a5094dbf9bc54bdded41",
+      "scripts/optimization_v3_distributional.py": "4e3ef21f789b900c07f769fbf44c6847584ec42109cad2f85c77085c191a22a8",
+      "scripts/optimization_v3_reg_diagnostics.py": "e2af49bb45353fca5bf0c14093be9b0f0b02afe24289a1b5c30dfb584bbd3f55"
+    },
+    "input_sha256": {
+      "data/raw/regression/Train.csv": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+      "experiments/runs/dual_reg_v1/stage1_paired_blends.npz": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516",
+      "experiments/runs/optimization_v2_regression_repr/pilot_predictions.npz": "eae6bea2dd6933de59ac0f63f54cc08124b59d4bcba91bbe05a7c5ec3dab9ff6",
+      "experiments/runs/optimization_v2_regression_repr/fullsix_predictions.npz": "4b87b0da34069ea3d75490233c574fbd92283f8b6472a43d8c654a20a4b904c9"
+    }
+  },
+  "signature": "e1d887928d459652a6cfdb2aae3f6d456e255395eb716ca55650fb9d87ed5fbc"
+}
