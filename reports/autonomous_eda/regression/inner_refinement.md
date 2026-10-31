@@ -47,4 +47,4 @@ Primary and H12 subgroup error tables, tails, missing/present streams, signed er
 
 Exactly 12 inner SVD128 fits were performed. 0 additional selected-parameter outer fits were performed; 6 outer fits were reused from the fixed paired stage. No full-train fit, official Test access, Kaggle submission, or leaderboard feedback occurred.
 
-The standard errors remain internal development evidence. Any later full-train parameter selection requires a separate decision and a fit-cycle 47–75 / validation-cycle 76–79 boundary; this report does not select a final inference recipe.
+The prediction errors remain internal development evidence; no statistical standard-error estimate is claimed. Any later full-train parameter selection requires a separate decision and a fit-cycle 47–75 / validation-cycle 76–79 boundary; this report does not select a final inference recipe.

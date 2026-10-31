@@ -28,7 +28,7 @@ The fit-only q80 thresholds and train/validation branch counts are frozen in `fr
 
 ## Interpretation
 
-This route is an adaptive ablation prompted by the earlier Q5 result. Any improvement would localize to the present/high-volume branch by construction; it would not establish that high text volume causes better predictions. Validation records and public Kaggle outcomes did not influence this route. Primary and H12 reuse development records, so the results are not independent confirmation.
+This route is an adaptive ablation prompted by the earlier Q5 result. Any improvement would localize to the present/high-volume branch by construction; it would not establish that high text volume causes better predictions. Earlier validation subgroup outcomes did inform the decision to test this one route. Validation input values and labels were not used to estimate each fold's q80 cutoff, and no public Kaggle outcome influenced the route. Primary and H12 reuse development records, so the results are not independent confirmation. This wording corrects an overly broad statement in the initial report; model recipes, predictions, metrics and receipts are unchanged.
 
 Input Train SHA-256 `875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c`. Extension freeze `5a5650a03470e775cf01a39bf9acbb795029d741714aa1ea3e6bbc3a560eee05`. New model fits: 0; official Test read: no; Kaggle submissions: 0.
 
