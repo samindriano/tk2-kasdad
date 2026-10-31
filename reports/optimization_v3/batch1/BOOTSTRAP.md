@@ -18,7 +18,7 @@ scored only after fitting; `scripts/optimization_v3_batch1_verify.py`
 recomputes the declared metrics independently from raw Train labels and saved
 row indices.
 
-## C03 readiness checkpoint
+## C03 pilot
 
 The C03 adapter and execution bridge are implemented in the batch1 namespace.
 The bridge loads only official Classification Train, checks the frozen Train
@@ -27,7 +27,7 @@ present-stream route as `0.75 * C2_B + 0.25 * candidate`; missing-stream rows
 retain the existing CatBoost branch. The route is independently reconstructed
 again by the verifier.
 
-Before the first fit, the following checks passed:
+Before the fit, the following checks passed:
 
 - `python -m pytest tests/test_optimization_v3_batch1.py -q`: 16 passed.
 - `python -m py_compile` passed for the batch1 engine, C03 adapter, dispatcher,
@@ -39,12 +39,18 @@ Before the first fit, the following checks passed:
   control reconstruction, resource gate, subgroup gate, resume integrity, and
   no-Test boundaries.
 
-The resource estimate was 1.602 GiB with 9.470 GiB available at preflight and a
-6 GiB per-job cap. The pilot is fixed at two new predictor fits (cutoffs 55 and
-67), with one training job and two threads. The predeclared gate requires a
-primary Macro F1 gain of at least 0.0005, H12 harm no worse than 0.001, each
-pilot window harm no worse than 0.005, and no supported subgroup guard failure.
+The resource estimate was 1.602 GiB with 9.804 GiB available at preflight and a
+6 GiB per-job cap. Exactly two new predictor fits ran (cutoffs 55 and 67), with
+one training job and two threads. Both fit receipts were saved and the fit count
+matches the card.
 
-At this checkpoint there is still no C03 freeze, official fit, result, Test
-read, or new Kaggle call. Do not describe C03 as passed until the pilot has run
-and its report has passed independent verification.
+C03 is **RETIRE** under its predeclared gate. Primary Macro F1 gain was
+−0.000319 against a required +0.0005; H12 gain was −0.000471 against a maximum
+allowed harm of 0.001. W1 was −0.001562 and W4 was +0.000703. All supported
+subgroup guards passed. Independent metric and row verification returned
+`PASS`. Full denominators and supporting artifacts are in
+[`C03/RESULTS.md`](C03/RESULTS.md), `C03/pilot.json`, `C03/verification.json`,
+and `C03/gate.json`.
+
+No Test data or Kaggle result was used. The frozen C03 recipe is retired and
+will not enter continuation or full-six evaluation.
