@@ -80,6 +80,20 @@ def test_r24_exact_ridge_recipe_and_rank75_average_ties() -> None:
     np.testing.assert_array_equal(rank75_prediction(raw, cycles), expected)
 
 
+def test_r24_freeze_resource_identity_excludes_volatile_live_ram() -> None:
+    snapshot = {field: index for index, field in enumerate(r24_runner.RESOURCE_IDENTITY_FIELDS)}
+    snapshot["status"] = "PASS"
+    first = {"55": {**snapshot, "available_physical_bytes": 8_000, "allowed_bytes": 6_000}}
+    second = {"55": {**snapshot, "available_physical_bytes": 7_500, "allowed_bytes": 5_500}}
+
+    assert r24_runner._resource_identity(first) == r24_runner._resource_identity(second)
+    frozen = r24_runner._resource_identity(first)["55"]
+    assert "available_physical_bytes" not in frozen
+    assert "allowed_bytes" not in frozen
+    assert frozen["estimated_peak_bytes"] == snapshot["estimated_peak_bytes"]
+    assert frozen["job_cap_bytes"] == snapshot["job_cap_bytes"]
+
+
 def test_r24_fit_only_interaction_design_and_fixed_replacement_route() -> None:
     fit_cycles = 47 + np.arange(160, dtype=np.int64) % 9
     score_cycles = 56 + np.arange(72, dtype=np.int64) % 12

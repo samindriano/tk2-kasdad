@@ -52,7 +52,10 @@ EXPERIMENT_DIR = ROOT / "experiments/optimization_v3/batch1/R24"
 RUN_DIR = ROOT / "experiments/runs/optimization_v3_batch1/R24"
 REPORT_DIR = ROOT / "reports/optimization_v3/batch1/R24"
 RECIPE_PATH = EXPERIMENT_DIR / "recipe.json"
-FREEZE_PATH = EXPERIMENT_DIR / "freeze.json"
+# Preserve the original freeze snapshot for audit history. Its volatile live-RAM
+# reading was incorrectly included in the identity, so the corrected identity is
+# written to a versioned path after normalizing that observation out.
+FREEZE_PATH = EXPERIMENT_DIR / "freeze.v2.json"
 PILOT_PATH = RUN_DIR / "pilot.json"
 RESULTS_PATH = REPORT_DIR / "results.json"
 VERIFICATION_PATH = REPORT_DIR / "verification.json"
@@ -93,6 +96,14 @@ GATE_KEYS = (
     "supported_tail_or_missing_MAE_harm_max",
 )
 PACKAGES = ["numpy", "pandas", "scipy", "scikit-learn", "threadpoolctl", "psutil"]
+RESOURCE_IDENTITY_FIELDS = (
+    "status", "fit_rows", "tfidf_ngram_nnz_upper_bound_one_block",
+    "structured_nnz_upper_bound", "total_nnz_upper_bound",
+    "csr_bytes_upper_bound", "fixed_overhead_bytes", "estimated_peak_bytes",
+    "estimated_peak_is_observed", "free_memory_reserve_bytes", "job_cap_bytes",
+    "threads", "concurrent_training_jobs",
+    "interaction_block_duplicates_at_most_one_tfidf_block",
+)
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -217,6 +228,22 @@ def _resource_preflight(fit_features: pd.DataFrame, available_bytes: int | None 
         "concurrent_training_jobs": 1,
         "interaction_block_duplicates_at_most_one_tfidf_block": True,
     }
+
+
+def _resource_identity(memory: Mapping[str, Mapping[str, Any]]) -> dict[str, dict[str, Any]]:
+    """Keep the frozen resource estimate stable while rechecking live RAM per run.
+
+    Available/allowed RAM are volatile host observations. Resource status and
+    the deterministic workload estimate remain frozen; _prepare still requires
+    a fresh live preflight to PASS before a fit can begin.
+    """
+    output: dict[str, dict[str, Any]] = {}
+    for cutoff, snapshot in sorted(memory.items(), key=lambda item: int(item[0])):
+        missing = [field for field in RESOURCE_IDENTITY_FIELDS if field not in snapshot]
+        if missing:
+            raise BatchIntegrityError(f"R24 resource snapshot is missing frozen fields: {missing}")
+        output[str(cutoff)] = {field: snapshot[field] for field in RESOURCE_IDENTITY_FIELDS}
+    return output
 
 
 def _budget_preflight() -> dict[str, Any]:
@@ -435,7 +462,7 @@ def _prepare(card: Mapping[str, Any], queue: Mapping[str, Any]) -> dict[str, Any
     identity.update({
         "recipe": recipe,
         "recipe_sha256": json_sha256(recipe),
-        "resource_preflight": memory,
+        "resource_preflight": _resource_identity(memory),
         "interaction_support": interaction_support,
         "control_cache_hashes": {
             "paired_lgb_ridge": r01.EXPECTED_BASE_CACHE_SHA256,
