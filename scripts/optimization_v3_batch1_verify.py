@@ -302,5 +302,3 @@ def verify_report(
 
 
 __all__ = ["reconstruct_c03", "verify_report"]
-
-\n

@@ -368,5 +368,3 @@ def test_c03_fit_only_transform_and_routing_smoke_on_synthetic_rows():
     reconstructed, baseline = reconstruct_c03(synthetic_arrays)
     assert np.array_equal(reconstructed, result["prediction"])
     assert np.allclose(baseline[controls["stream_missing"]], 0.7)
-
-\n
