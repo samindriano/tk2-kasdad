@@ -1,0 +1,179 @@
+{
+  "status": "PASS",
+  "at_utc": "2026-10-31T08:59:28.880353+00:00",
+  "historical_protected_files_byte_identical": 549,
+  "approved_academic_historical_edits": [
+    "README.md",
+    "docs/SAMUEL_DEMO.md",
+    "docs/SAMUEL_EDA.md",
+    "docs/SAMUEL_FINAL_COMPLIANCE.md",
+    "docs/SAMUEL_FINAL_REPRODUCIBILITY.md",
+    "docs/WORK_ALLOCATION.md",
+    "notebooks/samuel/09_samuel_final_regression.ipynb",
+    "notebooks/samuel/10_samuel_final_classification.ipynb",
+    "scripts/build_samuel_final_classification.py"
+  ],
+  "classification_original_control_reconciliation": [
+    {
+      "fit_end": 55,
+      "candidate": "DC_SVC",
+      "rows": 17685,
+      "original_C1_C2_route_exact": true
+    },
+    {
+      "fit_end": 55,
+      "candidate": "DC_NBSVM",
+      "rows": 17685,
+      "original_C1_C2_route_exact": true
+    },
+    {
+      "fit_end": 55,
+      "candidate": "DC_WORD_CHAR",
+      "rows": 17685,
+      "original_C1_C2_route_exact": true
+    },
+    {
+      "fit_end": 59,
+      "candidate": "DC_SVC",
+      "rows": 6493,
+      "original_C1_C2_route_exact": true
+    },
+    {
+      "fit_end": 59,
+      "candidate": "DC_NBSVM",
+      "rows": 6493,
+      "original_C1_C2_route_exact": true
+    },
+    {
+      "fit_end": 59,
+      "candidate": "DC_WORD_CHAR",
+      "rows": 6493,
+      "original_C1_C2_route_exact": true
+    },
+    {
+      "fit_end": 63,
+      "candidate": "DC_SVC",
+      "rows": 7078,
+      "original_C1_C2_route_exact": true
+    },
+    {
+      "fit_end": 63,
+      "candidate": "DC_NBSVM",
+      "rows": 7078,
+      "original_C1_C2_route_exact": true
+    },
+    {
+      "fit_end": 63,
+      "candidate": "DC_WORD_CHAR",
+      "rows": 7078,
+      "original_C1_C2_route_exact": true
+    },
+    {
+      "fit_end": 67,
+      "candidate": "DC_SVC",
+      "rows": 20903,
+      "original_C1_C2_route_exact": true
+    },
+    {
+      "fit_end": 67,
+      "candidate": "DC_NBSVM",
+      "rows": 20903,
+      "original_C1_C2_route_exact": true
+    },
+    {
+      "fit_end": 67,
+      "candidate": "DC_WORD_CHAR",
+      "rows": 20903,
+      "original_C1_C2_route_exact": true
+    },
+    {
+      "fit_end": 71,
+      "candidate": "DC_SVC",
+      "rows": 7462,
+      "original_C1_C2_route_exact": true
+    },
+    {
+      "fit_end": 71,
+      "candidate": "DC_NBSVM",
+      "rows": 7462,
+      "original_C1_C2_route_exact": true
+    },
+    {
+      "fit_end": 71,
+      "candidate": "DC_WORD_CHAR",
+      "rows": 7462,
+      "original_C1_C2_route_exact": true
+    },
+    {
+      "fit_end": 75,
+      "candidate": "DC_SVC",
+      "rows": 8491,
+      "original_C1_C2_route_exact": true
+    },
+    {
+      "fit_end": 75,
+      "candidate": "DC_NBSVM",
+      "rows": 8491,
+      "original_C1_C2_route_exact": true
+    },
+    {
+      "fit_end": 75,
+      "candidate": "DC_WORD_CHAR",
+      "rows": 8491,
+      "original_C1_C2_route_exact": true
+    }
+  ],
+  "classification_catboost_independent_AP_Brier_confusion_and_per_class_checks": 90,
+  "academic_portable_RunAll_and_11_figures_verified": true,
+  "stage_verification_sha256": {
+    "reports/dual_campaign/regression/verification.json": "46b2a552eb6a92896076bb5717007311c814a54090ec35e9914f35067b8ccddd",
+    "reports/dual_campaign/catboost/verification.json": "e1de81915dd54ccfcbad99e17f7f49aab68125434c12ce72531ddff010de4219",
+    "reports/dual_campaign/classification/amendment_01/stage1_verification.json": "f4f667d0c659c19087b3a3d0d059f53a856265d8c46a74813215495c728d59e7",
+    "reports/dual_campaign/classification/stage2/full_six_verification.json": "4f6f25707f867ec89c63d8689fc20a2fd6a43c7532321c635079096710d5db6c",
+    "reports/dual_campaign/classification/stage2/stage2_report_recovery_amendment_01_verification.json": "9f565b52fe06410eaba125525d6b0df05119fbcd3e64e814b1dd59cf6dff2a12",
+    "reports/dual_campaign/classification_catboost/verification.json": "e5ae1cf868de0ca1a518b387639cff40f6bbb914d537488b27872e185ed804d4"
+  },
+  "accepted_submissions": [
+    {
+      "task": "classification",
+      "candidate": "dc_cls_cb_missing_v1",
+      "ref": "57833406",
+      "public_score": 0.82701,
+      "csv_rows": 29421,
+      "source_commit": "61b8bba33929ffb0c794c590c069c092943dea8e"
+    },
+    {
+      "task": "regression",
+      "candidate": "dc_reg_catboost_v1",
+      "ref": "57833185",
+      "public_score": 12.48607,
+      "csv_rows": 29421,
+      "source_commit": "9a12dda75c952b5fd3e8939d9290c03adf9abc8a"
+    },
+    {
+      "task": "regression",
+      "candidate": "dc_reg_ridge_25_v1",
+      "ref": "57832438",
+      "public_score": 11.64134,
+      "csv_rows": 29421,
+      "source_commit": "61db46a32599dbf3676302427adfeda0f7e91df1"
+    },
+    {
+      "task": "regression",
+      "candidate": "dc_reg_ridge_50_v1",
+      "ref": "57832444",
+      "public_score": 11.75259,
+      "csv_rows": 29421,
+      "source_commit": "61db46a32599dbf3676302427adfeda0f7e91df1"
+    }
+  ],
+  "campaign_upload_counts": {
+    "classification": 1,
+    "regression": 3
+  },
+  "limitations": [
+    "OOF/H12 outcomes reused during adaptive development.",
+    "Kaggle public scores do not establish private/generalization performance.",
+    "Fresh CatBoost unit and OOF fits were executed; earlier report-only recovery reused verified predictions."
+  ]
+}
