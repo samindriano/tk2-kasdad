@@ -1,0 +1,1506 @@
+{
+  "status": "RESEARCH_PLAN_ONLY_NO_NEW_EXPERIMENTS_EXECUTED",
+  "created_at_utc": "2026-10-31T18:58:50.679071+00:00",
+  "user_date_asia_jakarta": "2026-11-01",
+  "resume_checkpoint": "cb27597bedf50e126bd3182898bb1301c49dbbb2",
+  "campaign_V3_complete": false,
+  "research_batch_name": "optimization_v3_batch1",
+  "executor_profile": "User-selected Luna session; no automatic model escalation",
+  "baseline": {
+    "classification": {
+      "primary": 0.8299435476765076,
+      "H12": 0.8029655654017788,
+      "accepted_public": 0.82908,
+      "submission_ref": "57837821",
+      "manifest": "reports/optimization_v3/kaggle/v3_cls_sparse25.json",
+      "manifest_sha256": "6e7c2cb50fe6d0ee4767a44c40f152b6538b933fab6cf7082659b16d791f7d1e",
+      "Train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c"
+    },
+    "regression": {
+      "primary": 11.559390078665364,
+      "H12": 14.04753258299653,
+      "accepted_public": 11.3597,
+      "submission_ref": "57835122",
+      "manifest": "reports/optimization_v2/kaggle/v2_reg_sparse_lgb25.json",
+      "manifest_sha256": "dd166e92089f24978244496a9a0afabc0d06551dbdc326579a7c898a8844e19a",
+      "Train_sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082"
+    },
+    "public_snapshot_warning": "Accepted historical receipts, not a fresh leaderboard/rank/quota claim"
+  },
+  "execution_preset": {
+    "wall_hours": null,
+    "max_successful_new_predictor_fits": 180,
+    "max_control_and_verification_refits": 24,
+    "max_pilot_configurations_per_family": 2,
+    "max_full_six_advances_per_task": 3,
+    "concurrent_fit_jobs": 1,
+    "threads_per_job": 2,
+    "max_job_RSS_GiB": 6,
+    "minimum_free_RAM_GiB_before_start": 4,
+    "authority_note": "Research now runs no experiments. Future master prompt retains original V3 submission authorization, with live limits and inherited campaign budget. No approval per internal milestone.",
+    "no_fit_after_deadline": "Only a user-selected hard deadline or real resource limit; default is complete declared queue.",
+    "finish_active_fit_then_checkpoint": true,
+    "preset_ids": [
+      "C03",
+      "R01",
+      "C02",
+      "R02",
+      "C07",
+      "R18",
+      "C09",
+      "R03",
+      "C04",
+      "R16",
+      "C18",
+      "R21",
+      "C16",
+      "R24",
+      "C13",
+      "R09",
+      "C06",
+      "R12",
+      "C01",
+      "R17",
+      "C10",
+      "R05",
+      "C19",
+      "R25",
+      "C08",
+      "R15",
+      "C17",
+      "R23",
+      "C14",
+      "R04",
+      "C05",
+      "R14",
+      "C11",
+      "R08",
+      "C20",
+      "R19",
+      "C15",
+      "R22",
+      "R20",
+      "C12",
+      "R06",
+      "R07",
+      "R10",
+      "R13",
+      "R11"
+    ],
+    "preset_stage_policy": "Process all45 conditional cards in one Luna chat. First24 are priority only, not a stop point. Keep controls fixed. No Sol/user review per ID. Then profile-specific full-six selection, qualified full-Train inference/submission, QA and consolidated report.",
+    "family_budget_scope": "task+family; at most2 pilot configurations per task-family",
+    "atomic_card_admission": "Reserve all predictor fits for a card before it starts. If remaining cap is insufficient, SKIP_BUDGET and do not start partial card.",
+    "RAM_policy": "Estimated additional RAM <= available_RAM minus2GiB and job cap; no dense full-word matrices.",
+    "fit_deadline_policy": "No arbitrary wall stop by default. Checkpoint at8h and continue if healthy.15min single-fit soft limit: investigate/gracefully interrupt owned job if genuinely stuck or resource bound, preserve attempt.",
+    "auto_selection_order": "Never mix profile gains. Per task: top2 passing STANDARD cards by common W1+W4/H12 metrics; separately top1 passing LATE card by common W4+W6/H12_L. CACHE_SIX cards already have common full-six. All finalists compared only after fixed full-six. Prefer distinct families within each profile.",
+    "priority_prefix_ids": [
+      "C03",
+      "R01",
+      "C02",
+      "R02",
+      "C07",
+      "R18",
+      "C09",
+      "R03",
+      "C04",
+      "R16",
+      "C18",
+      "R21",
+      "C16",
+      "R24",
+      "C13",
+      "R09",
+      "C06",
+      "R12",
+      "C01",
+      "R17",
+      "C10",
+      "R05",
+      "C19",
+      "R25"
+    ],
+    "mode": "ONE_CHAT_END_TO_END",
+    "soft_checkpoint_hours": 8,
+    "allow_Kaggle_for_qualified_finalists": true,
+    "orchestra": "User-selected Luna MAIN may delegate configured Luna XHigh workers under applicable orchestra policy; independent ownership; one training slot; MAIN owns integration/Git/Kaggle.",
+    "advancement_by_profile": {
+      "STANDARD": "top2 per task on common W1+W4/H12",
+      "LATE": "top1 per task separately on common W4+W6/H12_L",
+      "CACHE_SIX": "already common full-six; no continuation refit"
+    },
+    "single_fit_review_after_minutes": 15,
+    "resource_capped_optional_mode": "Only if user chooses explicit hard wall deadline; checkpoint at that deadline. Default processes declared queue to end."
+  },
+  "evaluation": {
+    "STANDARD": {
+      "pilot_cutoffs": [
+        55,
+        67
+      ],
+      "pilot_primary_windows": [
+        [
+          56,
+          59
+        ],
+        [
+          68,
+          71
+        ]
+      ],
+      "pilot_primary_rows": 9064,
+      "H12_windows": [
+        [
+          56,
+          67
+        ],
+        [
+          68,
+          79
+        ]
+      ],
+      "H12_rows": 38588,
+      "continuation_cutoffs": [
+        59,
+        63,
+        71,
+        75
+      ]
+    },
+    "LATE": {
+      "pilot_cutoffs": [
+        67,
+        75
+      ],
+      "pilot_primary_windows": [
+        [
+          68,
+          71
+        ],
+        [
+          76,
+          79
+        ]
+      ],
+      "H12_late_window": [
+        68,
+        79
+      ],
+      "early_H12_policy": "exact champion fallback",
+      "warning": "W4+W6 is not W1+W4 or full-six primary. Remaining origins follow the card fixed support/fallback rule before any continuation."
+    },
+    "CACHE_SIX": {
+      "new_fits": 0,
+      "primary_cutoffs": [
+        55,
+        59,
+        63,
+        67,
+        71,
+        75
+      ],
+      "H12_cutoffs": [
+        55,
+        67
+      ]
+    },
+    "classification_gate": {
+      "pilot_primary_gain_min": 0.0005,
+      "pilot_H12_harm_max": 0.001,
+      "individual_pilot_view_harm_max": 0.005,
+      "full_primary_gain_min": 0.0005,
+      "full_H12_harm_max": 0.001,
+      "full_nonnegative_windows_min": 4,
+      "supported_group_n_min": 200,
+      "supported_group_F1_harm_max": 0.01,
+      "positive_class_recall_harm_max": 0.02,
+      "positive_and_negative_per_group_min": 30
+    },
+    "regression_gate": {
+      "pilot_primary_MAE_gain_min": 0.03,
+      "pilot_H12_MAE_harm_max": 0.05,
+      "individual_pilot_view_MAE_harm_max": 0.5,
+      "full_primary_MAE_gain_min": 0.03,
+      "full_H12_MAE_harm_max": 0.05,
+      "full_nonnegative_windows_min": 4,
+      "supported_group_n_min": 100,
+      "supported_tail_or_missing_MAE_harm_max": 0.25
+    },
+    "late_gate_note": "Apply same aggregate delta thresholds to explicitly labelled W4+W6 and H12_L; report early fallback separately. No external promotion from late-only pilot. No downgrading gates after scores.",
+    "support_groups": "entry_friction0/1, stream present/missing, target tails for Regression, per-class and fit-defined text_load quartiles for Classification; unknown category status descriptive with denominators",
+    "validation_status": "All Train outcomes repeatedly reused. Temporal development evidence, not untouched holdouts; no public-score selection."
+  },
+  "policies": {
+    "C_SPARSE_REPLACE": ".75 frozen C2_B +.25 new sparse expert on present; frozen CB missing; threshold.50",
+    "C_LR_REPLACE": ".75 new hybrid LR +.25 frozen sparse binary on present; frozen CB missing; threshold.50",
+    "C_AUX25": ".75 current sparse25 probability +.25 new expert on present; frozen CB missing; threshold.50",
+    "C_META": "new meta-head on present when predeclared OOF support passes; otherwise exact current route; CB missing unchanged",
+    "C_CACHE": "single predeclared cache-only alternative in card; no learned new thresholds",
+    "R_SPARSE_REPLACE": ".75 frozen Ridge25 +.25 rank50(new sparse prediction)",
+    "R_AUX25": ".75 current three-component champion +.25 rank50(new target-scale predictor), clip[0,100]",
+    "R_RANK25": ".75 current champion +.25 whole-cycle percentile(new ranker score), clip[0,100]; no raw-score unit mixing",
+    "R_EF25_RAW": "EF1:.75champ+.25raw expert; other rows exactchamp; clip[0,100]",
+    "R_MISSING10_RAW": "missing:.90champ+.10raw expert; present exactchamp; support-passing origins only",
+    "R_SVD_REPLACE": ".5625 rank50(new SVD LGB)+.1875 frozen mapped Ridge+.25 frozen mapped sparse",
+    "R_RIDGE_REPLACE": ".5625 frozen mapped LGB+.1875 rank75(new Ridge)+.25 frozen mapped sparse",
+    "R_CALIBRATE": "card-defined past-only correction applied to current champion; fixed fallbacks; clip[0,100]"
+  },
+  "mandatory_bootstrap": {
+    "id": "B0",
+    "new_candidate_fits": 0,
+    "purpose": "Implement compact reusable new-namespace harness, end-to-end synthetic dry-run, and cache/control bridge. Do not train queued models until this passes.",
+    "required_fixture_cases": [
+      "string record_id",
+      "tied/binary quantiles",
+      "missing/blank streams",
+      "zero-support subgroup",
+      "unseen category",
+      "multiview aggregation from actual model-return schema",
+      "interrupt/resume/exclusive output",
+      "two Python hash seeds"
+    ],
+    "baseline_control_check": "One faithful cutoff67 replay per task only if the new bridge changes fit/prediction handling; reuse independently verified controls otherwise. Count control fits separately; no redundant whole-campaign refits."
+  },
+  "allowed_new_namespaces": [
+    "experiments/optimization_v3/batch1/",
+    "reports/optimization_v3/batch1/",
+    "experiments/runs/optimization_v3_batch1/ (ignored)",
+    "scripts/optimization_v3_batch1*.py",
+    "src/models/optimization_v3_batch1*.py",
+    "tests/test_optimization_v3_batch1*.py",
+    "experiments/optimization_v3/decisions/batch1_*.json",
+    "reports/optimization_v3/kaggle/batch1_*.json (new only)",
+    "submissions/dual_campaign/optimization_v3/batch1_*.csv (ignored)"
+  ],
+  "prohibited": [
+    "official Test access during pilots",
+    "Test labels",
+    "other-task labels as features",
+    "external datasets/pretrained models",
+    "official EDA/academic/teammate edits",
+    "old frozen source/output edits",
+    "force-push/reset/rebase/merge",
+    "outer early-stopping or threshold/weight grids",
+    "blind source/cache retry overwrites"
+  ],
+  "experiment_order": [
+    "C03",
+    "R01",
+    "C02",
+    "R02",
+    "C07",
+    "R18",
+    "C09",
+    "R03",
+    "C04",
+    "R16",
+    "C18",
+    "R21",
+    "C16",
+    "R24",
+    "C13",
+    "R09",
+    "C06",
+    "R12",
+    "C01",
+    "R17",
+    "C10",
+    "R05",
+    "C19",
+    "R25",
+    "C08",
+    "R15",
+    "C17",
+    "R23",
+    "C14",
+    "R04",
+    "C05",
+    "R14",
+    "C11",
+    "R08",
+    "C20",
+    "R19",
+    "C15",
+    "R22",
+    "R20",
+    "C12",
+    "R06",
+    "R07",
+    "R10",
+    "R13",
+    "R11"
+  ],
+  "counts": {
+    "classification": 20,
+    "regression": 25,
+    "total": 45,
+    "all_pilots_predictor_fits_if_all_conditions_pass": 98,
+    "priority_prefix_cards": 24,
+    "priority_prefix_predictor_fits": 44
+  },
+  "cards": [
+    {
+      "id": "C03",
+      "task": "classification",
+      "name": "Split unigram/bigram budgets",
+      "family": "vocab_allocation",
+      "priority": "P1",
+      "change": "Separate TF-IDF unigrams cap30000 and bigrams cap10000; both min_df3/max_df0.995/sublinear_tf=True, norm=l2 per block. Concatenate with unchanged structured sparse design; original sparse LGB parameters.",
+      "policy": "C_SPARSE_REPLACE",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [
+        "Fit vocabulary per cutoff; report unigram/bigram occupancy and nnz"
+      ],
+      "evidence": [
+        "reports/optimization_v3/research_backlog/feasibility.json",
+        "reports/optimization_v3/classification_sparse_full/fullsix.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 1,
+      "rationale": "Unigram dan bigram berebut anggaran vocabulary; pembagian terpisah mempertahankan kedua order tanpa mengulang unigram-only.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/C03.md",
+      "in_priority_prefix": true
+    },
+    {
+      "id": "R01",
+      "task": "regression",
+      "name": "Converged sparse LinearSVR",
+      "family": "sparse_linear_solver",
+      "priority": "P1",
+      "change": "Reuse exact V2 sparse hybrid design. Target z=(y-50)/50; LinearSVR epsilon0/loss epsilon_insensitive/dualTrue/C1/tol1e-4/max_iter20000/seed42; invert50z+50. Track ConvergenceWarning; no post-score iteration rescue. Not an exact regularization match to SGD.",
+      "policy": "R_AUX25",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [
+        "Record n_iter and convergence; halt this candidate if budget/max_iter reached"
+      ],
+      "evidence": [
+        "reports/optimization_v2/FINDINGS.md",
+        "reports/optimization_v2/regression_repr/fullsix.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 2,
+      "rationale": "SGD L1 sebelumnya mencapai batas iterasi. Solver lain menguji keterbatasan optimasi; regularisasi tidak diklaim persis sama.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/R01.md",
+      "in_priority_prefix": true
+    },
+    {
+      "id": "C02",
+      "task": "classification",
+      "name": "Present-only sparse expert",
+      "family": "fit_population",
+      "priority": "P1",
+      "change": "Copy current sparse binary model and TF-IDF exactly; fit predictor and transforms only on nonempty-stream fit rows. Keep fixed blend with unchanged C2_B/CB.",
+      "policy": "C_SPARSE_REPLACE",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [
+        "Record present-only fingerprints and constant missing indicator; do not call old all-row fit leakage"
+      ],
+      "evidence": [
+        "reports/optimization_v3/classification_sparse_full/fullsix.json",
+        "reports/optimization_v3/supervised_pilot/verification.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 3,
+      "rationale": "Model lama dilatih pada semua baris lalu dipakai hanya pada stream hadir; pilot token-summary sebelumnya mengubah populasi dan representasi sekaligus.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/C02.md",
+      "in_priority_prefix": true
+    },
+    {
+      "id": "R02",
+      "task": "regression",
+      "name": "Wider word vocabulary",
+      "family": "vocab_width",
+      "priority": "P1",
+      "change": "Original sparse L1 hybrid model; only max_features20000Ã¢â€ â€™60000, retaining regression min_df2 and other parameters.",
+      "policy": "R_SPARSE_REPLACE",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [
+        "Task-specific regression vocabulary occupancy; class scan is motivation only"
+      ],
+      "evidence": [
+        "reports/optimization_v2/regression_repr/fullsix.json",
+        "reports/optimization_v3/research_backlog/feasibility.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 4,
+      "rationale": "Cap dapat membuang identitas token. Audit Classification menemukan 93.338 unigram; besarnya vocabulary Regression tetap harus diperiksa di fit task sendiri.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/R02.md",
+      "in_priority_prefix": true
+    },
+    {
+      "id": "C07",
+      "task": "classification",
+      "name": "Category frequency/rarity features",
+      "family": "category_frequency",
+      "priority": "P2",
+      "change": "Append fit-only log1p category count and count<30 flag for each of org/module/pattern (six columns); missing explicit, unseen count0; unchanged sparse classifier. No target rates.",
+      "policy": "C_SPARSE_REPLACE",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [
+        "Do not use validation/Test category counts; verify nonconstant training columns"
+      ],
+      "evidence": [
+        "reports/optimization_v3/classification_diagnostics/audit.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 5,
+      "rationale": "Dukungan kategori memberi ukuran kelangkaan tanpa target encoding atau asumsi jarak ordinal.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/C07.md",
+      "in_priority_prefix": true
+    },
+    {
+      "id": "R18",
+      "task": "regression",
+      "name": "Recent OOF median location offset",
+      "family": "calibration_scalar",
+      "priority": "P2",
+      "change": "Latest four complete fit cycles of exact champion OOF: delta=clip(0.5*median(y-p),-2,2). Apply scalar future correction and clip0..100; cutoff55 unchanged. Uses median for MAE, superseding mean-offset draft.",
+      "policy": "R_CALIBRATE",
+      "pilot_predictor_fits": 0,
+      "evaluation": "LATE",
+      "condition": "No additional dependency",
+      "preflight_checks": [
+        "Minimum500 aligned OOF rows; no same/future-cycle labels"
+      ],
+      "evidence": [
+        "reports/optimization_v3/regression_diagnostics/diagnostics.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 6,
+      "rationale": "Median residual selaras dengan MAE; residual harus berasal dari OOF masa lalu, bukan label outer.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/R18.md",
+      "in_priority_prefix": true
+    },
+    {
+      "id": "C09",
+      "task": "classification",
+      "name": "Text Ãƒâ€” entry_friction linear interaction",
+      "family": "text_EF_interaction",
+      "priority": "P1",
+      "change": "Use original C2_B hybrid design and LR parameters; append only TF-IDF*I(entry_friction==1), retaining main TF-IDF and structured columns. Reference coding avoids duplicating both level blocks.",
+      "policy": "C_LR_REPLACE",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [
+        "Use entry_friction, not telemetry_flag; convergence and sparse memory checks"
+      ],
+      "evidence": [
+        "reports/optimization_v3/classification_diagnostics/audit.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 7,
+      "rationale": "Koefisien teks per entry_friction menguji interaksi, berbeda dari pengali bobot teks global yang sudah gagal.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/C09.md",
+      "in_priority_prefix": true
+    },
+    {
+      "id": "R03",
+      "task": "regression",
+      "name": "Split unigram/bigram budgets",
+      "family": "vocab_allocation",
+      "priority": "P1",
+      "change": "Two regression TF-IDF blocks: unigram cap30000 and bigram cap30000, min_df2/sublinear, otherwise original defaults. Same structured/OHE and sparse L1 model.",
+      "policy": "R_SPARSE_REPLACE",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [],
+      "evidence": [
+        "reports/optimization_v2/regression_repr/fullsix.json",
+        "reports/optimization_v3/research_backlog/feasibility.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 8,
+      "rationale": "Unigram dan bigram berebut anggaran vocabulary; pembagian terpisah mempertahankan kedua order tanpa mengulang unigram-only.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/R03.md",
+      "in_priority_prefix": true
+    },
+    {
+      "id": "C04",
+      "task": "classification",
+      "name": "Wider combined word vocabulary",
+      "family": "vocab_width",
+      "priority": "P1",
+      "change": "Current combined word(1,2) TF-IDF; only max_features increases20000Ã¢â€ â€™60000. Keep min_df3/max_df0.995 and classifier unchanged.",
+      "policy": "C_SPARSE_REPLACE",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [],
+      "evidence": [
+        "reports/optimization_v3/research_backlog/feasibility.json",
+        "reports/optimization_v3/classification_sparse_full/fullsix.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 9,
+      "rationale": "Cap dapat membuang identitas token. Audit Classification menemukan 93.338 unigram; besarnya vocabulary Regression tetap harus diperiksa di fit task sendiri.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/C04.md",
+      "in_priority_prefix": true
+    },
+    {
+      "id": "R16",
+      "task": "regression",
+      "name": "All-past exponentially weighted component",
+      "family": "recency",
+      "priority": "P1",
+      "change": "Refit only SVD32 LGB using fit-only sample_weight=2^(-(cutoff-cycle)/8), normalize mean1. Keep all past rows/transforms and original hyperparameters. Replace only weight0.5625 incumbent component using inherited rank50.",
+      "policy": "R_SVD_REPLACE",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [],
+      "evidence": [
+        "reports/optimization_v3/regression_diagnostics/diagnostics.json",
+        "reports/regression_round2/FINDINGS.md"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 10,
+      "rationale": "Bias H12 awal/akhir berlawanan; pembobotan halus seluruh history berbeda dari membuang history.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/R16.md",
+      "in_priority_prefix": true
+    },
+    {
+      "id": "C18",
+      "task": "classification",
+      "name": "Random-threshold sparse boosting",
+      "family": "random_thresholds",
+      "priority": "P2",
+      "change": "Original sparse classifier/matrix with extra_trees=True and extra_seed42 only. No feature/row sampling or tree-count grid.",
+      "policy": "C_SPARSE_REPLACE",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [],
+      "evidence": [
+        "reports/optimization_v3/classification_sparse_full/fullsix.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 11,
+      "rationale": "Aturan split acak mengubah bias learner dan mungkin memberi error komplementer; manfaat pada data ini belum diketahui.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/C18.md",
+      "in_priority_prefix": true
+    },
+    {
+      "id": "R21",
+      "task": "regression",
+      "name": "XGBoost L1 dense text-tabular",
+      "family": "xgb_loss",
+      "priority": "P1",
+      "change": "Finite structured numeric/OHE+SVD32 dense design. XGBRegressor reg:absoluteerror/hist/CPU/600trees/depth4/lr0.05/min_child_weight20/lambda5/colsample0.8/subsample1/seed42/n_jobs2.",
+      "policy": "R_AUX25",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [
+        "No external data; dense size preflight avoids sparse zero/missing ambiguity"
+      ],
+      "evidence": [
+        "reports/optimization_v2/regression_repr/fullsix.json",
+        "reports/optimization_v3/research_backlog/feasibility.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 12,
+      "rationale": "L1 dan pseudo-Huber memberi dua loss berbeda pada implementasi boosting lain, tanpa pretrained data.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/R21.md",
+      "in_priority_prefix": true
+    },
+    {
+      "id": "C16",
+      "task": "classification",
+      "name": "Moderate sparse-tree capacity",
+      "family": "sparse_capacity",
+      "priority": "P2",
+      "change": "Keep original word/structured matrix. Change leaves15Ã¢â€ â€™31, min_child50Ã¢â€ â€™100, lambda3Ã¢â€ â€™5; keep400trees/lr0.05. Fixed simultaneous capacity/regularization recipe, not one-factor causal attribution.",
+      "policy": "C_SPARSE_REPLACE",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [],
+      "evidence": [
+        "reports/optimization_v3/classification_sparse_full/fullsix.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 13,
+      "rationale": "Sparse boosting baru kuat pada semua window tetapi kapasitasnya baru satu titik. Dua recipe terbatas menguji underfit/regularisasi, bukan grid.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/C16.md",
+      "in_priority_prefix": true
+    },
+    {
+      "id": "R24",
+      "task": "regression",
+      "name": "EF interaction Hybrid Ridge",
+      "family": "text_EF_interaction",
+      "priority": "P1",
+      "change": "Original hybrid Ridge design/alpha10/lsqr/tol1e-4; append only TF-IDF*I(entry_friction==1). Replace only original Ridge component with its inherited rank75 map; LGB and sparse components exact.",
+      "policy": "R_RIDGE_REPLACE",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [
+        "Reference-coded interaction; convergence; no telemetry substitution"
+      ],
+      "evidence": [
+        "reports/optimization_v2/regression_repr/fullsix.json",
+        "reports/optimization_v3/regression_diagnostics/diagnostics.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 14,
+      "rationale": "Koefisien teks per entry_friction menguji interaksi, berbeda dari pengali bobot teks global yang sudah gagal.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/R24.md",
+      "in_priority_prefix": true
+    },
+    {
+      "id": "C13",
+      "task": "classification",
+      "name": "SVD32 + structured HGB",
+      "family": "dense_nonlinear",
+      "priority": "P2",
+      "change": "Classification word TF-IDFÃ¢â€ â€™fit-only SVD32 using existing n_iter7/seed42; append fit-only native structured representation and missing indicator. HGB classifier copies original C1_B hyperparameters, no early stopping.",
+      "policy": "C_AUX25",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [
+        "SVD never fits future rows; categorical mask excludes projected text columns"
+      ],
+      "evidence": [
+        "reports/optimization_v3/classification_sparse_full/fullsix.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 15,
+      "rationale": "Proyeksi fit-only memberi interaksi teks-tabular dengan bias representasi berbeda dari sparse boosting.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/C13.md",
+      "in_priority_prefix": true
+    },
+    {
+      "id": "R09",
+      "task": "regression",
+      "name": "Smooth robust Huber loss",
+      "family": "robust_loss",
+      "priority": "P2",
+      "change": "Existing SVD32 LightGBM design/parameters; objective huber/alpha0.9 instead of L1. Same fixed downstream mapping, no parameter search.",
+      "policy": "R_AUX25",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [],
+      "evidence": [
+        "reports/optimization_v3/regression_diagnostics/diagnostics.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 16,
+      "rationale": "Loss halus mengubah gradient dan kompromi error; MAE tetap penentu meskipun objective training berbeda.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/R09.md",
+      "in_priority_prefix": true
+    },
+    {
+      "id": "C06",
+      "task": "classification",
+      "name": "Learnable ordered category novelty",
+      "family": "category_novelty",
+      "priority": "P2",
+      "change": "For org_code/module_code/pattern_code, encode a training row as novel only if category absent from strictly earlier cycles. After encoding entire cycle update feature-only vocabulary. Outer rows use all fit categories. Missing gets a separate indicator, not novel. Append flags to current sparse model.",
+      "policy": "C_SPARSE_REPLACE",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [
+        "Label-free chronological proof; each added flag must have Ã¢â€°Â¥30 training zeros and ones; static full-fit-vocab flags are forbidden because all training values would be0"
+      ],
+      "evidence": [
+        "reports/optimization_v3/classification_diagnostics/audit.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 17,
+      "rationale": "Indikator unknown dari vocabulary fit penuh konstan saat training; novelty dari cycle sebelumnya memberi variasi yang bisa dipelajari.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/C06.md",
+      "in_priority_prefix": true
+    },
+    {
+      "id": "R12",
+      "task": "regression",
+      "name": "Cycle-grouped LambdaRank",
+      "family": "ranking",
+      "priority": "P1",
+      "change": "Original sparse word+structured design, one contiguous query per fit cycle; integer grades clip(floor(y/10),0,9), label_gain0..9. LGBMRanker lambdarank/200trees/15leaves/min_child40/lambda3/lr0.05/seed42/2threads, truncation=max fit-query size. Convert scores only to100*average_rank/n over entire future cycle. Do not rank50-mix unbounded ranker score units.",
+      "policy": "R_RANK25",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [
+        "Group row sorting and inverse order mapping; gains cover integer labels; whole-cycle batches; resource timing unknown"
+      ],
+      "evidence": [
+        "reports/optimization_v3/regression_diagnostics/diagnostics.json",
+        "reports/optimization_v2/regression_repr/fullsix.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 18,
+      "rationale": "Objective pasangan dalam cycle menguji pengurutan langsung, berbeda dari merangking ulang model pointwise L1.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/R12.md",
+      "in_priority_prefix": true
+    },
+    {
+      "id": "C01",
+      "task": "classification",
+      "name": "Cached alternative missing expert",
+      "family": "route_missing",
+      "priority": "P2",
+      "change": "Recompose current sparse25 present probabilities with historical C1_B missing probabilities; threshold0.50. No new model or route threshold.",
+      "policy": "C_CACHE",
+      "pilot_predictor_fits": 0,
+      "evaluation": "CACHE_SIX",
+      "condition": "No additional dependency",
+      "preflight_checks": [
+        "Exact IDs, cutoff, fit lineage and availability masks for all six source caches"
+      ],
+      "evidence": [
+        "reports/optimization_v3/classification_sparse_full/fullsix.json",
+        "reports/optimization_v3/classification_diagnostics/audit.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 19,
+      "rationale": "CB kuat secara agregat tetapi mempunyai counterexample temporal; komposisi Macro F1 dapat diperiksa sekali dari skor yang tersedia.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/C01.md",
+      "in_priority_prefix": true
+    },
+    {
+      "id": "R17",
+      "task": "regression",
+      "name": "OOF nonnegative affine L1 calibration",
+      "family": "calibration_affine",
+      "priority": "P2",
+      "change": "On exact champion prequential OOF56..cutoff, solve min sum|y-a-b*p| with b>=0 inside LP; use returned a,b and clip0..100. Require5000 OOF rows. If solver fails fallback incumbent. No fit51 champion fabrication; early cutoffs fallback.",
+      "policy": "R_CALIBRATE",
+      "pilot_predictor_fits": 2,
+      "evaluation": "LATE",
+      "condition": "No additional dependency",
+      "preflight_checks": [
+        "Strict OOF score chronology; evaluate67/75 W4+W6 and H12_L, early H12 unchanged"
+      ],
+      "evidence": [
+        "reports/optimization_v3/regression_residual/verification.json",
+        "reports/optimization_v3/regression_diagnostics/diagnostics.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 20,
+      "rationale": "Peta L1 berdimensi rendah menguji skala/lokasi; slope nonnegatif mempertahankan urutan.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/R17.md",
+      "in_priority_prefix": true
+    },
+    {
+      "id": "C10",
+      "task": "classification",
+      "name": "Separate trigram context",
+      "family": "trigram",
+      "priority": "P2",
+      "change": "Retain current word1Ã¢â‚¬â€œ2 cap20000; append word3-only TF-IDF cap10000/min_df3/max_df0.995/sublinear. Original sparse classifier.",
+      "policy": "C_SPARSE_REPLACE",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [
+        "Retire before fit if no supported trigrams; report occupied features/nnz"
+      ],
+      "evidence": [
+        "reports/optimization_v3/research_backlog/feasibility.json",
+        "reports/optimization_v3/classification_sparse_full/fullsix.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 21,
+      "rationale": "Order tiga belum ada pada model unigram/bigram, tetapi dukungan sekuens dapat sangat jarang.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/C10.md",
+      "in_priority_prefix": true
+    },
+    {
+      "id": "R05",
+      "task": "regression",
+      "name": "Binary word presence",
+      "family": "count_presence",
+      "priority": "P2",
+      "change": "CountVectorizer word(1,2)/min_df2/cap20000/binaryTrue; no IDF/norm. Original structured sparse L1 model.",
+      "policy": "R_SPARSE_REPLACE",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [],
+      "evidence": [
+        "reports/optimization_v2/regression_repr/fullsix.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 22,
+      "rationale": "Presence/count mengubah frekuensi dan normalisasi pada learner nonlinear; bukan sekadar rescaling kolom.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/R05.md",
+      "in_priority_prefix": true
+    },
+    {
+      "id": "C19",
+      "task": "classification",
+      "name": "XGBoost dense text-tabular classifier",
+      "family": "xgb_dense",
+      "priority": "P2",
+      "change": "Structured numeric scaled + categorical OHE + SVD32 text, finite dense matrix only if RAM bound passes. XGBClassifier binary:logistic/hist/CPU,600trees,depth4,lr0.05,min_child_weight20,lambda5,colsample_bytree0.8,subsample1,seed42,n_jobs2.",
+      "policy": "C_AUX25",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [
+        "Avoid CSR absent-zero vs missing ambiguity by explicitly audited dense design; no GPU assumptions"
+      ],
+      "evidence": [
+        "reports/optimization_v3/classification_sparse_full/fullsix.json",
+        "reports/optimization_v3/research_backlog/feasibility.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 23,
+      "rationale": "Algoritme boosting dan pertumbuhan pohon berbeda; dependency sudah tersedia sehingga integrasinya lebih ringan daripada model neural baru.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/C19.md",
+      "in_priority_prefix": true
+    },
+    {
+      "id": "R25",
+      "task": "regression",
+      "name": "Unnormalized word counts",
+      "family": "count_presence",
+      "priority": "P2",
+      "change": "Original word1Ã¢â‚¬â€œ2/min_df2/cap20000 CountVectorizer(binary=False), no IDF or row norm; original structured sparse L1 model. Second count_presence recipe alongside R05.",
+      "policy": "R_SPARSE_REPLACE",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [],
+      "evidence": [
+        "reports/optimization_v2/regression_repr/fullsix.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 24,
+      "rationale": "Presence/count mengubah frekuensi dan normalisasi pada learner nonlinear; bukan sekadar rescaling kolom.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/R25.md",
+      "in_priority_prefix": true
+    },
+    {
+      "id": "C08",
+      "task": "classification",
+      "name": "Ordered category outcome rates",
+      "family": "category_target_rates",
+      "priority": "P2",
+      "change": "For each org/module/pattern append earlier-cycle-only smoothed binary rate, support>=30/smoothing30, first-cycle prior0.5. Store finite clipped logit(rate). Entire cycle encoded before labels update; outer uses all fit labels.",
+      "policy": "C_SPARSE_REPLACE",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [
+        "Perturb same-cycle labels and prove no own/past feature changes; independent manual reconstruction; log support and unknown fallback"
+      ],
+      "evidence": [
+        "reports/optimization_v3/classification_diagnostics/audit.json",
+        "reports/optimization_v3/supervised_pilot/verification.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 25,
+      "rationale": "Statistik entitas terstruktur berbeda dari ringkasan token anonim yang gagal, tetapi tetap berisiko leakage dan drift.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/C08.md",
+      "in_priority_prefix": false
+    },
+    {
+      "id": "R15",
+      "task": "regression",
+      "name": "Missing-stream structured specialist",
+      "family": "specialist_missing",
+      "priority": "P2",
+      "change": "Later origins67/75 only. Structured-only LGBL1 base on missing/blank streams. Only missing rows use10% raw clipped expert+90%incumbent; present unchanged. No subgroup percentile transformation.",
+      "policy": "R_MISSING10_RAW",
+      "pilot_predictor_fits": 2,
+      "evaluation": "LATE",
+      "condition": "No additional dependency",
+      "preflight_checks": [
+        ">=1000 missing fit rows and>=100 missing validation rows/view; early cutoffs fallback when support insufficient; observed fit67=2029,fit75=2878"
+      ],
+      "evidence": [
+        "reports/optimization_v3/regression_diagnostics/diagnostics.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 26,
+      "rationale": "Missing mempunyai pola residual dan support terbatas; shrinkage tetap dan fallback membatasi perubahan.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/R15.md",
+      "in_priority_prefix": false
+    },
+    {
+      "id": "C17",
+      "task": "classification",
+      "name": "Longer regularized sparse boosting",
+      "family": "sparse_capacity",
+      "priority": "P2",
+      "change": "Original word/structured matrix, leaves15/min_child100/lambda5,600trees/lr0.05. Second and last sparse_capacity configuration. No outer early stopping.",
+      "policy": "C_SPARSE_REPLACE",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [],
+      "evidence": [
+        "reports/optimization_v3/classification_sparse_full/fullsix.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 27,
+      "rationale": "Sparse boosting baru kuat pada semua window tetapi kapasitasnya baru satu titik. Dua recipe terbatas menguji underfit/regularisasi, bukan grid.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/C17.md",
+      "in_priority_prefix": false
+    },
+    {
+      "id": "R23",
+      "task": "regression",
+      "name": "ExtraTrees median-leaf ensemble",
+      "family": "random_forest",
+      "priority": "P2",
+      "change": "Structured scaled numeric/OHE+SVD32; ExtraTreesRegressor200trees/criterion absolute_error/min_samples_leaf30/max_features1.0/random_state42/n_jobs2. OHE categories, no arbitrary ordinal distances. This averages leaf medians, not a quantile-regression forest claim.",
+      "policy": "R_AUX25",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [
+        "Absolute-error trees can be slow; first-fit time budget and matrix RAM guard"
+      ],
+      "evidence": [
+        "reports/optimization_v3/regression_diagnostics/diagnostics.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 28,
+      "rationale": "Pohon acak memberi smoothing berbeda dari boosting; criterion median tidak otomatis menjadikannya quantile forest.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/R23.md",
+      "in_priority_prefix": false
+    },
+    {
+      "id": "C14",
+      "task": "classification",
+      "name": "Random structured partitions + text LR",
+      "family": "random_partitions",
+      "priority": "P2",
+      "change": "RandomTreesEmbedding64trees/depth5/min_leaf30/seed42/2threads on fit-only scaled numeric/count metadata. Append sparse leaf indicators, original word TF-IDF, categorical OHE and missing indicator; original LR parameters.",
+      "policy": "C_LR_REPLACE",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [
+        "Unsupervised tree feature map fit inside cutoff; no ordinal category IDs treated as numeric distances"
+      ],
+      "evidence": [
+        "reports/optimization_v3/classification_diagnostics/audit.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 29,
+      "rationale": "Peta nonlinear tanpa label memberi pembanding berbeda dari residual head yang gagal.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/C14.md",
+      "in_priority_prefix": false
+    },
+    {
+      "id": "R04",
+      "task": "regression",
+      "name": "Hashing long-tail token identities",
+      "family": "hashing",
+      "priority": "P2",
+      "change": "HashingVectorizer word(1,2),n_features262144,alternate_sign=False,norm=None; no learned vocabulary/IDF. Original sparse L1 model. Count collisions/nnz without labels; do not claim unseen-token weights are learned.",
+      "policy": "R_SPARSE_REPLACE",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "R02 completes and RAM/nnz preflight passes",
+      "preflight_checks": [
+        "CSR only; no new Test-derived vocabulary or frequency learning"
+      ],
+      "evidence": [
+        "reports/optimization_v2/regression_repr/fullsix.json",
+        "reports/optimization_v3/research_backlog/feasibility.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 30,
+      "rationale": "Retensi identitas ekor panjang berbeda dari vocabulary cap, tetapi tabrakan dan absennya IDF dapat merugikan.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/R04.md",
+      "in_priority_prefix": false
+    },
+    {
+      "id": "C05",
+      "task": "classification",
+      "name": "Rare-term retention",
+      "family": "vocab_width",
+      "priority": "P2",
+      "change": "Combined word(1,2) max_features60000 with min_df2, all other TF-IDF/model settings unchanged. This is the second and last configuration of vocab_width.",
+      "policy": "C_SPARSE_REPLACE",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "C04 completed without resource failure; do not add further cap/min_df points",
+      "preflight_checks": [],
+      "evidence": [
+        "reports/optimization_v3/research_backlog/feasibility.json",
+        "reports/optimization_v3/classification_sparse_full/fullsix.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 31,
+      "rationale": "Cap dapat membuang identitas token. Audit Classification menemukan 93.338 unigram; besarnya vocabulary Regression tetap harus diperiksa di fit task sendiri.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/C05.md",
+      "in_priority_prefix": false
+    },
+    {
+      "id": "R14",
+      "task": "regression",
+      "name": "EF1 sparse specialist",
+      "family": "specialist_EF",
+      "priority": "P2",
+      "change": "Train original sparse L1 model only on parsed entry_friction==1; predict raw target scale and clip0..100. Only EF1 rows use25% raw expert+75%incumbent; other rows exact incumbent. No subgroup re-ranking.",
+      "policy": "R_EF25_RAW",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [
+        ">=500 EF1 fit rows and>=100 subgroup validation rows/view; telemetry_flag is not EF"
+      ],
+      "evidence": [
+        "reports/optimization_v3/regression_diagnostics/diagnostics.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 32,
+      "rationale": "Kontras residual EF berulang, tetapi subset lebih kecil dan conditional target bukan uniform 0â€“100.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/R14.md",
+      "in_priority_prefix": false
+    },
+    {
+      "id": "C11",
+      "task": "classification",
+      "name": "Word + character sparse boosting",
+      "family": "character_boost",
+      "priority": "P3",
+      "change": "Retain original word TF-IDF; append char_wb(3,5) min_df3/max_features30000/sublinear, lowercase Unicode strip. Original sparse classifier. Anonymous hash fragments have no semantic interpretation.",
+      "policy": "C_SPARSE_REPLACE",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [
+        "Memory estimate and train-only vocab; no dense conversion"
+      ],
+      "evidence": [
+        "reports/optimization_v3/classification_sparse_full/fullsix.json",
+        "reports/dual_campaign/classification/FINDINGS.md"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 33,
+      "rationale": "Learner nonlinear berbeda dari character LR/Ridge yang gagal. Token hash-like memberi dasar subword yang lemah, sehingga prioritas rendah.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/C11.md",
+      "in_priority_prefix": false
+    },
+    {
+      "id": "R08",
+      "task": "regression",
+      "name": "Row-local token statistics",
+      "family": "text_scalars",
+      "priority": "P3",
+      "change": "Append token_count,unique_token_count,TTR(0 empty),character_count to existing structured+SVD32 LGB. Exclude repeated_fraction because it is1-TTR. Original parameters.",
+      "policy": "R_AUX25",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [],
+      "evidence": [
+        "reports/optimization_v3/regression_diagnostics/diagnostics.json",
+        "reports/classification_ttr/FINDINGS.md"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 34,
+      "rationale": "Statistik row-local untuk Regression tidak membawa klaim EDA Classification; fitur algebraik duplikat dibuang.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/R08.md",
+      "in_priority_prefix": false
+    },
+    {
+      "id": "C20",
+      "task": "classification",
+      "name": "Cached fixed-q80 recomposition",
+      "family": "route_volume",
+      "priority": "P3",
+      "change": "Preserve CB missing. Present text_load>fit-only q80 uses sparse25, remaining present uses C2_B. One inherited q80 rule, no threshold search. Reconstruct all six and H12 from caches.",
+      "policy": "C_CACHE",
+      "pilot_predictor_fits": 0,
+      "evaluation": "CACHE_SIX",
+      "condition": "No additional dependency",
+      "preflight_checks": [],
+      "evidence": [
+        "reports/autonomous_eda/classification_volume/FINDINGS.md",
+        "reports/optimization_v3/classification_sparse_full/fullsix.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 35,
+      "rationale": "Rule q80 lama dapat diperiksa sekali dengan komponen baru tanpa mencari threshold baru.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/C20.md",
+      "in_priority_prefix": false
+    },
+    {
+      "id": "R19",
+      "task": "regression",
+      "name": "EF-stratified OOF median offsets",
+      "family": "calibration_group",
+      "priority": "P3",
+      "change": "Latest eight complete fit cycles: per parsed entry_friction0/1 compute clip(0.5*median(y-p),-2,2),>=200OOF rows/group. Unknown EF offset0. Fixed rule; no subgroup selection from outer residuals.",
+      "policy": "R_CALIBRATE",
+      "pilot_predictor_fits": 0,
+      "evaluation": "LATE",
+      "condition": "No additional dependency",
+      "preflight_checks": [],
+      "evidence": [
+        "reports/optimization_v3/regression_diagnostics/diagnostics.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 36,
+      "rationale": "Koreksi lokasi per EF memakai dukungan tetap tanpa memilih subgroup dari outer error.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/R19.md",
+      "in_priority_prefix": false
+    },
+    {
+      "id": "C15",
+      "task": "classification",
+      "name": "Two-score prequential meta-head",
+      "family": "score_meta",
+      "priority": "P3",
+      "change": "LR C1/liblinear/max_iter2000 on clipped logits of C2_B and raw sparse binary probabilities from genuinely past disjoint OOF blocks. Present-only meta fit. Use only cycle56+ OOF; no invented fit51 sparse vector. Early cutoffs retain current route when OOF support insufficient.",
+      "policy": "C_META",
+      "pilot_predictor_fits": 2,
+      "evaluation": "LATE",
+      "condition": "No additional dependency",
+      "preflight_checks": [
+        ">=5000 present OOF rows and>=1000/class; base cutoff strictly earlier than labels; cutoffs67/75; fallback rule fixed before scores"
+      ],
+      "evidence": [
+        "reports/optimization_v3/classification_residual_fullsix/verification_v2.json",
+        "reports/optimization_v3/classification_sparse_full/fullsix.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 37,
+      "rationale": "Komponen sparse baru belum ada pada meta-head lama; hanya skor OOF yang tersedia sebelum label boleh dipakai.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/C15.md",
+      "in_priority_prefix": false
+    },
+    {
+      "id": "R22",
+      "task": "regression",
+      "name": "XGBoost pseudo-Huber",
+      "family": "xgb_loss",
+      "priority": "P2",
+      "change": "Identical R21 design/parameters with reg:pseudohubererror/huber_slope5.0. Second and last xgb_loss recipe; no slope grid.",
+      "policy": "R_AUX25",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [],
+      "evidence": [
+        "reports/optimization_v2/regression_repr/fullsix.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 38,
+      "rationale": "L1 dan pseudo-Huber memberi dua loss berbeda pada implementasi boosting lain, tanpa pretrained data.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/R22.md",
+      "in_priority_prefix": false
+    },
+    {
+      "id": "R20",
+      "task": "regression",
+      "name": "Outer-fit token identity selection",
+      "family": "supervised_selection",
+      "priority": "P3",
+      "change": "Within each outer fit only, word-vocab and support>=30; rank binary token presence by abs((n/(n+30))*(token_mean-fit_mean)); choose128 identities with lexical tie-break. Fixed column identities per fold, no per-row schema changes. Structured+128presence sparse L1 model.",
+      "policy": "R_AUX25",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [
+        "No validation labels in selection; no in-fit selection-score claims; enough eligible128 tokens"
+      ],
+      "evidence": [
+        "reports/optimization_v3/supervised_pilot/verification.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 39,
+      "rationale": "Identitas fitur dipilih di dalam outer fit, berbeda dari merata-ratakan token statistics; risiko redundansi tetap tinggi.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/R20.md",
+      "in_priority_prefix": false
+    },
+    {
+      "id": "C12",
+      "task": "classification",
+      "name": "Character-only ablation",
+      "family": "character_boost",
+      "priority": "P3",
+      "change": "Use only C11 character block plus original structured design and sparse classifier. Same fixed routing.",
+      "policy": "C_SPARSE_REPLACE",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "C11 pilot passes; ablation only, not a rescue of failed C11",
+      "preflight_checks": [],
+      "evidence": [
+        "reports/optimization_v3/classification_sparse_full/fullsix.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 40,
+      "rationale": "Learner nonlinear berbeda dari character LR/Ridge yang gagal. Token hash-like memberi dasar subword yang lemah, sehingga prioritas rendah.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/C12.md",
+      "in_priority_prefix": false
+    },
+    {
+      "id": "R06",
+      "task": "regression",
+      "name": "Character sparse L1 boosting",
+      "family": "character_boost",
+      "priority": "P3",
+      "change": "char_wb(3,5)/min_df3/cap30000/sublinear TF-IDF plus original structured/OHE; original sparse L1 model. Different learner from failed character Ridge; low-confidence hash fragments.",
+      "policy": "R_AUX25",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [
+        "RAM/nnz preflight; do not infer semantic characters"
+      ],
+      "evidence": [
+        "reports/optimization_v3/regression_character_full/fullsix.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 41,
+      "rationale": "Learner nonlinear berbeda dari character LR/Ridge yang gagal. Token hash-like memberi dasar subword yang lemah, sehingga prioritas rendah.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/R06.md",
+      "in_priority_prefix": false
+    },
+    {
+      "id": "R07",
+      "task": "regression",
+      "name": "NMF32 nonnegative text factors",
+      "family": "nmf",
+      "priority": "P3",
+      "change": "TF-IDF fit-onlyÃ¢â€ â€™NMF32/init nndsvda/solvercd/frobenius/max_iter200/seed42; structured native design + original SVD32 LightGBM parameters. No factor semantics.",
+      "policy": "R_AUX25",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "No additional dependency",
+      "preflight_checks": [
+        "NMF only on nonnegative text block, not scaled structured values; inspect convergence and RAM"
+      ],
+      "evidence": [
+        "reports/regression_research/FINDINGS.md"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 42,
+      "rationale": "Geometri faktor nonnegatif berbeda dari SVD. Konvergensi dan manfaat belum diketahui.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/R07.md",
+      "in_priority_prefix": false
+    },
+    {
+      "id": "R10",
+      "task": "regression",
+      "name": "Fair robust loss",
+      "family": "robust_loss",
+      "priority": "P3",
+      "change": "Same SVD32 design/parameters; objective fair/fair_c1.0. Second and last robust_loss configuration.",
+      "policy": "R_AUX25",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "R09 gives nonnegative pilot/H12 MAE gain or both-origin tail improvement without view harm>0.25; otherwise skip",
+      "preflight_checks": [],
+      "evidence": [
+        "reports/optimization_v3/regression_diagnostics/diagnostics.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 43,
+      "rationale": "Loss halus mengubah gradient dan kompromi error; MAE tetap penentu meskipun objective training berbeda.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/R10.md",
+      "in_priority_prefix": false
+    },
+    {
+      "id": "R13",
+      "task": "regression",
+      "name": "CatBoost cycle-group ranker",
+      "family": "ranking_cb",
+      "priority": "P3",
+      "change": "CatBoostRanker YetiRank/800iterations/depth6/lr0.05/thread_count2/seed42 on structured+SVD32; same integer grades/groups; prediction becomes whole-cycle average percentile.",
+      "policy": "R_RANK25",
+      "pilot_predictor_fits": 2,
+      "evaluation": "STANDARD",
+      "condition": "R12 improves average within-cycle Spearman in both origins but misses MAE gate; no high-tail rescue based on public score",
+      "preflight_checks": [],
+      "evidence": [
+        "reports/optimization_v3/regression_diagnostics/diagnostics.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 44,
+      "rationale": "Implementasi ranking kedua hanya layak jika ada signal pengurutan yang dapat ditransfer, bukan rescue public score.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/R13.md",
+      "in_priority_prefix": false
+    },
+    {
+      "id": "R11",
+      "task": "regression",
+      "name": "Cumulative ordinal median",
+      "family": "ordinal",
+      "priority": "P3",
+      "change": "Shared structured+SVD32 per cutoff. Nine binary LGB heads for y>10,20,...90, regularized parameter set. Row-wise PAVA to nonincreasing survival probabilities; median at0.5 crossing with linear interpolation and boundaries0/100. Report discretization assumption.",
+      "policy": "R_AUX25",
+      "pilot_predictor_fits": 18,
+      "evaluation": "STANDARD",
+      "condition": "Cheaper objective/ranking lanes completed and budget has18 head fits available",
+      "preflight_checks": [
+        ">=100 positives/negatives for every threshold; count all18 predictors; never fit on validation labels"
+      ],
+      "evidence": [
+        "reports/optimization_v3/regression_distributional/pilot.json"
+      ],
+      "status": "PLANNED_NOT_RUN",
+      "implementation": "NOT_IMPLEMENTED",
+      "new_results": null,
+      "queue_order": 45,
+      "rationale": "Ambang kumulatif menggunakan urutan target, berbeda dari softmax bin nominal yang gagal; sembilan head harus dihitung.",
+      "card_path": "reports/optimization_v3/research_backlog/cards/R11.md",
+      "in_priority_prefix": false
+    }
+  ],
+  "reuse_sources": {
+    "classification": [
+      "src/models/optimization_v3_sparse_classification.py",
+      "src/models/classification_models.py",
+      "src/models/classification_round2_models.py",
+      "src/models/campaign_classification_catboost.py",
+      "scripts/optimization_v3_sparse_classification.py",
+      "scripts/optimization_v3_sparse_classification_fullsix.py"
+    ],
+    "regression": [
+      "src/models/optimization_v2_regression.py",
+      "src/models/regression_research_text.py",
+      "src/models/regression_research_lgb_text.py",
+      "src/models/regression_research_tabular.py",
+      "scripts/optimization_v3_reg_diagnostics.py",
+      "scripts/optimization_v3_distributional.py"
+    ]
+  },
+  "cache_registry": {
+    "classification_C2_B_and_C1_B": "experiments/runs/classification_round1_v1/fit{end}__{model_id}.npz, validated by scripts/research_campaign_classification_stage2.py:_load_round1_control and reports/classification_round1/fit_audits/fit{end}.json",
+    "classification_CB": "experiments/runs/dual_cls_catboost_v1/fit{end}.npz + .json",
+    "classification_sparse_pilot": "experiments/runs/optimization_v3_classification_sparse/fit{55,67}.npz keys rows,raw_candidate,blend25",
+    "classification_sparse_full": "experiments/runs/optimization_v3_classification_sparse_full/fit{59,63,71,75}.npz + sidecars; frozen verification in reports/optimization_v3/classification_sparse_full/",
+    "regression_LGB_Ridge": "experiments/runs/dual_reg_v1/stage1_paired_blends.npz: rows_{end},lgb_{end},ridge_{end},blend_ridge25_{end}; lgb/ridge already rank-mapped",
+    "regression_sparse": "experiments/runs/optimization_v2_regression_repr/{pilot_predictions,fullsix_predictions}.npz; raw_lgbm_sparse_l1_{end},rows_lgbm_sparse_l1_{end}; raw needs single rank50 map",
+    "regression_control_verifier": "scripts/optimization_v3_reg_diagnostics.py:_build_view and scripts/optimization_v3_verify_robust_aggregate.py independent reconstruction"
+  },
+  "external_finalist_stage": {
+    "authorized_by": "Original active V3 objective; current planning runs no fit/upload",
+    "qualification": "Fixed full-six gate vs frozen current champion; no promotion from pilot alone",
+    "recipe": "Frozen card policy; no new blend/threshold from public feedback",
+    "full_Train_rows": 50608,
+    "official_Test_rows": 29421,
+    "Train_only_learning": true,
+    "classification_values": "integer0/1 threshold0.50",
+    "regression_values": "finite0..100",
+    "required_QA": [
+      "exact SampleSubmission columns and ordered IDs",
+      "no duplicate/missing IDs",
+      "source commit/hash and dependency/recipe manifest",
+      "fresh full-Train fitted state audit",
+      "prediction/CSV hashes",
+      "fresh official rules/team/deadline/live sharedquota",
+      "global V3 budget counts old and new namespaces",
+      "exclusive idempotent reservation before upload; no ambiguous retries",
+      "confirm COMPLETE and score from Kaggle before success claim"
+    ],
+    "default_upload_order": "At most best qualifying finalist/task first. Any further distinct candidate needs compelling internal evidence, frozen budget justification and fresh live quota; no leaderboard weight probing.",
+    "existing_campaign_budget": "Read experiments/optimization_v3/milestone.json. Count accepted V3 Class57837821 before any new reservation. Do not reset budget/ledger by changing output namespace.",
+    "no_auth_or_quota": "Preserve validated artifacts and blocker; continue independent research; do not claim submission succeeded.",
+    "authorization_reconciliation": "experiments/optimization_v3/research_backlog/authorization_note.json"
+  }
+}

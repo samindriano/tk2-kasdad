@@ -1,0 +1,52 @@
+{
+  "at_utc": "2026-10-31T18:46:21.789397+00:00",
+  "user_date_asia_jakarta": "2026-11-01",
+  "scope": "read-only research feasibility; no model fitting",
+  "classification_train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+  "classification_text_scan": {
+    "non_null_documents": 47204,
+    "distinct_case_sensitive_unigrams": 93338,
+    "distinct_default_lowercase_unigrams": 93338,
+    "documents_with_any_uppercase_character": 0,
+    "analyzer": "sklearn TfidfVectorizer default word analyzer; compare lowercase=False strip_accents=None with default lowercase=True",
+    "target_labels_used": false,
+    "limitation": "Full Train descriptive vocabulary count is not a fit vocabulary; each future model must relearn vocabulary inside its own temporal fit."
+  },
+  "packages": {
+    "numpy": "2.4.2",
+    "pandas": "2.3.3",
+    "scipy": "1.18.0",
+    "scikit-learn": "1.8.0",
+    "lightgbm": "4.6.0",
+    "catboost": "1.2.8",
+    "xgboost": "3.2.0"
+  },
+  "optional_dependency_torch_installed": false,
+  "new_model_fits": 0,
+  "Kaggle_calls": 0,
+  "feature_support_scan": {
+    "classification_df_eligible_unigrams": {
+      "2": 21641,
+      "3": 14985,
+      "5": 10033
+    },
+    "classification_df_eligible_bigrams": {
+      "2": 111652,
+      "3": 66701,
+      "5": 37178
+    },
+    "Regression_signal_stream_column_equals_Classification": true,
+    "note": "Document-frequency counts are descriptive Train-only. Equality compares text columns without targets. No vocabulary is reused for model fitting."
+  },
+  "Regression_train_sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+  "verified_capped_vocabulary": {
+    "classification_fit55": 20000,
+    "classification_fit75": 20000,
+    "sources": [
+      "experiments/runs/optimization_v3_classification_sparse/fit55.json",
+      "experiments/runs/optimization_v3_classification_sparse_full/fit75.json"
+    ],
+    "regression_fullTrain_tfidf": 20000,
+    "regression_source": "reports/optimization_v2/kaggle/v2_reg_sparse_lgb25.json"
+  }
+}
