@@ -1,0 +1,112 @@
+{
+  "frozen_at_utc": "2026-10-31T07:30:06.585411+00:00",
+  "before_any_new_kaggle_submission_or_score": true,
+  "max_authorized_new_per_task": 2,
+  "selected_count_per_task": {
+    "classification": 1,
+    "regression": 1
+  },
+  "candidates": {
+    "classification": [
+      {
+        "candidate_id": "samuel_cls_q80_route_v1",
+        "eligible_for_external_evaluation": true,
+        "recipe": {
+          "kind": "volume_route",
+          "availability": "original NaN/blank rule",
+          "volume_cutoff": "strict text_load > fit-only Q80",
+          "threshold": 0.5,
+          "experts": "present-high:C2_B fitpresent; present-other:C2_B fitall; missing:C1_B fitall"
+        },
+        "submission_message": "Samuel EDA Q80 Present Specialist Route v1",
+        "internal_metrics": {
+          "primary": 0.8260718097666233,
+          "equal_cycle": 0.8190283142478604,
+          "H12": 0.7979394931540861
+        },
+        "reason": "Single adaptive subgroup route using preexisting fit-defined Q5; small pooled gains,5of6primarywindows andbothH12 improve; unchanged missing/lowpresent. Outer reuse and adaptive selection disclosed."
+      }
+    ],
+    "regression": [
+      {
+        "candidate_id": "samuel_reg_svd128_paired_v1",
+        "eligible_for_external_evaluation": true,
+        "recipe": {
+          "kind": "svd128_paired",
+          "params_id": "base",
+          "rank_weight": 0.5,
+          "representation": "same TFIDF and structured, SVD128 instead32",
+          "temporal_policy": "original per-fold params/rankweights keptfixed",
+          "full_train_policy": "original fullTrain base/.5 retained"
+        },
+        "submission_message": "Samuel EDA LGB SVD128 Paired Policy v1",
+        "internal_metrics": {
+          "primary": 11.916361543450673,
+          "equal_cycle": 12.255918332733012,
+          "H12": 14.519599867307
+        },
+        "reason": "Near-neutral mixed primary with bothH12halves improved; subgroup losses withincompetitiveguard; incremental representationtest. SVD128inner variant fullTrainchoice base/.5 is identical, so secondRegsubmission wouldduplicateinference."
+      }
+    ]
+  },
+  "rejected_for_external_evaluation": {
+    "present_specialist": "Q80route higherprimary/equalcycle/H12 withless widespread change; no extra weakuniform upload.",
+    "missing_specialist": "Largepooled/missinglosses",
+    "both_specialist": "Largepooled/missinglosses",
+    "svd128_inner": "FullTrainselectedbase/.5 equals pairedrecipe; no duplicateupload."
+  },
+  "new_public_scores_used_for_selection": false,
+  "official_final_models_changed": false,
+  "internal_result_sha256": {
+    "reports/autonomous_eda/classification/results.json": "e0a941509c91c348d67ed2ab87cdc4bf6df03b151c6ede394c3e3ee6854b5d09",
+    "reports/autonomous_eda/classification/verification.json": "ff7e49225c7bbe60e84d52ff92c9caae0603a55467b7bf4914f4da592e021818",
+    "reports/autonomous_eda/classification_volume/results.json": "14e002fc98a11fa84daf41831777e80ee7c0a8b7d5a2cb092742c8d20c737ba5",
+    "reports/autonomous_eda/classification_volume/verification.json": "31cc93c1edba1e3661e7a963f2e7522f7ef1f3ecfd8e3fa3cf62f3add7897728",
+    "reports/autonomous_eda/regression/results.json": "dfdb31f3f093a0ef8aea512f5ffd4d7cb94aec07c46c6570c8f4efe6f286f238",
+    "reports/autonomous_eda/regression/inner_refinement.json": "ea004de52fedce80887b21eb737b2bbd8a4e6c9a1e6b207dcd84ea64b15cd9f7",
+    "reports/autonomous_eda/regression/fulltrain_inner_selection.json": "cbc7b13377fc761c79b3c3804f58c163de959f4e3d6de3fdb5fb5c13d14e8628"
+  },
+  "source_code_sha256": {
+    "scripts/autonomous_kaggle.py": "04330b4e32d471050f062bd229824b96a36776e1e8bb4a1319f7722438d0c3d8",
+    "scripts/prepare_autonomous_candidates.py": "a526b58da924fdbfe2e0bba48cd1675f395089e95fc4327d7b8d500697dfc036",
+    "src/__init__.py": "ba7d869e1fb032057d9a14a67e9ca87f07e59bb20493664beaf636d6af4bf9f8",
+    "src/data/__init__.py": "9980200ebc80364819b916a8dc123d3b55546d26ac13f0425b51da6a0d7a97f3",
+    "src/data/audit.py": "79cb10c7a1f0795a9c1263c6bbe81a548268e73e38f670068794dc19b2fb9479",
+    "src/data/composition_eda.py": "85c9208fff82fbc74de19971a7dcae4b1ad4dd589629bd6b79546d6e539975d6",
+    "src/data/discovery.py": "fcd0b513ba22f5ef77aad8cccf269823c1b4ab23a9397d40dc78b3ab62218208",
+    "src/data/formal_eda.py": "46a4ebef49bc98ae3c8071193d103e8d1fc2c1794b0af1ec0d17942f8d53236b",
+    "src/data/samuel.py": "6a13b60485f2aebf1ee9184d059b62a85038492ebc93a129ac7aa14d81124d34",
+    "src/data/samuel_eda_a.py": "36c3fd3dcd347f8e953553890f688028783d300bcd403a21447840b69f8d604d",
+    "src/data/samuel_eda_a_figures.py": "5d47e260210c7428004172a67c6aa41864611f64e054138f507b29ce5eadbe60",
+    "src/data/temporal_eda.py": "2fb71bfb2b32fae86c19d85c09bcda0de32c04cef3ea7c954e34bca356685831",
+    "src/models/autonomous_classification.py": "571d4ca73c6391f59aa0f3dd92d79b59cc3fe1344fce130904d35ae8a22368d3",
+    "src/models/autonomous_regression.py": "c0928ccff12702bdc72fc4a88c2480f8678d5913f50f0a9c5078267d33161f9b",
+    "src/models/autonomous_volume_route.py": "1c3257610dceed235edfcb297c2173e42f5990133fb3b7811ee3700a2909d66d",
+    "src/models/classification_evaluation.py": "f7361819cd7b2466b74fd0b17176aecde6349803c20808f13ac45dbeb7682434",
+    "src/models/classification_metrics.py": "db77dd99210835006f96db1659bf4e87213179962b8f692d181af831b6539563",
+    "src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+    "src/models/classification_reporting.py": "e82e9f6f602f8ccc24470563abad81065b54b9f40eb0b4ae7e612200b22058c6",
+    "src/models/classification_review.py": "0b6c0408713bbbfc16f54405665be31deb5294d246c0a9e7d1691f98850d54a0",
+    "src/models/classification_round2_evaluation.py": "b42a9fc6b522ebde7fadbf39f38d2ed24c57d0adbccad41acc0c1282f7d8723c",
+    "src/models/classification_round2_metrics.py": "0bf4596aa3e5df38a8a49be14562225e4c1b94289b17b7d211f5f177672f48b8",
+    "src/models/classification_round2_models.py": "239008f056c6f5e004e84d2b9df9f5bfb20695ccfad90eed4deec3463c7d4575",
+    "src/models/classification_round2_reporting.py": "ed5a211ef95f8063883b4e863859d9c9bcac21242900c975ffbb7c65704d5063",
+    "src/models/classification_ttr_ablation.py": "569669e90bcf92f88aa3db59cf5348be85675028c518ab60ab2b0d77f7cf90b0",
+    "src/models/impact_oov.py": "1f297477d02aaa756b8bab182bf6be6be4be50001ece1bfb265e10a0ccf8ba85",
+    "src/models/regression_research_common.py": "4dd6cb64efa66f7e2b5119d79fecff1cb6c0aab541ca4bf19e49424fc49315ab",
+    "src/models/regression_research_lgb_text.py": "0fbcd282a6873616c866fc1c12ff4f86a5091e91d266e6900885a95ea8054777",
+    "src/models/regression_research_refinement.py": "6549b152e9f580956504a4f6dac5b6fa42cfa7bdcc9163904b9f9c04c0111f3e",
+    "src/models/regression_research_tabular.py": "674d7e52c485583729b8fe999dc133c39aae8dd85abd005a598e2caea9af99f9",
+    "src/models/regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+    "src/models/regression_round2_evaluation.py": "530fb3db09cdc27049551daca68896dbf7453975df20e00e0823cf8253394843",
+    "src/models/regression_round2_metrics.py": "d0a5050c55a90775fd3c034ca2ab91637ed46d870da7c3eb4e011c9b4ebb760f",
+    "src/models/regression_round2_models.py": "5cb195cc4a1b7894e670d9df117052eb9ac776630ff47d0469b83598880146df",
+    "src/models/regression_round2_reporting.py": "e959207562b3f663c4cbf17eaa743561fff32ea6e41251c415eb29f493a9280a",
+    "src/models/round1_behavior.py": "823740eabedf59f8ffc2e1b1a125829b3265c3c8fd52f5d22d9001914b918d7f",
+    "src/models/round1_evaluation.py": "be26992ee5c75190eb8a412fa6635dabd242eee1609fad0380023bfe3a1e300f",
+    "src/models/round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+    "src/models/round1_reporting.py": "c61ddd4e5e5ca252d522e7ab5007a53503202b21dd7d27d31177bbf6d3637b1e",
+    "src/utils/__init__.py": "865b6fe4dfe6ddc72969be3b9eabe72dc6fec223fd12d9b899318f63a3b5d9aa",
+    "src/utils/paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555"
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "protocol_id": "samuel-autonomous-classification-availability-specialists-v1",
+  "stage": "ADAPTIVE_DEVELOPMENT_REUSE_NOT_UNTOUCHED_VALIDATION",
+  "question": "Does fitting each frozen C4 expert only on the availability population where it will be used improve temporal classification?",
+  "target": "artifact_signal",
+  "primary_metric": "macro_f1",
+  "threshold": 0.5,
+  "baseline": {
+    "id": "C4_HGB",
+    "present_expert": "C2_B",
+    "missing_expert": "C1_B",
+    "present_fit_rows": "all temporal fit rows",
+    "missing_fit_rows": "all temporal fit rows",
+    "fixed_primary_macro_f1": 0.8254807111314647,
+    "fixed_h12_macro_f1": 0.7968102588689854,
+    "source_report": "reports/classification_round2/FINDINGS.md"
+  },
+  "hypothesis": {
+    "mechanism": "Joint fitting currently allows rows from the other availability population to influence each expert's learned structured coefficients, TF-IDF vocabulary, IDF, imputers, category encoders, and trees even though C4 routes only one population to that expert at prediction time. Subset fitting may reduce this cross-population interference.",
+    "counterevidence": "The present branch is 93 percent of Train and the existing wrappers already include an availability indicator; subset fitting may have little effect or may lose useful shared information. The missing branch has smaller support and changes label prevalence by cycle period.",
+    "scope": "Change only the fit-row population of the existing C1_B/C2_B branches. Keep preprocessing, allowlists, hyperparameters, random states, routing, and threshold frozen."
+  },
+  "raw_eda_question": "Within availability-specific training populations, how do artifact prevalence and text_load support vary across the three established cycle periods?",
+  "availability_rule": "Round 2 stream_missing_mask: null, empty, or whitespace-only signal_stream is missing.",
+  "periods": [
+    {"id": "cycle_47_57", "cycles": [47, 57]},
+    {"id": "cycle_58_68", "cycles": [58, 68]},
+    {"id": "cycle_69_79", "cycles": [69, 79]}
+  ],
+  "candidates": {
+    "present_specialist": {"present_expert": "C2_B fit on present-stream fit rows only", "missing_expert": "C1_B fit on all temporal fit rows"},
+    "missing_specialist": {"present_expert": "C2_B fit on all temporal fit rows", "missing_expert": "C1_B fit on missing-stream fit rows only"},
+    "both_specialist": {"present_expert": "C2_B fit on present-stream fit rows only", "missing_expert": "C1_B fit on missing-stream fit rows only"}
+  },
+  "recipes": {
+    "present": "Unmodified Round 1 C2_B structured plus TF-IDF Logistic Regression",
+    "missing": "Unmodified Round 1 C1_B expanded structured HistGradientBoostingClassifier",
+    "fit_only_preprocessing": true,
+    "allow_new_features": false,
+    "allow_threshold_tuning": false,
+    "allow_hyperparameter_tuning": false
+  },
+  "support_rule": {
+    "minimum_rows": 200,
+    "minimum_rows_per_class": 50,
+    "rationale": "Fail closed if either expert subset lacks both labels with practical support relative to C1_B min_samples_leaf=30."
+  },
+  "validation": {
+    "protocol_source": "experiments/classification_round2/protocol.json",
+    "primary_windows": [
+      {"id": "W1", "fit": [47, 55], "validation": [56, 59]},
+      {"id": "W2", "fit": [47, 59], "validation": [60, 63]},
+      {"id": "W3", "fit": [47, 63], "validation": [64, 67]},
+      {"id": "W4", "fit": [47, 67], "validation": [68, 71]},
+      {"id": "W5", "fit": [47, 71], "validation": [72, 75]},
+      {"id": "W6", "fit": [47, 75], "validation": [76, 79]}
+    ],
+    "secondary_windows": [
+      {"id": "H12_E", "fit": [47, 55], "validation": [56, 67]},
+      {"id": "H12_L", "fit": [47, 67], "validation": [68, 79]}
+    ],
+    "pooled_primary_rows_are_unique": true,
+    "h12_reuses_primary_records": true,
+    "threshold_and_metrics": "Fixed labels [0,1], probability >= 0.50; pooled and equal-cycle Macro F1, per-window, per-cycle, availability subgroup, and fit-defined text_load quintile subgroup metrics."
+  },
+  "fit_budget": {
+    "new_branch_fits": 12,
+    "explanation": "For each of six temporal fit cutoffs, fit one present-only C2_B and one missing-only C1_B. Both branch experts are reused across the three candidates. Full-row C1_B/C2_B controls come from exact hash-verified Round 1 probability caches or must refit to their frozen exact probability hash."
+  },
+  "comparison_and_candidate_guard": {
+    "compare_against": "C4_HGB at fixed threshold 0.50, recombined from original C1_B/C2_B controls at the same cutoff",
+    "external_candidate_guard": {
+      "primary_delta_at_least": -0.003,
+      "equal_cycle_primary_delta_at_least": -0.005,
+      "h12_delta_at_least": -0.005,
+      "worst_primary_window_delta_at_least": -0.015,
+      "per_class_f1_delta_at_least": -0.01,
+      "availability_subgroup_f1_delta_at_least": -0.015,
+      "meaning": "Practical non-inferiority screen, not a significance test or automatic submission approval. A new candidate is recommended for parent review only if it meets all guards and shows a positive pooled primary or H12 delta. The user permits a smaller or temporally mixed but still competitive external candidate; MAIN retains candidate selection and submission ownership."
+    },
+    "selection": "No threshold search, broad model search, Test access, or leaderboard-guided changes. If multiple candidates qualify, recommend at most one to MAIN using primary, equal-cycle, H12, window consistency, subgroup behavior, then simplicity."
+  },
+  "data_boundary": {
+    "allowed_source": "official Classification Train only",
+    "forbidden_sources": ["official Classification Test values", "Kaggle labels or leaderboard tuning"],
+    "preserve_historical_artifacts": true,
+    "prediction_cache_path": "ignored experiments/runs/autonomous_cls_v1/"
+  },
+  "limitations": [
+    "All Train cycles and primary windows have been used in prior development, so this is adaptive evidence rather than a new independent holdout.",
+    "H12_E and H12_L reuse primary validation records under longer histories; they are sensitivity windows, not independent replications.",
+    "Availability is an observed collection state, not a causal treatment. Subset fitting can reduce cross-population fit influence but does not remove other confounding or guarantee generalization to Kaggle Test."
+  ]
+}

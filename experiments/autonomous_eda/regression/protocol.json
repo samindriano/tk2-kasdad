@@ -1,0 +1,86 @@
+{
+  "protocol_id": "autonomous_regression_svd128_lgb_v1",
+  "status": "FROZEN_BEFORE_CANDIDATE_OUTER_FITS",
+  "source_commit": "ef475ddc8d8d2c31551c8b53cb9b01b4068ddd8e",
+  "research_question": "Could TF-IDF information represented by SVD components 33-128 add predictive signal for threat_rank beyond the frozen Stage 5 SVD32 LightGBM recipe?",
+  "discovery_scope": {
+    "target_blind_description": "Per-fit SVD explained variance by component blocks 1-32, 33-64 and 65-128.",
+    "observed_target_description": "Target spread by validation cycle and retrospective residual/error heterogeneity for the paired models.",
+    "interpretation_boundary": "Explained variance is target-blind and does not imply predictive value. Residual summaries use observed Train labels after model fits and are retrospective development evidence. No semantic or causal claim about text components is made.",
+    "prohibited_expansion": [
+      "No new member EDA question on scope_pressure, impact_load, entry_friction/artifact_signal or telemetry_flag/module_spread.",
+      "No new history-length, feature-removal, rank-only or broad parameter search.",
+      "No official Test fit, Test prediction, Kaggle submission or leaderboard-based selection."
+    ]
+  },
+  "candidate": {
+    "family": "LightGBM LGBMRegressor objective=regression_l1",
+    "input_features": "Exact Stage 5 expanded structured allowlist plus signal_stream",
+    "only_changed_factor": "Requested TruncatedSVD components: 32 to 128",
+    "tfidf": {
+      "ngram_range": [1, 2],
+      "min_df": 2,
+      "max_features": 20000,
+      "sublinear_tf": true,
+      "dtype": "float64"
+    },
+    "svd": {
+      "algorithm": "randomized",
+      "n_iter": 7,
+      "random_state": 42,
+      "requested_components": 128,
+      "actual_components": "min(128, fit-fold vocabulary width - 1)"
+    },
+    "lightgbm_parameter_sets": ["base", "regularized"],
+    "random_state": 42,
+    "threads": 2,
+    "transforms": "Structured imputation/categories, TF-IDF vocabulary/IDF and SVD are fit only on each temporal fit fold. No validation data is passed to fit."
+  },
+  "comparison": {
+    "control": "Exact frozen Stage 5 SVD32 LightGBM model and per-cycle rank-mapped predictions.",
+    "control_report": "reports/regression_research/stage5_lgb_text.json",
+    "fixed_param_rank_weight_by_fit_end": {
+      "55": {"param": "base", "rank_weight": 0.25},
+      "59": {"param": "regularized", "rank_weight": 0.25},
+      "63": {"param": "base", "rank_weight": 0.25},
+      "67": {"param": "base", "rank_weight": 0.5},
+      "71": {"param": "base", "rank_weight": 0.25},
+      "75": {"param": "base", "rank_weight": 0.5}
+    },
+    "outer_fit_ends": [55, 59, 63, 67, 71, 75],
+    "outer_prediction_coverage": {
+      "primary": [
+        {"id": "W1", "fit": [47, 55], "validation": [56, 59]},
+        {"id": "W2", "fit": [47, 59], "validation": [60, 63]},
+        {"id": "W3", "fit": [47, 63], "validation": [64, 67]},
+        {"id": "W4", "fit": [47, 67], "validation": [68, 71]},
+        {"id": "W5", "fit": [47, 71], "validation": [72, 75]},
+        {"id": "W6", "fit": [47, 75], "validation": [76, 79]}
+      ],
+      "h12": [
+        {"id": "H12_E", "fit": [47, 55], "validation": [56, 67]},
+        {"id": "H12_L", "fit": [47, 67], "validation": [68, 79]}
+      ]
+    },
+    "primary_metric": "MAE on exact paired validation rows; also equal-cycle MAE, per-cycle deltas, signed error, p95 absolute error, EF/missing-stream/target-region/tail guardrails.",
+    "frozen_reference": {
+      "primary_mae": 11.931600241417073,
+      "h12_mae": 14.704040710404005,
+      "h12_early_cycles": [56, 67],
+      "h12_late_cycles": [68, 79]
+    }
+  },
+  "fit_budget": {
+    "paired_svd128_outer_fits": 6,
+    "svd128_inner_fits_before_parent_review": 0,
+    "full_train_fits": 0,
+    "test_inference": 0
+  },
+  "adaptive_refinement_gate": {
+    "stage": "No second-stage SVD128 inner selection is run without the parent agent's review/approval.",
+    "competitive": "Paired delta MAE is no worse than +0.20 primary and +0.30 H12, with at least 2 of 6 primary windows improving or tied.",
+    "mixed": "One pooled primary/H12 effect improves by at least 0.20 MAE while the other worsens by no more than 0.40, or primary has at least 2 improving and 2 worsening windows with both pooled deltas within +/-0.25.",
+    "clearly_bad": "Both pooled effects worsen by more than their competitive limits and fewer than 2 primary windows improve; no refinement is warranted.",
+    "maximum_if_parent_approves": "Reuse exact Stage 5 inner protocol: same 2 parameter sets x 5 rank weights at the same six temporal cutoffs (at most 12 new inner SVD128 fits). Refit only selected outer parameter choices not already represented by the paired outer fit. No new parameter or weight grid."
+  }
+}

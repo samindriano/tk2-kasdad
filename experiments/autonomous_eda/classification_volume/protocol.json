@@ -1,0 +1,63 @@
+{
+  "protocol_id": "samuel-autonomous-classification-present-q80-route-v1",
+  "stage": "POST_HOC_LIMITED_ROUTE_AFTER_SUBGROUP_REVIEW",
+  "source_development_freeze_signature": "73b81ff3455c2ddc39992dbf806e8754fee5fe79a5d67845561ad832ed41d137",
+  "hypothesis": "The uniform present-only expert lost slightly overall but improved the highest fit-defined text_load quintile. Route only present rows above the fit-only text_load 80th percentile to that expert while retaining the original C2_B for other present rows and the original C1_B for missing rows.",
+  "adaptive_selection_note": "This limited route was selected after reviewing the first three candidate results and their subgroup outcomes. It is a follow-up on previously viewed development folds, not a pre-registered independent test.",
+  "candidate": {
+    "id": "present_q80_route",
+    "present_low_or_equal": "all-row C2_B",
+    "present_above_q80": "present-only C2_B",
+    "stream_missing": "all-row C1_B",
+    "threshold_feature": "text_load",
+    "threshold_definition": "For each fold, q80 = the ordinary linear interpolation 80th percentile of text_load over all rows with cycle_code <= fit_end; route high volume only when text_load > q80. Values equal to q80 stay on the original C2_B expert. Missing-stream routing takes precedence.",
+    "threshold_is_fit_only": true,
+    "threshold_search": false,
+    "outer_labels_used_to_select_threshold": false,
+    "new_model_fits": 0
+  },
+  "comparators": [
+    "C4_HGB original availability routing (C2_B all rows present; C1_B all rows missing)",
+    "present_specialist uniform route (C2_B present-only for all present; C1_B all rows missing)"
+  ],
+  "cache_reuse": {
+    "source_namespace": "experiments/runs/autonomous_cls_v1/",
+    "read_only": true,
+    "required_probability_vectors": [
+      "C1_B_all_probability",
+      "C2_B_all_probability",
+      "C2_B_present_probability"
+    ],
+    "no_refit": true
+  },
+  "validation": {
+    "windows_source": "experiments/classification_round2/protocol.json",
+    "primary_windows": [
+      {"id": "W1", "fit": [47, 55], "validation": [56, 59]},
+      {"id": "W2", "fit": [47, 59], "validation": [60, 63]},
+      {"id": "W3", "fit": [47, 63], "validation": [64, 67]},
+      {"id": "W4", "fit": [47, 67], "validation": [68, 71]},
+      {"id": "W5", "fit": [47, 71], "validation": [72, 75]},
+      {"id": "W6", "fit": [47, 75], "validation": [76, 79]}
+    ],
+    "secondary_windows": [
+      {"id": "H12_E", "fit": [47, 55], "validation": [56, 67]},
+      {"id": "H12_L", "fit": [47, 67], "validation": [68, 79]}
+    ],
+    "threshold": 0.5,
+    "metric": "Fixed-label [0,1] Macro F1",
+    "h12_overlaps_primary_records": true
+  },
+  "required_subgroups": [
+    "stream_missing",
+    "present_not_above_q80",
+    "present_above_q80",
+    "all_rows_q80_volume_bin"
+  ],
+  "data_boundary": {
+    "allowed": "official Classification Train only",
+    "forbidden": ["official Test values", "Kaggle labels", "new model fits", "hyperparameter/threshold search"],
+    "preserve_source_experiment_and_caches": true
+  },
+  "decision_owner": "MAIN selects at most two external Classification candidates under the global milestone guard; this experiment makes no upload decision."
+}

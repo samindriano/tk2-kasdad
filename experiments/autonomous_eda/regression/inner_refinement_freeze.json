@@ -1,0 +1,181 @@
+{
+  "identity": {
+    "code_sha256": {
+      "scripts/research_autonomous_regression.py": "8eddc0f695fbae3c5ff6f77fc1c4073e128553e81a512818af207baa2868fff8",
+      "scripts/verify_autonomous_regression.py": "c8a64ec55cdd7fc2751ec19ead7ef2f8fe0885e7873a4c3ea823283a11e7721c",
+      "src/models/autonomous_regression.py": "c0928ccff12702bdc72fc4a88c2480f8678d5913f50f0a9c5078267d33161f9b"
+    },
+    "first_stage_freeze_signature": "ab3f409226f6dc95688a1108ccd55e71e13430b5a8caf092d04348a0a6de37d4",
+    "first_stage_postfit_amendment_sha256": "8d407eceacc643a5a6c5c33ba7e801d7dac2c14686560dbad5991a1f8c3b0567",
+    "first_stage_report_sha256": "dfdb31f3f093a0ef8aea512f5ffd4d7cb94aec07c46c6570c8f4efe6f286f238",
+    "packages": {
+      "lightgbm": "4.6.0",
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.8.0",
+      "scipy": "1.18.0",
+      "threadpoolctl": "3.6.0"
+    },
+    "protocol_sha256": "01f16c78d08af07bc44689f9f44d4d8dde769a6af920ca769f07c6fe5575c606",
+    "reference_sha256": {
+      "experiments/autonomous_eda/regression/freeze.json": "1cc8633c5594a3a4065d75990e270613196a228ff5fd71c2ed4b7c7d683d1db3",
+      "experiments/autonomous_eda/regression/postfit_reporting_amendment_v1.json": "1bf8e9e575d0794c4e6d91a01661090344bf8aa66de39e53a5a36b9b3c3b4618",
+      "experiments/autonomous_eda/regression/postfit_reporting_amendment_v2.json": "721e21ab9f6a89aa11586f08dde7c459bd1476fa14d7b6516f3edee89c9723ad",
+      "experiments/autonomous_eda/regression/postfit_reporting_amendment_v3.json": "60a937051890cda7d10a895b7852bacbe24fbff45356da0da96f569ca6478964",
+      "experiments/autonomous_eda/regression/postfit_reporting_amendment_v4.json": "8d407eceacc643a5a6c5c33ba7e801d7dac2c14686560dbad5991a1f8c3b0567",
+      "experiments/autonomous_eda/regression/protocol.json": "3862f2744f420791a6ccd6e07271b6c13aedca51ef78852f33679fa01988c46d",
+      "experiments/regression_research/stage5_lgb_text_freeze.json": "3d6537104b831e7413e9423b04e12ae6c071ea866eb2ab2a4bdcff4c6e02268e",
+      "reports/autonomous_eda/regression/results.json": "dfdb31f3f093a0ef8aea512f5ffd4d7cb94aec07c46c6570c8f4efe6f286f238",
+      "reports/regression_research/stage5_lgb_text.json": "a7fb69f80c4aa0d91c01f50669b2e921dd51e1f04a7a91153ad6e71565837cf5"
+    },
+    "stage5_signature": "22aaf721983445fe995cac4fceb1f0c29ca5bde3b1826a74d4da18cbf230630e",
+    "train_rows": 50608,
+    "train_sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082"
+  },
+  "protocol": {
+    "boundary": {
+      "feature_changes": false,
+      "full_train_refit": false,
+      "leaderboard_feedback_used": false,
+      "new_model_family": false,
+      "new_parameter_values": false,
+      "official_test_read": false,
+      "official_test_target_read": false
+    },
+    "candidate_grid": {
+      "features": "Exact original SVD128 candidate features; no feature change.",
+      "model_family": "Same LightGBM L1 candidate; no parameter values added or changed.",
+      "outer_policies": [
+        "inner-selected"
+      ],
+      "params": [
+        "base",
+        "regularized"
+      ],
+      "rank_weights": [
+        0.0,
+        0.25,
+        0.5,
+        0.75,
+        1.0
+      ],
+      "tie_break": "Minimum inner MAE within 1e-10; lower rank_weight first; then regularized before base, identical to Stage 5 select_inner."
+    },
+    "fit_budget": {
+      "full_train_fits": 0,
+      "inner_svd128_fits": 12,
+      "kaggle": 0,
+      "reused_first_stage_outer_fits": "0-6 depending on inner parameter choice",
+      "selected_outer_svd128_fits_max": 6,
+      "test_inference": 0
+    },
+    "full_train_selection_note": "This stage does not refit on all Train and does not use 76-79 to choose a full-train recipe. Root must decide separately whether a final-policy helper using fit cycles 47-75 and validation 76-79 is needed after reviewing these temporal results.",
+    "lineage": {
+      "first_stage_freeze": "experiments/autonomous_eda/regression/freeze.json",
+      "first_stage_paired_report": "reports/autonomous_eda/regression/results.json",
+      "first_stage_protocol": "experiments/autonomous_eda/regression/protocol.json",
+      "reference_control": "reports/regression_research/stage5_lgb_text.json"
+    },
+    "main_review": "Parent agent approved this one bounded refinement after reviewing the paired ablation: primary was near-neutral and mixed across windows, while both H12 halves improved.",
+    "metrics_and_reporting": {
+      "attribution": "Keep fixed paired SVD128 and inner-selected SVD128 results distinct; also compare both with the frozen SVD32 Stage 5 control.",
+      "guardrails": [
+        "EF0/EF1",
+        "target regions",
+        "low/high tails",
+        "stream missing/present"
+      ],
+      "primary": "Same 38,588 unique canonical W1-W6 rows; raw MAE, equal-cycle MAE, per-cycle and per-window deltas, signed error, p95 absolute error.",
+      "secondary": "H12_E and H12_L separately and pooled on the same historical development rows.",
+      "selection_data": "Only each fold's stated inner validation labels select that fold's parameters and rank weight. Outer validation labels are used only for evaluation after selection."
+    },
+    "outer_policy": {
+      "additional_outer_fits": "Refit only a selected parameter whose raw outer prediction is absent from the six original paired fits; at most one additional outer fit per cutoff.",
+      "control": "Exact frozen Stage 5 SVD32 inner-selected predictions and exact first-stage fixed-policy SVD128 predictions.",
+      "fit_ends": [
+        55,
+        59,
+        63,
+        67,
+        71,
+        75
+      ],
+      "reuse": "Reuse each first-stage SVD128 outer raw prediction when its selected parameter matches the inner-selected parameter; apply the newly selected weight to that raw prediction.",
+      "validation_windows": "Unchanged W1-W6 and H12_E/H12_L from first-stage protocol."
+    },
+    "protocol_id": "autonomous_regression_svd128_inner_refinement_v1",
+    "research_question": "Within the same SVD128 LightGBM recipe, does selecting between the two existing LightGBM parameter sets and the existing per-cycle rank weights using past-only inner validation change the paired temporal result?",
+    "status": "FROZEN_BEFORE_FIRST_INNER_FIT",
+    "temporal_inner_folds": [
+      {
+        "inner_fit": [
+          47,
+          51
+        ],
+        "inner_validation": [
+          52,
+          55
+        ],
+        "outer_fit_end": 55
+      },
+      {
+        "inner_fit": [
+          47,
+          55
+        ],
+        "inner_validation": [
+          56,
+          59
+        ],
+        "outer_fit_end": 59
+      },
+      {
+        "inner_fit": [
+          47,
+          59
+        ],
+        "inner_validation": [
+          60,
+          63
+        ],
+        "outer_fit_end": 63
+      },
+      {
+        "inner_fit": [
+          47,
+          63
+        ],
+        "inner_validation": [
+          64,
+          67
+        ],
+        "outer_fit_end": 67
+      },
+      {
+        "inner_fit": [
+          47,
+          67
+        ],
+        "inner_validation": [
+          68,
+          71
+        ],
+        "outer_fit_end": 71
+      },
+      {
+        "inner_fit": [
+          47,
+          71
+        ],
+        "inner_validation": [
+          72,
+          75
+        ],
+        "outer_fit_end": 75
+      }
+    ]
+  },
+  "signature": "e5469d1c107e7e50ad10df3be5328bfc9aa9680733a130571ddd1a2c39d06949",
+  "source_commit": "ef475ddc8d8d2c31551c8b53cb9b01b4068ddd8e",
+  "status": "FROZEN_BEFORE_FIRST_INNER_FIT"
+}

@@ -1,0 +1,60 @@
+{
+  "protocol_id": "autonomous_regression_svd128_inner_refinement_v1",
+  "status": "FROZEN_BEFORE_FIRST_INNER_FIT",
+  "main_review": "Parent agent approved this one bounded refinement after reviewing the paired ablation: primary was near-neutral and mixed across windows, while both H12 halves improved.",
+  "lineage": {
+    "first_stage_protocol": "experiments/autonomous_eda/regression/protocol.json",
+    "first_stage_freeze": "experiments/autonomous_eda/regression/freeze.json",
+    "first_stage_paired_report": "reports/autonomous_eda/regression/results.json",
+    "reference_control": "reports/regression_research/stage5_lgb_text.json"
+  },
+  "research_question": "Within the same SVD128 LightGBM recipe, does selecting between the two existing LightGBM parameter sets and the existing per-cycle rank weights using past-only inner validation change the paired temporal result?",
+  "candidate_grid": {
+    "params": ["base", "regularized"],
+    "rank_weights": [0.0, 0.25, 0.5, 0.75, 1.0],
+    "outer_policies": ["inner-selected"],
+    "tie_break": "Minimum inner MAE within 1e-10; lower rank_weight first; then regularized before base, identical to Stage 5 select_inner.",
+    "features": "Exact original SVD128 candidate features; no feature change.",
+    "model_family": "Same LightGBM L1 candidate; no parameter values added or changed."
+  },
+  "temporal_inner_folds": [
+    {"outer_fit_end": 55, "inner_fit": [47, 51], "inner_validation": [52, 55]},
+    {"outer_fit_end": 59, "inner_fit": [47, 55], "inner_validation": [56, 59]},
+    {"outer_fit_end": 63, "inner_fit": [47, 59], "inner_validation": [60, 63]},
+    {"outer_fit_end": 67, "inner_fit": [47, 63], "inner_validation": [64, 67]},
+    {"outer_fit_end": 71, "inner_fit": [47, 67], "inner_validation": [68, 71]},
+    {"outer_fit_end": 75, "inner_fit": [47, 71], "inner_validation": [72, 75]}
+  ],
+  "outer_policy": {
+    "fit_ends": [55, 59, 63, 67, 71, 75],
+    "validation_windows": "Unchanged W1-W6 and H12_E/H12_L from first-stage protocol.",
+    "reuse": "Reuse each first-stage SVD128 outer raw prediction when its selected parameter matches the inner-selected parameter; apply the newly selected weight to that raw prediction.",
+    "additional_outer_fits": "Refit only a selected parameter whose raw outer prediction is absent from the six original paired fits; at most one additional outer fit per cutoff.",
+    "control": "Exact frozen Stage 5 SVD32 inner-selected predictions and exact first-stage fixed-policy SVD128 predictions."
+  },
+  "fit_budget": {
+    "inner_svd128_fits": 12,
+    "selected_outer_svd128_fits_max": 6,
+    "reused_first_stage_outer_fits": "0-6 depending on inner parameter choice",
+    "full_train_fits": 0,
+    "test_inference": 0,
+    "kaggle": 0
+  },
+  "metrics_and_reporting": {
+    "primary": "Same 38,588 unique canonical W1-W6 rows; raw MAE, equal-cycle MAE, per-cycle and per-window deltas, signed error, p95 absolute error.",
+    "secondary": "H12_E and H12_L separately and pooled on the same historical development rows.",
+    "guardrails": ["EF0/EF1", "target regions", "low/high tails", "stream missing/present"],
+    "attribution": "Keep fixed paired SVD128 and inner-selected SVD128 results distinct; also compare both with the frozen SVD32 Stage 5 control.",
+    "selection_data": "Only each fold's stated inner validation labels select that fold's parameters and rank weight. Outer validation labels are used only for evaluation after selection."
+  },
+  "boundary": {
+    "official_test_read": false,
+    "official_test_target_read": false,
+    "full_train_refit": false,
+    "feature_changes": false,
+    "new_model_family": false,
+    "new_parameter_values": false,
+    "leaderboard_feedback_used": false
+  },
+  "full_train_selection_note": "This stage does not refit on all Train and does not use 76-79 to choose a full-train recipe. Root must decide separately whether a final-policy helper using fit cycles 47-75 and validation 76-79 is needed after reviewing these temporal results."
+}
