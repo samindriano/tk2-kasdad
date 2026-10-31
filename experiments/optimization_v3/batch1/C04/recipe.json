@@ -1,0 +1,156 @@
+{
+  "card_id": "C04",
+  "classifier_parameters": {
+    "deterministic": true,
+    "force_col_wise": true,
+    "learning_rate": 0.05,
+    "min_child_samples": 50,
+    "n_estimators": 400,
+    "n_jobs": 2,
+    "num_leaves": 15,
+    "objective": "binary",
+    "random_state": 42,
+    "reg_alpha": 0.0,
+    "reg_lambda": 3.0,
+    "verbosity": -1
+  },
+  "evaluation": {
+    "fit_rows": {
+      "55": 12020,
+      "67": 29705
+    },
+    "minimum_group_support": 200,
+    "primary_population_note": "W1+W4 pilot, 9,064 rows; queue primary 0.8299435 is full-six and is not used as a pilot control metric",
+    "profile": "STANDARD",
+    "score_rows": {
+      "H12": 38588,
+      "W1": 4114,
+      "W4": 4950,
+      "primary": 9064
+    },
+    "views": {
+      "H12": [
+        [
+          55,
+          56,
+          67
+        ],
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "W1": [
+        [
+          55,
+          56,
+          59
+        ]
+      ],
+      "W4": [
+        [
+          67,
+          68,
+          71
+        ]
+      ],
+      "primary": [
+        [
+          55,
+          56,
+          59
+        ],
+        [
+          67,
+          68,
+          71
+        ]
+      ]
+    }
+  },
+  "feature_allowlist": [
+    "impact_load",
+    "entry_friction",
+    "cycle_code",
+    "scope_pressure",
+    "text_load",
+    "scope_trace",
+    "org_spread",
+    "module_spread",
+    "telemetry_flag",
+    "org_code",
+    "module_code",
+    "pattern_code",
+    "signal_stream"
+  ],
+  "fit_population": "all official Train rows with cycle_code <= the temporal cutoff",
+  "gate": {
+    "individual_pilot_view_harm_max": 0.005,
+    "pilot_H12_harm_max": 0.001,
+    "pilot_primary_gain_min": 0.0005,
+    "positive_and_negative_per_group_min": 30,
+    "positive_class_recall_harm_max": 0.02,
+    "supported_group_F1_harm_max": 0.01,
+    "supported_group_n_min": 200
+  },
+  "prediction_policy": {
+    "stream_missing": "frozen CatBoost probability",
+    "stream_missing_rule": "null, empty, or whitespace-only signal_stream",
+    "stream_present": "0.75*frozen C2_B probability + 0.25*C04 sparse LightGBM probability",
+    "threshold": 0.5
+  },
+  "queue_card": {
+    "card_path": "reports/optimization_v3/research_backlog/cards/C04.md",
+    "change": "Current combined word(1,2) TF-IDF; only max_features increases20000\u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u212260000. Keep min_df3/max_df0.995 and classifier unchanged.",
+    "condition": "No additional dependency",
+    "evaluation": "STANDARD",
+    "evidence": [
+      "reports/optimization_v3/research_backlog/feasibility.json",
+      "reports/optimization_v3/classification_sparse_full/fullsix.json"
+    ],
+    "family": "vocab_width",
+    "id": "C04",
+    "implementation": "NOT_IMPLEMENTED",
+    "in_priority_prefix": true,
+    "name": "Wider combined word vocabulary",
+    "new_results": null,
+    "pilot_predictor_fits": 2,
+    "policy": "C_SPARSE_REPLACE",
+    "preflight_checks": [],
+    "priority": "P1",
+    "queue_order": 9,
+    "rationale": "Cap dapat membuang identitas token. Audit Classification menemukan 93.338 unigram; besarnya vocabulary Regression tetap harus diperiksa di fit task sendiri.",
+    "status": "PLANNED_NOT_RUN",
+    "task": "classification"
+  },
+  "resource_policy": {
+    "free_memory_reserve_bytes": 2147483648,
+    "job_memory_cap_bytes": 6442450944,
+    "max_concurrent_training_jobs": 1,
+    "peak_estimate_is_not_observed": true,
+    "sparse_only": true,
+    "threads": 2
+  },
+  "single_recipe_change": {
+    "tfidf.max_features": {
+      "baseline": 20000,
+      "candidate": 60000
+    }
+  },
+  "structured_preprocessing": "C03 inherited fit-only numeric scaling and sparse OHE; unchanged",
+  "task": "classification",
+  "tfidf_parameters": {
+    "dtype": "float64",
+    "lowercase": true,
+    "max_df": 0.995,
+    "max_features": 60000,
+    "min_df": 3,
+    "ngram_range": [
+      1,
+      2
+    ],
+    "strip_accents": "unicode",
+    "sublinear_tf": true
+  }
+}
