@@ -1,0 +1,328 @@
+{
+  "accepted_control": {
+    "candidate_id": "v2_reg_sparse_lgb25",
+    "manifest": "reports\\optimization_v2\\kaggle\\v2_reg_sparse_lgb25.json",
+    "manifest_sha256": "dd166e92089f24978244496a9a0afabc0d06551dbdc326579a7c898a8844e19a",
+    "pilot_control_is_exact_three_component_incumbent": true,
+    "route": ".5625 rank50 LGB-SVD32 + .1875 rank75 hybrid Ridge + .25 rank50 sparse LGB"
+  },
+  "canonical_queue_sha256": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+  "card_id": "R24",
+  "card_sha256": "0348b18c635bba0f1c858bb75fb9d47bead6452bc7a1e3231e513b38cfbb0cab",
+  "convergence_diagnostics": {
+    "no_extra_predictor_fit": true,
+    "record": "Ridge.n_iter_, fit warnings, and post-fit normalized stationarity ratio",
+    "stationarity_is_diagnostic_not_a_tuned_gate": true
+  },
+  "estimator": {
+    "class": "sklearn.linear_model.Ridge",
+    "parameters": {
+      "alpha": 10.0,
+      "solver": "lsqr",
+      "tol": 0.0001
+    },
+    "sample_weight": false,
+    "target": "threat_rank"
+  },
+  "evaluation_views": {
+    "H12": [
+      [
+        55,
+        56,
+        67
+      ],
+      [
+        67,
+        68,
+        79
+      ]
+    ],
+    "H12_E": [
+      [
+        55,
+        56,
+        67
+      ]
+    ],
+    "H12_L": [
+      [
+        67,
+        68,
+        79
+      ]
+    ],
+    "W1": [
+      [
+        55,
+        56,
+        59
+      ]
+    ],
+    "W4": [
+      [
+        67,
+        68,
+        71
+      ]
+    ],
+    "primary": [
+      [
+        55,
+        56,
+        59
+      ],
+      [
+        67,
+        68,
+        71
+      ]
+    ]
+  },
+  "expected_view_rows": {
+    "H12": 38588,
+    "H12_E": 17685,
+    "H12_L": 20903,
+    "W1": 4114,
+    "W4": 4950,
+    "primary": 9064
+  },
+  "feature_allowlist": [
+    "impact_load",
+    "entry_friction",
+    "cycle_code",
+    "scope_pressure",
+    "text_load",
+    "scope_trace",
+    "org_spread",
+    "module_spread",
+    "telemetry_flag",
+    "org_code",
+    "module_code",
+    "pattern_code",
+    "signal_stream"
+  ],
+  "feature_roles": {
+    "record_id": "identity_only",
+    "threat_rank": "target_only"
+  },
+  "fit_population": "all official Regression Train rows with 47 <= cycle_code <= cutoff",
+  "fit_rows": {
+    "55": 12020,
+    "67": 29705
+  },
+  "gates": {
+    "individual_pilot_view_MAE_harm_max": 0.5,
+    "pilot_H12_MAE_harm_max": 0.05,
+    "pilot_primary_MAE_gain_min": 0.03,
+    "supported_group_n_min": 100.0,
+    "supported_tail_or_missing_MAE_harm_max": 0.25
+  },
+  "interaction": {
+    "definition": "Append TF-IDF * I(parsed entry_friction == 1) to original hybrid Ridge design",
+    "fit_scope": "same cutoff past rows as base TF-IDF; no score vocabulary fit",
+    "parsed_values_in_official_train": [
+      0,
+      1
+    ],
+    "reference_group": "parsed entry_friction == 0",
+    "telemetry_substitution": false
+  },
+  "kaggle_access": false,
+  "official_test_read": false,
+  "pre_freeze_group_support": {
+    "fixed_diagnostic_groups": [
+      "signal_stream_missing",
+      "target_le_5",
+      "target_ge_95"
+    ],
+    "group_support_minimum": 100,
+    "views": {
+      "H12": {
+        "signal_stream_missing": {
+          "n": 2578,
+          "supported": true
+        },
+        "target_ge_95": {
+          "n": 1955,
+          "supported": true
+        },
+        "target_le_5": {
+          "n": 1928,
+          "supported": true
+        }
+      },
+      "H12_E": {
+        "signal_stream_missing": {
+          "n": 1203,
+          "supported": true
+        },
+        "target_ge_95": {
+          "n": 898,
+          "supported": true
+        },
+        "target_le_5": {
+          "n": 880,
+          "supported": true
+        }
+      },
+      "H12_L": {
+        "signal_stream_missing": {
+          "n": 1375,
+          "supported": true
+        },
+        "target_ge_95": {
+          "n": 1057,
+          "supported": true
+        },
+        "target_le_5": {
+          "n": 1048,
+          "supported": true
+        }
+      },
+      "W1": {
+        "signal_stream_missing": {
+          "n": 392,
+          "supported": true
+        },
+        "target_ge_95": {
+          "n": 213,
+          "supported": true
+        },
+        "target_le_5": {
+          "n": 205,
+          "supported": true
+        }
+      },
+      "W4": {
+        "signal_stream_missing": {
+          "n": 342,
+          "supported": true
+        },
+        "target_ge_95": {
+          "n": 249,
+          "supported": true
+        },
+        "target_le_5": {
+          "n": 244,
+          "supported": true
+        }
+      },
+      "primary": {
+        "signal_stream_missing": {
+          "n": 734,
+          "supported": true
+        },
+        "target_ge_95": {
+          "n": 462,
+          "supported": true
+        },
+        "target_le_5": {
+          "n": 449,
+          "supported": true
+        }
+      }
+    }
+  },
+  "prediction_policy": {
+    "baseline": "clip(0.75*(0.75*frozen_mapped_LGB + 0.25*frozen_rank75_Ridge) + 0.25*frozen_sparse_rank50, 0, 100)",
+    "candidate": "clip(0.75*(0.75*frozen_mapped_LGB + 0.25*rank75(new_Ridge)) + 0.25*frozen_sparse_rank50, 0, 100)",
+    "lgb_component_changes": false,
+    "ridge_mapping": "rank75(raw): within each full score cycle 0.25*raw + 0.75*100*average_rank/n, then clip[0,100]",
+    "sparse_component_changes": false
+  },
+  "queue_card": {
+    "change": "Original hybrid Ridge design/alpha10/lsqr/tol1e-4; append only TF-IDF*I(entry_friction==1). Replace only original Ridge component with its inherited rank75 map; LGB and sparse components exact.",
+    "condition": "No additional dependency",
+    "evaluation": "STANDARD",
+    "family": "text_EF_interaction",
+    "id": "R24",
+    "name": "EF interaction Hybrid Ridge",
+    "pilot_predictor_fits": 2,
+    "policy": "R_RIDGE_REPLACE",
+    "preflight_checks": [
+      "Reference-coded interaction; convergence; no telemetry substitution"
+    ],
+    "priority": "P1",
+    "task": "regression"
+  },
+  "resource_policy": {
+    "concurrent_jobs": 1,
+    "free_ram_reserve_bytes": 2147483648,
+    "job_cap_bytes": 6442450944,
+    "threads": 2
+  },
+  "row_matched_control_metrics": {
+    "H12": {
+      "mae": 14.04753258299653,
+      "rows": 38588
+    },
+    "H12_E": {
+      "mae": 16.92661102497089,
+      "rows": 17685
+    },
+    "H12_L": {
+      "mae": 11.611685946326363,
+      "rows": 20903
+    },
+    "W1": {
+      "mae": 15.882111974427762,
+      "rows": 4114
+    },
+    "W4": {
+      "mae": 11.455005081083685,
+      "rows": 4950
+    },
+    "primary": {
+      "mae": 13.464395831218011,
+      "rows": 9064
+    }
+  },
+  "score_population": "complete declared 12-cycle horizons at cutoffs 55 and 67",
+  "score_rows": {
+    "55": 17685,
+    "67": 20903
+  },
+  "structured_recipe": {
+    "categorical_features": [
+      "org_code",
+      "module_code",
+      "pattern_code"
+    ],
+    "fit_scope": "cutoff past rows only",
+    "implementation": "RegressionTextModel._structured_fit/_structured_transform",
+    "numeric_features": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code"
+    ],
+    "rare_category": {
+      "max_categories": 254,
+      "min_frequency": 30,
+      "unknown": "infrequent_if_exist"
+    }
+  },
+  "text_recipe": {
+    "fit_scope": "cutoff past rows only",
+    "missing_stream": "empty document plus explicit binary missing column",
+    "parameters": {
+      "dtype": "float64",
+      "max_features": 20000,
+      "min_df": 2,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "sublinear_tf": true
+    },
+    "vectorizer": "sklearn.feature_extraction.text.TfidfVectorizer"
+  }
+}
