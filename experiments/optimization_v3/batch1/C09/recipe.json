@@ -1,0 +1,281 @@
+{
+  "card_id": "C09",
+  "task": "classification",
+  "policy": "C_LR_REPLACE",
+  "canonical_card_path": "reports/optimization_v3/research_backlog/cards/C09.md",
+  "change": "Use original C2_B hybrid design and LR parameters; append only TF-IDF*I(entry_friction==1), retaining main TF-IDF and structured columns. Reference coding avoids duplicating both level blocks.",
+  "model": {
+    "id": "C09",
+    "base_model": "C2_B hybrid LogisticRegression",
+    "input_feature_names": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code",
+      "signal_stream"
+    ],
+    "structured_and_text_preprocessing": "exact inherited C2_B fit-only transforms",
+    "logistic_regression": {
+      "C": 1.0,
+      "solver": "liblinear",
+      "max_iter": 2000,
+      "tol": 0.0001,
+      "class_weight": null,
+      "random_state": 42
+    },
+    "tfidf": {
+      "ngram_range": [
+        1,
+        2
+      ],
+      "min_df": 3,
+      "max_df": 0.995,
+      "max_features": 20000,
+      "sublinear_tf": true,
+      "lowercase": true,
+      "strip_accents": "unicode",
+      "dtype": "numpy.float64"
+    },
+    "interaction": "append CSR TF-IDF * I(parsed entry_friction == 1)",
+    "interaction_reference_level": "entry_friction=0",
+    "convergence_warning_policy": "fail the fit; no fallback estimator or parameter change"
+  },
+  "routing": {
+    "stream_present": {
+      "candidate_weight": 0.75,
+      "frozen_sparse_binary_weight": 0.25
+    },
+    "stream_missing": "frozen CatBoost probability",
+    "threshold": 0.5
+  },
+  "evaluation": {
+    "pilot_fit_ends": [
+      55,
+      67
+    ],
+    "fit_cycles": {
+      "55": [
+        47,
+        55
+      ],
+      "67": [
+        47,
+        67
+      ]
+    },
+    "score_horizons": {
+      "55": [
+        56,
+        67
+      ],
+      "67": [
+        68,
+        79
+      ]
+    },
+    "primary_windows": {
+      "55": [
+        56,
+        59
+      ],
+      "67": [
+        68,
+        71
+      ]
+    },
+    "primary_rows": 9064,
+    "H12_rows": 38588,
+    "gate": {
+      "pilot_primary_gain_min": 0.0005,
+      "pilot_H12_harm_max": 0.001,
+      "individual_pilot_view_harm_max": 0.005,
+      "full_primary_gain_min": 0.0005,
+      "full_H12_harm_max": 0.001,
+      "full_nonnegative_windows_min": 4,
+      "supported_group_n_min": 200,
+      "supported_group_F1_harm_max": 0.01,
+      "positive_class_recall_harm_max": 0.02,
+      "positive_and_negative_per_group_min": 30
+    }
+  },
+  "source_and_input_identity_sha256": "75da6a9f265778d2dd32dcc3764c6299308f45075fff9d1dbc7691ca31c1c877",
+  "source_and_input_identity": {
+    "recipe": {
+      "card_id": "C09",
+      "task": "classification",
+      "policy": "C_LR_REPLACE",
+      "change": "Use original C2_B hybrid design and LR parameters; append only TF-IDF*I(entry_friction==1), retaining main TF-IDF and structured columns. Reference coding avoids duplicating both level blocks.",
+      "pilot_fit_ends": [
+        55,
+        67
+      ],
+      "horizons": {
+        "55": 67,
+        "67": 79
+      },
+      "primary": {
+        "55": [
+          56,
+          59
+        ],
+        "67": [
+          68,
+          71
+        ]
+      },
+      "threshold": 0.5,
+      "present_weights": {
+        "C09": 0.75,
+        "sparse_binary": 0.25
+      },
+      "missing_model": "frozen CatBoost cache"
+    },
+    "source_sha256": {
+      "src/models/optimization_v3_batch1_c09.py": "207830288f0f4a2bb58e4df4450446ccaf61c49cd95ae18c1f3d83b9624ee1ac",
+      "scripts/optimization_v3_batch1_c09.py": "1be943502ed921fec14a72b91cf0347a444a6ef8ef75a94ef850c7130a0fcc5e",
+      "tests/test_optimization_v3_batch1_c09.py": "7f6622ebd97026bb93c0b34e81097ae030eb913ceab2dd129967caa4d433e3f8",
+      "src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+      "src/models/classification_round2_models.py": "239008f056c6f5e004e84d2b9df9f5bfb20695ccfad90eed4deec3463c7d4575",
+      "src/models/classification_metrics.py": "db77dd99210835006f96db1659bf4e87213179962b8f692d181af831b6539563",
+      "src/models/round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+      "src/models/round1_evaluation.py": "be26992ee5c75190eb8a412fa6635dabd242eee1609fad0380023bfe3a1e300f",
+      "src/models/optimization_v3_batch1.py": "d21ac914d0d1f516a93e431116556dabdbe7313a21fd2b1b04a73371bd56f420",
+      "src/utils/paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555",
+      "scripts/optimization_v3_sparse_classification.py": "a629b4aeb3e6ea564b61449502d2f8f712daf517d95ed041652d3866a2f27c1b",
+      "scripts/optimization_v3_verify_sparse_classification.py": "683f073bad4dac04728fcf0045cd3d39b0f1a1e790352f9c0174ecb36a867699",
+      "scripts/optimization_v3_sparse_classification_fullsix.py": "7b7e7425eeb497c9f9d5c1f55e2483c113ae8fe4502b1a43eee6e4573bc74c97",
+      "scripts/optimization_v3_verify_sparse_classification_fullsix.py": "acf3be75189f832af5d6ccc310326d1b0797c0e3d54eec6a1f7037ee0833d474",
+      "scripts/research_campaign_classification_stage2.py": "1a78b419e2b02c5187696f82823c2f8f96c7fa5c329846eff44ac52bbead1126"
+    },
+    "inputs_sha256": {
+      "official_train": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+      "reports/optimization_v3/research_backlog/cards/C09.md": "25e6fa39d7d63925dd6dba354392ba6806686b37598a0eee15a3ea101a81e701",
+      "experiments/optimization_v3/research_backlog/queue.json": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+      "reports/optimization_v3/kaggle/v3_cls_sparse25.json": "6e7c2cb50fe6d0ee4767a44c40f152b6538b933fab6cf7082659b16d791f7d1e",
+      "experiments/optimization_v3/classification_sparse/freeze.json": "18f49d3e235bc4fe8ff2fcd1e550bef09cc8b681f9420b103aca1080fdda8910",
+      "reports/optimization_v3/classification_sparse/verification.json": "63c8c259c4dfcc6720b5d776e4cb495428c60924c6d63085c08019c112d30b20",
+      "experiments/optimization_v3/classification_sparse_full/freeze.json": "9d2c63e0a25ef0b3c2d9bf0b3c26e862380514d6c1e1ef1b335a52861a160689",
+      "reports/optimization_v3/classification_sparse_full/verification.json": "8d93d596351f9fd078d166b5384527bd59d56ccb741571479d3b2e2ca1d50af7",
+      "experiments/runs/classification_round1_v1/fit55__C2_B.npz": "ce49c6b471f4b9eca8be1c24fa37b487d9a688b28dc543e3faa1a8b6fc7d177c",
+      "reports/classification_round1/fit_audits/fit55.json": "1a6c84022dbbb806b635e9548020428fd2202a4cff7e7c1e12fe61915aed6074",
+      "experiments/runs/optimization_v3_classification_sparse/fit55.npz": "0efbfd81ac9489c29c9ae1e06922e8769dbc1227a7242a1bb779940cfe682f5b",
+      "experiments/runs/optimization_v3_classification_sparse/fit55.json": "764fbfcd6ee191e90d9519561ea591b042bdef2845f62452ba055d6dcf884551",
+      "experiments/runs/dual_cls_catboost_v1/fit55.npz": "0cda97c481aef51495e3fd4a23c43b0a906f23ffc9080e91194250e7be4d046a",
+      "experiments/runs/dual_cls_catboost_v1/fit55.json": "eeadc3f3db6c29137a1d0028ed4f08aea0d7b5e40b01af3c217ca003ab293ef8",
+      "experiments/runs/classification_round1_v1/fit67__C2_B.npz": "853a8c44ac2b3ea50fc1824fec78f63948aee6b1c47678dc1ddc8ecb505ecdea",
+      "reports/classification_round1/fit_audits/fit67.json": "a854215f01672733b64b1adf3c778fd653342dcbd7abc960a0fe9c0ca1330a2a",
+      "experiments/runs/optimization_v3_classification_sparse/fit67.npz": "61232d3fdcadbbd6923154bc53302f56cdbab7c9d3255055441fa10abf077af4",
+      "experiments/runs/optimization_v3_classification_sparse/fit67.json": "6427f9a9bbf9bbcc35f6ef85ac5ab4d5875315cc902d17cb650dadb02cdb3ffc",
+      "experiments/runs/dual_cls_catboost_v1/fit67.npz": "4b63070ac665e2ed2a9f567fb5c945f640da1eace5533af8d87d7df1a66ead59",
+      "experiments/runs/dual_cls_catboost_v1/fit67.json": "df1b7a8d434767c723f98a65ae7a8442c418692fecccffdc6ef9b11dbeb6a538"
+    },
+    "baseline_manifest_sha256": "6e7c2cb50fe6d0ee4767a44c40f152b6538b933fab6cf7082659b16d791f7d1e",
+    "pilot_sparse_freeze_signature": "59104d95490adc147c07cfa18559074dae71599530fc1d0a7a5d948ae26a2d33",
+    "pilot_sparse_verification_status": "PASS",
+    "full_sparse_freeze_signature": "9b679e1a4a17b12e6ee6e418334c5a50e652c49935b5e1c22d170ed87ffb58e5",
+    "full_sparse_verification_status": "PASS",
+    "control_cache_checks": {
+      "55": {
+        "c2b": {
+          "cache_sha256": "ce49c6b471f4b9eca8be1c24fa37b487d9a688b28dc543e3faa1a8b6fc7d177c",
+          "audit_sha256": "1a6c84022dbbb806b635e9548020428fd2202a4cff7e7c1e12fe61915aed6074",
+          "probability_sha256": "45b5a44456316b2f03d7df6043f880a4b14be7c4d96c455bc7bb46c6f60cec82",
+          "fit_rows": 12020,
+          "structured_numeric_width": 36,
+          "structured_ohe_width_by_column": [
+            2403,
+            4129,
+            275
+          ],
+          "text_vocabulary_size": 20000
+        },
+        "sparse": {
+          "npz_sha256": "0efbfd81ac9489c29c9ae1e06922e8769dbc1227a7242a1bb779940cfe682f5b",
+          "sidecar_sha256": "764fbfcd6ee191e90d9519561ea591b042bdef2845f62452ba055d6dcf884551"
+        },
+        "catboost": {
+          "npz_sha256": "0cda97c481aef51495e3fd4a23c43b0a906f23ffc9080e91194250e7be4d046a",
+          "sidecar_sha256": "eeadc3f3db6c29137a1d0028ed4f08aea0d7b5e40b01af3c217ca003ab293ef8"
+        }
+      },
+      "67": {
+        "c2b": {
+          "cache_sha256": "853a8c44ac2b3ea50fc1824fec78f63948aee6b1c47678dc1ddc8ecb505ecdea",
+          "audit_sha256": "a854215f01672733b64b1adf3c778fd653342dcbd7abc960a0fe9c0ca1330a2a",
+          "probability_sha256": "3f46b2f168aeb6901416959bb7c24a0114443ff876ab871978d0042727609745",
+          "fit_rows": 29705,
+          "structured_numeric_width": 36,
+          "structured_ohe_width_by_column": [
+            5092,
+            8579,
+            388
+          ],
+          "text_vocabulary_size": 20000
+        },
+        "sparse": {
+          "npz_sha256": "61232d3fdcadbbd6923154bc53302f56cdbab7c9d3255055441fa10abf077af4",
+          "sidecar_sha256": "6427f9a9bbf9bbcc35f6ef85ac5ab4d5875315cc902d17cb650dadb02cdb3ffc"
+        },
+        "catboost": {
+          "npz_sha256": "4b63070ac665e2ed2a9f567fb5c945f640da1eace5533af8d87d7df1a66ead59",
+          "sidecar_sha256": "df1b7a8d434767c723f98a65ae7a8442c418692fecccffdc6ef9b11dbeb6a538"
+        }
+      }
+    },
+    "packages": {
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "scipy": "1.18.0",
+      "scikit-learn": "1.8.0",
+      "threadpoolctl": "3.6.0"
+    },
+    "training_source_boundary": "official classification Train only; Test/Sample/Kaggle not read"
+  },
+  "memory_forecast": {
+    "status": "PASS_CSR_ESTIMATE",
+    "method": "fit-free build_analyzer token counts; vocabulary cap and fit-only C2_B dimensions; conservative 64-bit CSR storage",
+    "largest_estimated_simultaneous_csr_gib": 0.19004948437213898,
+    "available_physical_ram_gib": 9.328922271728516,
+    "required_headroom_gib": 2.0,
+    "job_rss_cap_gib": 6.0,
+    "effective_estimate_limit_gib": 6.0,
+    "fit_free_preprocessing": true,
+    "estimator_internal_working_memory": "UNKNOWN; no claim of total peak RSS from the matrix estimate alone",
+    "folds": {
+      "55": {
+        "fit_rows": 12020,
+        "text_vocabulary_cap": 20000,
+        "analyzer_distinct_ngram_nnz_upper": 845523,
+        "ef1_interaction_nnz_upper": 219129,
+        "structured_width_upper": 39,
+        "structured_nnz_upper": 468780,
+        "extended_nnz_upper": 1545452,
+        "conservative_simultaneous_csr_bytes": 84877176,
+        "conservative_simultaneous_csr_gib": 0.0790480300784111,
+        "estimator_internal_working_memory": "UNKNOWN; liblinear solver internals are outside CSR estimate"
+      },
+      "67": {
+        "fit_rows": 29705,
+        "text_vocabulary_cap": 20000,
+        "analyzer_distinct_ngram_nnz_upper": 1977951,
+        "ef1_interaction_nnz_upper": 586815,
+        "structured_width_upper": 39,
+        "structured_nnz_upper": 1158495,
+        "extended_nnz_upper": 3752966,
+        "conservative_simultaneous_csr_bytes": 204064080,
+        "conservative_simultaneous_csr_gib": 0.19004948437213898,
+        "estimator_internal_working_memory": "UNKNOWN; liblinear solver internals are outside CSR estimate"
+      }
+    }
+  },
+  "training_source_boundary": "official classification Train only; no Test/Sample/Kaggle access",
+  "recipe_sha256": "edd8e225b64ea6d7da985d617498bfee9f5e3f2480ddc2bedaaaa45ebe6913bd"
+}
