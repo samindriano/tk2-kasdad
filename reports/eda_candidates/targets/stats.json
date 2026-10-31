@@ -1,0 +1,144 @@
+{
+  "candidate_id": "F_target_concordance",
+  "input_sha256": {
+    "regression": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+    "classification": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c"
+  },
+  "n": 50608,
+  "join": {
+    "type": "one_to_one",
+    "shared_features_equal": true,
+    "shared_feature_count": 18,
+    "test_used": false,
+    "other_target_used_for_model": false
+  },
+  "groups": [
+    {
+      "artifact_signal": 0,
+      "n": 33038,
+      "mean": 41.54343507476239,
+      "median": 38.565650000000005,
+      "sd": 27.531929886077183,
+      "p10": 6.5704,
+      "p25": 16.9239,
+      "p75": 64.349525,
+      "p90": 81.44966
+    },
+    {
+      "artifact_signal": 1,
+      "n": 17570,
+      "mean": 65.99533366533865,
+      "median": 69.66024999999999,
+      "sd": 24.179960275820157,
+      "p10": 31.2174,
+      "p25": 46.1355,
+      "p75": 87.966525,
+      "p90": 95.8259
+    }
+  ],
+  "mean_difference": 24.45189859057627,
+  "point_biserial": 0.40325735358944054,
+  "probability_superiority": 0.7445234472933894,
+  "high_quartile": {
+    "n": 12643,
+    "no_observed_artifact": 5029,
+    "no_observed_artifact_share": 0.39776951672862454
+  },
+  "low_quartile": {
+    "n": 12638,
+    "observed_artifact": 987,
+    "observed_artifact_share": 0.0780978002848552
+  },
+  "cycle_mean_difference_range": [
+    12.57744528312741,
+    32.556222480149415
+  ],
+  "cycle_positive_differences": 33,
+  "cycle_high_no_artifact_share_range": [
+    0.17549668874172186,
+    0.5943877551020408
+  ],
+  "leave_one_cycle_out_mean_difference_range": [
+    24.1214429287624,
+    24.73493484231402
+  ],
+  "leave_one_cycle_out_high_no_artifact_share_range": [
+    0.3914782466737409,
+    0.4058649581074421
+  ],
+  "pattern_supported": {
+    "minimum_per_class": 30,
+    "groups": 59,
+    "rows": 44675,
+    "coverage": 0.8827655706607651,
+    "positive_difference_groups": 59,
+    "group_size_weighted_mean_gap": 24.17019055907266,
+    "support_uses_observed_class_counts": true
+  },
+  "threshold_sensitivity": [
+    {
+      "threshold": 66.66666666666667,
+      "n_high": 16913,
+      "no_observed_artifact": 7537,
+      "share_within_high": 0.4456335363329983,
+      "share_of_all_records": 0.14892902307935504
+    },
+    {
+      "threshold": 75.0,
+      "n_high": 12643,
+      "no_observed_artifact": 5029,
+      "share_within_high": 0.39776951672862454,
+      "share_of_all_records": 0.09937164084729687
+    },
+    {
+      "threshold": 80.0,
+      "n_high": 10145,
+      "no_observed_artifact": 3675,
+      "share_within_high": 0.362247412518482,
+      "share_of_all_records": 0.07261697755295606
+    },
+    {
+      "threshold": 90.0,
+      "n_high": 5068,
+      "no_observed_artifact": 1303,
+      "share_within_high": 0.2571033938437253,
+      "share_of_all_records": 0.025746917483401834
+    },
+    {
+      "threshold": 10.0,
+      "n_low": 5058,
+      "observed_artifact": 19,
+      "share_within_low": 0.003756425464610518,
+      "share_of_all_records": 0.0003754347138792286
+    },
+    {
+      "threshold": 20.0,
+      "n_low": 10100,
+      "observed_artifact": 505,
+      "share_within_low": 0.05,
+      "share_of_all_records": 0.009978659500474234
+    },
+    {
+      "threshold": 25.0,
+      "n_low": 12638,
+      "observed_artifact": 987,
+      "share_within_low": 0.0780978002848552,
+      "share_of_all_records": 0.01950284539993677
+    },
+    {
+      "threshold": 33.333333333333336,
+      "n_low": 16850,
+      "observed_artifact": 2131,
+      "share_within_low": 0.12646884272997033,
+      "share_of_all_records": 0.04210796711982295
+    }
+  ],
+  "limitations": [
+    "Two observed outcomes; association does not identify a mechanism or cause.",
+    "artifact_signal=0 means not observed, not proven absent.",
+    "threat_rank has observed within-cycle percentile-rank geometry; the official source formula is unknown. It is not an observed real-world probability.",
+    "Outcome-defined quadrants are descriptive; neither target is a predictor for the other task.",
+    "Exploratory reused Train; sensitivity checks are not independent statistical validation.",
+    "Anonymized patterns cannot rule out unmeasured composition or observation quality."
+  ]
+}

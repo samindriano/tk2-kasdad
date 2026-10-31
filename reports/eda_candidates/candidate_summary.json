@@ -1,0 +1,145 @@
+{
+  "screening": [
+    {
+      "ID": "A",
+      "arah": "Keragaman token pada panjang sama",
+      "hipotesis": "Repetisi/variasi teks berkaitan dengan outcome",
+      "bukti": "Gap artifact tertimbang 14.20 pp; 64/71 strata searah",
+      "keputusan": "Shortlist; kandidat utama untuk review"
+    },
+    {
+      "ID": "B",
+      "arah": "text_load versus panjang stream aktual",
+      "hipotesis": "Metadata volume mencerminkan informasi lain dari ukuran teks",
+      "bukti": "Spearman text_load–token count 0.9829",
+      "keputusan": "Tidak diteruskan sebagai pertanyaan utama; proxy panjang sangat kuat"
+    },
+    {
+      "ID": "C",
+      "arah": "Ketersediaan informasi / stream kosong",
+      "hipotesis": "Availability berkaitan dengan profil outcome, bukan sekadar kelengkapan umum",
+      "bukti": "Gap rank pooled +8.118; setelah pembobotan volume sekitar −1 hingga 0",
+      "keputusan": "Shortlist stream availability; skor completeness umum ditolak"
+    },
+    {
+      "ID": "D",
+      "arah": "Heterogenitas keluarga pattern_code",
+      "hipotesis": "Kategori pola mempunyai profil outcome berbeda",
+      "bukti": "115 kode n≥30 mencakup 80.2% Train",
+      "keputusan": "Bukti cukup; bukan 3 shortlist utama karena makna kode anonim"
+    },
+    {
+      "ID": "E",
+      "arah": "Konteks organisasi dan modul",
+      "hipotesis": "Perbedaan antar-ekosistem memberi konteks outcome",
+      "bukti": "Known-code coverage n≥30: org 50.4%; module 23.6%",
+      "keputusan": "Dieliminasi: banyak singleton, coverage lemah, semantik anonim"
+    },
+    {
+      "ID": "F",
+      "arah": "Keselarasan kedua outcome TP2",
+      "hipotesis": "Indikasi artefak sejalan dengan prioritas, tetapi tidak saling menggantikan",
+      "bukti": "5,029/12,643 rank≥75 berlabel0 (39.78%)",
+      "keputusan": "Shortlist; paling mudah dijelaskan, insight lebih deskriptif"
+    }
+  ],
+  "overlap": [
+    {
+      "ID": "A",
+      "Rousan": "Target sama, fitur utama teks; tanpa EF/impact",
+      "Abhi": "Bukan scope_pressure→threat; tidak memakai impact sebagai kontrol",
+      "Rizky": "Bukan telemetry/module_spread; keduanya bukan fitur utama/kontrol",
+      "Samuel lama": "Tidak meneliti impact–threat antarperiode; cycle hanya sensitivity check",
+      "putusan": "Berbeda substantif; tidak mengubah pembagian resmi"
+    },
+    {
+      "ID": "B",
+      "Rousan": "Target sama, fitur utama teks; tanpa EF/impact",
+      "Abhi": "Bukan scope_pressure→threat; tidak memakai impact sebagai kontrol",
+      "Rizky": "Bukan telemetry/module_spread; keduanya bukan fitur utama/kontrol",
+      "Samuel lama": "Tidak meneliti impact–threat antarperiode; cycle hanya sensitivity check",
+      "putusan": "Berbeda substantif; tidak mengubah pembagian resmi"
+    },
+    {
+      "ID": "C",
+      "Rousan": "Bukan EF/impact→artifact",
+      "Abhi": "Bukan scope_pressure→threat; tidak memakai impact sebagai kontrol",
+      "Rizky": "Bukan telemetry/module_spread; keduanya bukan fitur utama/kontrol",
+      "Samuel lama": "Tidak meneliti impact–threat antarperiode; cycle hanya sensitivity check",
+      "putusan": "Berbeda substantif; tidak mengubah pembagian resmi"
+    },
+    {
+      "ID": "D",
+      "Rousan": "Bukan EF/impact→artifact",
+      "Abhi": "Bukan scope_pressure→threat; tidak memakai impact sebagai kontrol",
+      "Rizky": "Bukan telemetry/module_spread; keduanya bukan fitur utama/kontrol",
+      "Samuel lama": "Tidak meneliti impact–threat antarperiode; cycle hanya sensitivity check",
+      "putusan": "Berbeda substantif; tidak mengubah pembagian resmi"
+    },
+    {
+      "ID": "E",
+      "Rousan": "Bukan EF/impact→artifact",
+      "Abhi": "Bukan scope_pressure→threat; tidak memakai impact sebagai kontrol",
+      "Rizky": "Bukan telemetry×module_spread→artifact; module_code ≠ module_spread",
+      "Samuel lama": "Tidak meneliti impact–threat antarperiode; cycle hanya sensitivity check",
+      "putusan": "Berbeda substantif; tidak mengubah pembagian resmi"
+    },
+    {
+      "ID": "F",
+      "Rousan": "Bukan EF/impact→artifact",
+      "Abhi": "Bukan scope_pressure→threat; tidak memakai impact sebagai kontrol",
+      "Rizky": "Bukan telemetry/module_spread; keduanya bukan fitur utama/kontrol",
+      "Samuel lama": "Tidak meneliti impact–threat antarperiode; cycle hanya sensitivity check",
+      "putusan": "Berbeda substantif; tidak mengubah pembagian resmi"
+    }
+  ],
+  "comparison": [
+    {
+      "kandidat": "A · keragaman token",
+      "insight": "Asosiasi tetap pada panjang persis sama",
+      "dukungan": "71 panjang; 37.681 support rows, 18.365 baris dibandingkan",
+      "robustness": "80/120/200 minimum support; 3 ukuran keragaman; arah beragam",
+      "demo": "Definisi sederhana, tetapi perlu menjelaskan ties dan pembobotan",
+      "kelemahan": "Tidak memberi makna token; exact-length×cycle hanya 5 cycle",
+      "relevansi": "Konteks Classification berbasis teks, tanpa klaim gain model disebabkan EDA"
+    },
+    {
+      "kandidat": "C · stream availability",
+      "insight": "Gap marginal rank mengecil setelah komposisi volume",
+      "dukungan": "3.404 kosong, 47.204 tersedia; 906 kosong di luar rentang tersedia",
+      "robustness": "5/10/20 bin, common range, cycle, pattern, availability lain",
+      "demo": "Menarik untuk confounding; butuh menjelaskan common support",
+      "kelemahan": "Tanda sesudah pembobotan sensitif bin; bukan penjelasan kausal",
+      "relevansi": "Konteks informasi yang hilang, terpisah dari kesalahan model"
+    },
+    {
+      "kandidat": "F · dua outcome",
+      "insight": "Asosiasi positif tidak berarti outcome dapat dipertukarkan",
+      "dukungan": "50.608 verified pairs; 5.029/12.643 rank tinggi berlabel0",
+      "robustness": "33 cycle, leave-one-cycle-out, ambang rank, common pattern",
+      "demo": "Paling intuitif: ECDF dan komposisi outcome",
+      "kelemahan": "Asosiasi dasarnya relatif diharapkan; definisi high/low deskriptif",
+      "relevansi": "Menjelaskan perbedaan dua task, bukan fitur silang untuk model"
+    },
+    {
+      "kandidat": "EDA lama · impact–threat temporal",
+      "insight": "Marginal stabil menyembunyikan perubahan kondisional",
+      "dukungan": "50.608 Train; common impact×EF 48.630 (96,09%)",
+      "robustness": "33 cycle, periodisasi 2/3/4, composition, tails, cluster sensitivity",
+      "demo": "Lebih banyak konsep: korelasi, standardisasi, rank geometry",
+      "kelemahan": "Perlu waktu menjelaskan nonmonotonisitas dan batas temporal",
+      "relevansi": "Kuat untuk generalisasi Regression; sudah selesai dan tetap valid"
+    }
+  ],
+  "recommendation": {
+    "status": "RECOMMENDED_CANDIDATE_ONLY_USER_SELECTION_PENDING",
+    "candidate": "A",
+    "question": "Pada laporan dengan jumlah token yang sama, apakah keragaman token dalam signal_stream berkaitan dengan proporsi artifact_signal yang teramati?",
+    "answer": "Pada common support yang diuji, proporsi tertimbang meningkat dari 24.19% menjadi 38.39% (gap 14.20 pp); efek tidak seragam pada seluruh panjang.",
+    "why": "Pertanyaan lebih fokus, fitur mudah didefinisikan, bukti EDA berdiri sendiri, dan berbeda dari anggota lain. Bukan dipilih dari leaderboard.",
+    "replacement_worthwhile": "Layak bila tujuan Samuel ialah demo yang lebih fokus pada karakteristik teks; bukan keunggulan statistik universal atas EDA lama. EDA lama mempunyai coverage dan robustness yang sangat kuat.",
+    "official_question_changed": false,
+    "final_notebook_preparation_resumed": false,
+    "key_limit": "Temuan eksploratif; tidak ada makna token/kausalitas atau validasi independen; 6,73% teks kosong dikecualikan dan tidak semua panjang mempunyai dukungan."
+  }
+}

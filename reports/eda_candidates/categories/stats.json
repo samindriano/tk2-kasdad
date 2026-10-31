@@ -1,0 +1,1097 @@
+{
+  "status": "COMPLETE_EXPLORATORY_NOT_CONFIRMATORY",
+  "source": {
+    "regression_train_sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+    "classification_train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "course_pdf_sha256": "386fa63541cc3e9b36b56ee8f8f6c479b3bbaa7753b9482d60763326f4465c0a",
+    "code_meaning_reference": "reports/audits/source_definitions.json; category identifiers are anonymized and no code-level interpretation is assigned.",
+    "regression_shape": [
+      50608,
+      19
+    ],
+    "classification_shape": [
+      50608,
+      19
+    ],
+    "ordered_record_ids_equal": true,
+    "all_predictor_columns_equal_by_row": true,
+    "test_files_or_labels_used": false,
+    "raw_text_used": false,
+    "support_cutoffs_fixed_before_target_summary": [
+      30,
+      100,
+      300
+    ]
+  },
+  "effect_sizes": "One-way between-code share of variance in cycle-centered outcomes on only rows with named code support above a target-blind threshold. Cycle-centered target values are compared across pooled code categories; code-by-cycle membership composition is not standardized. This is descriptive, not a causal effect or p value.",
+  "categories": {
+    "pattern_code": {
+      "groups_including_missing": 496,
+      "observed_nonmissing_codes": 495,
+      "missing_rows": 8183,
+      "missing_share": 0.1616938033512488,
+      "group_size_median_including_missing": 4.0,
+      "top_10_row_share_including_missing_group": 0.5612748972494467,
+      "top_10_named_code_row_share": 0.4177797976604489,
+      "support_counts": {
+        "30": {
+          "categories_including_missing": 116,
+          "rows_in_supported_categories": 48779,
+          "row_coverage": 0.9638594688586785,
+          "nonmissing_categories": 115,
+          "rows_in_supported_nonmissing_categories": 40596,
+          "nonmissing_category_row_coverage": 0.8021656655074296
+        },
+        "100": {
+          "categories_including_missing": 69,
+          "rows_in_supported_categories": 46150,
+          "row_coverage": 0.911911160290863,
+          "nonmissing_categories": 68,
+          "rows_in_supported_nonmissing_categories": 37967,
+          "nonmissing_category_row_coverage": 0.7502173569396143
+        },
+        "300": {
+          "categories_including_missing": 29,
+          "rows_in_supported_categories": 39161,
+          "row_coverage": 0.7738104647486563,
+          "nonmissing_categories": 28,
+          "rows_in_supported_nonmissing_categories": 30978,
+          "nonmissing_category_row_coverage": 0.6121166613974075
+        }
+      },
+      "mean_group_sizes_of_supported_codes": {
+        "30": 420.5086206896552,
+        "100": 668.8405797101449,
+        "300": 1350.3793103448277
+      }
+    },
+    "org_code": {
+      "groups_including_missing": 8611,
+      "observed_nonmissing_codes": 8610,
+      "missing_rows": 2686,
+      "missing_share": 0.05307461270945305,
+      "group_size_median_including_missing": 1.0,
+      "top_10_row_share_including_missing_group": 0.24363736958583623,
+      "top_10_named_code_row_share": 0.20194435662345875,
+      "support_counts": {
+        "30": {
+          "categories_including_missing": 166,
+          "rows_in_supported_categories": 28188,
+          "row_coverage": 0.5569870376225102,
+          "nonmissing_categories": 165,
+          "rows_in_supported_nonmissing_categories": 25502,
+          "nonmissing_category_row_coverage": 0.5039124249130572
+        },
+        "100": {
+          "categories_including_missing": 50,
+          "rows_in_supported_categories": 22634,
+          "row_coverage": 0.4472415428390768,
+          "nonmissing_categories": 49,
+          "rows_in_supported_nonmissing_categories": 19948,
+          "nonmissing_category_row_coverage": 0.3941669301296238
+        },
+        "300": {
+          "categories_including_missing": 25,
+          "rows_in_supported_categories": 18680,
+          "row_coverage": 0.36911160290863104,
+          "nonmissing_categories": 24,
+          "rows_in_supported_nonmissing_categories": 15994,
+          "nonmissing_category_row_coverage": 0.31603699019917797
+        }
+      },
+      "mean_group_sizes_of_supported_codes": {
+        "30": 169.80722891566265,
+        "100": 452.68,
+        "300": 747.2
+      }
+    },
+    "module_code": {
+      "groups_including_missing": 14517,
+      "observed_nonmissing_codes": 14516,
+      "missing_rows": 4044,
+      "missing_share": 0.07990831489092634,
+      "group_size_median_including_missing": 1.0,
+      "top_10_row_share_including_missing_group": 0.20048213721150807,
+      "top_10_named_code_row_share": 0.12673885551691433,
+      "support_counts": {
+        "30": {
+          "categories_including_missing": 105,
+          "rows_in_supported_categories": 15981,
+          "row_coverage": 0.31578011381599747,
+          "nonmissing_categories": 104,
+          "rows_in_supported_nonmissing_categories": 11937,
+          "nonmissing_category_row_coverage": 0.23587179892507112
+        },
+        "100": {
+          "categories_including_missing": 21,
+          "rows_in_supported_categories": 12274,
+          "row_coverage": 0.24253082516598165,
+          "nonmissing_categories": 20,
+          "rows_in_supported_nonmissing_categories": 8230,
+          "nonmissing_category_row_coverage": 0.16262251027505534
+        },
+        "300": {
+          "categories_including_missing": 11,
+          "rows_in_supported_categories": 10458,
+          "row_coverage": 0.20664717040784067,
+          "nonmissing_categories": 10,
+          "rows_in_supported_nonmissing_categories": 6414,
+          "nonmissing_category_row_coverage": 0.12673885551691433
+        }
+      },
+      "mean_group_sizes_of_supported_codes": {
+        "30": 152.2,
+        "100": 584.4761904761905,
+        "300": 950.7272727272727
+      }
+    }
+  },
+  "missing_code_target_profiles": {
+    "pattern_code": {
+      "threat_rank": {
+        "rows": 8183,
+        "target_mean_or_rate": 49.80158862275449,
+        "mean_after_cycle_centering": -0.23241584208726665
+      },
+      "artifact_signal": {
+        "rows": 8183,
+        "target_mean_or_rate": 0.28363680801661983,
+        "mean_after_cycle_centering": -0.06256286891098399
+      }
+    },
+    "org_code": {
+      "threat_rank": {
+        "rows": 2686,
+        "target_mean_or_rate": 49.229381980640355,
+        "mean_after_cycle_centering": -0.8044576345033616
+      },
+      "artifact_signal": {
+        "rows": 2686,
+        "target_mean_or_rate": 0.35294117647058826,
+        "mean_after_cycle_centering": -0.0033887991019734094
+      }
+    },
+    "module_code": {
+      "threat_rank": {
+        "rows": 4044,
+        "target_mean_or_rate": 49.82679359545004,
+        "mean_after_cycle_centering": -0.2066421949455457
+      },
+      "artifact_signal": {
+        "rows": 4044,
+        "target_mean_or_rate": 0.3590504451038576,
+        "mean_after_cycle_centering": 0.0049456529273312864
+      }
+    }
+  },
+  "statistics": {
+    "pattern_code::threat_rank": {
+      "target": "threat_rank",
+      "kind": "continuous",
+      "overall_mean": 50.032603946016444,
+      "whole_train_rows": 50608,
+      "overall_missing_target_rows": 0,
+      "supports": [
+        {
+          "minimum_rows_per_code": 30,
+          "supported_codes": 115,
+          "represented_rows": 40596,
+          "row_coverage": 0.8021656655074296,
+          "group_size_median": 118.0,
+          "group_size_p10": 43.4,
+          "group_size_p90": 838.6000000000001,
+          "observed_target_mean_range": [
+            27.78046742865463,
+            72.19312173913043
+          ],
+          "observed_group_mean_quantiles_unweighted": {
+            "0.1": 39.077467272727276,
+            "0.25": 44.72799648114766,
+            "0.5": 51.74175555555556,
+            "0.75": 58.41220249493415,
+            "0.9": 65.3447382588204
+          },
+          "within_cycle_adjusted_group_mean_delta_quantiles_unweighted": {
+            "0.1": -10.956302373862474,
+            "0.25": -5.305531035970295,
+            "0.5": 1.7111997730393123,
+            "0.75": 8.377600462952135,
+            "0.9": 15.313067435942415
+          },
+          "within_cycle_adjusted_group_delta_range": [
+            -22.251310559717485,
+            22.159172906070495
+          ],
+          "eta_squared_of_cycle_centered_targets_by_code": 0.24560937529391222,
+          "interpretation": "One-way between-code share of variance in outcomes after subtracting the overall mean of each cycle, among rows in categories meeting this target-blind support threshold. Category membership composition across cycles is not standardized. This is descriptive, not causal or independent-validation evidence."
+        },
+        {
+          "minimum_rows_per_code": 100,
+          "supported_codes": 68,
+          "represented_rows": 37967,
+          "row_coverage": 0.7502173569396143,
+          "group_size_median": 256.5,
+          "group_size_p10": 116.4,
+          "group_size_p90": 1089.600000000001,
+          "observed_target_mean_range": [
+            27.78046742865463,
+            72.19312173913043
+          ],
+          "observed_group_mean_quantiles_unweighted": {
+            "0.1": 38.18925653720638,
+            "0.25": 44.33733179746475,
+            "0.5": 51.70912260869565,
+            "0.75": 60.48999952726723,
+            "0.9": 68.27992467668857
+          },
+          "within_cycle_adjusted_group_mean_delta_quantiles_unweighted": {
+            "0.1": -11.844239571894862,
+            "0.25": -5.697687415225523,
+            "0.5": 1.675254785430635,
+            "0.75": 10.456529162568904,
+            "0.9": 18.248309478305362
+          },
+          "within_cycle_adjusted_group_delta_range": [
+            -22.251310559717485,
+            22.159172906070495
+          ],
+          "eta_squared_of_cycle_centered_targets_by_code": 0.2546013888751806,
+          "interpretation": "One-way between-code share of variance in outcomes after subtracting the overall mean of each cycle, among rows in categories meeting this target-blind support threshold. Category membership composition across cycles is not standardized. This is descriptive, not causal or independent-validation evidence."
+        },
+        {
+          "minimum_rows_per_code": 300,
+          "supported_codes": 28,
+          "represented_rows": 30978,
+          "row_coverage": 0.6121166613974075,
+          "group_size_median": 709.0,
+          "group_size_p10": 366.0,
+          "group_size_p90": 1949.1000000000006,
+          "observed_target_mean_range": [
+            27.78046742865463,
+            71.85017558139535
+          ],
+          "observed_group_mean_quantiles_unweighted": {
+            "0.1": 41.7002502389295,
+            "0.25": 46.311295704204426,
+            "0.5": 54.7406074150924,
+            "0.75": 64.77571619321702,
+            "0.9": 70.34206178471241
+          },
+          "within_cycle_adjusted_group_mean_delta_quantiles_unweighted": {
+            "0.1": -8.332247789918174,
+            "0.25": -3.720982017297916,
+            "0.5": 4.7076504124166565,
+            "0.75": 14.744153739432772,
+            "0.9": 20.31032658526074
+          },
+          "within_cycle_adjusted_group_delta_range": [
+            -22.251310559717485,
+            21.818682033122787
+          ],
+          "eta_squared_of_cycle_centered_targets_by_code": 0.27976252265730445,
+          "interpretation": "One-way between-code share of variance in outcomes after subtracting the overall mean of each cycle, among rows in categories meeting this target-blind support threshold. Category membership composition across cycles is not standardized. This is descriptive, not causal or independent-validation evidence."
+        }
+      ]
+    },
+    "pattern_code::artifact_signal": {
+      "target": "artifact_signal",
+      "kind": "binary prevalence",
+      "overall_mean": 0.34717831172937086,
+      "whole_train_rows": 50608,
+      "overall_missing_target_rows": 0,
+      "supports": [
+        {
+          "minimum_rows_per_code": 30,
+          "supported_codes": 115,
+          "represented_rows": 40596,
+          "row_coverage": 0.8021656655074296,
+          "group_size_median": 118.0,
+          "group_size_p10": 43.4,
+          "group_size_p90": 838.6000000000001,
+          "observed_target_mean_range": [
+            0.02564102564102564,
+            0.7101449275362319
+          ],
+          "observed_group_mean_quantiles_unweighted": {
+            "0.1": 0.11575378195096506,
+            "0.25": 0.18911949902729336,
+            "0.5": 0.2647058823529412,
+            "0.75": 0.36376068376068377,
+            "0.9": 0.47507641011392054
+          },
+          "within_cycle_adjusted_group_mean_delta_quantiles_unweighted": {
+            "0.1": -0.23231775610170924,
+            "0.25": -0.15656551241779393,
+            "0.5": -0.08028684616896975,
+            "0.75": 0.00846956260163812,
+            "0.9": 0.11566729968148245
+          },
+          "within_cycle_adjusted_group_delta_range": [
+            -0.3154165693037676,
+            0.36180740972474706
+          ],
+          "eta_squared_of_cycle_centered_targets_by_code": 0.11059726692277701,
+          "interpretation": "One-way between-code share of variance in outcomes after subtracting the overall mean of each cycle, among rows in categories meeting this target-blind support threshold. Category membership composition across cycles is not standardized. This is descriptive, not causal or independent-validation evidence."
+        },
+        {
+          "minimum_rows_per_code": 100,
+          "supported_codes": 68,
+          "represented_rows": 37967,
+          "row_coverage": 0.7502173569396143,
+          "group_size_median": 256.5,
+          "group_size_p10": 116.4,
+          "group_size_p90": 1089.600000000001,
+          "observed_target_mean_range": [
+            0.08530805687203792,
+            0.7101449275362319
+          ],
+          "observed_group_mean_quantiles_unweighted": {
+            "0.1": 0.14852272727272725,
+            "0.25": 0.18947634999021537,
+            "0.5": 0.2682534001431639,
+            "0.75": 0.40532809444060575,
+            "0.9": 0.48707586732748764
+          },
+          "within_cycle_adjusted_group_mean_delta_quantiles_unweighted": {
+            "0.1": -0.19464138433871633,
+            "0.25": -0.15640982536841438,
+            "0.5": -0.07637057139162676,
+            "0.75": 0.06417271688901045,
+            "0.9": 0.13741143245075474
+          },
+          "within_cycle_adjusted_group_delta_range": [
+            -0.25744738010454715,
+            0.36180740972474706
+          ],
+          "eta_squared_of_cycle_centered_targets_by_code": 0.10908793781381569,
+          "interpretation": "One-way between-code share of variance in outcomes after subtracting the overall mean of each cycle, among rows in categories meeting this target-blind support threshold. Category membership composition across cycles is not standardized. This is descriptive, not causal or independent-validation evidence."
+        },
+        {
+          "minimum_rows_per_code": 300,
+          "supported_codes": 28,
+          "represented_rows": 30978,
+          "row_coverage": 0.6121166613974075,
+          "group_size_median": 709.0,
+          "group_size_p10": 366.0,
+          "group_size_p90": 1949.1000000000006,
+          "observed_target_mean_range": [
+            0.13971742543171115,
+            0.6902021772939346
+          ],
+          "observed_group_mean_quantiles_unweighted": {
+            "0.1": 0.18395629084967322,
+            "0.25": 0.20845714873271298,
+            "0.5": 0.31211034912718205,
+            "0.75": 0.45242088827638705,
+            "0.9": 0.49243245435008853
+          },
+          "within_cycle_adjusted_group_mean_delta_quantiles_unweighted": {
+            "0.1": -0.15884580180796357,
+            "0.25": -0.1379792769480532,
+            "0.5": -0.030952660767181107,
+            "0.75": 0.1074701711401358,
+            "0.9": 0.14181518818366748
+          },
+          "within_cycle_adjusted_group_delta_range": [
+            -0.2017509488548143,
+            0.32532379279406215
+          ],
+          "eta_squared_of_cycle_centered_targets_by_code": 0.10203496690790365,
+          "interpretation": "One-way between-code share of variance in outcomes after subtracting the overall mean of each cycle, among rows in categories meeting this target-blind support threshold. Category membership composition across cycles is not standardized. This is descriptive, not causal or independent-validation evidence."
+        }
+      ]
+    },
+    "org_code::threat_rank": {
+      "target": "threat_rank",
+      "kind": "continuous",
+      "overall_mean": 50.032603946016444,
+      "whole_train_rows": 50608,
+      "overall_missing_target_rows": 0,
+      "supports": [
+        {
+          "minimum_rows_per_code": 30,
+          "supported_codes": 165,
+          "represented_rows": 25502,
+          "row_coverage": 0.5039124249130572,
+          "group_size_median": 57.0,
+          "group_size_p10": 32.0,
+          "group_size_p90": 396.1999999999998,
+          "observed_target_mean_range": [
+            21.645682352941176,
+            90.06122852664578
+          ],
+          "observed_group_mean_quantiles_unweighted": {
+            "0.1": 31.59200060606061,
+            "0.25": 38.50885131578947,
+            "0.5": 49.111252941176474,
+            "0.75": 61.55930322580645,
+            "0.9": 74.03442935779816
+          },
+          "within_cycle_adjusted_group_mean_delta_quantiles_unweighted": {
+            "0.1": -18.43971853564363,
+            "0.25": -11.524766248720502,
+            "0.5": -0.9184613297214882,
+            "0.75": 11.527543730198708,
+            "0.9": 24.00152876657816
+          },
+          "within_cycle_adjusted_group_delta_range": [
+            -28.388095339553796,
+            40.03080944558131
+          ],
+          "eta_squared_of_cycle_centered_targets_by_code": 0.30863523427850403,
+          "interpretation": "One-way between-code share of variance in outcomes after subtracting the overall mean of each cycle, among rows in categories meeting this target-blind support threshold. Category membership composition across cycles is not standardized. This is descriptive, not causal or independent-validation evidence."
+        },
+        {
+          "minimum_rows_per_code": 100,
+          "supported_codes": 49,
+          "represented_rows": 19948,
+          "row_coverage": 0.3941669301296238,
+          "group_size_median": 296.0,
+          "group_size_p10": 117.80000000000001,
+          "group_size_p90": 714.6000000000003,
+          "observed_target_mean_range": [
+            25.96911923076923,
+            90.06122852664578
+          ],
+          "observed_group_mean_quantiles_unweighted": {
+            "0.1": 34.50605152573263,
+            "0.25": 42.88282596899224,
+            "0.5": 49.387837162162164,
+            "0.75": 65.77018881578947,
+            "0.9": 74.5162540171009
+          },
+          "within_cycle_adjusted_group_mean_delta_quantiles_unweighted": {
+            "0.1": -15.530881573422336,
+            "0.25": -7.14806840047933,
+            "0.5": -0.654878258061422,
+            "0.75": 15.741800723687897,
+            "0.9": 24.48293197565603
+          },
+          "within_cycle_adjusted_group_delta_range": [
+            -24.059307095180802,
+            40.03080944558131
+          ],
+          "eta_squared_of_cycle_centered_targets_by_code": 0.30656787099798816,
+          "interpretation": "One-way between-code share of variance in outcomes after subtracting the overall mean of each cycle, among rows in categories meeting this target-blind support threshold. Category membership composition across cycles is not standardized. This is descriptive, not causal or independent-validation evidence."
+        },
+        {
+          "minimum_rows_per_code": 300,
+          "supported_codes": 24,
+          "represented_rows": 15994,
+          "row_coverage": 0.31603699019917797,
+          "group_size_median": 508.0,
+          "group_size_p10": 323.2,
+          "group_size_p90": 1150.8,
+          "observed_target_mean_range": [
+            32.68300879478827,
+            90.06122852664578
+          ],
+          "observed_group_mean_quantiles_unweighted": {
+            "0.1": 37.73854951979647,
+            "0.25": 42.85630542916979,
+            "0.5": 55.58941509366804,
+            "0.75": 68.72540799620054,
+            "0.9": 82.3451687204659
+          },
+          "within_cycle_adjusted_group_mean_delta_quantiles_unweighted": {
+            "0.1": -12.297635886795847,
+            "0.25": -7.175844205877157,
+            "0.5": 5.559138151539848,
+            "0.75": 18.68974096662862,
+            "0.9": 32.31301487818379
+          },
+          "within_cycle_adjusted_group_delta_range": [
+            -17.359714586021674,
+            40.03080944558131
+          ],
+          "eta_squared_of_cycle_centered_targets_by_code": 0.3249928548328028,
+          "interpretation": "One-way between-code share of variance in outcomes after subtracting the overall mean of each cycle, among rows in categories meeting this target-blind support threshold. Category membership composition across cycles is not standardized. This is descriptive, not causal or independent-validation evidence."
+        }
+      ]
+    },
+    "org_code::artifact_signal": {
+      "target": "artifact_signal",
+      "kind": "binary prevalence",
+      "overall_mean": 0.34717831172937086,
+      "whole_train_rows": 50608,
+      "overall_missing_target_rows": 0,
+      "supports": [
+        {
+          "minimum_rows_per_code": 30,
+          "supported_codes": 165,
+          "represented_rows": 25502,
+          "row_coverage": 0.5039124249130572,
+          "group_size_median": 57.0,
+          "group_size_p10": 32.0,
+          "group_size_p90": 396.1999999999998,
+          "observed_target_mean_range": [
+            0.0,
+            1.0
+          ],
+          "observed_group_mean_quantiles_unweighted": {
+            "0.1": 0.0,
+            "0.25": 0.020833333333333332,
+            "0.5": 0.15233415233415235,
+            "0.75": 0.6388888888888888,
+            "0.9": 0.9286520376175548
+          },
+          "within_cycle_adjusted_group_mean_delta_quantiles_unweighted": {
+            "0.1": -0.3370435059407541,
+            "0.25": -0.3128400420473689,
+            "0.5": -0.20314494102225966,
+            "0.75": 0.2769867574347887,
+            "0.9": 0.5448722407105799
+          },
+          "within_cycle_adjusted_group_delta_range": [
+            -0.37524807911587776,
+            0.673286555519652
+          ],
+          "eta_squared_of_cycle_centered_targets_by_code": 0.46415893165903865,
+          "interpretation": "One-way between-code share of variance in outcomes after subtracting the overall mean of each cycle, among rows in categories meeting this target-blind support threshold. Category membership composition across cycles is not standardized. This is descriptive, not causal or independent-validation evidence."
+        },
+        {
+          "minimum_rows_per_code": 100,
+          "supported_codes": 49,
+          "represented_rows": 19948,
+          "row_coverage": 0.3941669301296238,
+          "group_size_median": 296.0,
+          "group_size_p10": 117.80000000000001,
+          "group_size_p90": 714.6000000000003,
+          "observed_target_mean_range": [
+            0.0,
+            0.9387755102040817
+          ],
+          "observed_group_mean_quantiles_unweighted": {
+            "0.1": 0.0011461318051575941,
+            "0.25": 0.011560693641618497,
+            "0.5": 0.061224489795918366,
+            "0.75": 0.2540983606557377,
+            "0.9": 0.7581903774036544
+          },
+          "within_cycle_adjusted_group_mean_delta_quantiles_unweighted": {
+            "0.1": -0.3399269656035436,
+            "0.25": -0.3206892470169838,
+            "0.5": -0.27758615408985404,
+            "0.75": -0.08326586022287472,
+            "0.9": 0.40123333840760755
+          },
+          "within_cycle_adjusted_group_delta_range": [
+            -0.37524807911587776,
+            0.6025583919401393
+          ],
+          "eta_squared_of_cycle_centered_targets_by_code": 0.4058812894288217,
+          "interpretation": "One-way between-code share of variance in outcomes after subtracting the overall mean of each cycle, among rows in categories meeting this target-blind support threshold. Category membership composition across cycles is not standardized. This is descriptive, not causal or independent-validation evidence."
+        },
+        {
+          "minimum_rows_per_code": 300,
+          "supported_codes": 24,
+          "represented_rows": 15994,
+          "row_coverage": 0.31603699019917797,
+          "group_size_median": 508.0,
+          "group_size_p10": 323.2,
+          "group_size_p90": 1150.8,
+          "observed_target_mean_range": [
+            0.0,
+            0.9216300940438872
+          ],
+          "observed_group_mean_quantiles_unweighted": {
+            "0.1": 0.0004297994269340978,
+            "0.25": 0.007212140175219024,
+            "0.5": 0.043018861382705775,
+            "0.75": 0.1540595314480665,
+            "0.9": 0.6313774738388982
+          },
+          "within_cycle_adjusted_group_mean_delta_quantiles_unweighted": {
+            "0.1": -0.33678330441405324,
+            "0.25": -0.32199887523082066,
+            "0.5": -0.2860203532956322,
+            "0.75": -0.20100360978206067,
+            "0.9": 0.2797596784112506
+          },
+          "within_cycle_adjusted_group_delta_range": [
+            -0.37524807911587776,
+            0.5457812209272414
+          ],
+          "eta_squared_of_cycle_centered_targets_by_code": 0.3720198531817158,
+          "interpretation": "One-way between-code share of variance in outcomes after subtracting the overall mean of each cycle, among rows in categories meeting this target-blind support threshold. Category membership composition across cycles is not standardized. This is descriptive, not causal or independent-validation evidence."
+        }
+      ]
+    },
+    "module_code::threat_rank": {
+      "target": "threat_rank",
+      "kind": "continuous",
+      "overall_mean": 50.032603946016444,
+      "whole_train_rows": 50608,
+      "overall_missing_target_rows": 0,
+      "supports": [
+        {
+          "minimum_rows_per_code": 30,
+          "supported_codes": 104,
+          "represented_rows": 11937,
+          "row_coverage": 0.23587179892507112,
+          "group_size_median": 42.5,
+          "group_size_p10": 31.0,
+          "group_size_p90": 277.30000000000007,
+          "observed_target_mean_range": [
+            15.176195000000002,
+            90.65176875
+          ],
+          "observed_group_mean_quantiles_unweighted": {
+            "0.1": 31.50226377840909,
+            "0.25": 41.95067219827586,
+            "0.5": 52.05618028985507,
+            "0.75": 65.63697030428811,
+            "0.9": 74.51187025673941
+          },
+          "within_cycle_adjusted_group_mean_delta_quantiles_unweighted": {
+            "0.1": -18.53058143480771,
+            "0.25": -8.081037158950114,
+            "0.5": 2.0177664616366293,
+            "0.75": 15.604863492503553,
+            "0.9": 24.476271790206784
+          },
+          "within_cycle_adjusted_group_delta_range": [
+            -34.874754760438705,
+            40.619758121536
+          ],
+          "eta_squared_of_cycle_centered_targets_by_code": 0.311287285074159,
+          "interpretation": "One-way between-code share of variance in outcomes after subtracting the overall mean of each cycle, among rows in categories meeting this target-blind support threshold. Category membership composition across cycles is not standardized. This is descriptive, not causal or independent-validation evidence."
+        },
+        {
+          "minimum_rows_per_code": 100,
+          "supported_codes": 20,
+          "represented_rows": 8230,
+          "row_coverage": 0.16262251027505534,
+          "group_size_median": 297.5,
+          "group_size_p10": 140.5,
+          "group_size_p90": 640.1000000000007,
+          "observed_target_mean_range": [
+            28.096250476190477,
+            82.36784063492064
+          ],
+          "observed_group_mean_quantiles_unweighted": {
+            "0.1": 39.74584227071094,
+            "0.25": 50.30351430956557,
+            "0.5": 53.05447900548033,
+            "0.75": 66.11661249012118,
+            "0.9": 72.34837128304008
+          },
+          "within_cycle_adjusted_group_mean_delta_quantiles_unweighted": {
+            "0.1": -10.285557279874483,
+            "0.25": 0.2695196646255227,
+            "0.5": 3.023310006718365,
+            "0.75": 16.086371025031436,
+            "0.9": 22.311973642558257
+          },
+          "within_cycle_adjusted_group_delta_range": [
+            -21.93720747717552,
+            32.325146124743554
+          ],
+          "eta_squared_of_cycle_centered_targets_by_code": 0.2827308268937554,
+          "interpretation": "One-way between-code share of variance in outcomes after subtracting the overall mean of each cycle, among rows in categories meeting this target-blind support threshold. Category membership composition across cycles is not standardized. This is descriptive, not causal or independent-validation evidence."
+        },
+        {
+          "minimum_rows_per_code": 300,
+          "supported_codes": 10,
+          "represented_rows": 6414,
+          "row_coverage": 0.12673885551691433,
+          "group_size_median": 375.5,
+          "group_size_p10": 314.7,
+          "group_size_p90": 1176.1999999999996,
+          "observed_target_mean_range": [
+            38.203767217630855,
+            82.36784063492064
+          ],
+          "observed_group_mean_quantiles_unweighted": {
+            "0.1": 39.74584227071094,
+            "0.25": 48.320355278751165,
+            "0.5": 58.92198288600892,
+            "0.75": 71.1219530592088,
+            "0.9": 75.51685857477027
+          },
+          "within_cycle_adjusted_group_mean_delta_quantiles_unweighted": {
+            "0.1": -10.285557279874483,
+            "0.25": -1.7107734158079493,
+            "0.5": 8.886674235721388,
+            "0.75": 21.085978793676436,
+            "0.9": 25.48099191286224
+          },
+          "within_cycle_adjusted_group_delta_range": [
+            -11.830017616287675,
+            32.325146124743554
+          ],
+          "eta_squared_of_cycle_centered_targets_by_code": 0.32601435763437536,
+          "interpretation": "One-way between-code share of variance in outcomes after subtracting the overall mean of each cycle, among rows in categories meeting this target-blind support threshold. Category membership composition across cycles is not standardized. This is descriptive, not causal or independent-validation evidence."
+        }
+      ]
+    },
+    "module_code::artifact_signal": {
+      "target": "artifact_signal",
+      "kind": "binary prevalence",
+      "overall_mean": 0.34717831172937086,
+      "whole_train_rows": 50608,
+      "overall_missing_target_rows": 0,
+      "supports": [
+        {
+          "minimum_rows_per_code": 30,
+          "supported_codes": 104,
+          "represented_rows": 11937,
+          "row_coverage": 0.23587179892507112,
+          "group_size_median": 42.5,
+          "group_size_p10": 31.0,
+          "group_size_p90": 277.30000000000007,
+          "observed_target_mean_range": [
+            0.0,
+            1.0
+          ],
+          "observed_group_mean_quantiles_unweighted": {
+            "0.1": 0.0,
+            "0.25": 0.0,
+            "0.5": 0.07771260997067449,
+            "0.75": 0.6027777777777777,
+            "0.9": 0.9247438928289993
+          },
+          "within_cycle_adjusted_group_mean_delta_quantiles_unweighted": {
+            "0.1": -0.34290916698924234,
+            "0.25": -0.3248028323420372,
+            "0.5": -0.2485921372353047,
+            "0.75": 0.2630696307671911,
+            "0.9": 0.5544417705206153
+          },
+          "within_cycle_adjusted_group_delta_range": [
+            -0.40311476216437586,
+            0.6770971539625885
+          ],
+          "eta_squared_of_cycle_centered_targets_by_code": 0.4494141868421701,
+          "interpretation": "One-way between-code share of variance in outcomes after subtracting the overall mean of each cycle, among rows in categories meeting this target-blind support threshold. Category membership composition across cycles is not standardized. This is descriptive, not causal or independent-validation evidence."
+        },
+        {
+          "minimum_rows_per_code": 100,
+          "supported_codes": 20,
+          "represented_rows": 8230,
+          "row_coverage": 0.16262251027505534,
+          "group_size_median": 297.5,
+          "group_size_p10": 140.5,
+          "group_size_p90": 640.1000000000007,
+          "observed_target_mean_range": [
+            0.0,
+            0.9219858156028369
+          ],
+          "observed_group_mean_quantiles_unweighted": {
+            "0.1": 0.0055900621118012426,
+            "0.25": 0.017716638347928377,
+            "0.5": 0.10967472894078399,
+            "0.75": 0.261544696719459,
+            "0.9": 0.5873615247170936
+          },
+          "within_cycle_adjusted_group_mean_delta_quantiles_unweighted": {
+            "0.1": -0.3348768078821316,
+            "0.25": -0.3256671668001339,
+            "0.5": -0.23760566311286901,
+            "0.75": -0.07889365966247462,
+            "0.9": 0.20811795989369292
+          },
+          "within_cycle_adjusted_group_delta_range": [
+            -0.34703935604744396,
+            0.5844283146320062
+          ],
+          "eta_squared_of_cycle_centered_targets_by_code": 0.2836145653594962,
+          "interpretation": "One-way between-code share of variance in outcomes after subtracting the overall mean of each cycle, among rows in categories meeting this target-blind support threshold. Category membership composition across cycles is not standardized. This is descriptive, not causal or independent-validation evidence."
+        },
+        {
+          "minimum_rows_per_code": 300,
+          "supported_codes": 10,
+          "represented_rows": 6414,
+          "row_coverage": 0.12673885551691433,
+          "group_size_median": 375.5,
+          "group_size_p10": 314.7,
+          "group_size_p90": 1176.1999999999996,
+          "observed_target_mean_range": [
+            0.0,
+            0.5826086956521739
+          ],
+          "observed_group_mean_quantiles_unweighted": {
+            "0.1": 0.0,
+            "0.25": 0.010573781205071233,
+            "0.5": 0.10967472894078399,
+            "0.75": 0.3225767545765894,
+            "0.9": 0.3974525988885256
+          },
+          "within_cycle_adjusted_group_mean_delta_quantiles_unweighted": {
+            "0.1": -0.334089256779634,
+            "0.25": -0.32759848191260865,
+            "0.5": -0.2408254293684264,
+            "0.75": -0.02152723332546285,
+            "0.9": 0.04211214832201669
+          },
+          "within_cycle_adjusted_group_delta_range": [
+            -0.3412639864533312,
+            0.20044573590217113
+          ],
+          "eta_squared_of_cycle_centered_targets_by_code": 0.22924805736585177,
+          "interpretation": "One-way between-code share of variance in outcomes after subtracting the overall mean of each cycle, among rows in categories meeting this target-blind support threshold. Category membership composition across cycles is not standardized. This is descriptive, not causal or independent-validation evidence."
+        }
+      ]
+    }
+  },
+  "pattern_code_cross_target_profile_association": {
+    "30": {
+      "nonmissing_pattern_codes": 115,
+      "pearson_cycle_adjusted_group_means_unweighted": 0.5428785688365353,
+      "spearman_cycle_adjusted_group_means_unweighted": 0.5603724453562693,
+      "pearson_cycle_adjusted_group_means_weighted_by_code_support": 0.3001506755632246,
+      "pearson_raw_group_means_unweighted": 0.5345993896092893,
+      "warning": "Ecological cross-code correlation; category averages are the units. It does not measure within-record association or causality."
+    },
+    "100": {
+      "nonmissing_pattern_codes": 68,
+      "pearson_cycle_adjusted_group_means_unweighted": 0.5684301798526387,
+      "spearman_cycle_adjusted_group_means_unweighted": 0.5710195823949306,
+      "pearson_cycle_adjusted_group_means_weighted_by_code_support": 0.3044701547476266,
+      "pearson_raw_group_means_unweighted": 0.5650300012428227,
+      "warning": "Ecological cross-code correlation; category averages are the units. It does not measure within-record association or causality."
+    },
+    "300": {
+      "nonmissing_pattern_codes": 28,
+      "pearson_cycle_adjusted_group_means_unweighted": 0.5456623102437385,
+      "spearman_cycle_adjusted_group_means_unweighted": 0.655719759168035,
+      "pearson_cycle_adjusted_group_means_weighted_by_code_support": 0.28082231008108016,
+      "pearson_raw_group_means_unweighted": 0.5489837874771017,
+      "warning": "Ecological cross-code correlation; category averages are the units. It does not measure within-record association or causality."
+    }
+  },
+  "pattern_code_per_cycle_profile_sensitivity": {
+    "rule": "Per cycle, named pattern codes with n≥10 in both Train files; only cycles with at least 10 codes are summarized.",
+    "cycles_with_enough_support": 33,
+    "cycle_count_total": 33,
+    "pearson_across_code_means_median": 0.5065086003577957,
+    "pearson_across_code_means_p10_p90": [
+      0.19460475023608492,
+      0.6330320836845741
+    ],
+    "positive_cycles_fraction": 0.9696969696969697,
+    "leave_one_cycle_out_mean_range": [
+      0.43071063492516903,
+      0.4590362534983635
+    ],
+    "per_cycle_details": [
+      {
+        "cycle_code": 47,
+        "n_supported_codes": 25,
+        "pearson_code_mean_association": 0.28018873384860365,
+        "spearman_code_mean_association": 0.3610470661825848
+      },
+      {
+        "cycle_code": 48,
+        "n_supported_codes": 22,
+        "pearson_code_mean_association": -0.20127003097690574,
+        "spearman_code_mean_association": -0.20728608564513643
+      },
+      {
+        "cycle_code": 49,
+        "n_supported_codes": 29,
+        "pearson_code_mean_association": 0.39849311656121394,
+        "spearman_code_mean_association": 0.3363726381918391
+      },
+      {
+        "cycle_code": 50,
+        "n_supported_codes": 19,
+        "pearson_code_mean_association": 0.42407098009035693,
+        "spearman_code_mean_association": 0.37543859649122807
+      },
+      {
+        "cycle_code": 51,
+        "n_supported_codes": 30,
+        "pearson_code_mean_association": 0.639229806029392,
+        "spearman_code_mean_association": 0.666592840929018
+      },
+      {
+        "cycle_code": 52,
+        "n_supported_codes": 24,
+        "pearson_code_mean_association": 0.25928721350610107,
+        "spearman_code_mean_association": 0.10393564063922783
+      },
+      {
+        "cycle_code": 53,
+        "n_supported_codes": 25,
+        "pearson_code_mean_association": 0.29248023217456,
+        "spearman_code_mean_association": 0.24480376768883153
+      },
+      {
+        "cycle_code": 54,
+        "n_supported_codes": 23,
+        "pearson_code_mean_association": 0.1481771918217725,
+        "spearman_code_mean_association": 0.04253216719555591
+      },
+      {
+        "cycle_code": 55,
+        "n_supported_codes": 33,
+        "pearson_code_mean_association": 0.5065086003577957,
+        "spearman_code_mean_association": 0.4867530449700241
+      },
+      {
+        "cycle_code": 56,
+        "n_supported_codes": 11,
+        "pearson_code_mean_association": 0.49599890874285524,
+        "spearman_code_mean_association": 0.4829169704328976
+      },
+      {
+        "cycle_code": 57,
+        "n_supported_codes": 20,
+        "pearson_code_mean_association": 0.5713806128506979,
+        "spearman_code_mean_association": 0.6175254291537671
+      },
+      {
+        "cycle_code": 58,
+        "n_supported_codes": 23,
+        "pearson_code_mean_association": 0.6343869514047882,
+        "spearman_code_mean_association": 0.6238260772038653
+      },
+      {
+        "cycle_code": 59,
+        "n_supported_codes": 27,
+        "pearson_code_mean_association": 0.5372713163008488,
+        "spearman_code_mean_association": 0.48495958668945394
+      },
+      {
+        "cycle_code": 60,
+        "n_supported_codes": 23,
+        "pearson_code_mean_association": 0.5366494181024083,
+        "spearman_code_mean_association": 0.5392981380581752
+      },
+      {
+        "cycle_code": 61,
+        "n_supported_codes": 23,
+        "pearson_code_mean_association": 0.3003302976108171,
+        "spearman_code_mean_association": 0.4187887431139852
+      },
+      {
+        "cycle_code": 62,
+        "n_supported_codes": 22,
+        "pearson_code_mean_association": 0.6030373535153585,
+        "spearman_code_mean_association": 0.6404970602767976
+      },
+      {
+        "cycle_code": 63,
+        "n_supported_codes": 35,
+        "pearson_code_mean_association": 0.40977043660553925,
+        "spearman_code_mean_association": 0.44889670004059085
+      },
+      {
+        "cycle_code": 64,
+        "n_supported_codes": 32,
+        "pearson_code_mean_association": 0.3616190000051167,
+        "spearman_code_mean_association": 0.27280228366778636
+      },
+      {
+        "cycle_code": 65,
+        "n_supported_codes": 30,
+        "pearson_code_mean_association": 0.5239697062108716,
+        "spearman_code_mean_association": 0.5116279354828106
+      },
+      {
+        "cycle_code": 66,
+        "n_supported_codes": 35,
+        "pearson_code_mean_association": 0.5248810625744658,
+        "spearman_code_mean_association": 0.588474851427586
+      },
+      {
+        "cycle_code": 67,
+        "n_supported_codes": 34,
+        "pearson_code_mean_association": 0.4126908372247004,
+        "spearman_code_mean_association": 0.3420188062660719
+      },
+      {
+        "cycle_code": 68,
+        "n_supported_codes": 12,
+        "pearson_code_mean_association": 0.06383114136164426,
+        "spearman_code_mean_association": 0.055944055944055944
+      },
+      {
+        "cycle_code": 69,
+        "n_supported_codes": 22,
+        "pearson_code_mean_association": 0.705149763365317,
+        "spearman_code_mean_association": 0.6937854214602249
+      },
+      {
+        "cycle_code": 70,
+        "n_supported_codes": 30,
+        "pearson_code_mean_association": 0.1784341344185809,
+        "spearman_code_mean_association": 0.2653607003190834
+      },
+      {
+        "cycle_code": 71,
+        "n_supported_codes": 35,
+        "pearson_code_mean_association": 0.5921825663251239,
+        "spearman_code_mean_association": 0.4975131653695812
+      },
+      {
+        "cycle_code": 72,
+        "n_supported_codes": 32,
+        "pearson_code_mean_association": 0.6121216509200894,
+        "spearman_code_mean_association": 0.5886128793051789
+      },
+      {
+        "cycle_code": 73,
+        "n_supported_codes": 36,
+        "pearson_code_mean_association": 0.6048568189813656,
+        "spearman_code_mean_association": 0.6126021868718999
+      },
+      {
+        "cycle_code": 74,
+        "n_supported_codes": 31,
+        "pearson_code_mean_association": 0.3083177726715187,
+        "spearman_code_mean_association": 0.31419647703792836
+      },
+      {
+        "cycle_code": 75,
+        "n_supported_codes": 31,
+        "pearson_code_mean_association": 0.3645497072447967,
+        "spearman_code_mean_association": 0.32509833089832185
+      },
+      {
+        "cycle_code": 76,
+        "n_supported_codes": 30,
+        "pearson_code_mean_association": 0.5359261242381393,
+        "spearman_code_mean_association": 0.5675826044689013
+      },
+      {
+        "cycle_code": 77,
+        "n_supported_codes": 34,
+        "pearson_code_mean_association": 0.6784333698990317,
+        "spearman_code_mean_association": 0.6283050881941211
+      },
+      {
+        "cycle_code": 78,
+        "n_supported_codes": 33,
+        "pearson_code_mean_association": 0.5573226741800441,
+        "spearman_code_mean_association": 0.5441324276033519
+      },
+      {
+        "cycle_code": 79,
+        "n_supported_codes": 35,
+        "pearson_code_mean_association": 0.6276126128037178,
+        "spearman_code_mean_association": 0.6465849783668309
+      }
+    ],
+    "interpretation": "Direction/stability check for category-average alignment within cycles; cycle is a composition stress test, not the research question."
+  },
+  "figures": [
+    "figures/pattern_code_two_targets.png",
+    "figures/category_code_support_coverage.png"
+  ],
+  "non_overlap": {
+    "Rousan": "Their main question is entry_friction/impact_load versus artifact_signal prevalence. This discovery uses anonymized code composition versus both outcomes; no entry_friction or impact_load is used.",
+    "Abhi": "Their question centers scope_pressure contribution to threat_rank conditional on impact_load. This discovery concerns pattern/org/module identifiers and never conditions on scope_pressure or impact_load.",
+    "Rizky": "Their question centers telemetry_flag/module_spread versus artifact_signal. Module_code is a distinct identifier field from module_spread and telemetry_flag is not used; pattern_code and org_code are additional directions.",
+    "Samuel_old": "The earlier EDA focuses impact_load–threat_rank association by cycle and rank geometry. Here category identifiers and cross-task target heterogeneity are primary; cycle is a nuisance composition adjustment only, not the EDA question."
+  },
+  "limitations": [
+    "Code labels are anonymized; no domain meaning is inferred from the identifier.",
+    "Per-code target means can be noisy even at n=30; target-blind minimum supports and cycle-adjusted effects reduce but do not eliminate this concern.",
+    "Cycle centering is one-variable composition adjustment; impact, entry friction, scope, text, and other confounders are not controlled.",
+    "Category identity may be tied to repeated entities or source coverage; association is not a causal pattern effect.",
+    "Groups and directions were selected exploratorily from this same Train. Effect sizes and intervals are descriptive, not an independent confirmation.",
+    "High-cardinality org_code/module_code are very sparse; small supported coverage makes group-level interpretation weak."
+  ]
+}

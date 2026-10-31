@@ -1,0 +1,655 @@
+{
+  "source": {
+    "hashes": {
+      "reg_train": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+      "cls_train": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c"
+    },
+    "regression_shape": [
+      50608,
+      19
+    ],
+    "classification_shape": [
+      50608,
+      19
+    ],
+    "n_joined": 50608,
+    "shared_features_equal_by_record_id": [
+      "record_id",
+      "cycle_code",
+      "org_code",
+      "module_code",
+      "pattern_code",
+      "signal_stream",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "text_load",
+      "scope_pressure",
+      "pulse_a",
+      "pulse_b",
+      "telemetry_flag",
+      "audit_lane",
+      "checksum_hint",
+      "impact_load",
+      "entry_friction"
+    ],
+    "train_cycles": [
+      47,
+      79
+    ]
+  },
+  "token_definition": {
+    "regex": "[A-Za-z0-9]+",
+    "lowercase": true,
+    "unique_fraction": "distinct regex tokens / tokens in row",
+    "repeated_token_share": "tokens belonging to types repeated within the row / tokens",
+    "entropy": "Shannon entropy of within-row token frequencies",
+    "raw_tokens_exported": false
+  },
+  "availability": {
+    "missing_or_blank_n": 3404,
+    "missing_or_blank_share": 0.06726209294973126,
+    "present_n": 47204,
+    "all_train_artifact_prevalence": 0.34717831172937086,
+    "all_train_threat_median": 50.02815,
+    "present_zero_token_n": 0,
+    "missing_artifact_rate": 0.3813160987074031,
+    "present_artifact_rate": 0.3447165494449623,
+    "missing_threat_median": 61.30245,
+    "present_threat_median": 49.1516
+  },
+  "text_diversity": {
+    "label_blind_length_quintile_edges": [
+      8.0,
+      20.0,
+      29.0,
+      39.0,
+      59.0,
+      145.0
+    ],
+    "per_length_quintile": [
+      {
+        "length_bin": "(7.999, 20.0]",
+        "n": 9642,
+        "token_p10": 12.0,
+        "token_p90": 20.0,
+        "low_diversity_n": 2484,
+        "high_diversity_n": 0,
+        "low_unique_fraction": 0.8937255799672792,
+        "high_unique_fraction": null,
+        "rho_diversity_threat": -0.011749212312561586,
+        "rho_diversity_artifact": 0.12349627394587104,
+        "threat_mean_low": 49.611252576489534,
+        "threat_mean_high": null,
+        "threat_median_low": 48.7491,
+        "threat_median_high": null,
+        "threat_delta_high_minus_low": null,
+        "artifact_rate_low": 0.39009661835748793,
+        "artifact_rate_high": null,
+        "artifact_delta_high_minus_low": null
+      },
+      {
+        "length_bin": "(20.0, 29.0]",
+        "n": 9887,
+        "token_p10": 21.0,
+        "token_p90": 29.0,
+        "low_diversity_n": 2445,
+        "high_diversity_n": 2530,
+        "low_unique_fraction": 0.8314517809833434,
+        "high_unique_fraction": 0.984179303011387,
+        "rho_diversity_threat": -0.004708972538567186,
+        "rho_diversity_artifact": 0.10143994587127969,
+        "threat_mean_low": 50.51958527607362,
+        "threat_mean_high": 49.1239271541502,
+        "threat_median_low": 51.6592,
+        "threat_median_high": 46.41,
+        "threat_delta_high_minus_low": -1.395658121923418,
+        "artifact_rate_low": 0.2723926380368098,
+        "artifact_rate_high": 0.39288537549407115,
+        "artifact_delta_high_minus_low": 0.12049273745726136
+      },
+      {
+        "length_bin": "(29.0, 39.0]",
+        "n": 9152,
+        "token_p10": 30.0,
+        "token_p90": 38.0,
+        "low_diversity_n": 2252,
+        "high_diversity_n": 2309,
+        "low_unique_fraction": 0.7814584455004151,
+        "high_unique_fraction": 0.9510296681356392,
+        "rho_diversity_threat": -0.02549871184117396,
+        "rho_diversity_artifact": 0.1356949839580271,
+        "threat_mean_low": 47.75046114564831,
+        "threat_mean_high": 45.58425396275444,
+        "threat_median_low": 47.745050000000006,
+        "threat_median_high": 41.3707,
+        "threat_delta_high_minus_low": -2.1662071828938707,
+        "artifact_rate_low": 0.2322380106571936,
+        "artifact_rate_high": 0.38891294932871373,
+        "artifact_delta_high_minus_low": 0.15667493867152013
+      },
+      {
+        "length_bin": "(39.0, 59.0]",
+        "n": 9417,
+        "token_p10": 41.0,
+        "token_p90": 57.0,
+        "low_diversity_n": 2374,
+        "high_diversity_n": 2358,
+        "low_unique_fraction": 0.7205922536734449,
+        "high_unique_fraction": 0.904286839360569,
+        "rho_diversity_threat": -0.09781331861402918,
+        "rho_diversity_artifact": 0.004557761231548916,
+        "threat_mean_low": 50.288111415332764,
+        "threat_mean_high": 43.107735029686175,
+        "threat_median_low": 51.8063,
+        "threat_median_high": 39.629599999999996,
+        "threat_delta_high_minus_low": -7.180376385646589,
+        "artifact_rate_low": 0.2872788542544229,
+        "artifact_rate_high": 0.29346904156064463,
+        "artifact_delta_high_minus_low": 0.006190187306221728
+      },
+      {
+        "length_bin": "(59.0, 145.0]",
+        "n": 9106,
+        "token_p10": 62.0,
+        "token_p90": 132.0,
+        "low_diversity_n": 2278,
+        "high_diversity_n": 2273,
+        "low_unique_fraction": 0.5754536357095728,
+        "high_unique_fraction": 0.8030375431129648,
+        "rho_diversity_threat": -0.013163106933782708,
+        "rho_diversity_artifact": 0.21612171321795645,
+        "threat_mean_low": 49.963584855136084,
+        "threat_mean_high": 48.075749318081826,
+        "threat_median_low": 51.564499999999995,
+        "threat_median_high": 49.7512,
+        "threat_delta_high_minus_low": -1.8878355370542579,
+        "artifact_rate_low": 0.13784021071115013,
+        "artifact_rate_high": 0.3801143862736472,
+        "artifact_delta_high_minus_low": 0.24227417556249706
+      }
+    ],
+    "bins_with_variable_diversity": 4,
+    "high_minus_low_threat_mean": -3.1529800014203597,
+    "high_minus_low_artifact_rate": 0.1301752401495257,
+    "exact_token_count_sensitivity": {
+      "minimum_rows_per_exact_count": 120,
+      "minimum_each_diversity_tail": 20,
+      "rank_tail_rule": "same as length-quintile analysis: average rank <= 0.25 versus >= 0.75",
+      "features": [
+        {
+          "feature": "type_token_ratio",
+          "supported_token_counts": 71,
+          "support_rows": 37681,
+          "share_of_stream_present": 0.7982586221506652,
+          "share_of_all_train": 0.7445660765096428,
+          "low_tail_compared_rows": 9011,
+          "high_tail_compared_rows": 9354,
+          "average_low_tail_artifact_rate": 0.24185169448316282,
+          "average_high_tail_artifact_rate": 0.38387123571522214,
+          "positive_token_count_strata": 64,
+          "share_supported_rows_from_positive_strata": 0.9281600806772644,
+          "upper_vs_lower_diversity_threat_delta": -2.748782763382042,
+          "upper_vs_lower_diversity_artifact_delta": 0.14201954123205932,
+          "threat_delta_minmax": [
+            -17.317717594108025,
+            12.314926099290766
+          ],
+          "artifact_delta_minmax": [
+            -0.2059061488673139,
+            0.5531309297912714
+          ]
+        },
+        {
+          "feature": "shannon_entropy",
+          "supported_token_counts": 71,
+          "support_rows": 37681,
+          "share_of_stream_present": 0.7982586221506652,
+          "share_of_all_train": 0.7445660765096428,
+          "low_tail_compared_rows": 9148,
+          "high_tail_compared_rows": 9736,
+          "average_low_tail_artifact_rate": 0.2667749794443874,
+          "average_high_tail_artifact_rate": 0.3672500813808056,
+          "positive_token_count_strata": 51,
+          "share_supported_rows_from_positive_strata": 0.8260131100554656,
+          "upper_vs_lower_diversity_threat_delta": -2.597585045886314,
+          "upper_vs_lower_diversity_artifact_delta": 0.10047510193641826,
+          "threat_delta_minmax": [
+            -19.05327515605493,
+            13.329470858585843
+          ],
+          "artifact_delta_minmax": [
+            -0.2391304347826087,
+            0.39109848484848486
+          ]
+        },
+        {
+          "feature": "repeated_token_share",
+          "supported_token_counts": 71,
+          "support_rows": 37681,
+          "share_of_stream_present": 0.7982586221506652,
+          "share_of_all_train": 0.7445660765096428,
+          "low_tail_compared_rows": 9269,
+          "high_tail_compared_rows": 9612,
+          "average_low_tail_artifact_rate": 0.24007449962896205,
+          "average_high_tail_artifact_rate": 0.38879646469806883,
+          "positive_token_count_strata": 66,
+          "share_supported_rows_from_positive_strata": 0.9438974549507709,
+          "upper_vs_lower_diversity_threat_delta": -2.9353967963329675,
+          "upper_vs_lower_diversity_artifact_delta": 0.14872196506910676,
+          "threat_delta_minmax": [
+            -21.83789837892604,
+            15.030746544715441
+          ],
+          "artifact_delta_minmax": [
+            -0.1914999009312463,
+            0.46251266464032426
+          ]
+        }
+      ],
+      "support_threshold_sensitivity": [
+        {
+          "min_rows_per_exact_token_count": 80,
+          "supported_token_counts": 84,
+          "support_rows": 38991,
+          "share_present": 0.826010507584103,
+          "compared_lower_tail_n": 9327,
+          "compared_upper_tail_n": 9690,
+          "pooled_lower_tail_artifact_rate": 0.23844751795861477,
+          "pooled_upper_tail_artifact_rate": 0.387203302373581,
+          "pooled_tail_delta_high_minus_low": 0.14875578441496626,
+          "support_weighted_stratum_delta": 0.14609583250671818,
+          "positive_token_count_strata": 77,
+          "share_support_from_positive_strata": 0.9305737221410069
+        },
+        {
+          "min_rows_per_exact_token_count": 120,
+          "supported_token_counts": 71,
+          "support_rows": 37681,
+          "share_present": 0.7982586221506652,
+          "compared_lower_tail_n": 9011,
+          "compared_upper_tail_n": 9354,
+          "pooled_lower_tail_artifact_rate": 0.243480190877816,
+          "pooled_upper_tail_artifact_rate": 0.3882830874492196,
+          "pooled_tail_delta_high_minus_low": 0.14480289657140358,
+          "support_weighted_stratum_delta": 0.14201954123205932,
+          "positive_token_count_strata": 64,
+          "share_support_from_positive_strata": 0.9281600806772644
+        },
+        {
+          "min_rows_per_exact_token_count": 200,
+          "supported_token_counts": 53,
+          "support_rows": 34967,
+          "share_present": 0.7407634946191001,
+          "compared_lower_tail_n": 8341,
+          "compared_upper_tail_n": 8649,
+          "pooled_lower_tail_artifact_rate": 0.2532070495144467,
+          "pooled_upper_tail_artifact_rate": 0.390449762978379,
+          "pooled_tail_delta_high_minus_low": 0.1372427134639323,
+          "support_weighted_stratum_delta": 0.1347635900011791,
+          "positive_token_count_strata": 46,
+          "share_support_from_positive_strata": 0.9225841507707266
+        }
+      ],
+      "cycle_and_exact_length_sensitivity": {
+        "cycles_supported": 5,
+        "per_cycle": [
+          {
+            "cycle": 62,
+            "supported_token_counts": 1,
+            "support_rows": 79,
+            "threat_delta": 7.742659090909093,
+            "artifact_delta": -0.03030303030303033
+          },
+          {
+            "cycle": 63,
+            "supported_token_counts": 1,
+            "support_rows": 60,
+            "threat_delta": 22.899799999999985,
+            "artifact_delta": 0.592857142857143
+          },
+          {
+            "cycle": 75,
+            "supported_token_counts": 1,
+            "support_rows": 60,
+            "threat_delta": -5.7806013157894744,
+            "artifact_delta": -0.23421052631578954
+          },
+          {
+            "cycle": 78,
+            "supported_token_counts": 4,
+            "support_rows": 273,
+            "threat_delta": -0.600030248286511,
+            "artifact_delta": 0.06950546401095853
+          },
+          {
+            "cycle": 79,
+            "supported_token_counts": 3,
+            "support_rows": 193,
+            "threat_delta": 5.916791457543115,
+            "artifact_delta": 0.33198738131244265
+          }
+        ],
+        "cycle_bootstrap_threat": {
+          "cycles": 5,
+          "p05": null,
+          "p50": null,
+          "p95": null
+        },
+        "cycle_bootstrap_artifact": {
+          "cycles": 5,
+          "p05": null,
+          "p50": null,
+          "p95": null
+        }
+      }
+    },
+    "per_cycle": [
+      {
+        "cycle": 47,
+        "n_present": 1241,
+        "threat_delta": 1.0341796931390765,
+        "artifact_delta": 0.06533253201355202
+      },
+      {
+        "cycle": 48,
+        "n_present": 894,
+        "threat_delta": -2.2581594561381375,
+        "artifact_delta": 0.14248366988838954
+      },
+      {
+        "cycle": 49,
+        "n_present": 1183,
+        "threat_delta": -1.5060958188262288,
+        "artifact_delta": -0.009317589799236034
+      },
+      {
+        "cycle": 50,
+        "n_present": 1021,
+        "threat_delta": 0.4516797140700381,
+        "artifact_delta": 0.11614013199638694
+      },
+      {
+        "cycle": 51,
+        "n_present": 1443,
+        "threat_delta": 1.9475338897346905,
+        "artifact_delta": 0.055033784787532465
+      },
+      {
+        "cycle": 52,
+        "n_present": 1452,
+        "threat_delta": -10.062570098848454,
+        "artifact_delta": -0.07602111091878304
+      },
+      {
+        "cycle": 53,
+        "n_present": 1292,
+        "threat_delta": -9.391891668453862,
+        "artifact_delta": 0.08195875946422561
+      },
+      {
+        "cycle": 54,
+        "n_present": 1175,
+        "threat_delta": -4.638932267174827,
+        "artifact_delta": 0.11428194941759857
+      },
+      {
+        "cycle": 55,
+        "n_present": 1493,
+        "threat_delta": 0.662212083869045,
+        "artifact_delta": 0.13559659707483762
+      },
+      {
+        "cycle": 56,
+        "n_present": 479,
+        "threat_delta": -10.967647959183665,
+        "artifact_delta": 0.14073129251700678
+      },
+      {
+        "cycle": 57,
+        "n_present": 864,
+        "threat_delta": 1.7728920695247603,
+        "artifact_delta": 0.05987279755453025
+      },
+      {
+        "cycle": 58,
+        "n_present": 1105,
+        "threat_delta": 1.0126353169051878,
+        "artifact_delta": 0.1504935566804471
+      },
+      {
+        "cycle": 59,
+        "n_present": 1274,
+        "threat_delta": -6.132648799586482,
+        "artifact_delta": 0.14826663539334883
+      },
+      {
+        "cycle": 60,
+        "n_present": 1393,
+        "threat_delta": -1.1010474311910192,
+        "artifact_delta": 0.21781461861176002
+      },
+      {
+        "cycle": 61,
+        "n_present": 1541,
+        "threat_delta": -4.497695412088254,
+        "artifact_delta": 0.1984274034521466
+      },
+      {
+        "cycle": 62,
+        "n_present": 1412,
+        "threat_delta": 3.3475037392468225,
+        "artifact_delta": 0.2024741429190104
+      },
+      {
+        "cycle": 63,
+        "n_present": 1778,
+        "threat_delta": -9.200730744024959,
+        "artifact_delta": -0.05191900468005282
+      },
+      {
+        "cycle": 64,
+        "n_present": 1698,
+        "threat_delta": -5.824743856095436,
+        "artifact_delta": 0.022935951847310725
+      },
+      {
+        "cycle": 65,
+        "n_present": 1480,
+        "threat_delta": -2.3999573779658028,
+        "artifact_delta": 0.17747676696537634
+      },
+      {
+        "cycle": 66,
+        "n_present": 1631,
+        "threat_delta": -8.002249413612391,
+        "artifact_delta": 0.1331743289594224
+      },
+      {
+        "cycle": 67,
+        "n_present": 1827,
+        "threat_delta": 1.2495667146282066,
+        "artifact_delta": 0.11715012757280698
+      },
+      {
+        "cycle": 68,
+        "n_present": 525,
+        "threat_delta": -1.5593113846153912,
+        "artifact_delta": 0.3046153846153846
+      },
+      {
+        "cycle": 69,
+        "n_present": 997,
+        "threat_delta": -5.579861235661913,
+        "artifact_delta": 0.2587575039030008
+      },
+      {
+        "cycle": 70,
+        "n_present": 1511,
+        "threat_delta": -4.311178881460315,
+        "artifact_delta": 0.15570620719779846
+      },
+      {
+        "cycle": 71,
+        "n_present": 1575,
+        "threat_delta": 0.04643044399736837,
+        "artifact_delta": 0.22184052624819964
+      },
+      {
+        "cycle": 72,
+        "n_present": 1687,
+        "threat_delta": -4.077465500917385,
+        "artifact_delta": 0.2779019480797431
+      },
+      {
+        "cycle": 73,
+        "n_present": 1738,
+        "threat_delta": -8.15302913226985,
+        "artifact_delta": 0.1308410337386505
+      },
+      {
+        "cycle": 74,
+        "n_present": 1679,
+        "threat_delta": -5.286095353734048,
+        "artifact_delta": 0.12336283524601355
+      },
+      {
+        "cycle": 75,
+        "n_present": 1851,
+        "threat_delta": -5.867252045723621,
+        "artifact_delta": 0.07986081562581188
+      },
+      {
+        "cycle": 76,
+        "n_present": 1704,
+        "threat_delta": -4.241681773646563,
+        "artifact_delta": 0.10717690593275415
+      },
+      {
+        "cycle": 77,
+        "n_present": 2163,
+        "threat_delta": -8.806367847602266,
+        "artifact_delta": 0.0753246011646707
+      },
+      {
+        "cycle": 78,
+        "n_present": 2015,
+        "threat_delta": -2.8755865438194417,
+        "artifact_delta": 0.07911350432631463
+      },
+      {
+        "cycle": 79,
+        "n_present": 2083,
+        "threat_delta": 11.34551287128506,
+        "artifact_delta": 0.2500284582588591
+      }
+    ],
+    "cycle_bootstrap_threat": {
+      "cycles": 33,
+      "p05": -4.435246761384352,
+      "p50": -3.1502543860434313,
+      "p95": -1.7816891986995593,
+      "interpretation": "Exploratory cycle-cluster sensitivity if cycles are exchangeable; not a confirmatory CI."
+    },
+    "cycle_bootstrap_artifact": {
+      "cycles": 33,
+      "p05": 0.10245975427519059,
+      "p50": 0.12753926690021483,
+      "p95": 0.15266062422544316,
+      "interpretation": "Exploratory cycle-cluster sensitivity if cycles are exchangeable; not a confirmatory CI."
+    },
+    "leave_one_cycle_out_threat_range": [
+      -3.799133832018484,
+      -2.84937954312654
+    ],
+    "leave_one_cycle_out_artifact_range": [
+      0.12493398342080934,
+      0.13618488559361466
+    ]
+  },
+  "text_load_coherence": {
+    "n_present": 47204,
+    "spearman_text_load_tokens": 0.9829062563768909,
+    "spearman_text_load_characters": 0.9833630898424733,
+    "text_load_quantiles_all_train": {
+      "0": 16.3429,
+      "0.25": 27.0507,
+      "0.5": 31.3103,
+      "0.75": 36.5289,
+      "1": 98.065
+    },
+    "text_load_quantiles_present_stream": {
+      "0": 20.6456,
+      "0.25": 27.701774999999998,
+      "0.5": 31.776699999999998,
+      "0.75": 36.92045,
+      "1": 98.065
+    },
+    "token_quantiles_present_stream": {
+      "0": 8.0,
+      "0.25": 22.0,
+      "0.5": 34.0,
+      "0.75": 52.0,
+      "0.9": 78.0,
+      "0.95": 102.0,
+      "0.99": 135.0,
+      "1": 145.0
+    },
+    "quartiles": [
+      {
+        "text_load_quartile": "(20.645, 27.702]",
+        "n": 11801,
+        "median_tokens": 17.0,
+        "median_characters": 152.0,
+        "median_diversity": 1.0,
+        "repeated_token_share": 0.0,
+        "threat_median": 51.4741,
+        "artifact_rate": 0.46758749258537413
+      },
+      {
+        "text_load_quartile": "(27.702, 31.777]",
+        "n": 11801,
+        "median_tokens": 28.0,
+        "median_characters": 250.0,
+        "median_diversity": 0.9117647058823529,
+        "repeated_token_share": 0.16666666666666666,
+        "threat_median": 48.2986,
+        "artifact_rate": 0.35107194305567324
+      },
+      {
+        "text_load_quartile": "(31.777, 36.92]",
+        "n": 11801,
+        "median_tokens": 41.0,
+        "median_characters": 366.0,
+        "median_diversity": 0.8529411764705882,
+        "repeated_token_share": 0.26666666666666666,
+        "threat_median": 46.0309,
+        "artifact_rate": 0.26997712058300144
+      },
+      {
+        "text_load_quartile": "(36.92, 98.065]",
+        "n": 11801,
+        "median_tokens": 71.0,
+        "median_characters": 637.0,
+        "median_diversity": 0.734375,
+        "repeated_token_share": 0.4186046511627907,
+        "threat_median": 51.303,
+        "artifact_rate": 0.29022964155580033
+      }
+    ]
+  },
+  "non_overlap": {
+    "Rousan": "Neither entry_friction nor impact_load is used to group or explain artifact_signal; feature focus is stream structure.",
+    "Abhi": "Neither scope_pressure nor impact_load enters the question or grouping.",
+    "Rizky": "Neither telemetry_flag nor module_spread enters grouping; text is the object studied.",
+    "Samuel_old": "No impact_load/threat_rank temporal association is retested; cycle is only a support sensitivity check.",
+    "shared_outcome": "artifact_signal overlaps as outcome only; core explanatory variables and question differ."
+  },
+  "limitations": [
+    "Exploratory on all labeled Train; no independent confirmatory sample.",
+    "Regex token richness measures structure, not semantics of anonymized technical tokens.",
+    "Broad length quintiles leave residual confounding by exact length, cycle and source/report style.",
+    "Cycle bootstrap assumes exchangeability for sensitivity and cannot project future cycles.",
+    "No fitted model, actual tokens, causal claim or Test label was used."
+  ]
+}

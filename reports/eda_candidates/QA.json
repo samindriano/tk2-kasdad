@@ -1,0 +1,71 @@
+{
+  "status": "PASS_RESEARCH_COMPLETE_USER_SELECTION_PENDING",
+  "date": "2026-10-31",
+  "python": "3.13.5",
+  "notebook": {
+    "path": "notebooks/samuel/eda_candidate_discovery.ipynb",
+    "sha256": "43ff9528d1aa246bdbc27465454e9f4bbf3bf61ec806ce0749c623e6745c3667",
+    "cells": 26,
+    "executed_code_cells": 9,
+    "errors": 0,
+    "embedded_pngs": 9,
+    "cache_free_file_isolation_pass": true,
+    "aggregate_json_csv_byte_matches": 28
+  },
+  "tests": {
+    "command": "python -m unittest tests.test_formal_eda -q",
+    "tests_run": 5,
+    "failures": 0,
+    "errors": 0,
+    "elapsed_seconds": 1.185
+  },
+  "independent_numerical_checks": 7,
+  "visual_review": {
+    "all_png_files_inspected_by_main": [
+      "reports/eda_candidates/figures/A_exact_length_diversity.png",
+      "reports/eda_candidates/figures/A_support_sensitivity.png",
+      "reports/eda_candidates/targets/target_concordance.png",
+      "reports/eda_candidates/targets/target_discordance.png",
+      "reports/eda_candidates/text/diversity_by_length_and_targets.png",
+      "reports/eda_candidates/text/text_length_coherence.png",
+      "reports/eda_candidates/missingness/figures/availability_count_and_outcomes.png",
+      "reports/eda_candidates/missingness/figures/co_missing_phi.png",
+      "reports/eda_candidates/missingness/figures/signal_stream_target_contrasts.png",
+      "reports/eda_candidates/missingness/figures/signal_stream_threat_ecdf.png",
+      "reports/eda_candidates/missingness/figures/text_load_confounding_check.png",
+      "reports/eda_candidates/categories/figures/category_code_support_coverage.png",
+      "reports/eda_candidates/categories/figures/pattern_code_two_targets.png"
+    ],
+    "count": 13,
+    "issues_fixed": [
+      "Missingness chart annotation margins/support labels",
+      "Category profile footnote moved outside data region",
+      "Target-discordance legend moved clear of values"
+    ],
+    "full_page_html_gui_inspected": false,
+    "html_export_available": true,
+    "basis": "Individual PNGs inspected at reading size; saved notebook outputs, execution order, and key tables checked. Full-page GUI layout is not certified."
+  },
+  "preservation": {
+    "historical_tracked_files": 319,
+    "paused_final_drafts": 8,
+    "byte_identical": true
+  },
+  "scope": {
+    "model_fits": 0,
+    "kaggle_uploads": 0,
+    "official_question_changed": false,
+    "final_notebook_preparation_resumed": false,
+    "raw_text_or_row_records_committed": false
+  },
+  "links": {
+    "research_markdown_missing_local_targets": []
+  },
+  "recommendation": "A; exploratory choice for user review, not automatic replacement",
+  "open_statistical_limits": [
+    "Not confirmatory or independent data",
+    "Exact-length-by-cycle support only5 cycles under relaxed60/10 rule",
+    "No causal or token-semantic interpretation",
+    "C standardized direction varies by bins and has positivity constraints"
+  ]
+}

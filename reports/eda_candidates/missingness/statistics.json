@@ -1,0 +1,230 @@
+{
+  "status": "COMPLETE_EXPLORATORY_MISSINGNESS_SCREEN",
+  "input_hashes": {
+    "regression": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+    "classification": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c"
+  },
+  "shapes": {
+    "regression": [
+      50608,
+      19
+    ],
+    "classification": [
+      50608,
+      19
+    ]
+  },
+  "shared_ids_and_features_aligned": true,
+  "shared_feature_columns_checked": [
+    "audit_lane",
+    "checksum_hint",
+    "cycle_code",
+    "entry_friction",
+    "impact_load",
+    "module_code",
+    "module_spread",
+    "org_code",
+    "org_spread",
+    "pattern_code",
+    "pulse_a",
+    "pulse_b",
+    "scope_pressure",
+    "scope_trace",
+    "signal_stream",
+    "telemetry_flag",
+    "text_load"
+  ],
+  "fields": [
+    "org_code",
+    "module_code",
+    "pattern_code",
+    "signal_stream",
+    "scope_trace",
+    "org_spread",
+    "module_spread"
+  ],
+  "telemetry_flag_included": false,
+  "group_definition": "Target-blind count of missing among seven report-context fields; telemetry_flag excluded because Rizky owns it.",
+  "targets": {
+    "regression": "threat_rank",
+    "classification": "artifact_signal"
+  },
+  "missingness_pattern_minimum_support_for_export": 100,
+  "overall": {
+    "n": 50608,
+    "complete_n": 26767,
+    "any_missing_n": 23841,
+    "complete_share": 0.5289084729687006,
+    "threat_mean_any_missing_minus_complete": 0.38430349411743236,
+    "threat_mean_1_to_3_missing": 50.17374880010104,
+    "threat_median_count0": 49.9451,
+    "threat_median_count3": 57.4084,
+    "artifact_rate_count0": 0.3511413307430792,
+    "artifact_rate_any_missing": 0.3427289123778365,
+    "artifact_rate_count0_vs_count1": [
+      0.3511413307430792,
+      0.3511756726203934
+    ],
+    "median_cycle_threat_delta": 0.3629382390641851,
+    "range_cycle_threat_delta": [
+      -4.716480790560475,
+      4.212999006532257
+    ],
+    "n_cycles_threat_delta_positive": 20,
+    "n_cycles_threat_delta_negative": 13,
+    "median_cycle_artifact_delta": -0.02075490638959998,
+    "range_cycle_artifact_delta": [
+      -0.09789767056220586,
+      0.11140986012900311
+    ],
+    "n_cycles_artifact_delta_positive": 12,
+    "n_cycles_artifact_delta_negative": 21,
+    "top_missing_pattern": "0010000",
+    "top_missing_pattern_n": 4838,
+    "phi_pattern_code_signal_stream": 0.06290938026331686,
+    "phi_scope_trace_org_spread": -0.003926055606536059
+  },
+  "signal_stream_availability": {
+    "missing_n": 3404,
+    "missing_share": 0.06726209294973126,
+    "threat_mean_missing": 57.60458636897768,
+    "threat_mean_present": 49.48656911490553,
+    "threat_mean_delta": 8.11801725407215,
+    "threat_median_missing": 61.30245,
+    "threat_median_present": 49.1516,
+    "threat_low_le5_share_missing": 0.03260869565217391,
+    "threat_low_le5_share_present": 0.051182103211592236,
+    "threat_high_ge95_share_missing": 0.05052878965922444,
+    "threat_high_ge95_share_present": 0.050588933141259215,
+    "artifact_rate_missing": 0.3813160987074031,
+    "artifact_rate_present": 0.3447165494449623,
+    "artifact_rate_delta": 0.0365995492624408,
+    "cycle_threat_delta_positive": 32,
+    "cycle_threat_delta_negative": 1,
+    "cycle_threat_delta_median": 7.060281693115726,
+    "cycle_threat_delta_range": [
+      -1.5450854457977456,
+      23.880645499201762
+    ],
+    "leave_one_cycle_out_cycle_mean_range": [
+      8.453619899289894,
+      9.248173991321128
+    ],
+    "cycle_artifact_delta_positive": 21,
+    "cycle_artifact_delta_negative": 12,
+    "standardized_threat_delta_over_common_other_missing_counts": 7.513862790670539,
+    "standardized_artifact_delta_over_common_other_missing_counts": 0.048916694295950885,
+    "standardization_common_n": 50008,
+    "standardization_strata": [
+      0,
+      1,
+      2
+    ],
+    "standardized_by_text_load_deciles": {
+      "n": 50608,
+      "strata": 10,
+      "threat_mean_delta": -0.8870038258691764,
+      "artifact_rate_delta": -0.022585307012079666
+    },
+    "common_text_load_support": {
+      "observed_min_missing": 16.3429,
+      "observed_min_present": 20.6456,
+      "observed_max_missing": 77.5241,
+      "observed_max_present": 98.065,
+      "common_observed_range": [
+        20.6456,
+        77.5241
+      ],
+      "rows_retained": 49637,
+      "missing_rows_retained": 2498,
+      "missing_rows_excluded": 906,
+      "present_rows_excluded": 65,
+      "mean_threat_delta_retained": 4.122922072045711
+    },
+    "text_load_binning_sensitivity": [
+      {
+        "quantile_bins_requested": 5,
+        "supported_bins": 5,
+        "rows_covered": 50608,
+        "coverage": 1.0,
+        "minimum_n_each_availability_state": 20,
+        "standardized_threat_mean_delta": 0.2528225593039153,
+        "standardized_artifact_rate_delta": -0.032687888016154,
+        "effective_n_stream_missing": 1048.9197626932705,
+        "effective_n_stream_present": 46545.61199294402
+      },
+      {
+        "quantile_bins_requested": 10,
+        "supported_bins": 10,
+        "rows_covered": 50608,
+        "coverage": 1.0,
+        "minimum_n_each_availability_state": 20,
+        "standardized_threat_mean_delta": -0.8870038258691764,
+        "standardized_artifact_rate_delta": -0.02258530701207966,
+        "effective_n_stream_missing": 962.5731710270372,
+        "effective_n_stream_present": 45086.551782271374
+      },
+      {
+        "quantile_bins_requested": 20,
+        "supported_bins": 20,
+        "rows_covered": 50608,
+        "coverage": 1.0,
+        "minimum_n_each_availability_state": 20,
+        "standardized_threat_mean_delta": -1.4476769078880025,
+        "standardized_artifact_rate_delta": -0.019152064648467266,
+        "effective_n_stream_missing": 952.9406661220779,
+        "effective_n_stream_present": 38051.82523595869
+      }
+    ],
+    "text_load_q1_share_of_missing_signal_stream": 0.7667450058754407,
+    "text_load_q1_missing_share": 0.5157083580320095,
+    "text_load_decile_effect_positive_n": 5,
+    "text_load_decile_effect_negative_n": 5,
+    "pattern_code_common_support": {
+      "20": {
+        "minimum_rows_per_pattern_and_stream_state": 20,
+        "common_patterns_including_missing": 32,
+        "covered_rows": 39712,
+        "covered_share": 0.784698071451154,
+        "stream_missing_rows_covered": 2832,
+        "stream_missing_coverage": 0.8319623971797885,
+        "stream_present_coverage": 0.7812897212100669,
+        "row_weighted_mean_threat_delta": 8.349886776841261,
+        "median_pattern_mean_delta": 6.367336226298779,
+        "pattern_mean_delta_range": [
+          -8.382253395143486,
+          30.916076061238684
+        ],
+        "text_load_x_pattern_cells": 19,
+        "text_load_x_pattern_rows_covered": 6576,
+        "text_load_x_pattern_share_covered": 0.1299399304457793
+      },
+      "30": {
+        "minimum_rows_per_pattern_and_stream_state": 30,
+        "common_patterns_including_missing": 22,
+        "covered_rows": 35478,
+        "covered_share": 0.7010354094214354,
+        "stream_missing_rows_covered": 2588,
+        "stream_missing_coverage": 0.7602820211515864,
+        "stream_present_coverage": 0.6967629861876112,
+        "row_weighted_mean_threat_delta": 9.05040932038666,
+        "median_pattern_mean_delta": 8.052481186737076,
+        "pattern_mean_delta_range": [
+          -2.416983379496706,
+          30.916076061238684
+        ],
+        "text_load_x_pattern_cells": 9,
+        "text_load_x_pattern_rows_covered": 3265,
+        "text_load_x_pattern_share_covered": 0.06451549162187796
+      }
+    }
+  },
+  "interpretation_limits": [
+    "Associations are descriptive, not causal; unavailable fields may reflect record-generation or collection processes.",
+    "All 33 cycles are development data previously examined; cycle contrasts are sensitivity checks, not independent confirmation.",
+    "Small count-4/count-5 groups are retained in the machine table but are not interpreted as a trend.",
+    "Classification and regression Train hashes match the pinned official inputs; all shared non-target features were checked after record_id alignment; no Test labels were read.",
+    "Seven-field completeness omits telemetry_flag to avoid centering Rizky's assigned topic; conclusions therefore apply only to these seven fields.",
+    "signal_stream availability follows the established NaN-or-blank-after-trim rule; other field missingness counts only null values."
+  ]
+}
