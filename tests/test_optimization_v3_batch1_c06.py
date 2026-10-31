@@ -136,6 +136,13 @@ def test_c06_preserves_frozen_sparse_classifier_parameters() -> None:
     assert len(NOVELTY_FEATURE_NAMES) == 6
 
 
+def test_c06_recipe_round_trips_its_json_encoding() -> None:
+    queue = c06_runner.load_queue(c06_runner.QUEUE_PATH)
+    card = next(item for item in queue["cards"] if item.get("id") == "C06")
+    recipe = c06_runner._recipe(card, c06_runner.evaluation_views_for_card(queue, "C06"))
+    assert json.loads(json.dumps(recipe, allow_nan=False)) == recipe
+
+
 def test_c06_two_fold_synthetic_pilot_reaches_independent_report_aggregation(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:

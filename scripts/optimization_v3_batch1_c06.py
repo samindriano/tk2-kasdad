@@ -57,7 +57,7 @@ QUEUE_PATH = ROOT / "experiments/optimization_v3/research_backlog/queue.json"
 CARD_PATH = ROOT / "reports/optimization_v3/research_backlog/cards/C06.md"
 EXPERIMENT_DIR = ROOT / "experiments/optimization_v3/batch1/C06"
 RECIPE_PATH = EXPERIMENT_DIR / "recipe.json"
-FREEZE_PATH = ROOT / "experiments/optimization_v3/batch1/C06/freeze.json"
+FREEZE_PATH = EXPERIMENT_DIR / "freeze_amendment_01.json"
 ARTIFACT_DIR = ROOT / "experiments/runs/optimization_v3_batch1/C06"
 REPORT_DIR = ROOT / "reports/optimization_v3/batch1/C06"
 
@@ -610,7 +610,10 @@ def _recipe(card: dict[str, Any], views: dict[str, list[tuple[int, int, int]]]) 
             "early_stopping": False,
         },
         "policy": EXPECTED_POLICY,
-        "evaluation_views": views,
+        "evaluation_views": {
+            name: [list(segment) for segment in segments]
+            for name, segments in views.items()
+        },
         "fit_predictor_count": int(card["pilot_predictor_fits"]),
         "metric": "Macro F1 at the frozen threshold 0.50",
         "gates": {
