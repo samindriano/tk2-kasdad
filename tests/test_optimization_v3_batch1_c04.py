@@ -1,14 +1,21 @@
 """C04 synthetic route, feature, and resource-contract checks."""
 from __future__ import annotations
 
+import json
 from types import SimpleNamespace
 
 import numpy as np
 import pandas as pd
 import pytest
 
-from scripts.optimization_v3_batch1_c04 import _macro_f1, _resource_estimate, _reconstruct_c04
+from scripts.optimization_v3_batch1_c04 import (
+    _frozen_identity_matches,
+    _macro_f1,
+    _resource_estimate,
+    _reconstruct_c04,
+)
 from src.models.classification_models import _TFIDF_PARAMS
+from src.models.optimization_v3_batch1 import json_sha256
 from src.models.optimization_v3_batch1_c04 import (
     CARD_ID,
     FEATURE_NAMES,
@@ -102,6 +109,16 @@ def test_independent_route_reconstruction_matches_frozen_policy() -> None:
     candidate, baseline = _reconstruct_c04(arrays)
     np.testing.assert_allclose(candidate, [0.175, 0.50, 0.65], rtol=0.0, atol=1e-12)
     np.testing.assert_allclose(baseline, [0.35, 0.50, 0.60], rtol=0.0, atol=1e-12)
+
+
+def test_frozen_identity_roundtrip_handles_integer_dictionary_keys() -> None:
+    identity = {"expected_fit_rows": {55: 12_020, 67: 29_705}, "card_id": "C04"}
+    stored_json = json.loads(json.dumps(identity))
+    frozen = {"identity": stored_json, "signature": json_sha256(identity)}
+    assert _frozen_identity_matches(frozen, identity)
+
+    stored_json["expected_fit_rows"]["55"] = 12_021
+    assert not _frozen_identity_matches(frozen, identity)
 
 
 def test_macro_f1_uses_the_frozen_half_threshold() -> None:

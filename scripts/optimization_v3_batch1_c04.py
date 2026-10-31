@@ -59,6 +59,7 @@ RUN_DIR = ROOT / "experiments/runs/optimization_v3_batch1/C04"
 REPORT_DIR = ROOT / "reports/optimization_v3/batch1/C04"
 RECIPE_PATH = EXPERIMENT_DIR / "recipe.json"
 FREEZE_PATH = EXPERIMENT_DIR / "freeze.json"
+SUPERSEDED_FREEZE_PATH = EXPERIMENT_DIR / "freeze_pre_run_identity_mismatch.json"
 ENGINE_REPORT_PATH = RUN_DIR / "pilot_engine_report.json"
 RESULTS_PATH = REPORT_DIR / "results.json"
 VERIFICATION_PATH = REPORT_DIR / "verification.json"
@@ -119,6 +120,7 @@ INPUTS_BASE = {
     "accepted_c03_verification_reference": ROOT / "reports/optimization_v3/batch1/C03/verification.json",
     "frozen_sparse_pilot_protocol": SPARSE_PILOT_CONFIG / "protocol.json",
     "frozen_sparse_pilot_freeze": SPARSE_PILOT_CONFIG / "freeze.json",
+    "superseded_prefit_freeze_archive": SUPERSEDED_FREEZE_PATH,
     "round1_dc_nbsvm55_cache": ROOT / "experiments/runs/dual_cls_v1a/fit55__DC_NBSVM.npz",
     "round1_dc_nbsvm67_cache": ROOT / "experiments/runs/dual_cls_v1a/fit67__DC_NBSVM.npz",
 }
@@ -410,6 +412,13 @@ def _validate_recipe_artifact(path: Path, recipe: Mapping[str, Any], digest: str
         raise BatchIntegrityError("Persisted C04 recipe differs from canonical freeze identity")
 
 
+def _frozen_identity_matches(frozen: Mapping[str, Any], identity: Mapping[str, Any]) -> bool:
+    """Compare canonical JSON identity, tolerating JSON stringification of map keys."""
+    signature = json_sha256(identity)
+    return (frozen.get("signature") == signature
+            and json_sha256(frozen.get("identity", {})) == signature)
+
+
 def _budget_preflight() -> dict[str, Any]:
     if not LEDGER_PATH.is_file():
         return {"status": "PASS", "reserved_total": 0, "next_total": 2,
@@ -498,7 +507,7 @@ def _prepare(card: Mapping[str, Any], queue: Mapping[str, Any]) -> dict[str, Any
         raise BatchIntegrityError("Existing C04 recipe differs from canonical preflight recipe")
     if FREEZE_PATH.exists():
         frozen = _read_json(FREEZE_PATH)
-        if frozen.get("identity") != identity or frozen.get("signature") != signature:
+        if not _frozen_identity_matches(frozen, identity):
             raise BatchIntegrityError("Existing C04 freeze differs from current source/input/recipe identity")
     budget = _budget_preflight()
     resource_pass = all(value["status"] == "PASS" for value in memory.values())
@@ -738,8 +747,7 @@ def run_card(card: Mapping[str, Any], queue: Mapping[str, Any], *,
         raise BatchIntegrityError("C04 requires a persisted, reviewed recipe/freeze before pilot fits")
     _validate_recipe_artifact(RECIPE_PATH, context["recipe"], context["identity"]["recipe_semantic_sha256"])
     frozen = _read_json(FREEZE_PATH)
-    if (frozen.get("identity") != context["identity"]
-            or frozen.get("signature") != json_sha256(context["identity"])):
+    if not _frozen_identity_matches(frozen, context["identity"]):
         raise BatchIntegrityError("C04 current source/input/recipe identity differs from committed freeze")
     if file_sha256(context["train_path"]) != TRAIN_SHA256:
         raise BatchIntegrityError("Official Train changed after C04 freeze")
