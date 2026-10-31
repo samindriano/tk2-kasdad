@@ -1,18 +1,24 @@
 # Samuel — ringkasan demo TP 2
 
-Buka [Classification 10](../notebooks/samuel/10_samuel_final_classification.ipynb), [Regression 09](../notebooks/samuel/09_samuel_final_regression.ipynb), dan [EDA A11](../notebooks/samuel/11_samuel_formal_eda_a.ipynb). Bedakan hasil W6 yang dihitung ulang, primary/H12 historis, dan Kaggle public.
+Buka [Classification 10](../notebooks/samuel/10_samuel_final_classification.ipynb), [Regression 09](../notebooks/samuel/09_samuel_final_regression.ipynb), dan [EDA availability12](../notebooks/samuel/12_samuel_formal_eda_availability.ipynb). Bedakan metrik fold W6 yang dihitung ulang, hasil primary/H12 historis, dan Kaggle public.
 
-## EDA A
+## EDA availability
 
-**Apa pertanyaannya?** Pada laporan dengan jumlah token yang sama, apakah keragaman token berkaitan dengan proporsi artifact_signal=1?
+**Apa pertanyaannya dan mengapa dipilih?** Apakah proporsi `artifact_signal = 1` berbeda menurut ketersediaan `signal_stream`, dan bagaimana perbedaan itu berubah setelah mempertimbangkan periode `cycle_code` serta volume narasi (`text_load`)? Pertanyaan ini memeriksa apakah ketiadaan informasi teks berkaitan dengan komposisi label dan apakah pola marginal bertahan setelah dua aspek struktur data diperhitungkan.
 
-**Apa TTR dan mengapa panjang dibuat sama?** TTR adalah token unik/token total setelah regex `[A-Za-z 0-9]+` dan lowercase. TTR dipengaruhi panjang, sehingga perbandingan dilakukan dalam setiap exact token count. TTR mengukur repetisi, bukan kualitas atau makna token anonim.
+**Apa hasil marginalnya?** Official Classification Train berisi 50.608 baris: 3.404 stream missing dan 47.204 present. Prevalensi artifact ialah 38,13% (1.298/3.404) saat missing versus 34,47% (16.272/47.204) saat present. Gap missing − present adalah +3,66 poin persentase (pp).
 
-**Bagaimana grup dibuat?** Average percentile rank TTR≤0,25 versus≥0,75; ties tidak dipecah. Minimum 120 baris per panjang dan 20 tiap tail. Kedua grup menggunakan bobot panjang yang sama.
+**Apa yang berubah setelah cycle dipertimbangkan?** Standardisasi pada exact `cycle_code`, minimum n=20 per status setiap cycle, mempertahankan semua 50.608 baris dan menghasilkan gap +3,96 pp. Jadi standardisasi waktu saja tidak membalik arah. Namun hasil tidak universal: gap positif di 21/33 cycle, negatif di 12; gap per periode 47–57 −1,84 pp, 58–68 +10,01 pp, dan 69–79 +3,18 pp.
 
-**Apa hasilnya?** Weighted prevalence 24,19% versus 38,39%, gap 14,20 pp;64/71 panjang searah. Support 37.681 berbeda dari 9.011 rendah dan 9.354 tinggi yang benar-benar dibandingkan. Asosiasi tidak kausal, tidak berlaku otomatis pada stream kosong/Test, dan tidak membuktikan TTR meningkatkan F1.
+**Mengapa arah berubah pada analisis periode × volume?** `text_load` lebih rendah saat stream missing (median 21,81) daripada present (31,78). Jika kedua status dibandingkan dengan bobot komposisi periode dan global quantile-bin `text_load` yang sama, gap menjadi −2,30 pp pada 5 bin (15/15 sel, coverage 100%) dan −2,15 pp pada 10 bin (28/30 sel, coverage 94,33%). Perbedaan komposisi dapat menjelaskan mengapa ringkasan marginal dan tersandar berubah arah; ini asosiasi deskriptif, bukan efek kausal `text_load` atau missingness.
 
-**Apakah hanya perbedaan waktu?** Gap tiga periode tetap positif 5,65/15,19/13,82 pp. Ringkasan exact length×cycle 7,99 pp per+0,10 TTR mempunyai estimand linear berbeda dari gap quartile. Ada counterexample dan confounding lain.
+**Apa arti common support?** Setiap cell harus memiliki sedikitnya 20 baris present dan 20 missing. Untuk 10 bin, denominator didukung adalah 3.372/3.404 missing dan 44.368/47.204 present; 906 baris missing berada di luar rentang `text_load` yang juga diamati pada present (20,65–77,52), sementara 65 present berada di luar rentang yang juga diamati pada missing. Binning adalah pendekatan kasar; dukungan cell tidak membuktikan overlap tepat pada tiap nilai volume.
+
+**Apakah hasil membuktikan sebab-akibat atau pola Test?** Tidak. Ini Training data yang dipakai dalam development; adjustment hanya mencakup strata yang ditetapkan, tidak menghilangkan seluruh confounding, dan tidak disertai inferensi untuk efek kausal. Stream kosong tidak memiliki isi teks. EDA tidak mengidentifikasi makna token anonim, kualitas narasi, atau prevalensi pada official Test.
+
+**Mengapa TTR tidak lagi menjadi EDA resmi?** Pengguna secara eksplisit memilih availability sebagai pertanyaan baru. EDA keragaman token yang lama tetap dipertahankan di [notebook11](../notebooks/samuel/11_samuel_formal_eda_a.ipynb) sebagai arsip; ia tidak dihapus atau dinyatakan salah.
+
+**Bagaimana kaitannya dengan model?** Routing C4_HGB sebelumnya ditemukan lewat modeling/error analysis: pada missing-stream subgroup, hybrid C2_B Macro F1 0,710427 dan structured HGB C1_B 0,781712. Routing kemudian menggabungkan dua cabang. Hasil historis primary berubah dari 0,820633 (hybrid) ke 0,825481 (routing), H12 dari 0,788581 ke 0,796810. EDA raw availability dikembangkan setelah diagnostics tersebut; hasil ini memberi konteks komposisi, bukan penyebab atau bukti tunggal keuntungan routing. Kaggle public Macro F1 0,82641 adalah evaluasi terpisah.
 
 ## Classification
 

@@ -3,7 +3,7 @@
 Cyber Vulnerability Lifecycle · Semester Ganjil 2026/2027 · Samuel, Rousan, Abhi, Rizky.
 
 Repository independen dan private: [samindriano/tk2-kasdad](https://github.com/samindriano/tk2-kasdad).
-Audit, EDA formal Samuel, Regression/Classification Round 1–2, serta **autonomous Regression research selesai pada 30 Oktober 2026**. Seluruh checkpoint lama dipertahankan. Regression public MAE terbaik **11,71363**, mengalahkan baseline yang diberikan pengguna **12,23275** dan stretch goal <12. Kandidat masih provisional; belum ada model final permanen.
+**Status akademis terbaru:** EDA resmi Samuel adalah availability `signal_stream` dan volume narasi `text_load`, sesuai keputusan pengguna 31 Oktober 2026. Notebook formal: [EDA12](notebooks/samuel/12_samuel_formal_eda_availability.ipynb); approach individual: [Classification10](notebooks/samuel/10_samuel_final_classification.ipynb) dan [Regression09](notebooks/samuel/09_samuel_final_regression.ipynb). EDA temporal03 dan TTR11 tetap arsip. Model akademis tetap C4_HGB (public F1 0,82641) dan LightGBM/SVD32 (public MAE 11,71363). Riset Kaggle lanjutan terpisah dari notebook resmi; hasil historis dipertahankan.
 
 ## Status dan temuan awal
 
@@ -11,7 +11,7 @@ Audit, EDA formal Samuel, Regression/Classification Round 1–2, serta **autonom
 |---|---|---|
 | Classification | Audit aktual selesai; bukan sertifikasi bebas leakage | Train 50.608 × 19, test 29.421 × 18; target `artifact_signal` terverifikasi lewat train/test/sample |
 | Regression | Audit aktual selesai | Train 50.608 × 19, test 29.421 × 18; `threat_rank` terverifikasi lewat train/test/sample |
-| EDA Samuel | EDA formal selesai; pertanyaan tetap | Pertanyaan utama dipilih pengguna; seluruh 33 cycle, robustness periodisasi, common-support dan EF composition diperiksa |
+| EDA Samuel | Availability + volume disetujui pengguna; notebook formal12 | Prevalence marginal, periode/cycle, distribusi volume dan standardisasi common-support; temporal03/TTR11 menjadi arsip |
 | Regression Samuel Round 1 | Selesai; disetujui pengguna untuk progression | 64 fit + 64 refit terpisah; seluruh prediction vectors bit-identical; R1-D memimpin primary, tetapi R1-C sedikit lebih baik pada pooled H12 |
 | Classification Samuel Round 1 | Selesai; disetujui sebagai checkpoint | 7 recipe, 56 evaluation jobs; 78 fits +13 representative refits. Hybrid LR fixed F1 0,8206, dengan missing-stream dan threshold trade-offs |
 | Classification Samuel Round 2 | Selesai; berhenti untuk review | 10 recipe, 4 policies, 80 window jobs, 72 fits +12 representative refits. Fixed HGB fallback route F1 0,8255 primary /0,7968 H12 |
@@ -19,7 +19,7 @@ Audit, EDA formal Samuel, Regression/Classification Round 1–2, serta **autonom
 | Initial Kaggle benchmarks | COMPLETE; satu upload per kompetisi | Classification C4_HGB fixed public Macro F1 0,82641; Regression R1-D asli clipped public MAE 13,53473. Tidak dipakai memilih recipe Round 2 |
 | Autonomous Regression research | Selesai; strong provisional candidate | LightGBM MAE + TF-IDF/SVD32 + inner-selected rank blend: primary 11,9316 / H12 14,7040; public 11,71363. Empat dari enam additional submissions dipakai |
 
-Milestone terbaru: [notebook autonomous Regression research](notebooks/samuel/08_samuel_regression_research.ipynb), [hasil, kegagalan dan rekomendasi](reports/regression_research/FINDINGS.md), [seluruh perbandingan](reports/regression_research/COMPARISON_TABLES.md), [Kaggle log dan refs](reports/regression_research/KAGGLE_LOG.md), [best provisional manifest pointer](reports/regression_research/best_candidate.json), serta [protocol/reproduksi](docs/REGRESSION_RESEARCH.md). Text menambah informasi; pure percentile mapping tidak otomatis membantu. Hybrid Ridge tetap leader pooled H12 (13,9381), sedangkan LightGBM+text terbaik primary/public. H12 early risk dan adaptive validation bias tetap berlaku.
+Riwayat autonomous Regression research: [notebook autonomous Regression research](notebooks/samuel/08_samuel_regression_research.ipynb), [hasil, kegagalan dan rekomendasi](reports/regression_research/FINDINGS.md), [seluruh perbandingan](reports/regression_research/COMPARISON_TABLES.md), [Kaggle log dan refs](reports/regression_research/KAGGLE_LOG.md), [best provisional manifest pointer](reports/regression_research/best_candidate.json), serta [protocol/reproduksi](docs/REGRESSION_RESEARCH.md). Text menambah informasi; pure percentile mapping tidak otomatis membantu. Hybrid Ridge tetap leader pooled H12 (13,9381), sedangkan LightGBM+text terbaik primary/public. H12 early risk dan adaptive validation bias tetap berlaku.
 
 Checkpoint Regression Round 2: [notebook](notebooks/samuel/07_samuel_regression_round2.ipynb), [findings dan rekomendasi](reports/regression_round2/FINDINGS.md), [seluruh kandidat/window/cycle](reports/regression_round2/COMPARISON_TABLES.md), [temporal generalization risk](reports/regression_round2/TEMPORAL_GENERALIZATION.md), [protocol/reproduksi](docs/REGRESSION_ROUND2.md), dan [verification receipt](reports/regression_round2/verification.json). Recency membantu sedikit pada primary tetapi tidak H12; kontribusi kategori/cycle tergantung horizon/history. H12 memakai ulang records primary dan bukan independent replication.
 
@@ -96,12 +96,12 @@ Panduan rinci: [data/README.md](data/README.md). Makna/rentang target, metric da
 
 | Anggota | Task | Pertanyaan yang disepakati |
 |---|---|---|
-| Samuel | Regression | Apakah hubungan antara impact_load dan threat_rank mengalami perubahan antarperiode cycle_code, meskipun distribusi threat_rank relatif stabil? |
+| Samuel | Classification | Apakah proporsi `artifact_signal = 1` berbeda menurut ketersediaan `signal_stream`, dan bagaimana perbedaannya berubah setelah mempertimbangkan periode `cycle_code` serta volume narasi (`text_load`)? |
 | Rousan | Classification | Apakah proporsi `artifact_signal` berbeda berdasarkan `entry_friction`, dan bagaimana hubungan berubah pada berbagai tingkat `impact_load`? |
 | Abhi | Regression | Apakah `scope_pressure` memberi informasi tambahan mengenai `threat_rank` setelah mempertimbangkan `impact_load`? |
 | Rizky | Classification | Bagaimana hubungan `telemetry_flag` dengan `artifact_signal`, dan apakah berbeda pada berbagai tingkat `module_spread`? |
 
-Milestone modeling terbaru hanya Classification Samuel; pertanyaan EDA formal Samuel tetap Regression. Folder anggota lain dan pekerjaannya tidak diubah. [Pembagian kerja](docs/WORK_ALLOCATION.md) tetap menjadi referensi EDA; catatan 27 Oktober dipertahankan sebagai riwayat.
+Pertanyaan resmi Samuel kini berfokus pada Classification; notebook Regression tetap memuat pendekatan modeling individual tanpa membuat EDA Regression baru. Folder serta pertanyaan anggota lain tidak diubah. [Pembagian kerja](docs/WORK_ALLOCATION.md) dan [status EDA Samuel](docs/SAMUEL_EDA.md) mencatat keputusan terbaru; catatan terdahulu dipertahankan sebagai riwayat.
 
 ## Struktur
 
@@ -138,9 +138,9 @@ Folder `data/derived`, `notebooks/classification`, `notebooks/regression`, dokum
 - [Protokol Round 1](docs/ROUND1_PROTOCOL.md) dan [feature eligibility](docs/ROUND1_FEATURE_ELIGIBILITY.md) dibekukan sebelum eksperimen. Enam primary windows adalah development validation karena seluruh train sudah dipakai EDA. Recipe TP1 tidak dipindahkan otomatis.
 - [Referensi TP1](docs/TP1_REFERENCE.md) dibaca tanpa perubahan. Ada perbedaan antara ringkasan resep lama dan artifact final yang ditemukan; perbedaannya didokumentasikan.
 
-Langkah berikutnya adalah review Classification Round 2 dan memilih prioritas kedua task bersama pengguna. Pertanyaan EDA tetap. Belum ada Classification Round 3 atau Regression Round 2. Kenaikan skor agregat dibaca bersama horizon panjang, reused-validation selection bias, threshold policy serta missing-stream/EF subgroups.
+Catatan titik review historis Round 2: prioritas saat itu adalah memilih arah penelitian kedua task. Checkpoint lanjutan sudah tersedia; lihat status akademis terbaru di awal halaman. Kenaikan skor agregat tetap dibaca bersama horizon panjang, reused-validation selection bias, threshold policy serta missing-stream/EF subgroups.
 
-## Discovery regression terbaru
+## Arsip discovery Regression
 
 Arsip regression dipindahkan dari Downloads ke raw lokal; CRC dan SHA-256 diverifikasi. Tidak ada overwrite data lama. Kedua task memakai file test yang byte-identical; train regression memakai 18 kolom input yang sama (termasuk ID), dengan label threat_rank.
 
@@ -148,9 +148,9 @@ Threat_rank memiliki 34.333 nilai unik, range teramati 0,0428–100, median 50,0
 
 Notebook discovery: `notebooks/samuel/02_regression_discovery.ipynb`. Perbandingan TP1 opsional memerlukan root raw TP1 via `--tp1-data-dir` atau environment `TP1_DATA_DIR`; Round 1 hanya membutuhkan raw TP2. Definisi cycle terurut tercantum dalam materi lokal TP1 halaman 16; makna target TP2 kini dikonfirmasi pengguna dan formula rinci tetap belum diketahui.
 
-## EDA formal dan titik review
+## Arsip EDA temporal dan titik review terdahulu
 
-Notebook demo utama: `notebooks/samuel/03_samuel_formal_eda.ipynb`; jalankan Restart & Run All atau `python scripts/build_formal_eda_notebook.py`. Runner tanpa notebook: `python scripts/run_formal_eda.py`; path default relatif root kode, dengan override `TP2_DATA_DIR` atau `--data-dir`. Pendukung: `temporal_robustness.json`, `composition_robustness.json`, `formal_eda_summary.json` dan lima grafik diagnostik. Notebook lama dipertahankan sebagai sejarah discovery.
+Notebook demo pada milestone lama: `notebooks/samuel/03_samuel_formal_eda.ipynb`; jalankan Restart & Run All atau `python scripts/build_formal_eda_notebook.py`. Runner tanpa notebook: `python scripts/run_formal_eda.py`; path default relatif root kode, dengan override `TP2_DATA_DIR` atau `--data-dir`. Pendukung: `temporal_robustness.json`, `composition_robustness.json`, `formal_eda_summary.json` dan lima grafik diagnostik. Notebook lama dipertahankan sebagai sejarah discovery.
 
 Hubungan tetap berbeda setelah mix exact impact×EF dibuat sama: Pearson 0,5244 → 0,6617 → 0,6837 pada 33 common cells, coverage96,09%. EF0 datar setelah blok tengah, EF1 masih menguat. Dua kelompok impact dan EF tetap menunjukkan conditional shifts berlawanan. Mean target percycle hampir persis50+50/n, conditional pada geometri average percentile yang teramati; kestabilan marginal tidak membuktikan kestabilan hubungan fitur atau mekanisme sumber.
 

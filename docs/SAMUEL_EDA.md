@@ -1,22 +1,26 @@
-# EDA resmi Samuel — keragaman token dan artifact
+# EDA resmi Samuel — availability `signal_stream`
 
-**Keputusan pengguna, 31 Oktober 2026:** kandidat A resmi menjadi pertanyaan EDA individual Samuel untuk TP2.
+**Keputusan pengguna, 31 Oktober 2026:** pertanyaan resmi EDA individual adalah:
 
-> Pada laporan dengan jumlah token yang sama, apakah keragaman token dalam "signal_stream" berkaitan dengan proporsi "artifact_signal = 1" yang teramati?
+> Apakah proporsi `artifact_signal = 1` berbeda menurut ketersediaan `signal_stream`, dan bagaimana perbedaannya berubah setelah mempertimbangkan periode `cycle_code` serta volume narasi (`text_load`)?
 
-Notebook EDA: [11_samuel_formal_eda_a.ipynb](../notebooks/samuel/11_samuel_formal_eda_a.ipynb). [Ringkasan, compliance dan reproduksi](../reports/eda_a_formal/SUMMARY.md) merangkum hasil. Notebook ini menghitung ulang dari official Classification Train; detail pendukung tetap pada [discovery](../reports/eda_candidates/DISCOVERY_FINDINGS.md) dan [targeted robustness](../reports/eda_a_robustness/FINDINGS.md).
+Notebook final: [12_samuel_formal_eda_availability.ipynb](../notebooks/samuel/12_samuel_formal_eda_availability.ipynb). Notebook menggunakan official Classification Train dan menghitung hasil dari raw data, bukan laporan cache. Ringkasan keputusan ada di [FINDINGS.md](../reports/academic_availability/FINDINGS.md); metodologi dan eksekusi tercatat pada [QA.json](../reports/academic_availability/QA.json).
 
-TTR adalah proporsi token unik setelah regex `[A-Za-z0-9]+` dan lowercase. Pertanyaan meneliti asosiasi, bukan kualitas/semantik teks atau sebab-akibat. Pertanyaan Rousan, Abhi, dan Rizky tidak berubah. Dokumen alokasi bersama tidak diedit; halaman khusus Samuel ini mencatat keputusan terbaru.
+Hasil utama: 50.608 baris; stream missing pada 3.404 (6,73%) dan present pada 47.204. Artifact prevalence marginal ialah 38,13% (missing) dan 34,47% (present), gap **+3,66 pp**. Setelah standardisasi exact cycle gap **+3,96 pp** dengan 100% coverage. Setelah standardisasi periode × kuantil global `text_load`, gap berubah arah menjadi **−2,30 pp** untuk lima bin (100% coverage) dan **−2,15 pp** untuk sepuluh bin (94,33%; 28/30 sel didukung; minimum 20 observasi per status per sel).
 
-EDA temporal lama dipertahankan sebagai **historical research/archive**: [notebook03](../notebooks/samuel/03_samuel_formal_eda.ipynb) dan [laporan formal lama](../reports/eda/SAMUEL_FORMAL_EDA.md). Notebook final modeling dan submission Kaggle berada di luar milestone ini. Penyajian paket final pengumpulan dikerjakan pada tahap akhir.
+Periode gap tidak seragam: −1,84 pp pada 47–57, +10,01 pp pada 58–68, dan +3,18 pp pada 69–79. Median `text_load` adalah 21,81 saat stream missing dan 31,78 saat present. Batas nilai yang sama-sama teramati adalah 20,65–77,52; bin kasar tidak menjamin overlap tepat.
 
-## Arsip — catatan sebelum keputusan EDA A
+Ini asosiasi deskriptif pada Train, bukan efek kausal. Standardisasi hanya menyamakan komposisi cycle/periode-volume yang didefinisikan, tidak menghilangkan seluruh confounding, dan tidak membuktikan pola pada official Test. EDA raw ini dikembangkan setelah modeling/error diagnostics; ia memberi konteks availability, bukan penyebab keputusan routing. TTR EDA terdahulu tetap diarsipkan pada notebook11; EDA temporal lama tetap diarsipkan pada [notebook03](../notebooks/samuel/03_samuel_formal_eda.ipynb). Keduanya tidak ditimpa atau dihapus.
 
-Teks berikut merekam milestone temporal terdahulu, bukan status EDA resmi saat ini. Perintah di bagian arsip berlaku untuk penelitian lama; gunakan instruksi EDA A pada tautan di atas untuk pekerjaan terbaru.
+Pertanyaan Rousan, Abhi, dan Rizky tidak berubah.
+
+## Arsip — catatan sebelum keputusan EDA availability
+
+Bagian berikut merekam pertanyaan dan riset historis. Ia bukan status EDA resmi saat ini.
 
 ### EDA Samuel — formal milestone dan titik review
 
-**Status sekarang:** pertanyaan utama tetap dan EDA formal selesai. Modeling Regression Round 1 yang diotorisasi pengguna juga selesai; hasil menunggu review arah berikutnya. Notebook EDA `notebooks/samuel/03_samuel_formal_eda.ipynb` dan hasil `reports/eda/SAMUEL_FORMAL_EDA.md` dipertahankan. Notebook modeling baru `notebooks/samuel/04_samuel_regression_round1.ipynb`; hasil di `reports/round1/ROUND1_FINDINGS.md` dan QA di `reports/round1/VALIDATION.md`. Dokumen rancangan lama dipertahankan sebagai riwayat sebelum modeling.
+**Status pada milestone saat itu:** pertanyaan temporal utama tetap dan EDA formal selesai. Modeling Regression Round 1 yang diotorisasi pengguna juga selesai; hasil menunggu review arah berikutnya. Notebook EDA `notebooks/samuel/03_samuel_formal_eda.ipynb` dan hasil `reports/eda/SAMUEL_FORMAL_EDA.md` dipertahankan. Notebook modeling baru `notebooks/samuel/04_samuel_regression_round1.ipynb`; hasil di `reports/round1/ROUND1_FINDINGS.md` dan QA di `reports/round1/VALIDATION.md`. Dokumen rancangan lama dipertahankan sebagai riwayat sebelum modeling.
 
 Jalankan `python scripts/build_formal_eda_notebook.py` atau Restart & Run All notebook utama. Alternatif runner deskriptif `python scripts/run_formal_eda.py`. `TP2_DATA_DIR`/`--data-dir` mengubah root raw yang berisi regression/. Formal EDA hanya membutuhkan data TP2; tidak membaca ulang model atau raw TP1.
 

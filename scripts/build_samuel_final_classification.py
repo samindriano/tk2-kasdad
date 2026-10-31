@@ -183,7 +183,7 @@ CELLS = [
         """
         ### Distribusi label per cycle
 
-        Grafik ini memberi konteks data; EDA resmi Samuel tentang keragaman token diringkas pada bagian berikut dan tersedia lengkap di notebook11. Prevalence per cycle dapat berubah; model dan evaluasi karena itu mempertahankan urutan waktu.
+        Grafik ini memberi konteks data; EDA availability Samuel diringkas pada bagian berikut dan tersedia lengkap di notebook12. Prevalence per cycle dapat berubah; model dan evaluasi karena itu mempertahankan urutan waktu.
         """,
         "eda-context",
     ),
@@ -667,34 +667,56 @@ def finalized_cells():
             cells.append(cell)
             cells.extend([
                 _markdown('''
-                ### EDA individual Samuel — keragaman token
+                ### EDA individual Samuel — ketersediaan stream
 
-                Pertanyaan resmi: **Pada laporan dengan jumlah token yang sama, apakah keragaman token
-                dalam `signal_stream` berkaitan dengan proporsi `artifact_signal = 1` yang teramati?**
-                TTR = token unik/token total, regex `[A-Za-z0-9]+` dan lowercase; ia mengukur repetisi,
-                bukan kualitas atau makna token anonim. Ringkasan berikut dihitung ulang dari Train.
-                [Notebook EDA A](11_samuel_formal_eda_a.ipynb) menyimpan seluruh interpretasi dan robustness.
-                ''', 'eda-a-context'),
+                Pertanyaan resmi: **Apakah proporsi `artifact_signal = 1` berbeda menurut ketersediaan
+                `signal_stream`, dan bagaimana perbedaannya berubah setelah mempertimbangkan periode
+                `cycle_code` serta volume narasi (`text_load`)?** Ringkasan berikut dihitung ulang dari
+                official Classification Train; detail eksplorasi, denominators, support, dan keterbatasan
+                ada di [notebook EDA availability](12_samuel_formal_eda_availability.ipynb).
+
+                EDA raw ini dikembangkan setelah model diagnostics. Hasil routing berasal dari eksperimen
+                modeling/error analysis sebelumnya; EDA ini memberi konteks komposisi, bukan penjelasan kausal.
+                ''', 'eda-availability-context'),
                 _code('''
-                from src.data.samuel_eda_a import derive_features, exact_length_comparison
-                from src.data.samuel_eda_a_figures import primary_figure
-                get_ipython().run_line_magic('matplotlib','inline')
-                eda_lengths, eda_summary = exact_length_comparison(derive_features(train))
-                assert eda_summary['strata'] == 71 and eda_summary['support_rows'] == 37681
-                display(pd.DataFrame({'grup':['Keragaman rendah','Keragaman tinggi'],
-                    'n kontras':[eda_summary['low_n'],eda_summary['high_n']],
-                    'artifact=1 tertimbang (%)':[100*eda_summary['low_rate'],100*eda_summary['high_rate']]}).round(2))
-                fig=primary_figure(eda_lengths,eda_summary);display(fig);plt.close(fig)
-                ''', 'eda-a-calculation'),
+                from src.eda.availability import (
+                    add_global_quantile_bins, prepare_availability_frame,
+                    prevalence_table, standardized_contrast,
+                )
+
+                eda_availability = prepare_availability_frame(train, stream_missing_mask(train))
+                eda_marginal = prevalence_table(eda_availability, ['availability']).set_index('availability')
+                eda_cycle, _ = standardized_contrast(eda_availability, ['cycle_code'], min_support=20)
+                eda_q5_frame, _ = add_global_quantile_bins(eda_availability, 5)
+                eda_period_q5, _ = standardized_contrast(eda_q5_frame, ['period', 'text_load_q5'], min_support=20)
+                eda_q10_frame, _ = add_global_quantile_bins(eda_availability, 10)
+                eda_period_q10, _ = standardized_contrast(eda_q10_frame, ['period', 'text_load_q10'], min_support=20)
+
+                eda_contrasts = pd.DataFrame([
+                    {'kontras':'Marginal', 'gap_pp':100*(eda_marginal.loc['missing','prevalence']-eda_marginal.loc['present','prevalence']), 'coverage':1.0},
+                    {'kontras':'Exact cycle', 'gap_pp':eda_cycle['standardized_missing_minus_present_pp'], 'coverage':eda_cycle['coverage_all_rows']},
+                    {'kontras':'Periode × text_load q5', 'gap_pp':eda_period_q5['standardized_missing_minus_present_pp'], 'coverage':eda_period_q5['coverage_all_rows']},
+                    {'kontras':'Periode × text_load q10', 'gap_pp':eda_period_q10['standardized_missing_minus_present_pp'], 'coverage':eda_period_q10['coverage_all_rows']},
+                ])
+                eda_display = eda_contrasts.assign(**{'Coverage (%)':100*eda_contrasts.coverage}).drop(columns='coverage')
+                eda_display = eda_display.rename(columns={'kontras':'Kontras','gap_pp':'Gap missing − present (pp)'})
+                display(eda_display.round(2))
+                fig, ax = plt.subplots(figsize=(8.6,3.8))
+                x = np.arange(len(eda_contrasts)); values = eda_contrasts.gap_pp.to_numpy()
+                colors = ['#424a54','#1f4e79','#d17a22','#9a7b32']
+                ax.axhline(0,color='#30343b',lw=1); ax.vlines(x,0,values,color=colors,lw=2); ax.scatter(x,values,color=colors,s=48,zorder=3)
+                for i,row in eda_contrasts.iterrows():
+                    ax.annotate(f"{row.gap_pp:+.2f} pp",(i,row.gap_pp),xytext=(0,8),textcoords='offset points',ha='center',fontsize=8)
+                ax.set_xticks(x,['Marginal','Exact cycle','Periode × q5','Periode × q10'])
+                ax.set_ylim(-3.2,5.0)
+                ax.set_ylabel('Gap missing − present (pp)'); ax.set_title('Asosiasi raw berubah setelah standardisasi komposisi')
+                ax.grid(axis='y',color='#e1e4e8',linewidth=.7); fig.tight_layout(); plt.show(); plt.close(fig)
+                ''', 'eda-availability-calculation'),
                 _markdown('''
-                Pada 71 panjang didukung (37.681 support rows), proporsi tertimbang **24,19% versus38,39%**
-                memberi gap **14,20 pp**; 64/71 panjang positif. Kontras memakai9.011 rendah dan9.354 tinggi,
-                dengan average-rank tails≤0,25/≥0,75, ties dipertahankan, n≥120/panjang dan≥20/tail.
-                Bobot panjang sama untuk dua grup; support rows dan comparison rows berbeda.
-                Asosiasi tidak universal atau kausal; stream kosong dikecualikan dan pola Test belum diketahui.
-                Modeling berikut tidak menambahkan TTR sebagai predictor. Manfaat TF-IDF diuji terpisah;
-                EDA tidak membuktikan TTR menyebabkan kenaikan F1 atau merupakan fitur terbaik.
-                ''', 'eda-a-interpretation')])
+                Gap marginal **+3,66 pp** menjadi **+3,96 pp** setelah standardisasi exact cycle (seluruh Train didukung), lalu berbalik menjadi **−2,30 pp** pada periode × 5 kuantil volume dan **−2,15 pp** pada periode × 10 kuantil (coverage 94,33%). Bin volume bersifat kasar, common support tepat tidak sempurna, dan arah asosiasi bukan bukti sebab-akibat.
+
+                Secara terpisah, diagnostics modeling menunjukkan hybrid lebih lemah pada stream missing, sedangkan structured HGB lebih kuat pada subgroup itu; C4_HGB menggabungkan kedua cabang. Karena urutannya demikian, jangan menyajikan EDA ini sebagai penyebab ditemukannya routing atau klaim bahwa status missing mengubah target.
+                ''', 'eda-availability-interpretation')])
             continue
         if cell['id'] == 'optional-refit-note':
             cells.append(_code('''

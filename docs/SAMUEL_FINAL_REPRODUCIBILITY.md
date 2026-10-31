@@ -1,37 +1,44 @@
-# Reproduksi notebook modeling Samuel
+# Reproducibility notebook Samuel — TP2
 
-Notebook [Regression09](../notebooks/samuel/09_samuel_final_regression.ipynb) dan [Classification10](../notebooks/samuel/10_samuel_final_classification.ipynb) membutuhkan repository source, committed protocol/evidence JSON, dependencies, dan raw Train resmi. Keduanya tidak diklaim self-contained sebagai satu file tanpa repository. [EDA11](../notebooks/samuel/11_samuel_formal_eda_a.ipynb) tetap utuh.
+Notebook formal EDA [availability12](../notebooks/samuel/12_samuel_formal_eda_availability.ipynb), [Classification10](../notebooks/samuel/10_samuel_final_classification.ipynb), dan [Regression09](../notebooks/samuel/09_samuel_final_regression.ipynb) memerlukan repository source, protokol/evidence yang tercatat di repository, dependencies, serta official Train. Notebook tidak dimaksudkan sebagai file terisolasi tanpa source code pendukung. Notebook TTR lama [11](../notebooks/samuel/11_samuel_formal_eda_a.ipynb) dipertahankan sebagai arsip dan tidak diedit.
 
-## Setup dan Run All
+## Data dan environment
 
-Lingkungan referensi Python3.13.5. `requirements-research.txt` mencakup pinned core dan LightGBM4.6.0; jangan mengubah versi atau recipe hanya untuk meloloskan assertion.
+Lingkungan validasi menggunakan Python 3.13 dan dependencies repository. Setup di PowerShell:
 
-```powershell
-python -m pip install -r requirements-research.txt
-python -m jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=1800 notebooks/samuel/09_samuel_final_regression.ipynb
-python -m jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=1800 notebooks/samuel/10_samuel_final_classification.ipynb
-```
+    python -m pip install -r requirements-research.txt
 
-Default input: `data/raw/regression/Train.csv` dan `data/raw/classification/Train.csv`. Alternatif: set `TP2_DATA_DIR` ke folder induk yang berisi subfolder `regression/` dan `classification/`. Resolver menerima nama CSV case-insensitive, tetapi menolak ambiguitas. Hash kedua Train diverifikasi; data tidak diedit atau masuk Git.
+Sediakan hanya official Classification Train dan Regression Train untuk eksekusi inti:
 
-Classification menjalankan dua fit komponen C2_B dan C1_B pada cycle47–75, memprediksi76–79, kemudian melakukan routing/cutoff0,50 dan menghitung metrics. Regression menjalankan dua inner fits47–71→72–75 untuk memilih konfigurasi/bobot dari grid lama, satu outer fit47–75→76–79, serta dua baseline median. Ini demonstrasi protokol yang sudah dibekukan, bukan pencarian model baru.
+    data/raw/classification/Train.csv
+    data/raw/regression/Train.csv
 
-Imputasi, encoder, scaler, TF-IDF/IDF, SVD, dan estimator belajar hanya pada fit fold. Tabel primary/H12 berasal dari committed reports dengan provenance; public Kaggle dari accepted manifests. Tidak ada refresh API atau leaderboard tuning.
+Alternatifnya, atur TP2_DATA_DIR ke direktori induk yang memiliki subfolder classification dan regression. Resolver nama CSV tidak membedakan kapitalisasi dan menolak nama ambigu. File Test, SampleSubmission, submission, dan credentials tidak diperlukan untuk evaluasi temporal inti. Input raw tidak diedit dan tidak masuk Git.
 
-## Pemeriksaan tanpa cache
+## Run All
 
-```powershell
-python scripts/validate_samuel_final_notebooks.py --execute
-```
+Dari root repository, jalankan masing-masing perintah dalam kernel baru:
 
-Validator membuat salinan source/evidence dan **dua Train saja**, memakai fresh kernels. Tidak ada ignored `experiments/runs`, Test, SampleSubmission, model binaries, atau credentials. Ini file isolation pada dependencies terpasang, bukan fresh dependency installation. Opsi `--check-preservation` memeriksa bytes423 historical tracked files, termasuk EDA11, pada checkout referensi; perbedaan line endings di platform lain dapat memengaruhi byte checks tanpa berarti numerical failure.
+    python -m jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=1800 notebooks/samuel/12_samuel_formal_eda_availability.ipynb
+    python -m jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=1800 notebooks/samuel/10_samuel_final_classification.ipynb
+    python -m jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=1800 notebooks/samuel/09_samuel_final_regression.ipynb
 
-Core metrics dan probability/prediction hashes direkonsiliasi dengan W6 historis. Jika berbeda, selidiki input/order/software; jangan melonggarkan assertion tanpa review. Unit tests yang dijalankan serta visual-review status ada di [VALIDATION.json](../reports/samuel_final/VALIDATION.json).
+Untuk pemeriksaan portable dengan source tracked dan dua official Train saja, jalankan:
 
-## Refit dan inference opsional
+    python scripts/qa_samuel_availability_final.py
 
-Default `RUN_FULL_TRAIN=False` dan `RUN_FULL_TRAIN_INFERENCE=False`. Mengaktifkannya memerlukan official Test dan SampleSubmission untuk task terkait. Sel mempelajari ulang pipeline pada semua Train, mengecek schema/ID/range, dan menulis CSV lokal di ignored `artifacts/samuel_final/` dengan guard terhadap penggantian output yang berbeda. Tidak ada upload atau overwrite accepted manifests/CSV.
+QA membuat salinan sementara dari source tracked pada commit asal dan perubahan akademis Samuel yang diotorisasi. Salinan hanya memperoleh dua file Train; Test, ignored experiment caches, model binaries, submissions, serta credentials tidak disalin. Setiap notebook dijalankan melalui fresh kernel. Dependency yang sudah terpasang dipakai tanpa instalasi ulang. Receipt dan hash input disimpan di [reports/academic_availability/QA.json](../reports/academic_availability/QA.json); empat grafik EDA disimpan di folder figures untuk visual review.
 
-**Tahap opsional tidak dijalankan pada eksekusi core milestone ini.** Accepted manifests tetap menjadi bukti refit/submission sebelumnya. Notebook menunjukkan kode tahap tersebut, tetapi tidak mengklaim output optional baru. Tidak perlu menjalankannya untuk demo evaluasi temporal.
+## Apa yang dihitung
 
-Packaging akhir perlu membawa source pendukung (`src/`, helper `scripts/`, selected committed protocols/reports, requirements) atau mengikuti format lain yang disepakati asdos agar notebook tetap runnable. User belum mengotorisasi penguncian ZIP atau pengumpulan tugas. Nama export resmi tercantum pada [compliance checklist](SAMUEL_FINAL_COMPLIANCE.md); milestone berhenti pada review notebook.
+EDA12 membaca official Classification Train. Ia membangun label availability dengan fungsi yang sama seperti pipeline Classification, memvalidasi target biner dan ID, lalu menghitung prevalensi marginal, periode/cycle, distribusi text_load, dan kontras standardisasi dengan minimum 20 baris per availability per cell.
+
+Classification10 menjalankan dua komponen C2_B dan C1_B pada cycle 47–75, memprediksi 76–79, lalu mengevaluasi routing C4_HGB pada threshold 0,50. Regression09 menjalankan inner temporal selection pada 47–71 ke 72–75, satu outer fit 47–75 ke 76–79, dan baseline median. Itu menunjukkan pipeline model yang sebenarnya pada satu representative window, bukan mengulang semua ratusan fit historis.
+
+Imputasi, encoding, scaling, TF-IDF/IDF, SVD, dan estimator dipelajari hanya dari data fit. Tabel primary/H12 berasal dari laporan eksperimen terverifikasi dengan provenance; skor Kaggle public berasal dari manifests sebelumnya dan merupakan evaluasi terpisah. Tidak ada upload baru atau leaderboard tuning dalam QA ini.
+
+## Inference opsional
+
+Refit seluruh Train dan prediksi official Test dinonaktifkan secara default. Mengaktifkan inference memerlukan Test dan SampleSubmission; proses opsional memeriksa schema, IDs, serta range, dan menyimpan CSV lokal. QA ini tidak menjalankan refit inference, tidak membuat submission, dan tidak mengunggah ke Kaggle.
+
+Untuk pengumpulan akhir, notebook memerlukan source pendukung, dependencies, dan protokol/evidence yang dirujuk atau paket yang disetujui asdos. Checklist nama export resmi ada di [SAMUEL_FINAL_COMPLIANCE.md](SAMUEL_FINAL_COMPLIANCE.md). Arsip TTR EDA dan EDA temporal lama tetap dipertahankan.
