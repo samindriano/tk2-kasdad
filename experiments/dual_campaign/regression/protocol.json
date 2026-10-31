@@ -1,0 +1,33 @@
+{
+  "experiment_id": "dual_regression_blend_v1",
+  "purpose": "Test whether the existing Hybrid Ridge text model adds complementary error information to the existing LightGBM SVD32 champion.",
+  "source_scope": "Official Regression Train only; cycles 47-79. Official Test, labels from other tasks, external datasets, and Kaggle feedback are not used.",
+  "primary_control": "lgb_text_inner_v1: LightGBM regression_l1 + structured + TF-IDF/SVD32, with its frozen past-only selected parameter and rank mapping.",
+  "secondary_control": "hybrid_ridge_inner_v1: expanded structured + TF-IDF Ridge, with its frozen past-only selected rank mapping.",
+  "folds": "The six frozen expanding primary windows and two H12 windows from experiments/regression_round2/protocol.json.",
+  "component_policy": "At each cutoff, use each component's existing inner-selected model parameter and within-cycle rank weight. Blend the mapped component predictions; Ridge share is alpha.",
+  "fixed_ridge_shares": [0.25, 0.5],
+  "inner_weight_grid": [0.0, 0.25, 0.5, 0.75, 1.0],
+  "inner_selection": "At each outer cutoff E, choose Ridge share by pooled MAE on cycles E-3..E. Inner component predictions come from models fit only on cycles 47..E-4. Ties within 1e-10 choose the lower Ridge share, retaining more of the LightGBM champion.",
+  "outer_application": "Apply the selected share to the already frozen component predictions from models fit on cycles 47..E, evaluated only on cycles after E.",
+  "computed_fit_budget": {
+    "new_model_fits": 0,
+    "reason": "Reuse historical cache artifacts only after validating their folds, model-state hashes, prediction hashes, code identity, and raw Train identity.",
+    "weight_evaluations": 30,
+    "historical_fit_records_reused": "6 outer component pairs plus 6 inner component pairs; all existing folds are repeated development data."
+  },
+  "metrics": [
+    "pooled MAE",
+    "equal-cycle MAE",
+    "each primary window and each H12 window MAE",
+    "per-cycle paired delta MAE against LightGBM",
+    "signed error, EF0/EF1, target thirds, tails <=5/>=95, stream present/missing",
+    "paired absolute-error win/tie/loss rates and error correlation"
+  ],
+  "promotion_guardrails": "No promotion based on pooled MAE alone. Review H12, each window, equal-cycle error, EF/tail/stream groups, and paired per-cycle deltas. Validation has been adaptively reused and is not an untouched holdout.",
+  "next_stage_gate": "No second-family model fit in this milestone. Parent reviews the paired blend results before any bounded follow-up model family.",
+  "random_seed": 42,
+  "thread_limit": 2,
+  "external_data": false,
+  "kaggle_submission": false
+}
