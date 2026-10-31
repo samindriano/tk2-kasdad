@@ -166,6 +166,20 @@ def _read_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _validate_recipe_artifact(path: Path, expected_recipe: Mapping[str, Any],
+                              expected_semantic_sha256: str) -> None:
+    """Validate parsed recipe content against its canonical semantic digest.
+
+    Recipe files are pretty-printed for review, while ``json_sha256`` hashes
+    canonical compact JSON. Hashing the formatted file bytes would compare two
+    different serialization formats and reject a valid recipe artifact.
+    """
+    persisted = _read_json(path)
+    if (persisted != dict(expected_recipe)
+            or json_sha256(persisted) != expected_semantic_sha256):
+        raise BatchIntegrityError("Persisted R03 recipe differs from preflight freeze identity")
+
+
 def _validate_card_and_queue(queue: Mapping[str, Any], card: Mapping[str, Any]) -> None:
     if file_sha256(QUEUE_PATH) != QUEUE_SHA256 or file_sha256(CARD_PATH) != CARD_SHA256:
         raise BatchIntegrityError("R03 canonical queue or card bytes differ from the reviewed recipe")
@@ -781,8 +795,11 @@ def run_card(card: Mapping[str, Any], queue: Mapping[str, Any], *,
             raise BatchIntegrityError("Existing R03 recipe differs from current canonical recipe")
     else:
         write_json_exclusive(RECIPE_PATH, context["recipe"])
-    if file_sha256(RECIPE_PATH) != context["identity"]["recipe_artifact_sha256"]:
-        raise BatchIntegrityError("Persisted R03 recipe hash differs from preflight freeze identity")
+    _validate_recipe_artifact(
+        RECIPE_PATH,
+        context["recipe"],
+        context["identity"]["recipe_artifact_sha256"],
+    )
     identity = dict(context["identity"])
     ensure_frozen(FREEZE_PATH, identity)
     if file_sha256(context["train_path"]) != TRAIN_SHA256:

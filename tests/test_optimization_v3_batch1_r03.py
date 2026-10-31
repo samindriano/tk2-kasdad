@@ -1,10 +1,14 @@
 """Synthetic, no-fit contract tests for the R03 split-vocabulary policy."""
 from __future__ import annotations
 
+import json
+
 import numpy as np
 import pandas as pd
 import pytest
 
+from scripts.optimization_v3_batch1_r03 import _validate_recipe_artifact
+from src.models.optimization_v3_batch1 import BatchIntegrityError, json_sha256
 from src.models.optimization_v3_batch1_r03 import (
     EXPECTED_SCORE_CYCLES,
     FEATURE_NAMES,
@@ -96,3 +100,15 @@ def test_feature_selector_excludes_target_and_identifier_without_fitting() -> No
         model._select(frame.assign(threat_rank=[1.0]))
     with pytest.raises(R03IntegrityError, match="feature allowlist"):
         model._select(frame.assign(record_id=["row-1"]))
+
+
+def test_pretty_printed_recipe_validates_against_canonical_semantic_hash(tmp_path) -> None:
+    recipe = {"card_id": "R03", "parameters": {"max_features": 30_000}}
+    path = tmp_path / "recipe.json"
+    path.write_text(json.dumps(recipe, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+    _validate_recipe_artifact(path, recipe, json_sha256(recipe))
+
+    altered = {"card_id": "R03", "parameters": {"max_features": 29_999}}
+    with pytest.raises(BatchIntegrityError, match="recipe differs"):
+        _validate_recipe_artifact(path, altered, json_sha256(altered))
