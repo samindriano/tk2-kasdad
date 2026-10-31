@@ -1,8 +1,9 @@
-"""R18 read-only preflight bridge for the V3 batch1 queue.
+"""R18 runner for the frozen V3 batch1 queue card.
 
-The current assignment permits synthetic checks and a read-only preflight
-only. Official candidate scoring, freezing, and persistence are deliberately
-blocked here until MAIN independently reviews this bridge.
+The default workflow remains explicit and staged: run ``--preflight-only`` for
+read-only checks, ``--freeze-only`` to persist the reviewed recipe after MAIN's
+source review, and ``--run-frozen`` only after the freeze exists. No model or
+preprocessing estimators are fit by this calibration-only card.
 """
 from __future__ import annotations
 
@@ -684,6 +685,35 @@ def _synthetic_smoke_checks() -> list[str]:
     assert synthetic_result["views"]["H12_E"]["candidate_mae"] == synthetic_result["views"]["H12_E"]["baseline_mae"]
     assert synthetic_result["all_pilot_gates_pass"] is True
     passed.append("synthetic_late_views_and_subgroup_gate_aggregation")
+    w4_block = synthetic_blocks[67]
+    w4_rows = np.asarray(w4_block["rows"], dtype=np.int64)
+    w4_mask = (synthetic_cycles[w4_rows] >= 68) & (synthetic_cycles[w4_rows] <= 71)
+    w4_rows = w4_rows[w4_mask]
+    w4_view = {
+        "rows": w4_rows, "cycle": synthetic_cycles[w4_rows],
+        "cutoff": np.full(len(w4_rows), 67, dtype=np.int64),
+        "baseline": np.asarray(w4_block["baseline_prediction"])[w4_mask],
+        "candidate": np.asarray(w4_block["prediction"])[w4_mask],
+    }
+    w4_target = np.asarray([synthetic_target[int(row)] for row in w4_rows], dtype=np.float64)
+    w4_subgroups = synthetic_result["subgroups"]["W4"]
+    check = _verify_subgroup_table(
+        view_name="W4", view=w4_view, frame=synthetic_frame, target=w4_target,
+        stored=w4_subgroups,
+    )
+    assert check["status"] == "PASS" and check["groups"] > 0
+    tampered_subgroups = json.loads(json.dumps(w4_subgroups))
+    tampered_subgroups["target_tail"]["middle"]["n"] += 1
+    try:
+        _verify_subgroup_table(
+            view_name="W4", view=w4_view, frame=synthetic_frame, target=w4_target,
+            stored=tampered_subgroups,
+        )
+    except BatchIntegrityError:
+        pass
+    else:
+        raise AssertionError("tampered R18 subgroup denominator was accepted")
+    passed.append("independent_subgroup_table_denominators_and_metrics")
     middle_rows = np.arange(100, 200, dtype=np.int64)
     middle_view = {
         "rows": middle_rows,
@@ -1275,6 +1305,79 @@ def _independent_mae(target: Any, prediction: Any) -> float:
     return float(np.abs(y - p).sum(dtype=np.float64) / y.size)
 
 
+def _verify_subgroup_table(
+    *, view_name: str, view: Mapping[str, np.ndarray], frame: pd.DataFrame,
+    target: Any, stored: Mapping[str, Any], support_min: int = 100,
+) -> dict[str, Any]:
+    """Reconstruct every published subgroup denominator and MAE independently."""
+    rows = np.asarray(view["rows"], dtype=np.int64)
+    y = np.asarray(target, dtype=np.float64)
+    if y.shape != rows.shape or not np.isfinite(y).all():
+        raise BatchIntegrityError(f"R18 {view_name} subgroup targets are invalid or misaligned")
+    labels_by_field = _group_labels_for_view(view=view, frame=frame, target=y)
+    if not isinstance(stored, Mapping) or set(stored) != set(labels_by_field):
+        raise BatchIntegrityError(f"R18 {view_name} subgroup fields differ from the published table")
+
+    checked_groups = 0
+    for field, labels in labels_by_field.items():
+        categories = sorted(set(str(x) for x in labels))
+        if field == "entry_friction":
+            categories = sorted(set(categories) | {"0", "1", "missing"})
+        elif field == "signal_stream":
+            categories = ["present", "missing"]
+        elif field == "target_tail":
+            categories = ["low_le5", "middle", "high_ge95"]
+        elif field.endswith("_status"):
+            categories = ["seen", "unseen", "missing"]
+        stored_field = stored.get(field)
+        if not isinstance(stored_field, Mapping) or set(stored_field) != set(categories):
+            raise BatchIntegrityError(f"R18 {view_name} subgroup categories differ for {field}")
+
+        for group in categories:
+            selected = labels == group
+            n = int(selected.sum())
+            supported = n >= int(support_min)
+            if n:
+                candidate_mae = _independent_mae(y[selected], np.asarray(view["candidate"])[selected])
+                baseline_mae = _independent_mae(y[selected], np.asarray(view["baseline"])[selected])
+                harm = float(candidate_mae - baseline_mae)
+            else:
+                candidate_mae = baseline_mae = harm = None
+            guard = bool(
+                supported and view_name in {"W4", "W6", "H12_L"}
+                and ((field == "target_tail" and group in {"low_le5", "high_ge95"})
+                     or (field == "signal_stream" and group == "missing"))
+            )
+            guard_pass = None if not guard else bool(harm <= 0.25)
+            actual = stored_field[group]
+            expected = {
+                "n": n, "supported": supported,
+                "candidate_mae": candidate_mae, "baseline_mae": baseline_mae,
+                "candidate_minus_baseline_mae": harm,
+                "guard_applies": guard, "guard_pass": guard_pass,
+            }
+            if not isinstance(actual, Mapping) or set(actual) != set(expected):
+                raise BatchIntegrityError(
+                    f"R18 {view_name} subgroup result schema differs for {field}={group}"
+                )
+            for key, value in expected.items():
+                observed = actual[key]
+                if value is None:
+                    matches = observed is None
+                elif isinstance(value, (int, bool)):
+                    matches = observed == value and type(observed) is type(value)
+                else:
+                    matches = (observed is not None and np.isclose(
+                        float(observed), float(value), atol=1e-12, rtol=0.0))
+                if not matches:
+                    raise BatchIntegrityError(
+                        f"R18 {view_name} subgroup {field}={group} {key} differs: "
+                        f"stored={observed!r}, reconstructed={value!r}"
+                    )
+            checked_groups += 1
+    return {"status": "PASS", "fields": len(labels_by_field), "groups": checked_groups}
+
+
 def _independent_verify_receipts(
     *, signature: str, state: Mapping[str, Any], blocks: Mapping[int, Mapping[str, Any]],
     target_by_row: Mapping[int, float], results: Mapping[str, Any],
@@ -1393,6 +1496,7 @@ def _independent_verify_receipts(
     }
 
     subgroup_failures = []
+    subgroup_table_checks = {}
     for name in ("W4", "W6", "H12_L"):
         block, low, high = view_specs[name]
         rows = np.asarray(block["rows"], dtype=np.int64)
@@ -1406,6 +1510,10 @@ def _independent_verify_receipts(
             "candidate": np.asarray(block["prediction"])[mask],
         }
         labels = _group_labels_for_view(view=group_view, frame=frame, target=y)
+        subgroup_table_checks[name] = _verify_subgroup_table(
+            view_name=name, view=group_view, frame=frame, target=y,
+            stored=results.get("subgroups", {}).get(name), support_min=100,
+        )
         guard_groups = (
             ("target_tail", "low_le5"), ("target_tail", "high_ge95"),
             ("signal_stream", "missing"),
@@ -1442,6 +1550,7 @@ def _independent_verify_receipts(
         "status": "PASS",
         "receipt_checks": bundle_checks,
         "view_metric_checks": metric_checks,
+        "subgroup_table_checks": subgroup_table_checks,
         "independent_supported_tail_or_missing_guard_failures": subgroup_failures,
         "independent_gate_reconstruction": independent_gates,
         "test_or_sample_used": False,
