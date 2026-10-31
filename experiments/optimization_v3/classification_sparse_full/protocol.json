@@ -1,0 +1,43 @@
+{
+  "experiment": "Optimization V3 sparse TF-IDF LightGBM Classification full six windows",
+  "continuation_of": "classification_sparse pilot, frozen signature 59104d95490adc147c07cfa18559074dae71599530fc1d0a7a5d948ae26a2d33",
+  "candidate_policy": "fixed 25% sparse-LGB probability plus 75% C2_B probability for stream-present rows; retain existing CatBoost missing-stream expert for stream-missing rows",
+  "new_fit_cutoffs": [59, 63, 71, 75],
+  "reused_fit_cutoffs": [55, 67],
+  "primary_windows": {
+    "W1": [55, 56, 59],
+    "W2": [59, 60, 63],
+    "W3": [63, 64, 67],
+    "W4": [67, 68, 71],
+    "W5": [71, 72, 75],
+    "W6": [75, 76, 79]
+  },
+  "h12_policy": "reuse cutoff 55 probabilities for cycles 56-67 and cutoff 67 probabilities for cycles 68-79; do not refit",
+  "model": {
+    "id": "V3_SPARSE_LGB_BINARY",
+    "objective": "binary",
+    "learning_rate": 0.05,
+    "n_estimators": 400,
+    "num_leaves": 15,
+    "min_child_samples": 50,
+    "reg_lambda": 3.0,
+    "reg_alpha": 0.0,
+    "random_state": 42,
+    "deterministic": true,
+    "force_col_wise": true,
+    "n_jobs": 2,
+    "threshold": 0.5
+  },
+  "guardrails": {
+    "no_test_or_kaggle_access": true,
+    "no_new_thresholds_or_weights": true,
+    "no_fit_on_validation_rows": true,
+    "missing_stream_branch_unchanged": true,
+    "parent_review_gates": {
+      "primary_macro_f1_gain_minimum": 0.0005,
+      "h12_macro_f1_harm_maximum": 0.001,
+      "nonnegative_primary_windows_minimum": 4
+    }
+  },
+  "subgroups": "stream present/missing; text_load quartiles and low/high tails with cut points computed only from feature values in cycles 47-55"
+}
