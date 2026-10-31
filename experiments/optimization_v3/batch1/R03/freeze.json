@@ -1,0 +1,416 @@
+{
+  "created_at_utc": "2026-10-31T21:38:24.960615+00:00",
+  "identity": {
+    "card": {
+      "card_path": "reports/optimization_v3/research_backlog/cards/R03.md",
+      "change": "Two regression TF-IDF blocks: unigram cap30000 and bigram cap30000, min_df2/sublinear, otherwise original defaults. Same structured/OHE and sparse L1 model.",
+      "condition": "No additional dependency",
+      "evaluation": "STANDARD",
+      "evidence": [
+        "reports/optimization_v2/regression_repr/fullsix.json",
+        "reports/optimization_v3/research_backlog/feasibility.json"
+      ],
+      "family": "vocab_allocation",
+      "id": "R03",
+      "implementation": "NOT_IMPLEMENTED",
+      "in_priority_prefix": true,
+      "name": "Split unigram/bigram budgets",
+      "new_results": null,
+      "pilot_predictor_fits": 2,
+      "policy": "R_SPARSE_REPLACE",
+      "preflight_checks": [],
+      "priority": "P1",
+      "queue_order": 8,
+      "rationale": "Unigram dan bigram berebut anggaran vocabulary; pembagian terpisah mempertahankan kedua order tanpa mengulang unigram-only.",
+      "status": "PLANNED_NOT_RUN",
+      "task": "regression"
+    },
+    "control_lineage": {
+      "fullsix_freeze_sha256": "bb38f5fb7df09f0642ad18f064373f2b7051ed64e8b5d260ccb2d31b84ef909c",
+      "fullsix_prediction_cache_sha256": "4b87b0da34069ea3d75490233c574fbd92283f8b6472a43d8c654a20a4b904c9",
+      "fullsix_report_sha256": "a9686473998722b8f86a0f6a4489b4e3a75a6b6ba20c661ac564e6a5e61aea48",
+      "manifest_recipe_id": "v2_reg_sparse_lgb25",
+      "manifest_status": "PREPARED_AND_QA_PASS",
+      "old_sparse_pilot_cache_sha256": "eae6bea2dd6933de59ac0f63f54cc08124b59d4bcba91bbe05a7c5ec3dab9ff6",
+      "old_sparse_pilot_verified": true,
+      "pilot_report_sha256": "2a1bb2d4db3fd531478de2aeedaf4e380472f39f1439a40abef9511042dec653",
+      "pilot_verification_sha256": "4e42ee044d9832c47e4fbf6305a1c4a86fa42e0b089080cf3befd74811bbb740",
+      "ridge25_cache_sha256": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516"
+    },
+    "evaluation_views": {
+      "H12": [
+        [
+          55,
+          56,
+          67
+        ],
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "W1": [
+        [
+          55,
+          56,
+          59
+        ]
+      ],
+      "W4": [
+        [
+          67,
+          68,
+          71
+        ]
+      ],
+      "primary": [
+        [
+          55,
+          56,
+          59
+        ],
+        [
+          67,
+          68,
+          71
+        ]
+      ]
+    },
+    "expected_fit_rows": {
+      "55": 12020,
+      "67": 29705
+    },
+    "expected_score_rows": {
+      "H12": 38588,
+      "H12_E": 17685,
+      "H12_L": 20903,
+      "W1": 4114,
+      "W4": 4950,
+      "primary": 9064
+    },
+    "feature_names": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code",
+      "signal_stream"
+    ],
+    "input_sha256": {
+      "accepted_sparse_fullsix_freeze": "bb38f5fb7df09f0642ad18f064373f2b7051ed64e8b5d260ccb2d31b84ef909c",
+      "accepted_sparse_fullsix_prediction_cache": "4b87b0da34069ea3d75490233c574fbd92283f8b6472a43d8c654a20a4b904c9",
+      "accepted_sparse_fullsix_report": "a9686473998722b8f86a0f6a4489b4e3a75a6b6ba20c661ac564e6a5e61aea48",
+      "accepted_sparse_pilot_prediction_cache": "eae6bea2dd6933de59ac0f63f54cc08124b59d4bcba91bbe05a7c5ec3dab9ff6",
+      "accepted_sparse_pilot_report": "2a1bb2d4db3fd531478de2aeedaf4e380472f39f1439a40abef9511042dec653",
+      "accepted_sparse_pilot_verification": "4e42ee044d9832c47e4fbf6305a1c4a86fa42e0b089080cf3befd74811bbb740",
+      "accepted_v2_reg_sparse_lgb25_manifest": "dd166e92089f24978244496a9a0afabc0d06551dbdc326579a7c898a8844e19a",
+      "canonical_card": "c16de95d965865a6fd56bcfa249042455e4a73102a7b649cc8abda373a3d4c97",
+      "canonical_queue": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+      "official_regression_train": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+      "read_only_feasibility_report": "7d164a372e000f1e078cc6fcd50d68861e30b5870c4b526d49213d5b6b79ee3d",
+      "ridge25_and_paired_prediction_cache": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516"
+    },
+    "package_versions": {
+      "lightgbm": "4.6.0",
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.8.0",
+      "scipy": "1.18.0",
+      "threadpoolctl": "3.6.0"
+    },
+    "recipe": {
+      "card_id": "R03",
+      "evaluation": {
+        "cutoffs": [
+          55,
+          67
+        ],
+        "denominators": {
+          "H12": 38588,
+          "H12_E": 17685,
+          "H12_L": 20903,
+          "W1": 4114,
+          "W4": 4950,
+          "primary": 9064
+        },
+        "fit_rows": {
+          "55": 12020,
+          "67": 29705
+        },
+        "minimum_group_support": 100,
+        "predictor_fits": 2,
+        "profile": "STANDARD",
+        "score_cycles": {
+          "55": [
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            65,
+            66,
+            67
+          ],
+          "67": [
+            68,
+            69,
+            70,
+            71,
+            72,
+            73,
+            74,
+            75,
+            76,
+            77,
+            78,
+            79
+          ]
+        },
+        "views": {
+          "H12": [
+            [
+              55,
+              56,
+              67
+            ],
+            [
+              67,
+              68,
+              79
+            ]
+          ],
+          "W1": [
+            [
+              55,
+              56,
+              59
+            ]
+          ],
+          "W4": [
+            [
+              67,
+              68,
+              71
+            ]
+          ],
+          "primary": [
+            [
+              55,
+              56,
+              59
+            ],
+            [
+              67,
+              68,
+              71
+            ]
+          ]
+        }
+      },
+      "feature_allowlist": [
+        "impact_load",
+        "entry_friction",
+        "cycle_code",
+        "scope_pressure",
+        "text_load",
+        "scope_trace",
+        "org_spread",
+        "module_spread",
+        "telemetry_flag",
+        "org_code",
+        "module_code",
+        "pattern_code",
+        "signal_stream"
+      ],
+      "feature_role": {
+        "record_id": "identity_only",
+        "threat_rank": "target_only"
+      },
+      "fixed_control_metrics_from_queue": {
+        "H12_mae": 14.04753258299653,
+        "primary_mae": 11.559390078665364
+      },
+      "gate": {
+        "individual_pilot_view_MAE_harm_max": 0.5,
+        "pilot_H12_MAE_harm_max": 0.05,
+        "pilot_primary_MAE_gain_min": 0.03,
+        "supported_group_n_min": 100,
+        "supported_tail_or_missing_MAE_harm_max": 0.25
+      },
+      "prediction_policy": {
+        "candidate": "clip(0.75 * frozen Ridge25 + 0.25 * rank50(new raw sparse), 0, 100)",
+        "rank50": "clip(0.5 * raw + 0.5 * (100 * average_rank(raw)/n_cycle),0,100)",
+        "ranking_population": "all score rows for each cycle in complete 12-cycle horizon per cutoff",
+        "ridge25_and_old_sparse_control": "row-exact frozen caches; old sparse raw receives rank50 once",
+        "ties": "average"
+      },
+      "queue_recipe": {
+        "card_path": "reports/optimization_v3/research_backlog/cards/R03.md",
+        "change": "Two regression TF-IDF blocks: unigram cap30000 and bigram cap30000, min_df2/sublinear, otherwise original defaults. Same structured/OHE and sparse L1 model.",
+        "condition": "No additional dependency",
+        "evaluation": "STANDARD",
+        "evidence": [
+          "reports/optimization_v2/regression_repr/fullsix.json",
+          "reports/optimization_v3/research_backlog/feasibility.json"
+        ],
+        "family": "vocab_allocation",
+        "id": "R03",
+        "implementation": "NOT_IMPLEMENTED",
+        "in_priority_prefix": true,
+        "name": "Split unigram/bigram budgets",
+        "new_results": null,
+        "pilot_predictor_fits": 2,
+        "policy": "R_SPARSE_REPLACE",
+        "preflight_checks": [],
+        "priority": "P1",
+        "queue_order": 8,
+        "rationale": "Unigram dan bigram berebut anggaran vocabulary; pembagian terpisah mempertahankan kedua order tanpa mengulang unigram-only.",
+        "status": "PLANNED_NOT_RUN",
+        "task": "regression"
+      },
+      "resource_policy": {
+        "concurrent_jobs": 1,
+        "free_ram_reserve_bytes": 2147483648,
+        "job_memory_cap_bytes": 6442450944,
+        "no_densification": true,
+        "threads": 2
+      },
+      "sparse_regressor": {
+        "class": "lightgbm.LGBMRegressor",
+        "early_stopping": false,
+        "objective": "regression_l1",
+        "parameters": {
+          "boosting_type": "gbdt",
+          "colsample_bytree": 1.0,
+          "deterministic": true,
+          "force_col_wise": true,
+          "learning_rate": 0.05,
+          "max_depth": -1,
+          "min_child_samples": 40,
+          "min_child_weight": 0.001,
+          "n_estimators": 400,
+          "n_jobs": 2,
+          "num_leaves": 31,
+          "objective": "regression_l1",
+          "random_state": 42,
+          "reg_alpha": 0.0,
+          "reg_lambda": 1.0,
+          "subsample": 1.0,
+          "subsample_freq": 0,
+          "verbosity": -1
+        },
+        "sparse_csr_only": true
+      },
+      "structured": {
+        "categorical_columns": [
+          "org_code",
+          "module_code",
+          "pattern_code"
+        ],
+        "missing_stream_indicator": true,
+        "numeric_parser": "Round2 _SelectedPreprocessor fit only on fold Train rows",
+        "ohe": {
+          "dtype": "float64",
+          "handle_unknown": "infrequent_if_exist",
+          "max_categories": 254,
+          "min_frequency": 30,
+          "sparse_output": true
+        },
+        "scaler": "sklearn StandardScaler default parameters",
+        "source": "RegressionTextModel._structured_fit/_structured_transform"
+      },
+      "tfidf_blocks": {
+        "bigram": {
+          "analyzer": "word",
+          "binary": false,
+          "decode_error": "strict",
+          "dtype": "float64",
+          "encoding": "utf-8",
+          "input": "content",
+          "lowercase": true,
+          "max_df": 1.0,
+          "max_features": 30000,
+          "min_df": 2,
+          "ngram_range": [
+            2,
+            2
+          ],
+          "norm": "l2",
+          "preprocessor": null,
+          "smooth_idf": true,
+          "stop_words": null,
+          "strip_accents": null,
+          "sublinear_tf": true,
+          "token_pattern": "(?u)\\b\\w\\w+\\b",
+          "tokenizer": null,
+          "use_idf": true,
+          "vocabulary": null
+        },
+        "unigram": {
+          "analyzer": "word",
+          "binary": false,
+          "decode_error": "strict",
+          "dtype": "float64",
+          "encoding": "utf-8",
+          "input": "content",
+          "lowercase": true,
+          "max_df": 1.0,
+          "max_features": 30000,
+          "min_df": 2,
+          "ngram_range": [
+            1,
+            1
+          ],
+          "norm": "l2",
+          "preprocessor": null,
+          "smooth_idf": true,
+          "stop_words": null,
+          "strip_accents": null,
+          "sublinear_tf": true,
+          "token_pattern": "(?u)\\b\\w\\w+\\b",
+          "tokenizer": null,
+          "use_idf": true,
+          "vocabulary": null
+        }
+      }
+    },
+    "recipe_artifact_sha256": "73f530acafe2f5343401ef55bef3947da4749a19cc6625e63df52f0bca0bdf8e",
+    "resource_policy": {
+      "concurrent_jobs": 1,
+      "free_ram_reserve_bytes": 2147483648,
+      "job_memory_cap_bytes": 6442450944,
+      "no_densification": true,
+      "threads": 2
+    },
+    "schema_version": 1,
+    "source_sha256": {
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_r03.py": "683dbdcaaacdf40a4446a25ee2773682f97d1319eb62fafa5adeb253498235d0",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_reg_diagnostics.py": "e2af49bb45353fca5bf0c14093be9b0f0b02afe24289a1b5c30dfb584bbd3f55",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v2_regression.py": "b235cfd93c8cc0a207cfcea79892b925f9dfdfe515491a459d6ca1b6142cb590",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1.py": "d21ac914d0d1f516a93e431116556dabdbe7313a21fd2b1b04a73371bd56f420",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1_r03.py": "eec5407f1e2d86b18c2fb5dfd56e50de6acd858827e21ccb2038912c0def5d12",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_research_tabular.py": "674d7e52c485583729b8fe999dc133c39aae8dd85abd005a598e2caea9af99f9",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_round2_models.py": "f56f7ee2c337acdf2cbe7160719faf62b1e3d3470a7f656b044ce0890d677e09",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\utils\\paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\tests\\test_optimization_v3_batch1_r03.py": "34dbfdbb01f371d1a6a8def875f02539fec8b2cca1f3cc5836706980e7c4db9b"
+    },
+    "test_data_used": false,
+    "validation_labels_passed_to_adapter": false
+  },
+  "signature": "d66b6f73efb6a114e084c8840ebe8bf103df51c18974283ea1476e13a84134da"
+}

@@ -1,0 +1,260 @@
+{
+  "card_id": "R03",
+  "evaluation": {
+    "cutoffs": [
+      55,
+      67
+    ],
+    "denominators": {
+      "H12": 38588,
+      "H12_E": 17685,
+      "H12_L": 20903,
+      "W1": 4114,
+      "W4": 4950,
+      "primary": 9064
+    },
+    "fit_rows": {
+      "55": 12020,
+      "67": 29705
+    },
+    "minimum_group_support": 100,
+    "predictor_fits": 2,
+    "profile": "STANDARD",
+    "score_cycles": {
+      "55": [
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67
+      ],
+      "67": [
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79
+      ]
+    },
+    "views": {
+      "H12": [
+        [
+          55,
+          56,
+          67
+        ],
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "W1": [
+        [
+          55,
+          56,
+          59
+        ]
+      ],
+      "W4": [
+        [
+          67,
+          68,
+          71
+        ]
+      ],
+      "primary": [
+        [
+          55,
+          56,
+          59
+        ],
+        [
+          67,
+          68,
+          71
+        ]
+      ]
+    }
+  },
+  "feature_allowlist": [
+    "impact_load",
+    "entry_friction",
+    "cycle_code",
+    "scope_pressure",
+    "text_load",
+    "scope_trace",
+    "org_spread",
+    "module_spread",
+    "telemetry_flag",
+    "org_code",
+    "module_code",
+    "pattern_code",
+    "signal_stream"
+  ],
+  "feature_role": {
+    "record_id": "identity_only",
+    "threat_rank": "target_only"
+  },
+  "fixed_control_metrics_from_queue": {
+    "H12_mae": 14.04753258299653,
+    "primary_mae": 11.559390078665364
+  },
+  "gate": {
+    "individual_pilot_view_MAE_harm_max": 0.5,
+    "pilot_H12_MAE_harm_max": 0.05,
+    "pilot_primary_MAE_gain_min": 0.03,
+    "supported_group_n_min": 100,
+    "supported_tail_or_missing_MAE_harm_max": 0.25
+  },
+  "prediction_policy": {
+    "candidate": "clip(0.75 * frozen Ridge25 + 0.25 * rank50(new raw sparse), 0, 100)",
+    "rank50": "clip(0.5 * raw + 0.5 * (100 * average_rank(raw)/n_cycle),0,100)",
+    "ranking_population": "all score rows for each cycle in complete 12-cycle horizon per cutoff",
+    "ridge25_and_old_sparse_control": "row-exact frozen caches; old sparse raw receives rank50 once",
+    "ties": "average"
+  },
+  "queue_recipe": {
+    "card_path": "reports/optimization_v3/research_backlog/cards/R03.md",
+    "change": "Two regression TF-IDF blocks: unigram cap30000 and bigram cap30000, min_df2/sublinear, otherwise original defaults. Same structured/OHE and sparse L1 model.",
+    "condition": "No additional dependency",
+    "evaluation": "STANDARD",
+    "evidence": [
+      "reports/optimization_v2/regression_repr/fullsix.json",
+      "reports/optimization_v3/research_backlog/feasibility.json"
+    ],
+    "family": "vocab_allocation",
+    "id": "R03",
+    "implementation": "NOT_IMPLEMENTED",
+    "in_priority_prefix": true,
+    "name": "Split unigram/bigram budgets",
+    "new_results": null,
+    "pilot_predictor_fits": 2,
+    "policy": "R_SPARSE_REPLACE",
+    "preflight_checks": [],
+    "priority": "P1",
+    "queue_order": 8,
+    "rationale": "Unigram dan bigram berebut anggaran vocabulary; pembagian terpisah mempertahankan kedua order tanpa mengulang unigram-only.",
+    "status": "PLANNED_NOT_RUN",
+    "task": "regression"
+  },
+  "resource_policy": {
+    "concurrent_jobs": 1,
+    "free_ram_reserve_bytes": 2147483648,
+    "job_memory_cap_bytes": 6442450944,
+    "no_densification": true,
+    "threads": 2
+  },
+  "sparse_regressor": {
+    "class": "lightgbm.LGBMRegressor",
+    "early_stopping": false,
+    "objective": "regression_l1",
+    "parameters": {
+      "boosting_type": "gbdt",
+      "colsample_bytree": 1.0,
+      "deterministic": true,
+      "force_col_wise": true,
+      "learning_rate": 0.05,
+      "max_depth": -1,
+      "min_child_samples": 40,
+      "min_child_weight": 0.001,
+      "n_estimators": 400,
+      "n_jobs": 2,
+      "num_leaves": 31,
+      "objective": "regression_l1",
+      "random_state": 42,
+      "reg_alpha": 0.0,
+      "reg_lambda": 1.0,
+      "subsample": 1.0,
+      "subsample_freq": 0,
+      "verbosity": -1
+    },
+    "sparse_csr_only": true
+  },
+  "structured": {
+    "categorical_columns": [
+      "org_code",
+      "module_code",
+      "pattern_code"
+    ],
+    "missing_stream_indicator": true,
+    "numeric_parser": "Round2 _SelectedPreprocessor fit only on fold Train rows",
+    "ohe": {
+      "dtype": "float64",
+      "handle_unknown": "infrequent_if_exist",
+      "max_categories": 254,
+      "min_frequency": 30,
+      "sparse_output": true
+    },
+    "scaler": "sklearn StandardScaler default parameters",
+    "source": "RegressionTextModel._structured_fit/_structured_transform"
+  },
+  "tfidf_blocks": {
+    "bigram": {
+      "analyzer": "word",
+      "binary": false,
+      "decode_error": "strict",
+      "dtype": "float64",
+      "encoding": "utf-8",
+      "input": "content",
+      "lowercase": true,
+      "max_df": 1.0,
+      "max_features": 30000,
+      "min_df": 2,
+      "ngram_range": [
+        2,
+        2
+      ],
+      "norm": "l2",
+      "preprocessor": null,
+      "smooth_idf": true,
+      "stop_words": null,
+      "strip_accents": null,
+      "sublinear_tf": true,
+      "token_pattern": "(?u)\\b\\w\\w+\\b",
+      "tokenizer": null,
+      "use_idf": true,
+      "vocabulary": null
+    },
+    "unigram": {
+      "analyzer": "word",
+      "binary": false,
+      "decode_error": "strict",
+      "dtype": "float64",
+      "encoding": "utf-8",
+      "input": "content",
+      "lowercase": true,
+      "max_df": 1.0,
+      "max_features": 30000,
+      "min_df": 2,
+      "ngram_range": [
+        1,
+        1
+      ],
+      "norm": "l2",
+      "preprocessor": null,
+      "smooth_idf": true,
+      "stop_words": null,
+      "strip_accents": null,
+      "sublinear_tf": true,
+      "token_pattern": "(?u)\\b\\w\\w+\\b",
+      "tokenizer": null,
+      "use_idf": true,
+      "vocabulary": null
+    }
+  }
+}
