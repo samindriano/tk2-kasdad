@@ -788,7 +788,7 @@ def run_card(card: Mapping[str, Any], queue: Mapping[str, Any], *,
             write_json_exclusive(RECIPE_PATH, context["recipe"])
         if FREEZE_PATH.exists():
             frozen = _read_json(FREEZE_PATH)
-            if frozen.get("identity") != context["identity"] or frozen.get("identity_sha256") != json_sha256(context["identity"]):
+            if frozen.get("identity") != context["identity"] or frozen.get("signature") != json_sha256(context["identity"]):
                 raise BatchIntegrityError("Existing R21 freeze differs; refusing overwrite")
         else:
             ensure_frozen(FREEZE_PATH, context["identity"])
@@ -807,7 +807,7 @@ def run_card(card: Mapping[str, Any], queue: Mapping[str, Any], *,
     if _read_json(RECIPE_PATH) != context["recipe"]:
         raise BatchIntegrityError("R21 recipe differs from live preflight; no fit started")
     frozen = _read_json(FREEZE_PATH)
-    if frozen.get("identity") != context["identity"] or frozen.get("identity_sha256") != json_sha256(context["identity"]):
+    if frozen.get("identity") != context["identity"] or frozen.get("signature") != json_sha256(context["identity"]):
         raise BatchIntegrityError("R21 source/input identity differs from committed freeze; no fit started")
     if file_sha256(context["train_path"]) != TRAIN_SHA256:
         raise BatchIntegrityError("Official Train changed after R21 freeze")
