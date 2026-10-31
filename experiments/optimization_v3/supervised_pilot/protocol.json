@@ -1,0 +1,63 @@
+{
+  "experiment_id": "optimization_v3_ordered_supervised_token_summaries_pilot",
+  "hypothesis": "Past-cycle target statistics summarized over signal_stream document tokens may add a compact supervised lexical feature family that differs from word TF-IDF and sparse/NB representations. This is an association/prediction hypothesis, not a claim about token meaning or causation.",
+  "comparison_interpretation": "The new Classification expert is deliberately fit on present-stream rows only; current controls were fit on their original supplied populations. Therefore candidate-control deltas jointly reflect representation and fit-population differences and cannot be attributed to token statistics alone. Missing-stream rows remain on the unchanged CB_MISSING route.",
+  "encoder": {
+    "token_unit": "Unigram document-presence: each normalized analyzer token counts at most once per report.",
+    "normalization": "sklearn TfidfVectorizer unigram analyzer with lowercase and Unicode accent stripping.",
+    "minimum_document_support": 3,
+    "smoothing": 30.0,
+    "summary_features": ["posterior mean", "minimum", "maximum", "standard deviation", "75th percentile", "known-token share", "log unique-token count", "log mean token support"],
+    "training_order": "All reports in cycle c are encoded before any target from cycle c is added. Each fitted training row may only use target labels from strictly earlier cycles. Validation rows use all labels from the corresponding past-only fit period.",
+    "classification_target_unit": "artifact_signal in {0,1}.",
+    "regression_target_unit": "threat_rank / 100 for token statistics; unchanged 0-100 target for regression estimator."
+  },
+  "model": {
+    "class": "src.models.optimization_v3_supervised.OrderedStatsBoost",
+    "parameters": {"n_estimators": 400, "num_leaves": 15, "min_child_samples": 40, "reg_lambda": 3.0, "learning_rate": 0.05, "random_state": 42, "n_jobs": 2},
+    "classification_objective": "binary, threshold fixed at 0.50",
+    "regression_objective": "regression_l1"
+  },
+  "fits": [
+    {"task": "classification", "cutoff": 55, "train_cycles": [47, 55], "validation_cycles": [56, 67]},
+    {"task": "classification", "cutoff": 67, "train_cycles": [47, 67], "validation_cycles": [68, 79]},
+    {"task": "regression", "cutoff": 55, "train_cycles": [47, 55], "validation_cycles": [56, 67]},
+    {"task": "regression", "cutoff": 67, "train_cycles": [47, 67], "validation_cycles": [68, 79]}
+  ],
+  "classification_policies": {
+    "fit_population": "Present-stream rows only, signal_stream non-missing and nonblank, cycles 47 through the cutoff. The expert is only routed for present streams; absent/blank streams remain on the original CB_MISSING expert.",
+    "initial_control": "C2_B on present streams and original CB_MISSING expert on missing streams.",
+    "latest_control": "Fixed 25% sparse-LGB + 75% C2_B present expert from the verified Optimization V3 sparse pilot; original CB_MISSING expert on missing streams.",
+    "direct_candidate": "Use OrderedStatsBoost probability on present streams and preserve CB_MISSING on missing streams.",
+    "fixed_blend_candidate": "Use 25% OrderedStatsBoost probability + 75% latest sparse25 control on present streams; preserve CB_MISSING exactly on missing streams.",
+    "advance_gate_vs_latest": "Pooled primary-pilot OR pooled H12 Macro F1 improves, and no W1/W4/H12_E/H12_L view loses more than 0.01 Macro F1."
+  },
+  "regression_policies": {
+    "fit_population": "All official Regression Train rows in cycles 47 through the cutoff.",
+    "control": "Current three-component champion reconstructed from the original row-aligned V2 caches via scripts/optimization_v3_reg_diagnostics.py:_build_view.",
+    "direct": "Raw OrderedStatsBoost regression output.",
+    "rank50": "Within-cycle average-rank percentile blend: clip(0.5*raw + 0.5*100*average_rank/n, 0, 100).",
+    "fixed_blend": "clip(0.75*current_champion + 0.25*rank50, 0, 100).",
+    "advance_gate_for_fixed_blend": "Pooled primary-pilot OR H12 MAE improves and the maximum MAE harm in W1/W4/H12_E/H12_L is at most 0.50."
+  },
+  "views": ["W1", "W4", "H12_E", "H12_L", "primary_pilot", "H12"],
+  "boundaries": {
+    "official_train_only": true,
+    "test_read": false,
+    "kaggle_access": false,
+    "new_fit_count": 4,
+    "threshold_or_weight_search": false,
+    "outer_validation_targets_used_for_fit_or_policy_selection": false,
+    "classification_missing_streams_excluded_from_supervised_expert_fit": true,
+    "regression_uses_all_train_stream_availability_groups": true
+  },
+  "fit_population": {
+    "classification": "signal_stream present and nonblank, cycles 47 through cutoff; present-only expert",
+    "regression": "all official Train rows, cycles 47 through cutoff"
+  },
+  "interpretation_limits": [
+    "These are known Train-cycle development views reused in prior adaptive work, not an untouched holdout.",
+    "The token summaries describe past label associations and do not identify anonymous token semantics.",
+    "A model gain would not establish that individual tokens cause the target or generalize to official Test."
+  ]
+}
