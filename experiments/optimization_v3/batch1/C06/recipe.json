@@ -1,0 +1,143 @@
+{
+  "accepted_control": {
+    "manifest": "reports\\optimization_v3\\kaggle\\v3_cls_sparse25.json",
+    "manifest_sha256": "6e7c2cb50fe6d0ee4767a44c40f152b6538b933fab6cf7082659b16d791f7d1e",
+    "missing_model": "frozen CatBoost probability unchanged",
+    "present_model": "C2_B probability 0.75 + frozen sparse-binary probability 0.25",
+    "threshold": 0.5
+  },
+  "appended_features": [
+    "org_code__novel_from_prior_cycles",
+    "org_code__missing",
+    "module_code__novel_from_prior_cycles",
+    "module_code__missing",
+    "pattern_code__novel_from_prior_cycles",
+    "pattern_code__missing"
+  ],
+  "card_id": "C06",
+  "card_sha256": "9b2b16a4431950a2532b8669e5712d70e96203eb1d518be960ff7ee0cb1268dc",
+  "evaluation_views": {
+    "H12": [
+      [
+        55,
+        56,
+        67
+      ],
+      [
+        67,
+        68,
+        79
+      ]
+    ],
+    "W1": [
+      [
+        55,
+        56,
+        59
+      ]
+    ],
+    "W4": [
+      [
+        67,
+        68,
+        71
+      ]
+    ],
+    "primary": [
+      [
+        55,
+        56,
+        59
+      ],
+      [
+        67,
+        68,
+        71
+      ]
+    ]
+  },
+  "fit_predictor_count": 2,
+  "gates": {
+    "individual_pilot_view_harm_max": 0.005,
+    "pilot_H12_harm_max": 0.001,
+    "pilot_primary_gain_min": 0.0005,
+    "positive_and_negative_per_group_min": 30,
+    "positive_class_recall_harm_max": 0.02,
+    "supported_group_F1_harm_max": 0.01,
+    "supported_group_n_min": 200
+  },
+  "input_feature_names": [
+    "impact_load",
+    "entry_friction",
+    "cycle_code",
+    "scope_pressure",
+    "text_load",
+    "scope_trace",
+    "org_spread",
+    "module_spread",
+    "telemetry_flag",
+    "org_code",
+    "module_code",
+    "pattern_code",
+    "signal_stream"
+  ],
+  "metric": "Macro F1 at the frozen threshold 0.50",
+  "ordered_category_novelty": {
+    "features_per_field": [
+      "novel_from_prior_cycles",
+      "missing"
+    ],
+    "fields": [
+      "org_code",
+      "module_code",
+      "pattern_code"
+    ],
+    "fit_rule": "encode every row in cycle c as novel iff nonmissing category is absent from vocabulary from cycles strictly less than c; update vocabulary only after all rows in cycle c are encoded",
+    "later_cycle_categories_used_for_fit_flags": false,
+    "minimum_fit_support_per_binary_feature": {
+      "ones": 30,
+      "zeros": 30
+    },
+    "missing_rule": "pd.isna values set missing=1 and novel=0; category strings are stripped; blank string remains a category to match the unchanged sparse structured model",
+    "outer_score_rule": "a nonmissing score row is novel iff its category is absent from the full fit-prefix vocabulary",
+    "target_rates_used": false,
+    "validation_labels_used": false
+  },
+  "policy": ".75 frozen C2_B +.25 new sparse expert on present; frozen CB missing; threshold.50",
+  "status": "FROZEN_RECIPE_BEFORE_PILOT",
+  "test_data_used": false,
+  "unchanged_sparse_classifier": {
+    "design_order": "original sparse structured+TFIDF+stream-missing design, then the six chronology-only novelty/missing flags",
+    "early_stopping": false,
+    "model": "LightGBM LGBMClassifier",
+    "parameters": {
+      "deterministic": true,
+      "force_col_wise": true,
+      "learning_rate": 0.05,
+      "min_child_samples": 50,
+      "n_estimators": 400,
+      "n_jobs": 2,
+      "num_leaves": 15,
+      "objective": "binary",
+      "random_state": 42,
+      "reg_alpha": 0.0,
+      "reg_lambda": 3.0,
+      "verbosity": -1
+    },
+    "structured_preprocessing": "RegressionTextModel._structured_fit/_structured_transform",
+    "tfidf_parameters": {
+      "dtype": "float64",
+      "lowercase": true,
+      "max_df": 0.995,
+      "max_features": 20000,
+      "min_df": 3,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "strip_accents": "unicode",
+      "sublinear_tf": true
+    },
+    "threads": 2
+  }
+}

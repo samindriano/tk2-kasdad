@@ -1,0 +1,1165 @@
+{
+  "created_at_utc": "2026-10-31T23:22:27.238858+00:00",
+  "identity": {
+    "accepted_manifest_sha256": "6e7c2cb50fe6d0ee4767a44c40f152b6538b933fab6cf7082659b16d791f7d1e",
+    "card": {
+      "card_path": "reports/optimization_v3/research_backlog/cards/C06.md",
+      "change": "For org_code/module_code/pattern_code, encode a training row as novel only if category absent from strictly earlier cycles. After encoding entire cycle update feature-only vocabulary. Outer rows use all fit categories. Missing gets a separate indicator, not novel. Append flags to current sparse model.",
+      "condition": "No additional dependency",
+      "evaluation": "STANDARD",
+      "evidence": [
+        "reports/optimization_v3/classification_diagnostics/audit.json"
+      ],
+      "family": "category_novelty",
+      "id": "C06",
+      "implementation": "NOT_IMPLEMENTED",
+      "in_priority_prefix": true,
+      "name": "Learnable ordered category novelty",
+      "new_results": null,
+      "pilot_predictor_fits": 2,
+      "policy": "C_SPARSE_REPLACE",
+      "preflight_checks": [
+        "Label-free chronological proof; each added flag must have \u00c3\u00a2\u00e2\u20ac\u00b0\u00c2\u00a530 training zeros and ones; static full-fit-vocab flags are forbidden because all training values would be0"
+      ],
+      "priority": "P2",
+      "queue_order": 17,
+      "rationale": "Indikator unknown dari vocabulary fit penuh konstan saat training; novelty dari cycle sebelumnya memberi variasi yang bisa dipelajari.",
+      "status": "PLANNED_NOT_RUN",
+      "task": "classification"
+    },
+    "control_records": {
+      "55": {
+        "c2b_control": {
+          "audit_sha256": "1a6c84022dbbb806b635e9548020428fd2202a4cff7e7c1e12fe61915aed6074",
+          "cache_sha256": "ce49c6b471f4b9eca8be1c24fa37b487d9a688b28dc543e3faa1a8b6fc7d177c",
+          "fit_rows": 12020,
+          "probability_sha256": "45b5a44456316b2f03d7df6043f880a4b14be7c4d96c455bc7bb46c6f60cec82"
+        },
+        "catboost_cache_sha256": "0cda97c481aef51495e3fd4a23c43b0a906f23ffc9080e91194250e7be4d046a",
+        "catboost_prediction_sha256": "3f94a46c139987888bc42230d9c51bbb3807bf5f0d26dc84b418e5b96c23d7a3",
+        "score_rows": 17685,
+        "sparse_pilot_cache_sha256": "0efbfd81ac9489c29c9ae1e06922e8769dbc1227a7242a1bb779940cfe682f5b",
+        "sparse_pilot_freeze_signature": "59104d95490adc147c07cfa18559074dae71599530fc1d0a7a5d948ae26a2d33",
+        "stream_missing_rows": 1203,
+        "stream_present_rows": 16482
+      },
+      "67": {
+        "c2b_control": {
+          "audit_sha256": "a854215f01672733b64b1adf3c778fd653342dcbd7abc960a0fe9c0ca1330a2a",
+          "cache_sha256": "853a8c44ac2b3ea50fc1824fec78f63948aee6b1c47678dc1ddc8ecb505ecdea",
+          "fit_rows": 29705,
+          "probability_sha256": "3f46b2f168aeb6901416959bb7c24a0114443ff876ab871978d0042727609745"
+        },
+        "catboost_cache_sha256": "4b63070ac665e2ed2a9f567fb5c945f640da1eace5533af8d87d7df1a66ead59",
+        "catboost_prediction_sha256": "cc8d2fd670c462d0907fb33a7ee2ecc59885c72f05283f7366fa3767d84da9d2",
+        "score_rows": 20903,
+        "sparse_pilot_cache_sha256": "61232d3fdcadbbd6923154bc53302f56cdbab7c9d3255055441fa10abf077af4",
+        "sparse_pilot_freeze_signature": "59104d95490adc147c07cfa18559074dae71599530fc1d0a7a5d948ae26a2d33",
+        "stream_missing_rows": 1375,
+        "stream_present_rows": 19528
+      }
+    },
+    "evaluation_views": {
+      "H12": [
+        [
+          55,
+          56,
+          67
+        ],
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "W1": [
+        [
+          55,
+          56,
+          59
+        ]
+      ],
+      "W4": [
+        [
+          67,
+          68,
+          71
+        ]
+      ],
+      "primary": [
+        [
+          55,
+          56,
+          59
+        ],
+        [
+          67,
+          68,
+          71
+        ]
+      ]
+    },
+    "feature_names": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code",
+      "signal_stream"
+    ],
+    "input_sha256": {
+      "accepted_v3_sparse25_manifest": "6e7c2cb50fe6d0ee4767a44c40f152b6538b933fab6cf7082659b16d791f7d1e",
+      "c2b_round1_55_audit": "1a6c84022dbbb806b635e9548020428fd2202a4cff7e7c1e12fe61915aed6074",
+      "c2b_round1_55_npz": "ce49c6b471f4b9eca8be1c24fa37b487d9a688b28dc543e3faa1a8b6fc7d177c",
+      "c2b_round1_67_audit": "a854215f01672733b64b1adf3c778fd653342dcbd7abc960a0fe9c0ca1330a2a",
+      "c2b_round1_67_npz": "853a8c44ac2b3ea50fc1824fec78f63948aee6b1c47678dc1ddc8ecb505ecdea",
+      "card": "9b2b16a4431950a2532b8669e5712d70e96203eb1d518be960ff7ee0cb1268dc",
+      "catboost_55_npz": "0cda97c481aef51495e3fd4a23c43b0a906f23ffc9080e91194250e7be4d046a",
+      "catboost_55_sidecar": "eeadc3f3db6c29137a1d0028ed4f08aea0d7b5e40b01af3c217ca003ab293ef8",
+      "catboost_67_npz": "4b63070ac665e2ed2a9f567fb5c945f640da1eace5533af8d87d7df1a66ead59",
+      "catboost_67_sidecar": "df1b7a8d434767c723f98a65ae7a8442c418692fecccffdc6ef9b11dbeb6a538",
+      "classification_diagnostic_evidence": "c26218e0e90715a30b7b92584ddbf6c6d0eac2b3c71ecb5d4c2473c42fe4dc67",
+      "frozen_sparse_pilot_freeze": "18f49d3e235bc4fe8ff2fcd1e550bef09cc8b681f9420b103aca1080fdda8910",
+      "frozen_sparse_pilot_protocol": "2cc006183d89ce6a21ffb740e5e9bf38afc3bfb4f5014fc57e83b9c701f0a635",
+      "official_classification_train": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+      "queue": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+      "sparse_pilot_55_npz": "0efbfd81ac9489c29c9ae1e06922e8769dbc1227a7242a1bb779940cfe682f5b",
+      "sparse_pilot_55_sidecar": "764fbfcd6ee191e90d9519561ea591b042bdef2845f62452ba055d6dcf884551",
+      "sparse_pilot_67_npz": "61232d3fdcadbbd6923154bc53302f56cdbab7c9d3255055441fa10abf077af4",
+      "sparse_pilot_67_sidecar": "6427f9a9bbf9bbcc35f6ef85ac5ab4d5875315cc902d17cb650dadb02cdb3ffc",
+      "sparse_pilot_report": "893256cc76aded8606d00a922dc7a275914468184fad9ae3e7c33d2678040392",
+      "sparse_pilot_verification": "63c8c259c4dfcc6720b5d776e4cb495428c60924c6d63085c08019c112d30b20"
+    },
+    "ordered_category_novelty_preflight": {
+      "55": {
+        "category_audit": {
+          "module_code": {
+            "fit_categories_seen_by_final_cycle": 4128,
+            "fit_vocabulary_sha256": "d72a43426520583905dc6b5982f2a8f1fb2656c42a41e4f41839698fa6b5ff4a",
+            "missing_fit_rows": 1223,
+            "novel_fit_rows": 6863
+          },
+          "org_code": {
+            "fit_categories_seen_by_final_cycle": 2402,
+            "fit_vocabulary_sha256": "d78ee9460f312edcac9933c9ccd64f552262a144ee25d04e0730c245c33c5a8c",
+            "missing_fit_rows": 869,
+            "novel_fit_rows": 4584
+          },
+          "pattern_code": {
+            "fit_categories_seen_by_final_cycle": 274,
+            "fit_vocabulary_sha256": "ce094aa994a0d7d5ab9a16c73e5777a071b374d4a250e468b78a6a4104cf04f8",
+            "missing_fit_rows": 2636,
+            "novel_fit_rows": 1161
+          }
+        },
+        "cycle_audit": {
+          "47": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 128,
+                "new_categories_added_after_cycle": 624,
+                "novel_rows": 1214,
+                "vocabulary_size_after_cycle": 624
+              },
+              "org_code": {
+                "missing_rows": 112,
+                "new_categories_added_after_cycle": 380,
+                "novel_rows": 1230,
+                "vocabulary_size_after_cycle": 380
+              },
+              "pattern_code": {
+                "missing_rows": 384,
+                "new_categories_added_after_cycle": 124,
+                "novel_rows": 958,
+                "vocabulary_size_after_cycle": 124
+              }
+            },
+            "rows": 1342
+          },
+          "48": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 90,
+                "new_categories_added_after_cycle": 410,
+                "novel_rows": 717,
+                "vocabulary_size_after_cycle": 1034
+              },
+              "org_code": {
+                "missing_rows": 72,
+                "new_categories_added_after_cycle": 234,
+                "novel_rows": 418,
+                "vocabulary_size_after_cycle": 614
+              },
+              "pattern_code": {
+                "missing_rows": 163,
+                "new_categories_added_after_cycle": 27,
+                "novel_rows": 36,
+                "vocabulary_size_after_cycle": 151
+              }
+            },
+            "rows": 977
+          },
+          "49": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 119,
+                "new_categories_added_after_cycle": 449,
+                "novel_rows": 778,
+                "vocabulary_size_after_cycle": 1483
+              },
+              "org_code": {
+                "missing_rows": 91,
+                "new_categories_added_after_cycle": 220,
+                "novel_rows": 427,
+                "vocabulary_size_after_cycle": 834
+              },
+              "pattern_code": {
+                "missing_rows": 223,
+                "new_categories_added_after_cycle": 26,
+                "novel_rows": 43,
+                "vocabulary_size_after_cycle": 177
+              }
+            },
+            "rows": 1255
+          },
+          "50": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 114,
+                "new_categories_added_after_cycle": 395,
+                "novel_rows": 645,
+                "vocabulary_size_after_cycle": 1878
+              },
+              "org_code": {
+                "missing_rows": 69,
+                "new_categories_added_after_cycle": 214,
+                "novel_rows": 372,
+                "vocabulary_size_after_cycle": 1048
+              },
+              "pattern_code": {
+                "missing_rows": 290,
+                "new_categories_added_after_cycle": 18,
+                "novel_rows": 29,
+                "vocabulary_size_after_cycle": 195
+              }
+            },
+            "rows": 1111
+          },
+          "51": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 162,
+                "new_categories_added_after_cycle": 520,
+                "novel_rows": 779,
+                "vocabulary_size_after_cycle": 2398
+              },
+              "org_code": {
+                "missing_rows": 112,
+                "new_categories_added_after_cycle": 323,
+                "novel_rows": 503,
+                "vocabulary_size_after_cycle": 1371
+              },
+              "pattern_code": {
+                "missing_rows": 297,
+                "new_categories_added_after_cycle": 22,
+                "novel_rows": 27,
+                "vocabulary_size_after_cycle": 217
+              }
+            },
+            "rows": 1535
+          },
+          "52": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 171,
+                "new_categories_added_after_cycle": 467,
+                "novel_rows": 731,
+                "vocabulary_size_after_cycle": 2865
+              },
+              "org_code": {
+                "missing_rows": 119,
+                "new_categories_added_after_cycle": 296,
+                "novel_rows": 469,
+                "vocabulary_size_after_cycle": 1667
+              },
+              "pattern_code": {
+                "missing_rows": 336,
+                "new_categories_added_after_cycle": 19,
+                "novel_rows": 26,
+                "vocabulary_size_after_cycle": 236
+              }
+            },
+            "rows": 1565
+          },
+          "53": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 152,
+                "new_categories_added_after_cycle": 389,
+                "novel_rows": 587,
+                "vocabulary_size_after_cycle": 3254
+              },
+              "org_code": {
+                "missing_rows": 85,
+                "new_categories_added_after_cycle": 227,
+                "novel_rows": 346,
+                "vocabulary_size_after_cycle": 1894
+              },
+              "pattern_code": {
+                "missing_rows": 381,
+                "new_categories_added_after_cycle": 12,
+                "novel_rows": 12,
+                "vocabulary_size_after_cycle": 248
+              }
+            },
+            "rows": 1371
+          },
+          "54": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 131,
+                "new_categories_added_after_cycle": 418,
+                "novel_rows": 656,
+                "vocabulary_size_after_cycle": 3672
+              },
+              "org_code": {
+                "missing_rows": 90,
+                "new_categories_added_after_cycle": 236,
+                "novel_rows": 355,
+                "vocabulary_size_after_cycle": 2130
+              },
+              "pattern_code": {
+                "missing_rows": 258,
+                "new_categories_added_after_cycle": 22,
+                "novel_rows": 24,
+                "vocabulary_size_after_cycle": 270
+              }
+            },
+            "rows": 1256
+          },
+          "55": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 156,
+                "new_categories_added_after_cycle": 456,
+                "novel_rows": 756,
+                "vocabulary_size_after_cycle": 4128
+              },
+              "org_code": {
+                "missing_rows": 119,
+                "new_categories_added_after_cycle": 272,
+                "novel_rows": 464,
+                "vocabulary_size_after_cycle": 2402
+              },
+              "pattern_code": {
+                "missing_rows": 304,
+                "new_categories_added_after_cycle": 4,
+                "novel_rows": 6,
+                "vocabulary_size_after_cycle": 274
+              }
+            },
+            "rows": 1608
+          }
+        },
+        "feature_names": [
+          "org_code__novel_from_prior_cycles",
+          "org_code__missing",
+          "module_code__novel_from_prior_cycles",
+          "module_code__missing",
+          "pattern_code__novel_from_prior_cycles",
+          "pattern_code__missing"
+        ],
+        "fit_cycle_max": 55,
+        "fit_cycle_min": 47,
+        "fit_rows": 12020,
+        "flag_support": {
+          "module_code__missing": {
+            "minimum_per_class": 30,
+            "ones": 1223,
+            "zeros": 10797
+          },
+          "module_code__novel_from_prior_cycles": {
+            "minimum_per_class": 30,
+            "ones": 6863,
+            "zeros": 5157
+          },
+          "org_code__missing": {
+            "minimum_per_class": 30,
+            "ones": 869,
+            "zeros": 11151
+          },
+          "org_code__novel_from_prior_cycles": {
+            "minimum_per_class": 30,
+            "ones": 4584,
+            "zeros": 7436
+          },
+          "pattern_code__missing": {
+            "minimum_per_class": 30,
+            "ones": 2636,
+            "zeros": 9384
+          },
+          "pattern_code__novel_from_prior_cycles": {
+            "minimum_per_class": 30,
+            "ones": 1161,
+            "zeros": 10859
+          }
+        },
+        "strict_prior_cycle_rule_proven": true,
+        "target_rates_used": false,
+        "validation_or_test_categories_used": false
+      },
+      "67": {
+        "category_audit": {
+          "module_code": {
+            "fit_categories_seen_by_final_cycle": 8578,
+            "fit_vocabulary_sha256": "af5eefa43db70c48330e542832cf43ff3f4341c79364b37c58b44db5bd6e15a6",
+            "missing_fit_rows": 3013,
+            "novel_fit_rows": 13847
+          },
+          "org_code": {
+            "fit_categories_seen_by_final_cycle": 5091,
+            "fit_vocabulary_sha256": "3e211b44a0b4b32bca2ae96003ce0817cf86e9005cfade42bfb47443a0f5d66a",
+            "missing_fit_rows": 2159,
+            "novel_fit_rows": 8692
+          },
+          "pattern_code": {
+            "fit_categories_seen_by_final_cycle": 387,
+            "fit_vocabulary_sha256": "e1effd2327ebd60dbf96d4ee4f4894c74fa98f937045230eeca83d0d624763db",
+            "missing_fit_rows": 5731,
+            "novel_fit_rows": 1291
+          }
+        },
+        "cycle_audit": {
+          "47": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 128,
+                "new_categories_added_after_cycle": 624,
+                "novel_rows": 1214,
+                "vocabulary_size_after_cycle": 624
+              },
+              "org_code": {
+                "missing_rows": 112,
+                "new_categories_added_after_cycle": 380,
+                "novel_rows": 1230,
+                "vocabulary_size_after_cycle": 380
+              },
+              "pattern_code": {
+                "missing_rows": 384,
+                "new_categories_added_after_cycle": 124,
+                "novel_rows": 958,
+                "vocabulary_size_after_cycle": 124
+              }
+            },
+            "rows": 1342
+          },
+          "48": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 90,
+                "new_categories_added_after_cycle": 410,
+                "novel_rows": 717,
+                "vocabulary_size_after_cycle": 1034
+              },
+              "org_code": {
+                "missing_rows": 72,
+                "new_categories_added_after_cycle": 234,
+                "novel_rows": 418,
+                "vocabulary_size_after_cycle": 614
+              },
+              "pattern_code": {
+                "missing_rows": 163,
+                "new_categories_added_after_cycle": 27,
+                "novel_rows": 36,
+                "vocabulary_size_after_cycle": 151
+              }
+            },
+            "rows": 977
+          },
+          "49": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 119,
+                "new_categories_added_after_cycle": 449,
+                "novel_rows": 778,
+                "vocabulary_size_after_cycle": 1483
+              },
+              "org_code": {
+                "missing_rows": 91,
+                "new_categories_added_after_cycle": 220,
+                "novel_rows": 427,
+                "vocabulary_size_after_cycle": 834
+              },
+              "pattern_code": {
+                "missing_rows": 223,
+                "new_categories_added_after_cycle": 26,
+                "novel_rows": 43,
+                "vocabulary_size_after_cycle": 177
+              }
+            },
+            "rows": 1255
+          },
+          "50": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 114,
+                "new_categories_added_after_cycle": 395,
+                "novel_rows": 645,
+                "vocabulary_size_after_cycle": 1878
+              },
+              "org_code": {
+                "missing_rows": 69,
+                "new_categories_added_after_cycle": 214,
+                "novel_rows": 372,
+                "vocabulary_size_after_cycle": 1048
+              },
+              "pattern_code": {
+                "missing_rows": 290,
+                "new_categories_added_after_cycle": 18,
+                "novel_rows": 29,
+                "vocabulary_size_after_cycle": 195
+              }
+            },
+            "rows": 1111
+          },
+          "51": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 162,
+                "new_categories_added_after_cycle": 520,
+                "novel_rows": 779,
+                "vocabulary_size_after_cycle": 2398
+              },
+              "org_code": {
+                "missing_rows": 112,
+                "new_categories_added_after_cycle": 323,
+                "novel_rows": 503,
+                "vocabulary_size_after_cycle": 1371
+              },
+              "pattern_code": {
+                "missing_rows": 297,
+                "new_categories_added_after_cycle": 22,
+                "novel_rows": 27,
+                "vocabulary_size_after_cycle": 217
+              }
+            },
+            "rows": 1535
+          },
+          "52": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 171,
+                "new_categories_added_after_cycle": 467,
+                "novel_rows": 731,
+                "vocabulary_size_after_cycle": 2865
+              },
+              "org_code": {
+                "missing_rows": 119,
+                "new_categories_added_after_cycle": 296,
+                "novel_rows": 469,
+                "vocabulary_size_after_cycle": 1667
+              },
+              "pattern_code": {
+                "missing_rows": 336,
+                "new_categories_added_after_cycle": 19,
+                "novel_rows": 26,
+                "vocabulary_size_after_cycle": 236
+              }
+            },
+            "rows": 1565
+          },
+          "53": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 152,
+                "new_categories_added_after_cycle": 389,
+                "novel_rows": 587,
+                "vocabulary_size_after_cycle": 3254
+              },
+              "org_code": {
+                "missing_rows": 85,
+                "new_categories_added_after_cycle": 227,
+                "novel_rows": 346,
+                "vocabulary_size_after_cycle": 1894
+              },
+              "pattern_code": {
+                "missing_rows": 381,
+                "new_categories_added_after_cycle": 12,
+                "novel_rows": 12,
+                "vocabulary_size_after_cycle": 248
+              }
+            },
+            "rows": 1371
+          },
+          "54": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 131,
+                "new_categories_added_after_cycle": 418,
+                "novel_rows": 656,
+                "vocabulary_size_after_cycle": 3672
+              },
+              "org_code": {
+                "missing_rows": 90,
+                "new_categories_added_after_cycle": 236,
+                "novel_rows": 355,
+                "vocabulary_size_after_cycle": 2130
+              },
+              "pattern_code": {
+                "missing_rows": 258,
+                "new_categories_added_after_cycle": 22,
+                "novel_rows": 24,
+                "vocabulary_size_after_cycle": 270
+              }
+            },
+            "rows": 1256
+          },
+          "55": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 156,
+                "new_categories_added_after_cycle": 456,
+                "novel_rows": 756,
+                "vocabulary_size_after_cycle": 4128
+              },
+              "org_code": {
+                "missing_rows": 119,
+                "new_categories_added_after_cycle": 272,
+                "novel_rows": 464,
+                "vocabulary_size_after_cycle": 2402
+              },
+              "pattern_code": {
+                "missing_rows": 304,
+                "new_categories_added_after_cycle": 4,
+                "novel_rows": 6,
+                "vocabulary_size_after_cycle": 274
+              }
+            },
+            "rows": 1608
+          },
+          "56": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 54,
+                "new_categories_added_after_cycle": 123,
+                "novel_rows": 179,
+                "vocabulary_size_after_cycle": 4251
+              },
+              "org_code": {
+                "missing_rows": 41,
+                "new_categories_added_after_cycle": 58,
+                "novel_rows": 92,
+                "vocabulary_size_after_cycle": 2460
+              },
+              "pattern_code": {
+                "missing_rows": 172,
+                "new_categories_added_after_cycle": 7,
+                "novel_rows": 7,
+                "vocabulary_size_after_cycle": 281
+              }
+            },
+            "rows": 564
+          },
+          "57": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 89,
+                "new_categories_added_after_cycle": 261,
+                "novel_rows": 405,
+                "vocabulary_size_after_cycle": 4512
+              },
+              "org_code": {
+                "missing_rows": 78,
+                "new_categories_added_after_cycle": 137,
+                "novel_rows": 203,
+                "vocabulary_size_after_cycle": 2597
+              },
+              "pattern_code": {
+                "missing_rows": 144,
+                "new_categories_added_after_cycle": 4,
+                "novel_rows": 4,
+                "vocabulary_size_after_cycle": 285
+              }
+            },
+            "rows": 962
+          },
+          "58": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 122,
+                "new_categories_added_after_cycle": 369,
+                "novel_rows": 539,
+                "vocabulary_size_after_cycle": 4881
+              },
+              "org_code": {
+                "missing_rows": 74,
+                "new_categories_added_after_cycle": 228,
+                "novel_rows": 326,
+                "vocabulary_size_after_cycle": 2825
+              },
+              "pattern_code": {
+                "missing_rows": 215,
+                "new_categories_added_after_cycle": 10,
+                "novel_rows": 10,
+                "vocabulary_size_after_cycle": 295
+              }
+            },
+            "rows": 1205
+          },
+          "59": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 137,
+                "new_categories_added_after_cycle": 394,
+                "novel_rows": 555,
+                "vocabulary_size_after_cycle": 5275
+              },
+              "org_code": {
+                "missing_rows": 109,
+                "new_categories_added_after_cycle": 244,
+                "novel_rows": 323,
+                "vocabulary_size_after_cycle": 3069
+              },
+              "pattern_code": {
+                "missing_rows": 268,
+                "new_categories_added_after_cycle": 10,
+                "novel_rows": 11,
+                "vocabulary_size_after_cycle": 305
+              }
+            },
+            "rows": 1383
+          },
+          "60": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 144,
+                "new_categories_added_after_cycle": 418,
+                "novel_rows": 645,
+                "vocabulary_size_after_cycle": 5693
+              },
+              "org_code": {
+                "missing_rows": 117,
+                "new_categories_added_after_cycle": 275,
+                "novel_rows": 380,
+                "vocabulary_size_after_cycle": 3344
+              },
+              "pattern_code": {
+                "missing_rows": 252,
+                "new_categories_added_after_cycle": 8,
+                "novel_rows": 9,
+                "vocabulary_size_after_cycle": 313
+              }
+            },
+            "rows": 1478
+          },
+          "61": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 192,
+                "new_categories_added_after_cycle": 463,
+                "novel_rows": 729,
+                "vocabulary_size_after_cycle": 6156
+              },
+              "org_code": {
+                "missing_rows": 122,
+                "new_categories_added_after_cycle": 289,
+                "novel_rows": 512,
+                "vocabulary_size_after_cycle": 3633
+              },
+              "pattern_code": {
+                "missing_rows": 296,
+                "new_categories_added_after_cycle": 17,
+                "novel_rows": 20,
+                "vocabulary_size_after_cycle": 330
+              }
+            },
+            "rows": 1632
+          },
+          "62": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 145,
+                "new_categories_added_after_cycle": 431,
+                "novel_rows": 626,
+                "vocabulary_size_after_cycle": 6587
+              },
+              "org_code": {
+                "missing_rows": 118,
+                "new_categories_added_after_cycle": 275,
+                "novel_rows": 367,
+                "vocabulary_size_after_cycle": 3908
+              },
+              "pattern_code": {
+                "missing_rows": 330,
+                "new_categories_added_after_cycle": 8,
+                "novel_rows": 9,
+                "vocabulary_size_after_cycle": 338
+              }
+            },
+            "rows": 1500
+          },
+          "63": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 190,
+                "new_categories_added_after_cycle": 429,
+                "novel_rows": 846,
+                "vocabulary_size_after_cycle": 7016
+              },
+              "org_code": {
+                "missing_rows": 134,
+                "new_categories_added_after_cycle": 256,
+                "novel_rows": 479,
+                "vocabulary_size_after_cycle": 4164
+              },
+              "pattern_code": {
+                "missing_rows": 344,
+                "new_categories_added_after_cycle": 7,
+                "novel_rows": 10,
+                "vocabulary_size_after_cycle": 345
+              }
+            },
+            "rows": 1883
+          },
+          "64": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 191,
+                "new_categories_added_after_cycle": 447,
+                "novel_rows": 673,
+                "vocabulary_size_after_cycle": 7463
+              },
+              "org_code": {
+                "missing_rows": 129,
+                "new_categories_added_after_cycle": 297,
+                "novel_rows": 437,
+                "vocabulary_size_after_cycle": 4461
+              },
+              "pattern_code": {
+                "missing_rows": 268,
+                "new_categories_added_after_cycle": 13,
+                "novel_rows": 16,
+                "vocabulary_size_after_cycle": 358
+              }
+            },
+            "rows": 1807
+          },
+          "65": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 143,
+                "new_categories_added_after_cycle": 304,
+                "novel_rows": 538,
+                "vocabulary_size_after_cycle": 7767
+              },
+              "org_code": {
+                "missing_rows": 95,
+                "new_categories_added_after_cycle": 171,
+                "novel_rows": 303,
+                "vocabulary_size_after_cycle": 4632
+              },
+              "pattern_code": {
+                "missing_rows": 263,
+                "new_categories_added_after_cycle": 9,
+                "novel_rows": 10,
+                "vocabulary_size_after_cycle": 367
+              }
+            },
+            "rows": 1567
+          },
+          "66": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 172,
+                "new_categories_added_after_cycle": 385,
+                "novel_rows": 571,
+                "vocabulary_size_after_cycle": 8152
+              },
+              "org_code": {
+                "missing_rows": 123,
+                "new_categories_added_after_cycle": 207,
+                "novel_rows": 302,
+                "vocabulary_size_after_cycle": 4839
+              },
+              "pattern_code": {
+                "missing_rows": 265,
+                "new_categories_added_after_cycle": 7,
+                "novel_rows": 8,
+                "vocabulary_size_after_cycle": 374
+              }
+            },
+            "rows": 1751
+          },
+          "67": {
+            "fields": {
+              "module_code": {
+                "missing_rows": 211,
+                "new_categories_added_after_cycle": 426,
+                "novel_rows": 678,
+                "vocabulary_size_after_cycle": 8578
+              },
+              "org_code": {
+                "missing_rows": 150,
+                "new_categories_added_after_cycle": 252,
+                "novel_rows": 384,
+                "vocabulary_size_after_cycle": 5091
+              },
+              "pattern_code": {
+                "missing_rows": 278,
+                "new_categories_added_after_cycle": 13,
+                "novel_rows": 16,
+                "vocabulary_size_after_cycle": 387
+              }
+            },
+            "rows": 1953
+          }
+        },
+        "feature_names": [
+          "org_code__novel_from_prior_cycles",
+          "org_code__missing",
+          "module_code__novel_from_prior_cycles",
+          "module_code__missing",
+          "pattern_code__novel_from_prior_cycles",
+          "pattern_code__missing"
+        ],
+        "fit_cycle_max": 67,
+        "fit_cycle_min": 47,
+        "fit_rows": 29705,
+        "flag_support": {
+          "module_code__missing": {
+            "minimum_per_class": 30,
+            "ones": 3013,
+            "zeros": 26692
+          },
+          "module_code__novel_from_prior_cycles": {
+            "minimum_per_class": 30,
+            "ones": 13847,
+            "zeros": 15858
+          },
+          "org_code__missing": {
+            "minimum_per_class": 30,
+            "ones": 2159,
+            "zeros": 27546
+          },
+          "org_code__novel_from_prior_cycles": {
+            "minimum_per_class": 30,
+            "ones": 8692,
+            "zeros": 21013
+          },
+          "pattern_code__missing": {
+            "minimum_per_class": 30,
+            "ones": 5731,
+            "zeros": 23974
+          },
+          "pattern_code__novel_from_prior_cycles": {
+            "minimum_per_class": 30,
+            "ones": 1291,
+            "zeros": 28414
+          }
+        },
+        "strict_prior_cycle_rule_proven": true,
+        "target_rates_used": false,
+        "validation_or_test_categories_used": false
+      }
+    },
+    "package_versions": {
+      "lightgbm": "4.6.0",
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "psutil": "7.0.0",
+      "scikit-learn": "1.8.0",
+      "scipy": "1.18.0",
+      "threadpoolctl": "3.6.0"
+    },
+    "python_version": "3.13.5",
+    "recipe": {
+      "accepted_control": {
+        "manifest": "reports\\optimization_v3\\kaggle\\v3_cls_sparse25.json",
+        "manifest_sha256": "6e7c2cb50fe6d0ee4767a44c40f152b6538b933fab6cf7082659b16d791f7d1e",
+        "missing_model": "frozen CatBoost probability unchanged",
+        "present_model": "C2_B probability 0.75 + frozen sparse-binary probability 0.25",
+        "threshold": 0.5
+      },
+      "appended_features": [
+        "org_code__novel_from_prior_cycles",
+        "org_code__missing",
+        "module_code__novel_from_prior_cycles",
+        "module_code__missing",
+        "pattern_code__novel_from_prior_cycles",
+        "pattern_code__missing"
+      ],
+      "card_id": "C06",
+      "card_sha256": "9b2b16a4431950a2532b8669e5712d70e96203eb1d518be960ff7ee0cb1268dc",
+      "evaluation_views": {
+        "H12": [
+          [
+            55,
+            56,
+            67
+          ],
+          [
+            67,
+            68,
+            79
+          ]
+        ],
+        "W1": [
+          [
+            55,
+            56,
+            59
+          ]
+        ],
+        "W4": [
+          [
+            67,
+            68,
+            71
+          ]
+        ],
+        "primary": [
+          [
+            55,
+            56,
+            59
+          ],
+          [
+            67,
+            68,
+            71
+          ]
+        ]
+      },
+      "fit_predictor_count": 2,
+      "gates": {
+        "individual_pilot_view_harm_max": 0.005,
+        "pilot_H12_harm_max": 0.001,
+        "pilot_primary_gain_min": 0.0005,
+        "positive_and_negative_per_group_min": 30,
+        "positive_class_recall_harm_max": 0.02,
+        "supported_group_F1_harm_max": 0.01,
+        "supported_group_n_min": 200
+      },
+      "input_feature_names": [
+        "impact_load",
+        "entry_friction",
+        "cycle_code",
+        "scope_pressure",
+        "text_load",
+        "scope_trace",
+        "org_spread",
+        "module_spread",
+        "telemetry_flag",
+        "org_code",
+        "module_code",
+        "pattern_code",
+        "signal_stream"
+      ],
+      "metric": "Macro F1 at the frozen threshold 0.50",
+      "ordered_category_novelty": {
+        "features_per_field": [
+          "novel_from_prior_cycles",
+          "missing"
+        ],
+        "fields": [
+          "org_code",
+          "module_code",
+          "pattern_code"
+        ],
+        "fit_rule": "encode every row in cycle c as novel iff nonmissing category is absent from vocabulary from cycles strictly less than c; update vocabulary only after all rows in cycle c are encoded",
+        "later_cycle_categories_used_for_fit_flags": false,
+        "minimum_fit_support_per_binary_feature": {
+          "ones": 30,
+          "zeros": 30
+        },
+        "missing_rule": "pd.isna values set missing=1 and novel=0; category strings are stripped; blank string remains a category to match the unchanged sparse structured model",
+        "outer_score_rule": "a nonmissing score row is novel iff its category is absent from the full fit-prefix vocabulary",
+        "target_rates_used": false,
+        "validation_labels_used": false
+      },
+      "policy": ".75 frozen C2_B +.25 new sparse expert on present; frozen CB missing; threshold.50",
+      "status": "FROZEN_RECIPE_BEFORE_PILOT",
+      "test_data_used": false,
+      "unchanged_sparse_classifier": {
+        "design_order": "original sparse structured+TFIDF+stream-missing design, then the six chronology-only novelty/missing flags",
+        "early_stopping": false,
+        "model": "LightGBM LGBMClassifier",
+        "parameters": {
+          "deterministic": true,
+          "force_col_wise": true,
+          "learning_rate": 0.05,
+          "min_child_samples": 50,
+          "n_estimators": 400,
+          "n_jobs": 2,
+          "num_leaves": 15,
+          "objective": "binary",
+          "random_state": 42,
+          "reg_alpha": 0.0,
+          "reg_lambda": 3.0,
+          "verbosity": -1
+        },
+        "structured_preprocessing": "RegressionTextModel._structured_fit/_structured_transform",
+        "tfidf_parameters": {
+          "dtype": "float64",
+          "lowercase": true,
+          "max_df": 0.995,
+          "max_features": 20000,
+          "min_df": 3,
+          "ngram_range": [
+            1,
+            2
+          ],
+          "strip_accents": "unicode",
+          "sublinear_tf": true
+        },
+        "threads": 2
+      }
+    },
+    "recipe_semantic_sha256": "d32ab5c31d9b0928aab20a0d4755ae9ad9c1c76d96fd73bbb6b5d0b2b0b8b475",
+    "resource_preflight_recipe": {
+      "cap_gib": 6.0,
+      "concurrent_fit_jobs": 1,
+      "estimate_method": "cutoff-67 fit-only word n-gram upper bound; sparse storage x3 plus six compact binary columns and 1.5GiB fixed",
+      "estimated_peak_job_gib": 1.6059173047542572,
+      "minimum_free_ram_gib": 4.0,
+      "reserve_gib": 2.0,
+      "threads": 2,
+      "word_ngram_nnz_upper_bound": 2265362
+    },
+    "schema_version": 1,
+    "source_sha256": {
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1.py": "c93dd71ed2b512f32bf8916f59b0af56bff212934efb8825b0e8a680da72e969",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_c06.py": "318e09dd31137762bab3275b0d384cb975cdad5aea9be15e04f8a91641fd67f7",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_sparse_classification.py": "a629b4aeb3e6ea564b61449502d2f8f712daf517d95ed041652d3866a2f27c1b",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_sparse_classification_fullsix.py": "7b7e7425eeb497c9f9d5c1f55e2483c113ae8fe4502b1a43eee6e4573bc74c97",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_verify_sparse_classification.py": "683f073bad4dac04728fcf0045cd3d39b0f1a1e790352f9c0174ecb36a867699",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\research_campaign_classification.py": "1a6f5979c1e1194225356bbd224f34d468114f1c71170e67180f90a70602bcbf",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\research_campaign_classification_stage2.py": "1a78b419e2b02c5187696f82823c2f8f96c7fa5c329846eff44ac52bbead1126",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\campaign_classification_catboost.py": "5aa480703fd99b28b2343df8a09d68661107995f2b446d3773c735b211d9c3c5",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\classification_metrics.py": "db77dd99210835006f96db1659bf4e87213179962b8f692d181af831b6539563",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\classification_round2_models.py": "239008f056c6f5e004e84d2b9df9f5bfb20695ccfad90eed4deec3463c7d4575",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1.py": "d21ac914d0d1f516a93e431116556dabdbe7313a21fd2b1b04a73371bd56f420",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1_c06.py": "4ff645772d7eaf43aabc7cd77ba4103fc254fd5c0c6d5451a0b3863315b69482",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_sparse_classification.py": "fb5b013fa59d0b748a3386dae90cb14789a0b4cbd9a5c7a115d5ddc3c443d5a3",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_round2_models.py": "f56f7ee2c337acdf2cbe7160719faf62b1e3d3470a7f656b044ce0890d677e09",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\round1_evaluation.py": "be26992ee5c75190eb8a412fa6635dabd242eee1609fad0380023bfe3a1e300f",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\utils\\paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\tests\\test_optimization_v3_batch1_c06.py": "ef80aaa96c66c3286d819fca4a92d2f284eabc9e61b27a31b8e8ccb0bb7ca2d3"
+    },
+    "sparse_pilot_freeze_signature": "59104d95490adc147c07cfa18559074dae71599530fc1d0a7a5d948ae26a2d33",
+    "test_data_used": false,
+    "validation_labels_passed_to_adapter": false
+  },
+  "signature": "bbed04f71c69c71b847a09866241e52186df1dbaff34de91f603e9b391b64f70"
+}
