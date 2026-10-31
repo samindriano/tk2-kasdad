@@ -1,0 +1,170 @@
+{
+  "baseline_metrics_key": "results.hybrid_ridge_inner_v1",
+  "current_ridge25": {
+    "cache_path": "experiments/runs/dual_reg_v1/stage1_paired_blends.npz",
+    "cache_sha256": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516",
+    "control_fits_in_this_pilot": 0,
+    "cutoff_identity": {
+      "55": {
+        "baseline_prediction_sha256": "df55e3389cdac3ad6037788a6a359aed969ef0b74680cf895831ac412c0c83b8",
+        "fit_positions_sha256": "e1b5d2c20d2490f0cf4325f4acdbba0abcd1d89db396a3a39d13e3f51b8da74b",
+        "fit_rows": 12020,
+        "validation_positions_sha256": "aca4054e5b32b98e2de800a24cc8beb38d4b7d86f66f7f4f7e7ed723408136b6",
+        "validation_rows": 17685
+      },
+      "67": {
+        "baseline_prediction_sha256": "1769dbf552692337c4b2d8954a076d5279a77651d2c8f62f4d4aad8d56ff3327",
+        "fit_positions_sha256": "21df8b3baa7004c330d6ac403ed42e8cbd9de99081d048a15cd8b4332257108d",
+        "fit_rows": 29705,
+        "validation_positions_sha256": "9ead64310afbcc9fd5ef149b46a920a7dd2062debc58cfec29cd01c5f5b30781",
+        "validation_rows": 20903
+      }
+    },
+    "prediction_key": "blend_ridge25_{55,67}",
+    "report_path": "reports/dual_campaign/regression/stage1_paired_blend.json",
+    "report_sha256": "b582733e27c1818f1e87239332a0b11cef0168e541008ae4e1d119270f69d218"
+  },
+  "experiment_id": "optimization_v2_sparse_hybrid_regression_pilot",
+  "fit_protocol": {
+    "cutoffs": [
+      55,
+      67
+    ],
+    "estimators": {
+      "lgbm_sparse_l1": {
+        "boosting_type": "gbdt",
+        "colsample_bytree": 1.0,
+        "deterministic": true,
+        "force_col_wise": true,
+        "learning_rate": 0.05,
+        "max_depth": -1,
+        "min_child_samples": 40,
+        "min_child_weight": 0.001,
+        "n_estimators": 400,
+        "n_jobs": 2,
+        "num_leaves": 31,
+        "objective": "regression_l1",
+        "random_state": 42,
+        "reg_alpha": 0.0,
+        "reg_lambda": 1.0,
+        "subsample": 1.0,
+        "subsample_freq": 0,
+        "verbosity": -1
+      },
+      "sgd_l1": {
+        "alpha": 1e-05,
+        "average": true,
+        "early_stopping": false,
+        "epsilon": 0.0,
+        "eta0": 0.01,
+        "learning_rate": "invscaling",
+        "loss": "epsilon_insensitive",
+        "max_iter": 2000,
+        "n_iter_no_change": 30,
+        "penalty": "l2",
+        "power_t": 0.25,
+        "random_state": 42,
+        "tol": 1e-05
+      }
+    },
+    "feature_allowlist": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code",
+      "signal_stream"
+    ],
+    "fit_rows": {
+      "55": 12020,
+      "67": 29705
+    },
+    "no_native_categorical": true,
+    "no_search": true,
+    "no_svd": true,
+    "no_validation_labels_in_fit": true,
+    "official_test_loaded": false,
+    "policies": {
+      "blend25": "clip(0.25 * candidate_rank50 + 0.75 * cached current Ridge25, 0, 100)",
+      "clipped": "clip raw candidate prediction to [0, 100] diagnostic",
+      "rank50": "clip(0.5 * raw + 0.5 * within-cycle average percentile rank, 0, 100)",
+      "raw": "unclipped direct prediction diagnostic"
+    },
+    "preprocessing": "RegressionTextModel._structured_fit/_structured_transform + _fit_vectorizer; scaled numeric, train-only OHE, train-only raw TF-IDF, missing indicator",
+    "views": {
+      "H12_E": {
+        "eval_cycle": [
+          56,
+          67
+        ],
+        "fit_cutoff": 55
+      },
+      "H12_L": {
+        "eval_cycle": [
+          68,
+          79
+        ],
+        "fit_cutoff": 67
+      },
+      "W1": {
+        "eval_cycle": [
+          56,
+          59
+        ],
+        "fit_cutoff": 55
+      },
+      "W4": {
+        "eval_cycle": [
+          68,
+          71
+        ],
+        "fit_cutoff": 67
+      }
+    }
+  },
+  "frozen_at_utc": "2026-10-31T09:34:54.248043+00:00",
+  "notes": [
+    "Ridge25 predictions are reused row-exactly; no control model is refit.",
+    "All temporal validation cycles were seen in prior development; no inferential or untouched-holdout claim.",
+    "Only these two fixed estimators at cutoffs 55 and 67 are run in this milestone."
+  ],
+  "official_train": {
+    "cycle_max": 79,
+    "cycle_min": 47,
+    "path": "data/raw/regression/Train.csv",
+    "rows": 50608,
+    "sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+    "target": "threat_rank",
+    "target_max": 100.0,
+    "target_min": 0.0428
+  },
+  "packages": {
+    "lightgbm": "4.6.0",
+    "numpy": "2.4.2",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.8.0",
+    "scipy": "1.18.0"
+  },
+  "round2_protocol_sha256": "3bfc281f7212586ee7459be3ca769057899cb0e202b94f80abdb4e1d259b3058",
+  "source_head": "6bd52501fcd963bc3154ad3a2ccd7e359d0f9714",
+  "source_sha256": {
+    "experiments/regression_round2/protocol.json": "3bfc281f7212586ee7459be3ca769057899cb0e202b94f80abdb4e1d259b3058",
+    "scripts/optimization_v2_regression.py": "500dbe97f7f69f6427242f15a1511e61c48c834753b9e521ed8aa1913b0a049d",
+    "scripts/optimization_v2_verify_regression.py": "141d3647722e38e3ef9cac3c651cc0b105e16a6a7fa1fc6ce6a4efab4674ce03",
+    "src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+    "src/models/optimization_v2_regression.py": "b235cfd93c8cc0a207cfcea79892b925f9dfdfe515491a459d6ca1b6142cb590",
+    "src/models/regression_research_tabular.py": "674d7e52c485583729b8fe999dc133c39aae8dd85abd005a598e2caea9af99f9",
+    "src/models/regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+    "src/models/regression_round2_models.py": "f56f7ee2c337acdf2cbe7160719faf62b1e3d3470a7f656b044ce0890d677e09",
+    "src/models/round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+    "tests/test_optimization_v2_regression.py": "55a2b13a3db93461474292ed4ab75fa2dbd0ae9829fe2da765e635dbd3ecdffb"
+  },
+  "stage": "four_fit_pilot_only_no_full_six_continuation"
+}

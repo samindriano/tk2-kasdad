@@ -8,9 +8,10 @@ gate.OUT=ROOT/'reports/optimization_v2/kaggle'
 gate.CONFIG=ROOT/'experiments/optimization_v2'
 gate.historical_gate.BASE={'classification':('artifact_signal','57833406',.82701),
                            'regression':('threat_rank','57832438',11.64134)}
+ORIGINAL_PREFLIGHT=gate.preflight
 
 def preflight(api, task):
-    r=gate.preflight(api,task)
+    r=ORIGINAL_PREFLIGHT(api,task)
     r['campaign']='optimization_v2'
     rules=api.competition_list_pages(gate.slug(task),page_name='rules')
     r['rules_content']=[p.content for p in rules]
@@ -25,6 +26,8 @@ def preflight(api, task):
     assert rows,'No leaderboard records returned'
     leader=rows[0]
     score=ours[0]['score']
+    assert [d['score']for d in rows]==sorted([d['score']for d in rows],reverse=task=='classification')
+    ours[0]['competition_rank']=1+sum(d['score']>score if task=='classification'else d['score']<score for d in rows)
     r['public_leaderboard']={'retrieved_rows':len(rows),'pagination_scope':'First200 API leaderboard rows',
          'team':ours[0],'leader':{'score':leader['score'],'rank_in_returned_page':1},
          'gap_to_leader':leader['score']-score if task=='classification' else score-leader['score'],
@@ -42,6 +45,7 @@ def main():
         assert a.manifest
         # The existing uploader invokes the isolated, authenticated preflight
         # internally immediately before its exclusive reservation.
+        gate.preflight=preflight
         gate.upload(api,a.task,a.manifest)
     else:assert a.candidate;gate.poll(api,a.task,a.candidate)
 

@@ -1,0 +1,213 @@
+{
+  "existing_pilot": {
+    "freeze_sha256": "fd60a14eb3ad966cbcdc2156f5c1a9c222554f43992390a7a91a46f2fee4af40",
+    "prediction_cache_sha256": "eae6bea2dd6933de59ac0f63f54cc08124b59d4bcba91bbe05a7c5ec3dab9ff6",
+    "report_sha256": "2a1bb2d4db3fd531478de2aeedaf4e380472f39f1439a40abef9511042dec653",
+    "reused_fits": [
+      "sgd_l1@55",
+      "lgbm_sparse_l1@55",
+      "sgd_l1@67",
+      "lgbm_sparse_l1@67"
+    ],
+    "verification_sha256": "4e42ee044d9832c47e4fbf6305a1c4a86fa42e0b089080cf3befd74811bbb740",
+    "verified_status": "PASS"
+  },
+  "existing_ridge25": {
+    "cache_sha256": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516",
+    "cutoff_rows": {
+      "55": {
+        "fit_positions_sha256": "e1b5d2c20d2490f0cf4325f4acdbba0abcd1d89db396a3a39d13e3f51b8da74b",
+        "fit_rows": 12020,
+        "ridge25_sha256": "df55e3389cdac3ad6037788a6a359aed969ef0b74680cf895831ac412c0c83b8",
+        "validation_positions_sha256": "aca4054e5b32b98e2de800a24cc8beb38d4b7d86f66f7f4f7e7ed723408136b6",
+        "validation_rows": 17685
+      },
+      "59": {
+        "fit_positions_sha256": "5e329042de6a1b44eb9074b5eeb2c478e45c6fa161bc87fb774b2a386482fe94",
+        "fit_rows": 16134,
+        "ridge25_sha256": "a3d7597a967db30d77347c0d1b6034658db629b7bed55a6bd537ecdcc33b9627",
+        "validation_positions_sha256": "c30a4445e9bda0ef8dad1fb28ddc81781703d9626cf70e182df15d7bce137e6d",
+        "validation_rows": 6493
+      },
+      "63": {
+        "fit_positions_sha256": "f64882f79f76dad9161d7f672a689aeaba75ab9ba872442570017d831dafbebf",
+        "fit_rows": 22627,
+        "ridge25_sha256": "6537fef46f7813f7f9ec710d28a8470cb07ec6302ca4d6d623c1d83059b0c50e",
+        "validation_positions_sha256": "55da25f1a20f08a2cb52863003c2528d3af162257ff49ab4ca66965358bdda2a",
+        "validation_rows": 7078
+      },
+      "67": {
+        "fit_positions_sha256": "21df8b3baa7004c330d6ac403ed42e8cbd9de99081d048a15cd8b4332257108d",
+        "fit_rows": 29705,
+        "ridge25_sha256": "1769dbf552692337c4b2d8954a076d5279a77651d2c8f62f4d4aad8d56ff3327",
+        "validation_positions_sha256": "9ead64310afbcc9fd5ef149b46a920a7dd2062debc58cfec29cd01c5f5b30781",
+        "validation_rows": 20903
+      },
+      "71": {
+        "fit_positions_sha256": "b75d1e20c1d8cc3044dff46daa9d9e474d24ac9be909796bb6b18e9b7458437c",
+        "fit_rows": 34655,
+        "ridge25_sha256": "95d3f52ca2ed3a29cda0b35cb6ba7eed27a291b591873a1991b87c99d39db94d",
+        "validation_positions_sha256": "b6e78245afd13f45f95e6838b98e1c97a66e98df51af1ae3548b791a4ce198bd",
+        "validation_rows": 7462
+      },
+      "75": {
+        "fit_positions_sha256": "e733031bb45eac2f1f55b94e45bc7161c1e80801f85564a25a289758100e2bc9",
+        "fit_rows": 42117,
+        "ridge25_sha256": "511f3c55124f4044aaf3427f5cb8c9bc0037a9166fe365f4eef01d16f70f79cb",
+        "validation_positions_sha256": "90d2c53157abdf97367b909335151bf728f36a21740ffaffb90a4a5012bcef94",
+        "validation_rows": 8491
+      }
+    },
+    "metric_provenance_correction": {
+      "authoritative_report_key": "results.ridge_25",
+      "cache_prediction_key": "blend_ridge25_{55,59,63,67,71,75}",
+      "pilot_freeze_key_note": "Prior pilot freeze.json named results.hybrid_ridge_inner_v1 in baseline_metrics_key; the cached control arrays and prior independently verified row-exact metrics are Ridge25. This continuation uses results.ridge_25 as the authoritative report section and preserves the prior pilot artifact unchanged."
+    },
+    "new_control_fits": 0,
+    "report_sha256": "b582733e27c1818f1e87239332a0b11cef0168e541008ae4e1d119270f69d218"
+  },
+  "experiment_id": "optimization_v2_sparse_hybrid_fullsix_continuation",
+  "fit_rows_by_cutoff": {
+    "59": 16134,
+    "63": 22627,
+    "71": 34655,
+    "75": 42117
+  },
+  "frozen_at_utc": "2026-10-31T09:43:59.031250+00:00",
+  "guardrails": {
+    "h12_maximum_harm_mae": 0.05,
+    "maximum_tail_or_stream_missing_harm_mae": 0.25,
+    "minimum_nonworse_primary_windows": 4,
+    "primary_gain_minimum_mae": 0.03
+  },
+  "no_fit_completed_before_receipt": true,
+  "official_train": {
+    "cycle_range": [
+      47,
+      79
+    ],
+    "path": "data/raw/regression/Train.csv",
+    "rows": 50608,
+    "sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082"
+  },
+  "packages": {
+    "lightgbm": "4.6.0",
+    "numpy": "2.4.2",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.8.0",
+    "scipy": "1.18.0"
+  },
+  "protocol": {
+    "SGD_interpretation": "fixed-budget approximate L1; max_iter=2000; convergence warnings and n_iter recorded; no claim optimizer converged",
+    "feature_allowlist": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code",
+      "signal_stream"
+    ],
+    "hyperparameter_or_weight_search": "prohibited",
+    "long_horizons": {
+      "H12_E": {
+        "eval_cycles": [
+          56,
+          67
+        ],
+        "fit_cutoff": 55
+      },
+      "H12_L": {
+        "eval_cycles": [
+          68,
+          79
+        ],
+        "fit_cutoff": 67
+      }
+    },
+    "new_candidate_blending": "prohibited",
+    "new_fit_count": 8,
+    "new_fit_cutoffs": [
+      59,
+      63,
+      71,
+      75
+    ],
+    "objective_and_preprocessing": "exactly as prefit receipt experiments/optimization_v2/regression_repr/freeze.json",
+    "policies": [
+      "fixed candidate rank50 blended 0.25/0.75 with current row-exact Ridge25"
+    ],
+    "rank50_alone": "diagnostic only; retired as candidate by pilot",
+    "recipes": [
+      "sgd_l1",
+      "lgbm_sparse_l1"
+    ],
+    "scope_stop": "stop after independent verification of six-window results",
+    "test_access": false,
+    "views": {
+      "W1": {
+        "eval_cycles": [
+          56,
+          59
+        ],
+        "fit_cutoff": 55
+      },
+      "W2": {
+        "eval_cycles": [
+          60,
+          63
+        ],
+        "fit_cutoff": 59
+      },
+      "W3": {
+        "eval_cycles": [
+          64,
+          67
+        ],
+        "fit_cutoff": 63
+      },
+      "W4": {
+        "eval_cycles": [
+          68,
+          71
+        ],
+        "fit_cutoff": 67
+      },
+      "W5": {
+        "eval_cycles": [
+          72,
+          75
+        ],
+        "fit_cutoff": 71
+      },
+      "W6": {
+        "eval_cycles": [
+          76,
+          79
+        ],
+        "fit_cutoff": 75
+      }
+    }
+  },
+  "source_head": "6bd52501fcd963bc3154ad3a2ccd7e359d0f9714",
+  "source_sha256": {
+    "experiments/regression_round2/protocol.json": "3bfc281f7212586ee7459be3ca769057899cb0e202b94f80abdb4e1d259b3058",
+    "scripts/optimization_v2_regression.py": "500dbe97f7f69f6427242f15a1511e61c48c834753b9e521ed8aa1913b0a049d",
+    "scripts/optimization_v2_regression_fullsix.py": "a37cfb7d4b30838458f4304bab1720aa074546ccd6de70007cb3422300729f6a",
+    "scripts/optimization_v2_verify_regression.py": "141d3647722e38e3ef9cac3c651cc0b105e16a6a7fa1fc6ce6a4efab4674ce03",
+    "scripts/optimization_v2_verify_regression_fullsix.py": "be3e458dd701d3fb267e7b21541febef3578815049c153cc45ebc560a4f8c335",
+    "src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+    "src/models/optimization_v2_regression.py": "b235cfd93c8cc0a207cfcea79892b925f9dfdfe515491a459d6ca1b6142cb590",
+    "src/models/regression_research_tabular.py": "674d7e52c485583729b8fe999dc133c39aae8dd85abd005a598e2caea9af99f9",
+    "src/models/regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+    "src/models/regression_round2_models.py": "f56f7ee2c337acdf2cbe7160719faf62b1e3d3470a7f656b044ce0890d677e09",
+    "src/models/round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4"
+  },
+  "stage": "four_new_cutoffs_only_plus_row_exact_reuse_of_55_67"
+}
