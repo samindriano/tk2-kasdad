@@ -1,0 +1,29 @@
+{
+  "experiment_id": "dual_regression_catboost_svd32_v1",
+  "purpose": "Test one distinct MAE boosting family against the validated LightGBM SVD32 champion and the fixed 25% Hybrid Ridge blend.",
+  "source_scope": "Official Regression Train only, cycles 47-79. No Test feature/label reads, external datasets, pretrained weights, Kaggle feedback, or group labels.",
+  "representation": "R1-D expanded structured allowlist plus signal_stream TF-IDF word 1-2 (min_df=2, max_features=20000, sublinear_tf) and randomized TruncatedSVD32 (n_iter=7, seed=42); preprocessing, TF-IDF, and SVD are fit on each temporal fit partition only. Categorical structured columns are passed to CatBoost as native categories.",
+  "model": {
+    "family": "CatBoostRegressor",
+    "loss_function": "MAE",
+    "iterations": 500,
+    "depth": 6,
+    "learning_rate": 0.05,
+    "random_seed": 42,
+    "thread_count": 2,
+    "task_type": "CPU",
+    "early_stopping": false,
+    "eval_set": false
+  },
+  "pilot_cutoffs": [55, 67],
+  "pilot_views": ["W1", "W4", "H12_E", "H12_L"],
+  "pilot_gate": "Continue to the remaining four frozen primary fit cutoffs only if CatBoost mean clipped-MAE delta versus the frozen ridge_25 blend is <= +0.50 across the four pilot views and no single view is > +1.00. Otherwise retire the family after the two pilot fits.",
+  "pilot_baselines": ["lgb_text_inner_v1", "ridge_25"],
+  "max_outer_fits": 6,
+  "extra_configurations": 0,
+  "post_full_six_blend_gate": "Only after all six windows, measure paired residual correlation and row-level win rates against LGB. Evaluate one fixed 25% CatBoost / 75% LGB blend only if signed-error correlation <=0.93 and CatBoost has lower absolute error on >=40% of paired primary rows. No weight tuning.",
+  "reports": ["raw and clipped MAE", "equal-cycle MAE", "primary windows", "H12_E/H12_L", "per-cycle bias", "EF0/EF1", "target tails <=5/>=95", "stream missing/present", "paired residual correlation and win rates"],
+  "no_test_access": true,
+  "no_kaggle_submission": true,
+  "max_model_binary_artifacts": 0
+}

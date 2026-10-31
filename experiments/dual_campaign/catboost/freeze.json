@@ -1,0 +1,47 @@
+{
+  "catboost_version": "1.2.8",
+  "experiment_id": "dual_regression_catboost_svd32_v1",
+  "folds": [
+    55,
+    59,
+    63,
+    67,
+    71,
+    75
+  ],
+  "freeze_sha256": "4b1c5ec037a04b2b1ccf37d5682a4469e7eb03980b4c561b3afefd6d24be636e",
+  "frozen_at_utc": "2026-10-31T08:15:12.006491+00:00",
+  "inputs": {
+    "base_stage1_predictions_sha256": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516",
+    "stage23_freeze_signature": "052610c2adef6ad106039cbe26d336d525f64ea97c56b51d487e6ba24b9ea5dd",
+    "stage5_freeze_signature": "22aaf721983445fe995cac4fceb1f0c29ca5bde3b1826a74d4da18cbf230630e",
+    "stage5_report_sha256": "a7fb69f80c4aa0d91c01f50669b2e921dd51e1f04a7a91153ad6e71565837cf5",
+    "temporal_protocol_sha256": "3bfc281f7212586ee7459be3ca769057899cb0e202b94f80abdb4e1d259b3058",
+    "train_sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082"
+  },
+  "max_model_fits": 6,
+  "no_test_access": true,
+  "parameters": {
+    "allow_writing_files": false,
+    "depth": 6,
+    "iterations": 500,
+    "learning_rate": 0.05,
+    "loss_function": "MAE",
+    "random_seed": 42,
+    "task_type": "CPU",
+    "thread_count": 2,
+    "verbose": false
+  },
+  "pilot_folds": [
+    55,
+    67
+  ],
+  "source_commit": "61db46a32599dbf3676302427adfeda0f7e91df1",
+  "source_sha256": {
+    "experiments/dual_campaign/catboost/protocol.json": "2ef534ce9f56a3783a9559f7f82eb7ee8853bb084a6708184091448d1249a631",
+    "scripts/research_campaign_catboost.py": "d60a5ce288c630d5860765b534c00f6c29dbf13e4898fb094fc62afc6fdd2d2a",
+    "scripts/verify_campaign_catboost.py": "0ec15009ffa7c27c9e35c5fa5351de3c57ecbb97ff3a41a9bde3db99034a068e",
+    "src/models/campaign_catboost.py": "144932050543a2ef0438e5baed6fbe0a184c5ebeb55b991f8d4bf1ffd71142de",
+    "tests/test_campaign_catboost.py": "5a32bdc92b0f44069eda6c8aa7e63597adedeb3f21e64e9644e58f516dfab821"
+  }
+}

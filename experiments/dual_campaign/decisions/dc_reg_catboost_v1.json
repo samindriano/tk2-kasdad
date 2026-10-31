@@ -1,0 +1,92 @@
+{
+  "task": "regression",
+  "candidate_id": "dc_reg_catboost_v1",
+  "approved_for_external_evaluation": true,
+  "approved_at_utc": "2026-10-31T08:28:27.357579+00:00",
+  "recipe": {
+    "kind": "regression_component_blend",
+    "components": [
+      {
+        "model": "catboost",
+        "rank_weight": 0.0,
+        "weight": 1.0
+      }
+    ]
+  },
+  "preparation_entrypoint": "scripts/prepare_campaign_catboost_candidate.py",
+  "submission_message": "Samuel Dual Campaign CatBoost MAE SVD32 v1",
+  "reason": "A distinct fixed model family improves pooled primary/H12 against official LGB and remains close to Ridge25 on primary. One external family check is methodologically meaningful despite worse target tails; do not promote from mean/public alone. No blend follows failed preregistered complementarity gate.",
+  "guardrail_counterexamples": {
+    "primary_low_tail_MAE": 13.059,
+    "primary_high_tail_MAE": 10.931,
+    "reference_Ridge25_low_tail": 11.821,
+    "reference_Ridge25_high_tail": 9.379,
+    "missing_stream_MAE": 13.188,
+    "primary_later_windows_worse_than_Ridge25": 3
+  },
+  "internal": {
+    "primary_MAE": 11.809633,
+    "H12_MAE": 14.377381,
+    "official_reference_primary": 11.9316,
+    "official_reference_H12": 14.704041,
+    "Ridge25_reference_primary": 11.800756,
+    "Ridge25_reference_H12": 14.252094
+  },
+  "public_context_seen": [
+    "Ridge25 11.64134",
+    "Ridge50 11.75259"
+  ],
+  "selection_limit": "One final fixed CatBoost external evaluation; no hyperparameter/individual-label changes based on public. Official academic model unchanged.",
+  "source_code_sha256": {
+    "scripts/campaign_kaggle.py": "93e0e0d7aa791eef4a2296711b4e4e50c71c5dcabfec782c0f33221225a65fca",
+    "scripts/prepare_campaign_candidate.py": "ffb5e8d8514ec2501bf969b43458b8fd1f47cf3b78565344d1b7aa4885f40afc",
+    "scripts/prepare_campaign_catboost_candidate.py": "395d9fb06a37f408083e1006fc5501b115944330eec3f3d94e0df4fdb4c8a969",
+    "src/__init__.py": "ba7d869e1fb032057d9a14a67e9ca87f07e59bb20493664beaf636d6af4bf9f8",
+    "src/data/__init__.py": "9980200ebc80364819b916a8dc123d3b55546d26ac13f0425b51da6a0d7a97f3",
+    "src/data/audit.py": "79cb10c7a1f0795a9c1263c6bbe81a548268e73e38f670068794dc19b2fb9479",
+    "src/data/composition_eda.py": "85c9208fff82fbc74de19971a7dcae4b1ad4dd589629bd6b79546d6e539975d6",
+    "src/data/discovery.py": "fcd0b513ba22f5ef77aad8cccf269823c1b4ab23a9397d40dc78b3ab62218208",
+    "src/data/formal_eda.py": "46a4ebef49bc98ae3c8071193d103e8d1fc2c1794b0af1ec0d17942f8d53236b",
+    "src/data/samuel.py": "6a13b60485f2aebf1ee9184d059b62a85038492ebc93a129ac7aa14d81124d34",
+    "src/data/samuel_eda_a.py": "36c3fd3dcd347f8e953553890f688028783d300bcd403a21447840b69f8d604d",
+    "src/data/samuel_eda_a_figures.py": "5d47e260210c7428004172a67c6aa41864611f64e054138f507b29ce5eadbe60",
+    "src/data/temporal_eda.py": "2fb71bfb2b32fae86c19d85c09bcda0de32c04cef3ea7c954e34bca356685831",
+    "src/models/autonomous_classification.py": "571d4ca73c6391f59aa0f3dd92d79b59cc3fe1344fce130904d35ae8a22368d3",
+    "src/models/autonomous_regression.py": "c0928ccff12702bdc72fc4a88c2480f8678d5913f50f0a9c5078267d33161f9b",
+    "src/models/autonomous_volume_route.py": "1c3257610dceed235edfcb297c2173e42f5990133fb3b7811ee3700a2909d66d",
+    "src/models/campaign_catboost.py": "144932050543a2ef0438e5baed6fbe0a184c5ebeb55b991f8d4bf1ffd71142de",
+    "src/models/campaign_regression.py": "bb0699ec25079cbfea5e1efd6cbc1c49f27d2eaef8e6e272573e2cb248a74799",
+    "src/models/classification_evaluation.py": "f7361819cd7b2466b74fd0b17176aecde6349803c20808f13ac45dbeb7682434",
+    "src/models/classification_metrics.py": "db77dd99210835006f96db1659bf4e87213179962b8f692d181af831b6539563",
+    "src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+    "src/models/classification_reporting.py": "e82e9f6f602f8ccc24470563abad81065b54b9f40eb0b4ae7e612200b22058c6",
+    "src/models/classification_review.py": "0b6c0408713bbbfc16f54405665be31deb5294d246c0a9e7d1691f98850d54a0",
+    "src/models/classification_round2_evaluation.py": "b42a9fc6b522ebde7fadbf39f38d2ed24c57d0adbccad41acc0c1282f7d8723c",
+    "src/models/classification_round2_metrics.py": "0bf4596aa3e5df38a8a49be14562225e4c1b94289b17b7d211f5f177672f48b8",
+    "src/models/classification_round2_models.py": "239008f056c6f5e004e84d2b9df9f5bfb20695ccfad90eed4deec3463c7d4575",
+    "src/models/classification_round2_reporting.py": "ed5a211ef95f8063883b4e863859d9c9bcac21242900c975ffbb7c65704d5063",
+    "src/models/classification_ttr_ablation.py": "569669e90bcf92f88aa3db59cf5348be85675028c518ab60ab2b0d77f7cf90b0",
+    "src/models/impact_oov.py": "1f297477d02aaa756b8bab182bf6be6be4be50001ece1bfb265e10a0ccf8ba85",
+    "src/models/regression_research_common.py": "4dd6cb64efa66f7e2b5119d79fecff1cb6c0aab541ca4bf19e49424fc49315ab",
+    "src/models/regression_research_lgb_text.py": "0fbcd282a6873616c866fc1c12ff4f86a5091e91d266e6900885a95ea8054777",
+    "src/models/regression_research_refinement.py": "6549b152e9f580956504a4f6dac5b6fa42cfa7bdcc9163904b9f9c04c0111f3e",
+    "src/models/regression_research_tabular.py": "674d7e52c485583729b8fe999dc133c39aae8dd85abd005a598e2caea9af99f9",
+    "src/models/regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+    "src/models/regression_round2_evaluation.py": "530fb3db09cdc27049551daca68896dbf7453975df20e00e0823cf8253394843",
+    "src/models/regression_round2_metrics.py": "d0a5050c55a90775fd3c034ca2ab91637ed46d870da7c3eb4e011c9b4ebb760f",
+    "src/models/regression_round2_models.py": "5cb195cc4a1b7894e670d9df117052eb9ac776630ff47d0469b83598880146df",
+    "src/models/regression_round2_reporting.py": "e959207562b3f663c4cbf17eaa743561fff32ea6e41251c415eb29f493a9280a",
+    "src/models/round1_behavior.py": "823740eabedf59f8ffc2e1b1a125829b3265c3c8fd52f5d22d9001914b918d7f",
+    "src/models/round1_evaluation.py": "be26992ee5c75190eb8a412fa6635dabd242eee1609fad0380023bfe3a1e300f",
+    "src/models/round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+    "src/models/round1_reporting.py": "c61ddd4e5e5ca252d522e7ab5007a53503202b21dd7d27d31177bbf6d3637b1e",
+    "src/utils/__init__.py": "865b6fe4dfe6ddc72969be3b9eabe72dc6fec223fd12d9b899318f63a3b5d9aa",
+    "src/utils/paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555"
+  },
+  "internal_result_sha256": {
+    "reports/dual_campaign/catboost/stage2_catboost.json": "7759cbc6c88004a9cb060db181f5b63df67800993ef7720bba9f67554e6ac28e",
+    "reports/dual_campaign/catboost/verification.json": "e1de81915dd54ccfcbad99e17f7f49aab68125434c12ce72531ddff010de4219",
+    "experiments/dual_campaign/catboost/freeze.json": "9c2274941c1ad19981a9b83e6f15cb14beb3b6eba3065d5815cde70aa5af0af2",
+    "experiments/dual_campaign/catboost/protocol.json": "2ef534ce9f56a3783a9559f7f82eb7ee8853bb084a6708184091448d1249a631"
+  }
+}
