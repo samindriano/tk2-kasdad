@@ -1,0 +1,234 @@
+{
+  "card_id": "R12",
+  "checks": {
+    "W1_MAE_harm_max": true,
+    "W4_MAE_harm_max": true,
+    "independent_metric_and_policy_reconstruction": true,
+    "pilot_H12_MAE_harm_max": true,
+    "pilot_primary_MAE_gain_min": true,
+    "supported_tail_or_missing_harm_max": false
+  },
+  "decision_basis": "Predeclared temporal pilot metrics and supported subgroup guards; no Test or Kaggle result used.",
+  "profile": "STANDARD",
+  "status": "RETIRE",
+  "supported_tail_or_missing_failures": [
+    {
+      "baseline_mae": 13.833275642085468,
+      "candidate_mae": 14.60203489812686,
+      "candidate_minus_baseline_mae": 0.7687592560413918,
+      "field": "stream_missing",
+      "group": "missing",
+      "n": 392,
+      "supported": true,
+      "tail_definition_uses_observed_target_after_prediction": false,
+      "view": "W1"
+    },
+    {
+      "baseline_mae": 13.845691180212624,
+      "candidate_mae": 14.33496672764792,
+      "candidate_minus_baseline_mae": 0.48927554743529633,
+      "field": "stream_missing",
+      "group": "missing",
+      "n": 734,
+      "supported": true,
+      "tail_definition_uses_observed_target_after_prediction": false,
+      "view": "primary"
+    },
+    {
+      "baseline_mae": 14.325131948847591,
+      "candidate_mae": 14.649630503358305,
+      "candidate_minus_baseline_mae": 0.3244985545107131,
+      "field": "stream_missing",
+      "group": "missing",
+      "n": 2578,
+      "supported": true,
+      "tail_definition_uses_observed_target_after_prediction": false,
+      "view": "H12"
+    }
+  ],
+  "thresholds": {
+    "individual_pilot_view_MAE_harm_max": 0.5,
+    "pilot_H12_MAE_harm_max": 0.05,
+    "pilot_primary_MAE_gain_min": 0.03,
+    "supported_group_n_min": 100,
+    "supported_tail_or_missing_MAE_harm_max": 0.25
+  },
+  "view_subgroups": {
+    "H12": {
+      "rows": 38588,
+      "subgroups": {
+        "groups": {
+          "stream_missing": {
+            "missing": {
+              "baseline_mae": 14.325131948847591,
+              "candidate_mae": 14.649630503358305,
+              "candidate_minus_baseline_mae": 0.3244985545107131,
+              "n": 2578,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": false
+            },
+            "present": {
+              "baseline_mae": 14.027658904430465,
+              "candidate_mae": 13.699570270559162,
+              "candidate_minus_baseline_mae": -0.32808863387130316,
+              "n": 36010,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": false
+            }
+          },
+          "target_tail": {
+            "high_ge95": {
+              "baseline_mae": 10.242197755462715,
+              "candidate_mae": 9.680642446135268,
+              "candidate_minus_baseline_mae": -0.5615553093274475,
+              "n": 1955,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": true
+            },
+            "low_le5": {
+              "baseline_mae": 15.47074152305708,
+              "candidate_mae": 14.440926480860373,
+              "candidate_minus_baseline_mae": -1.0298150421967076,
+              "n": 1928,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": true
+            }
+          }
+        },
+        "support_minimum": 100
+      }
+    },
+    "W1": {
+      "rows": 4114,
+      "subgroups": {
+        "groups": {
+          "stream_missing": {
+            "missing": {
+              "baseline_mae": 13.833275642085468,
+              "candidate_mae": 14.60203489812686,
+              "candidate_minus_baseline_mae": 0.7687592560413918,
+              "n": 392,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": false
+            },
+            "present": {
+              "baseline_mae": 16.097894844464882,
+              "candidate_mae": 15.443915311818103,
+              "candidate_minus_baseline_mae": -0.6539795326467797,
+              "n": 3722,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": false
+            }
+          },
+          "target_tail": {
+            "high_ge95": {
+              "baseline_mae": 10.95190538014284,
+              "candidate_mae": 10.828403652580343,
+              "candidate_minus_baseline_mae": -0.12350172756249655,
+              "n": 213,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": true
+            },
+            "low_le5": {
+              "baseline_mae": 21.512208387237514,
+              "candidate_mae": 19.952826174345926,
+              "candidate_minus_baseline_mae": -1.5593822128915882,
+              "n": 205,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": true
+            }
+          }
+        },
+        "support_minimum": 100
+      }
+    },
+    "W4": {
+      "rows": 4950,
+      "subgroups": {
+        "groups": {
+          "stream_missing": {
+            "missing": {
+              "baseline_mae": 13.85992185549287,
+              "candidate_mae": 14.028853503005392,
+              "candidate_minus_baseline_mae": 0.16893164751252243,
+              "n": 342,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": false
+            },
+            "present": {
+              "baseline_mae": 11.276515164233006,
+              "candidate_mae": 11.243321867956466,
+              "candidate_minus_baseline_mae": -0.033193296276539996,
+              "n": 4608,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": false
+            }
+          },
+          "target_tail": {
+            "high_ge95": {
+              "baseline_mae": 7.354027536026501,
+              "candidate_mae": 7.041503224614198,
+              "candidate_minus_baseline_mae": -0.31252431141230286,
+              "n": 249,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": true
+            },
+            "low_le5": {
+              "baseline_mae": 9.740550072150272,
+              "candidate_mae": 9.523249344087583,
+              "candidate_minus_baseline_mae": -0.21730072806268907,
+              "n": 244,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": true
+            }
+          }
+        },
+        "support_minimum": 100
+      }
+    },
+    "primary": {
+      "rows": 9064,
+      "subgroups": {
+        "groups": {
+          "stream_missing": {
+            "missing": {
+              "baseline_mae": 13.845691180212624,
+              "candidate_mae": 14.33496672764792,
+              "candidate_minus_baseline_mae": 0.48927554743529633,
+              "n": 734,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": false
+            },
+            "present": {
+              "baseline_mae": 13.43079789770516,
+              "candidate_mae": 13.120225685249745,
+              "candidate_minus_baseline_mae": -0.31057221245541555,
+              "n": 8330,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": false
+            }
+          },
+          "target_tail": {
+            "high_ge95": {
+              "baseline_mae": 9.012789399222996,
+              "candidate_mae": 8.787411863481706,
+              "candidate_minus_baseline_mae": -0.2253775357412895,
+              "n": 462,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": true
+            },
+            "low_le5": {
+              "baseline_mae": 15.115137944294784,
+              "candidate_mae": 14.285082863470569,
+              "candidate_minus_baseline_mae": -0.8300550808242146,
+              "n": 449,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": true
+            }
+          }
+        },
+        "support_minimum": 100
+      }
+    }
+  }
+}

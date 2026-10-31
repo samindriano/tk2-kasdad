@@ -1,0 +1,92 @@
+{
+  "card_id": "R12",
+  "control_reconstruction": {
+    "accepted_fullsix_metrics": {
+      "h12": {
+        "mae": 14.04753258299653,
+        "rows": 38588
+      },
+      "primary": {
+        "mae": 11.559390078665364,
+        "rows": 38588
+      }
+    },
+    "exact_component_reconstruction": true,
+    "fit_rows_by_cutoff": {
+      "55": 12020,
+      "67": 29705
+    },
+    "pilot_H12_rows": 38588,
+    "pilot_primary_rows": 9064,
+    "views": {
+      "H12": {
+        "baseline": 14.04753258299653,
+        "rows": 38588
+      },
+      "W1": {
+        "baseline": 15.882111974427762,
+        "rows": 4114
+      },
+      "W4": {
+        "baseline": 11.455005081083685,
+        "rows": 4950
+      },
+      "primary": {
+        "baseline": 13.464395831218011,
+        "rows": 9064
+      }
+    }
+  },
+  "fit_accounting": {
+    "attempted_predictor_fits": 2,
+    "expected_card_predictor_fits": 2,
+    "fit_failed_events": 0,
+    "fit_seconds_by_cutoff": {
+      "55": 13.051620799989905,
+      "67": 32.46890540001914
+    },
+    "successful_predictor_fits": 2
+  },
+  "freeze_signature": "dbc69182a35d02032763d463c630c49ff52b2d803ac487202aefd465b25d78d3",
+  "independent_metric_implementation": "scripts/optimization_v3_batch1_verify.py",
+  "official_test_read": false,
+  "resource_observation": {
+    "RSS_sample_count": 178,
+    "preflight_estimated_peak_job_GiB": 2.351933553814888,
+    "queue_job_cap_GiB": 6.0,
+    "resource_estimate_limitation": "2.25GiB fixed allowance + 3 x fit-free sparse word ngram upper bound; ranker pair-buffer RSS not directly measured",
+    "sampled_peak_process_RSS_GiB": 0.4765205383300781
+  },
+  "status": "PASS",
+  "test_labels_used": false,
+  "views": {
+    "H12": {
+      "baseline": 14.04753258299653,
+      "candidate": 13.763042212099437,
+      "gain_positive_is_better": 0.2844903708970925,
+      "metric": "mae",
+      "n": 38588
+    },
+    "W1": {
+      "baseline": 15.882111974427762,
+      "candidate": 15.36369724614796,
+      "gain_positive_is_better": 0.5184147282798008,
+      "metric": "mae",
+      "n": 4114
+    },
+    "W4": {
+      "baseline": 11.455005081083685,
+      "candidate": 11.435776780923481,
+      "gain_positive_is_better": 0.01922830016020427,
+      "metric": "mae",
+      "n": 4950
+    },
+    "primary": {
+      "baseline": 13.464395831218011,
+      "candidate": 13.218595050333622,
+      "gain_positive_is_better": 0.24580078088438917,
+      "metric": "mae",
+      "n": 9064
+    }
+  }
+}
