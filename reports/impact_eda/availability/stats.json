@@ -1,0 +1,2464 @@
+{
+  "title": "Classification signal_stream availability and artifact_signal composition",
+  "method": "Raw-data descriptive analysis; no model scores, predictions, Test data, or Test labels.",
+  "source": {
+    "path_role": "official Classification Train resolved with src.utils.paths.task_files",
+    "sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "rows": 50608,
+    "columns": [
+      "record_id",
+      "cycle_code",
+      "org_code",
+      "module_code",
+      "pattern_code",
+      "signal_stream",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "text_load",
+      "scope_pressure",
+      "pulse_a",
+      "pulse_b",
+      "telemetry_flag",
+      "audit_lane",
+      "checksum_hint",
+      "impact_load",
+      "entry_friction",
+      "artifact_signal"
+    ],
+    "record_id_unique": true
+  },
+  "reproduction": {
+    "script_sha256": "44b43ba6628b70a2c722ae96f2e8697f3e44d466497e74c626c3d218ebe3825f",
+    "python": "3.13.5",
+    "packages": {
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "matplotlib": "3.10.5",
+      "scikit-learn": "1.8.0"
+    }
+  },
+  "definitions": {
+    "availability": "Round2 stream_missing_mask: null, blank, or whitespace-only stream is missing",
+    "outcome": "artifact_signal in {0,1}",
+    "uncertainty_interval": "Wilson 95%; descriptive per-group intervals, not an adjusted contrast CI",
+    "minimum_exact_cycle_support": "minimal 20 baris pada masing-masing status availability",
+    "standardization": "within each supported cycle compute missing-present prevalence; weight each cycle by its share of all rows in the pooled supported-cycle population"
+  },
+  "schema_audit": {
+    "shape": [
+      50608,
+      19
+    ],
+    "duplicate_record_id": 0,
+    "artifact_signal_missing": 0,
+    "signal_stream_null": 3404,
+    "signal_stream_blank_or_whitespace_nonnull": 0,
+    "signal_stream_missing_under_frozen_mask": 3404,
+    "cycle_min_max": [
+      47,
+      79
+    ],
+    "official_test_opened": false
+  },
+  "overall_groups": [
+    {
+      "availability": "present",
+      "n": 47204,
+      "artifact_0": 30932,
+      "artifact_1": 16272,
+      "artifact_prevalence": 0.3447165494449623,
+      "artifact_wilson95": {
+        "low": 0.3404418389907919,
+        "high": 0.3490165317591632
+      },
+      "text_load_median": 31.776699999999998,
+      "text_load_q25": 27.701774999999998,
+      "text_load_q75": 36.92045
+    },
+    {
+      "availability": "missing",
+      "n": 3404,
+      "artifact_0": 2106,
+      "artifact_1": 1298,
+      "artifact_prevalence": 0.3813160987074031,
+      "artifact_wilson95": {
+        "low": 0.3651419107350195,
+        "high": 0.39775785741334574
+      },
+      "text_load_median": 21.80525,
+      "text_load_q25": 20.546174999999998,
+      "text_load_q75": 23.78535
+    }
+  ],
+  "overall_missing_minus_present_pp": 3.65995492624408,
+  "periods": [
+    {
+      "period": [
+        47,
+        57
+      ],
+      "n": 13546,
+      "groups": [
+        {
+          "availability": "present",
+          "n": 12537,
+          "artifact_0": 8678,
+          "artifact_1": 3859,
+          "artifact_prevalence": 0.3078088856983329,
+          "artifact_wilson95": {
+            "low": 0.29978890084120935,
+            "high": 0.31594661293402304
+          },
+          "text_load_median": 32.4559,
+          "text_load_q25": 28.724,
+          "text_load_q75": 37.3429
+        },
+        {
+          "availability": "missing",
+          "n": 1009,
+          "artifact_0": 717,
+          "artifact_1": 292,
+          "artifact_prevalence": 0.2893954410307235,
+          "artifact_wilson95": {
+            "low": 0.26225496171076135,
+            "high": 0.31813346305331736
+          },
+          "text_load_median": 21.1493,
+          "text_load_q25": 19.9651,
+          "text_load_q75": 22.8575
+        }
+      ],
+      "missing_minus_present_pp": -1.8413444667609413
+    },
+    {
+      "period": [
+        58,
+        68
+      ],
+      "n": 16736,
+      "groups": [
+        {
+          "availability": "present",
+          "n": 15664,
+          "artifact_0": 9341,
+          "artifact_1": 6323,
+          "artifact_prevalence": 0.4036644535240041,
+          "artifact_wilson95": {
+            "low": 0.3960055980697544,
+            "high": 0.4113705482914329
+          },
+          "text_load_median": 31.131149999999998,
+          "text_load_q25": 27.103575,
+          "text_load_q75": 36.111525
+        },
+        {
+          "availability": "missing",
+          "n": 1072,
+          "artifact_0": 532,
+          "artifact_1": 540,
+          "artifact_prevalence": 0.503731343283582,
+          "artifact_wilson95": {
+            "low": 0.4738413694404167,
+            "high": 0.5335946704466958
+          },
+          "text_load_median": 21.899050000000003,
+          "text_load_q25": 20.832625,
+          "text_load_q75": 23.433
+        }
+      ],
+      "missing_minus_present_pp": 10.006688975957795
+    },
+    {
+      "period": [
+        69,
+        79
+      ],
+      "n": 20326,
+      "groups": [
+        {
+          "availability": "present",
+          "n": 19003,
+          "artifact_0": 12913,
+          "artifact_1": 6090,
+          "artifact_prevalence": 0.3204757143608904,
+          "artifact_wilson95": {
+            "low": 0.3138776282664455,
+            "high": 0.32714636749937476
+          },
+          "text_load_median": 31.7944,
+          "text_load_q25": 27.5128,
+          "text_load_q75": 37.32665
+        },
+        {
+          "availability": "missing",
+          "n": 1323,
+          "artifact_0": 857,
+          "artifact_1": 466,
+          "artifact_prevalence": 0.35222978080120937,
+          "artifact_wilson95": {
+            "low": 0.3269523285131684,
+            "high": 0.37836287896646253
+          },
+          "text_load_median": 22.2651,
+          "text_load_q25": 20.8856,
+          "text_load_q75": 24.1804
+        }
+      ],
+      "missing_minus_present_pp": 3.1754066440318973
+    }
+  ],
+  "cycles": [
+    {
+      "cycle": 47,
+      "n": 1342,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 1241,
+          "artifact_0": 890,
+          "artifact_1": 351,
+          "artifact_prevalence": 0.28283642224012895,
+          "artifact_wilson95": {
+            "low": 0.2584787151181442,
+            "high": 0.30853442042553875
+          },
+          "text_load_median": 33.3214,
+          "text_load_q25": 29.2681,
+          "text_load_q75": 41.6258
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 101,
+          "artifact_0": 85,
+          "artifact_1": 16,
+          "artifact_prevalence": 0.15841584158415842,
+          "artifact_wilson95": {
+            "low": 0.09992756899137685,
+            "high": 0.2419358429055546
+          },
+          "text_load_median": 20.5617,
+          "text_load_q25": 19.5202,
+          "text_load_q75": 29.4299
+        }
+      },
+      "missing_minus_present_pp": -12.442058065597053,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 48,
+      "n": 977,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 894,
+          "artifact_0": 537,
+          "artifact_1": 357,
+          "artifact_prevalence": 0.39932885906040266,
+          "artifact_wilson95": {
+            "low": 0.3677211539561196,
+            "high": 0.4317980170159712
+          },
+          "text_load_median": 33.68045,
+          "text_load_q25": 29.611449999999998,
+          "text_load_q75": 40.68615
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 83,
+          "artifact_0": 64,
+          "artifact_1": 19,
+          "artifact_prevalence": 0.2289156626506024,
+          "artifact_wilson95": {
+            "low": 0.15173364740724513,
+            "high": 0.3300806770974395
+          },
+          "text_load_median": 21.5622,
+          "text_load_q25": 20.11195,
+          "text_load_q75": 22.93465
+        }
+      },
+      "missing_minus_present_pp": -17.041319640980028,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 49,
+      "n": 1255,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 1183,
+          "artifact_0": 895,
+          "artifact_1": 288,
+          "artifact_prevalence": 0.24344885883347422,
+          "artifact_wilson95": {
+            "low": 0.21984911011196995,
+            "high": 0.2687093696338034
+          },
+          "text_load_median": 32.3899,
+          "text_load_q25": 28.96595,
+          "text_load_q75": 36.32445
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 72,
+          "artifact_0": 60,
+          "artifact_1": 12,
+          "artifact_prevalence": 0.16666666666666666,
+          "artifact_wilson95": {
+            "low": 0.09799371242561683,
+            "high": 0.269107069305355
+          },
+          "text_load_median": 21.1929,
+          "text_load_q25": 19.8691,
+          "text_load_q75": 26.4359
+        }
+      },
+      "missing_minus_present_pp": -7.678219216680756,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 50,
+      "n": 1111,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 1021,
+          "artifact_0": 725,
+          "artifact_1": 296,
+          "artifact_prevalence": 0.2899118511263467,
+          "artifact_wilson95": {
+            "low": 0.26290966935502014,
+            "high": 0.31848899840217704
+          },
+          "text_load_median": 32.7626,
+          "text_load_q25": 28.9058,
+          "text_load_q75": 39.0925
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 90,
+          "artifact_0": 71,
+          "artifact_1": 19,
+          "artifact_prevalence": 0.2111111111111111,
+          "artifact_wilson95": {
+            "low": 0.13952592118014923,
+            "high": 0.30634799581257294
+          },
+          "text_load_median": 20.415399999999998,
+          "text_load_q25": 19.5897,
+          "text_load_q75": 21.89865
+        }
+      },
+      "missing_minus_present_pp": -7.8800740015235595,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 51,
+      "n": 1535,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 1443,
+          "artifact_0": 930,
+          "artifact_1": 513,
+          "artifact_prevalence": 0.35550935550935553,
+          "artifact_wilson95": {
+            "low": 0.33122555379117347,
+            "high": 0.38056042147394475
+          },
+          "text_load_median": 32.4227,
+          "text_load_q25": 28.780749999999998,
+          "text_load_q75": 37.088499999999996
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 92,
+          "artifact_0": 67,
+          "artifact_1": 25,
+          "artifact_prevalence": 0.2717391304347826,
+          "artifact_wilson95": {
+            "low": 0.1913577564924533,
+            "high": 0.37041852992054786
+          },
+          "text_load_median": 21.6289,
+          "text_load_q25": 20.53365,
+          "text_load_q75": 23.7379
+        }
+      },
+      "missing_minus_present_pp": -8.377022507457294,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 52,
+      "n": 1565,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 1452,
+          "artifact_0": 1046,
+          "artifact_1": 406,
+          "artifact_prevalence": 0.2796143250688705,
+          "artifact_wilson95": {
+            "low": 0.2571341414269134,
+            "high": 0.30325755086736117
+          },
+          "text_load_median": 31.975900000000003,
+          "text_load_q25": 28.770500000000002,
+          "text_load_q75": 35.323975
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 113,
+          "artifact_0": 84,
+          "artifact_1": 29,
+          "artifact_prevalence": 0.25663716814159293,
+          "artifact_wilson95": {
+            "low": 0.18503799497941728,
+            "high": 0.34423867996861246
+          },
+          "text_load_median": 20.881,
+          "text_load_q25": 19.8031,
+          "text_load_q75": 22.1958
+        }
+      },
+      "missing_minus_present_pp": -2.297715692727759,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 53,
+      "n": 1371,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 1292,
+          "artifact_0": 986,
+          "artifact_1": 306,
+          "artifact_prevalence": 0.23684210526315788,
+          "artifact_wilson95": {
+            "low": 0.21446133049968064,
+            "high": 0.26078311752187955
+          },
+          "text_load_median": 32.606899999999996,
+          "text_load_q25": 28.71415,
+          "text_load_q75": 38.9203
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 79,
+          "artifact_0": 54,
+          "artifact_1": 25,
+          "artifact_prevalence": 0.31645569620253167,
+          "artifact_wilson95": {
+            "low": 0.22445285966871514,
+            "high": 0.4254808762548768
+          },
+          "text_load_median": 21.5931,
+          "text_load_q25": 20.136499999999998,
+          "text_load_q75": 29.05155
+        }
+      },
+      "missing_minus_present_pp": 7.961359093937379,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 54,
+      "n": 1256,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 1175,
+          "artifact_0": 782,
+          "artifact_1": 393,
+          "artifact_prevalence": 0.334468085106383,
+          "artifact_wilson95": {
+            "low": 0.30806925678197894,
+            "high": 0.3619457421906961
+          },
+          "text_load_median": 31.7546,
+          "text_load_q25": 28.443550000000002,
+          "text_load_q75": 35.526399999999995
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 81,
+          "artifact_0": 66,
+          "artifact_1": 15,
+          "artifact_prevalence": 0.18518518518518517,
+          "artifact_wilson95": {
+            "low": 0.11556290005906689,
+            "high": 0.28331589447245376
+          },
+          "text_load_median": 21.2349,
+          "text_load_q25": 19.7571,
+          "text_load_q75": 26.0133
+        }
+      },
+      "missing_minus_present_pp": -14.928289992119781,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 55,
+      "n": 1608,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 1493,
+          "artifact_0": 1014,
+          "artifact_1": 479,
+          "artifact_prevalence": 0.32083054253181514,
+          "artifact_wilson95": {
+            "low": 0.29763828634146716,
+            "high": 0.34494243131081737
+          },
+          "text_load_median": 32.066,
+          "text_load_q25": 28.1504,
+          "text_load_q75": 35.7562
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 115,
+          "artifact_0": 75,
+          "artifact_1": 40,
+          "artifact_prevalence": 0.34782608695652173,
+          "artifact_wilson95": {
+            "low": 0.2669736416451737,
+            "high": 0.4385163418393998
+          },
+          "text_load_median": 21.1228,
+          "text_load_q25": 20.064,
+          "text_load_q75": 23.137900000000002
+        }
+      },
+      "missing_minus_present_pp": 2.6995544424706583,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 56,
+      "n": 564,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 479,
+          "artifact_0": 356,
+          "artifact_1": 123,
+          "artifact_prevalence": 0.2567849686847599,
+          "artifact_wilson95": {
+            "low": 0.21970577617283898,
+            "high": 0.29773417074247793
+          },
+          "text_load_median": 35.0034,
+          "text_load_q25": 29.4097,
+          "text_load_q75": 44.51605
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 85,
+          "artifact_0": 48,
+          "artifact_1": 37,
+          "artifact_prevalence": 0.43529411764705883,
+          "artifact_wilson95": {
+            "low": 0.33495777427196094,
+            "high": 0.5412261589275046
+          },
+          "text_load_median": 20.8931,
+          "text_load_q25": 20.0524,
+          "text_load_q75": 22.0528
+        }
+      },
+      "missing_minus_present_pp": 17.85091489622989,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 57,
+      "n": 962,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 864,
+          "artifact_0": 517,
+          "artifact_1": 347,
+          "artifact_prevalence": 0.40162037037037035,
+          "artifact_wilson95": {
+            "low": 0.3694374270730513,
+            "high": 0.4346742591432165
+          },
+          "text_load_median": 31.34885,
+          "text_load_q25": 27.693550000000002,
+          "text_load_q75": 36.781475
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 98,
+          "artifact_0": 43,
+          "artifact_1": 55,
+          "artifact_prevalence": 0.5612244897959183,
+          "artifact_wilson95": {
+            "low": 0.4625100210917256,
+            "high": 0.6553201841994971
+          },
+          "text_load_median": 21.52105,
+          "text_load_q25": 20.660224999999997,
+          "text_load_q75": 22.398225
+        }
+      },
+      "missing_minus_present_pp": 15.960411942554797,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 58,
+      "n": 1205,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 1105,
+          "artifact_0": 565,
+          "artifact_1": 540,
+          "artifact_prevalence": 0.48868778280542985,
+          "artifact_wilson95": {
+            "low": 0.45930494677481604,
+            "high": 0.5181489986913026
+          },
+          "text_load_median": 30.3245,
+          "text_load_q25": 26.5542,
+          "text_load_q75": 33.7993
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 100,
+          "artifact_0": 43,
+          "artifact_1": 57,
+          "artifact_prevalence": 0.57,
+          "artifact_wilson95": {
+            "low": 0.47215389549212305,
+            "high": 0.6626670147588988
+          },
+          "text_load_median": 21.8078,
+          "text_load_q25": 20.700525000000003,
+          "text_load_q75": 22.86515
+        }
+      },
+      "missing_minus_present_pp": 8.13122171945701,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 59,
+      "n": 1383,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 1274,
+          "artifact_0": 747,
+          "artifact_1": 527,
+          "artifact_prevalence": 0.41365777080062793,
+          "artifact_wilson95": {
+            "low": 0.3869134736028531,
+            "high": 0.44092119361553894
+          },
+          "text_load_median": 30.605800000000002,
+          "text_load_q25": 26.853849999999998,
+          "text_load_q75": 36.188199999999995
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 109,
+          "artifact_0": 58,
+          "artifact_1": 51,
+          "artifact_prevalence": 0.46788990825688076,
+          "artifact_wilson95": {
+            "low": 0.37691328555456316,
+            "high": 0.5610527769799256
+          },
+          "text_load_median": 21.5404,
+          "text_load_q25": 20.338,
+          "text_load_q75": 22.7319
+        }
+      },
+      "missing_minus_present_pp": 5.423213745625283,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 60,
+      "n": 1478,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 1393,
+          "artifact_0": 733,
+          "artifact_1": 660,
+          "artifact_prevalence": 0.4737975592246949,
+          "artifact_wilson95": {
+            "low": 0.4476848334361342,
+            "high": 0.5000544038702732
+          },
+          "text_load_median": 31.0158,
+          "text_load_q25": 26.7384,
+          "text_load_q75": 35.6978
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 85,
+          "artifact_0": 37,
+          "artifact_1": 48,
+          "artifact_prevalence": 0.5647058823529412,
+          "artifact_wilson95": {
+            "low": 0.4587738410724954,
+            "high": 0.6650422257280392
+          },
+          "text_load_median": 21.4601,
+          "text_load_q25": 20.806,
+          "text_load_q75": 22.7151
+        }
+      },
+      "missing_minus_present_pp": 9.090832312824626,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 61,
+      "n": 1632,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 1541,
+          "artifact_0": 812,
+          "artifact_1": 729,
+          "artifact_prevalence": 0.47306943543153795,
+          "artifact_wilson95": {
+            "low": 0.44823941199723905,
+            "high": 0.4980333919037121
+          },
+          "text_load_median": 30.05,
+          "text_load_q25": 25.9873,
+          "text_load_q75": 34.5075
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 91,
+          "artifact_0": 33,
+          "artifact_1": 58,
+          "artifact_prevalence": 0.6373626373626373,
+          "artifact_wilson95": {
+            "low": 0.534882923607384,
+            "high": 0.7287148775110555
+          },
+          "text_load_median": 21.9479,
+          "text_load_q25": 20.93355,
+          "text_load_q75": 23.23435
+        }
+      },
+      "missing_minus_present_pp": 16.429320193109938,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 62,
+      "n": 1500,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 1412,
+          "artifact_0": 884,
+          "artifact_1": 528,
+          "artifact_prevalence": 0.37393767705382436,
+          "artifact_wilson95": {
+            "low": 0.3490745661749405,
+            "high": 0.3994848521256612
+          },
+          "text_load_median": 30.73205,
+          "text_load_q25": 26.881050000000002,
+          "text_load_q75": 36.165025
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 88,
+          "artifact_0": 55,
+          "artifact_1": 33,
+          "artifact_prevalence": 0.375,
+          "artifact_wilson95": {
+            "low": 0.28107922931825335,
+            "high": 0.47937753734796973
+          },
+          "text_load_median": 22.30825,
+          "text_load_q25": 21.071675,
+          "text_load_q75": 28.694125
+        }
+      },
+      "missing_minus_present_pp": 0.10623229461756423,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 63,
+      "n": 1883,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 1778,
+          "artifact_0": 947,
+          "artifact_1": 831,
+          "artifact_prevalence": 0.46737907761529807,
+          "artifact_wilson95": {
+            "low": 0.4442829644736431,
+            "high": 0.4906158451674939
+          },
+          "text_load_median": 30.6022,
+          "text_load_q25": 26.545175,
+          "text_load_q75": 35.485125000000004
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 105,
+          "artifact_0": 43,
+          "artifact_1": 62,
+          "artifact_prevalence": 0.5904761904761905,
+          "artifact_wilson95": {
+            "low": 0.4948448240745816,
+            "high": 0.6797210096239605
+          },
+          "text_load_median": 22.3742,
+          "text_load_q25": 20.9713,
+          "text_load_q75": 24.2675
+        }
+      },
+      "missing_minus_present_pp": 12.309711286089243,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 64,
+      "n": 1807,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 1698,
+          "artifact_0": 1065,
+          "artifact_1": 633,
+          "artifact_prevalence": 0.37279151943462896,
+          "artifact_wilson95": {
+            "low": 0.350103346211398,
+            "high": 0.39605397193305575
+          },
+          "text_load_median": 30.57245,
+          "text_load_q25": 26.855975,
+          "text_load_q75": 36.153625000000005
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 109,
+          "artifact_0": 45,
+          "artifact_1": 64,
+          "artifact_prevalence": 0.5871559633027523,
+          "artifact_wilson95": {
+            "low": 0.4932991419382305,
+            "high": 0.6750786883253
+          },
+          "text_load_median": 22.0559,
+          "text_load_q25": 21.1926,
+          "text_load_q75": 23.4414
+        }
+      },
+      "missing_minus_present_pp": 21.436444386812337,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 65,
+      "n": 1567,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 1480,
+          "artifact_0": 946,
+          "artifact_1": 534,
+          "artifact_prevalence": 0.3608108108108108,
+          "artifact_wilson95": {
+            "low": 0.3367336935259527,
+            "high": 0.38560861093597854
+          },
+          "text_load_median": 32.678200000000004,
+          "text_load_q25": 28.40635,
+          "text_load_q75": 36.99785
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 87,
+          "artifact_0": 51,
+          "artifact_1": 36,
+          "artifact_prevalence": 0.41379310344827586,
+          "artifact_wilson95": {
+            "low": 0.3160931236316698,
+            "high": 0.5187840327380061
+          },
+          "text_load_median": 22.1001,
+          "text_load_q25": 20.7128,
+          "text_load_q75": 25.395699999999998
+        }
+      },
+      "missing_minus_present_pp": 5.2982292637465065,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 66,
+      "n": 1751,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 1631,
+          "artifact_0": 1065,
+          "artifact_1": 566,
+          "artifact_prevalence": 0.34702636419374616,
+          "artifact_wilson95": {
+            "low": 0.3243081401186237,
+            "high": 0.3704634860181654
+          },
+          "text_load_median": 31.0461,
+          "text_load_q25": 27.59415,
+          "text_load_q75": 36.57705
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 120,
+          "artifact_0": 83,
+          "artifact_1": 37,
+          "artifact_prevalence": 0.30833333333333335,
+          "artifact_wilson95": {
+            "low": 0.23272736988916298,
+            "high": 0.39582997723800684
+          },
+          "text_load_median": 22.33795,
+          "text_load_q25": 20.857075,
+          "text_load_q75": 22.9825
+        }
+      },
+      "missing_minus_present_pp": -3.869303086041281,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 67,
+      "n": 1953,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 1827,
+          "artifact_0": 1202,
+          "artifact_1": 625,
+          "artifact_prevalence": 0.34209085933223865,
+          "artifact_wilson95": {
+            "low": 0.3206888224022455,
+            "high": 0.3641555439845279
+          },
+          "text_load_median": 32.5104,
+          "text_load_q25": 28.06745,
+          "text_load_q75": 36.459149999999994
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 126,
+          "artifact_0": 53,
+          "artifact_1": 73,
+          "artifact_prevalence": 0.5793650793650794,
+          "artifact_wilson95": {
+            "low": 0.49207231903835913,
+            "high": 0.6619616865993871
+          },
+          "text_load_median": 21.95015,
+          "text_load_q25": 20.516775000000003,
+          "text_load_q75": 24.232925
+        }
+      },
+      "missing_minus_present_pp": 23.727422003284076,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 68,
+      "n": 577,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 525,
+          "artifact_0": 375,
+          "artifact_1": 150,
+          "artifact_prevalence": 0.2857142857142857,
+          "artifact_wilson95": {
+            "low": 0.24873703192145774,
+            "high": 0.3258046454618822
+          },
+          "text_load_median": 35.6298,
+          "text_load_q25": 29.6161,
+          "text_load_q75": 42.7247
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 52,
+          "artifact_0": 31,
+          "artifact_1": 21,
+          "artifact_prevalence": 0.40384615384615385,
+          "artifact_wilson95": {
+            "low": 0.2815973387185887,
+            "high": 0.5393242451513848
+          },
+          "text_load_median": 21.7788,
+          "text_load_q25": 20.9495,
+          "text_load_q75": 22.255975
+        }
+      },
+      "missing_minus_present_pp": 11.813186813186816,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 69,
+      "n": 1079,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 997,
+          "artifact_0": 588,
+          "artifact_1": 409,
+          "artifact_prevalence": 0.4102306920762287,
+          "artifact_wilson95": {
+            "low": 0.38009992089462463,
+            "high": 0.4410505735993602
+          },
+          "text_load_median": 33.3675,
+          "text_load_q25": 28.5503,
+          "text_load_q75": 37.8245
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 82,
+          "artifact_0": 50,
+          "artifact_1": 32,
+          "artifact_prevalence": 0.3902439024390244,
+          "artifact_wilson95": {
+            "low": 0.2918468135988424,
+            "high": 0.4984642989184968
+          },
+          "text_load_median": 21.9598,
+          "text_load_q25": 21.07775,
+          "text_load_q75": 22.713925
+        }
+      },
+      "missing_minus_present_pp": -1.9986789637204294,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 70,
+      "n": 1605,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 1511,
+          "artifact_0": 948,
+          "artifact_1": 563,
+          "artifact_prevalence": 0.37260092653871607,
+          "artifact_wilson95": {
+            "low": 0.3485741264619432,
+            "high": 0.39727386458807534
+          },
+          "text_load_median": 33.768,
+          "text_load_q25": 29.0612,
+          "text_load_q75": 38.21405
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 94,
+          "artifact_0": 46,
+          "artifact_1": 48,
+          "artifact_prevalence": 0.5106382978723404,
+          "artifact_wilson95": {
+            "low": 0.41116886151084975,
+            "high": 0.6092723709084791
+          },
+          "text_load_median": 22.34075,
+          "text_load_q25": 21.275125,
+          "text_load_q75": 25.996275
+        }
+      },
+      "missing_minus_present_pp": 13.803737133362432,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 71,
+      "n": 1689,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 1575,
+          "artifact_0": 984,
+          "artifact_1": 591,
+          "artifact_prevalence": 0.37523809523809526,
+          "artifact_wilson95": {
+            "low": 0.35165668522281956,
+            "high": 0.3994266184208858
+          },
+          "text_load_median": 33.1576,
+          "text_load_q25": 28.355,
+          "text_load_q75": 38.952650000000006
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 114,
+          "artifact_0": 75,
+          "artifact_1": 39,
+          "artifact_prevalence": 0.34210526315789475,
+          "artifact_wilson95": {
+            "low": 0.2614420235959843,
+            "high": 0.43306277666470266
+          },
+          "text_load_median": 21.78615,
+          "text_load_q25": 20.597475,
+          "text_load_q75": 23.955424999999998
+        }
+      },
+      "missing_minus_present_pp": -3.313283208020051,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 72,
+      "n": 1811,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 1687,
+          "artifact_0": 1114,
+          "artifact_1": 573,
+          "artifact_prevalence": 0.3396561944279787,
+          "artifact_wilson95": {
+            "low": 0.31744391017029394,
+            "high": 0.3625970557181759
+          },
+          "text_load_median": 30.7377,
+          "text_load_q25": 26.782850000000003,
+          "text_load_q75": 36.475899999999996
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 124,
+          "artifact_0": 61,
+          "artifact_1": 63,
+          "artifact_prevalence": 0.5080645161290323,
+          "artifact_wilson95": {
+            "low": 0.42116044210328424,
+            "high": 0.5944839350686403
+          },
+          "text_load_median": 22.34335,
+          "text_load_q25": 21.0572,
+          "text_load_q75": 24.2339
+        }
+      },
+      "missing_minus_present_pp": 16.840832170105358,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 73,
+      "n": 1880,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 1738,
+          "artifact_0": 1172,
+          "artifact_1": 566,
+          "artifact_prevalence": 0.3256616800920598,
+          "artifact_wilson95": {
+            "low": 0.304035544842044,
+            "high": 0.3480567871373029
+          },
+          "text_load_median": 32.52205,
+          "text_load_q25": 27.777974999999998,
+          "text_load_q75": 37.039225
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 142,
+          "artifact_0": 86,
+          "artifact_1": 56,
+          "artifact_prevalence": 0.39436619718309857,
+          "artifact_wilson95": {
+            "low": 0.31778349295783453,
+            "high": 0.47651368260125165
+          },
+          "text_load_median": 21.994349999999997,
+          "text_load_q25": 20.713900000000002,
+          "text_load_q75": 23.843049999999998
+        }
+      },
+      "missing_minus_present_pp": 6.870451709103875,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 74,
+      "n": 1814,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 1679,
+          "artifact_0": 1146,
+          "artifact_1": 533,
+          "artifact_prevalence": 0.31745086360929126,
+          "artifact_wilson95": {
+            "low": 0.2956238264180541,
+            "high": 0.3401113185732157
+          },
+          "text_load_median": 32.4025,
+          "text_load_q25": 27.814,
+          "text_load_q75": 38.166799999999995
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 135,
+          "artifact_0": 113,
+          "artifact_1": 22,
+          "artifact_prevalence": 0.16296296296296298,
+          "artifact_wilson95": {
+            "low": 0.11015087164704164,
+            "high": 0.23442530341662338
+          },
+          "text_load_median": 21.5526,
+          "text_load_q25": 20.33695,
+          "text_load_q75": 23.202199999999998
+        }
+      },
+      "missing_minus_present_pp": -15.448790064632828,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 75,
+      "n": 1957,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 1851,
+          "artifact_0": 1325,
+          "artifact_1": 526,
+          "artifact_prevalence": 0.28417071853052406,
+          "artifact_wilson95": {
+            "low": 0.2640875640915326,
+            "high": 0.30514785697350916
+          },
+          "text_load_median": 30.8557,
+          "text_load_q25": 26.8152,
+          "text_load_q75": 36.10145
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 106,
+          "artifact_0": 71,
+          "artifact_1": 35,
+          "artifact_prevalence": 0.330188679245283,
+          "artifact_wilson95": {
+            "low": 0.247979912995538,
+            "high": 0.42427498614262227
+          },
+          "text_load_median": 22.583750000000002,
+          "text_load_q25": 21.4528,
+          "text_load_q75": 26.667225000000002
+        }
+      },
+      "missing_minus_present_pp": 4.601796071475894,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 76,
+      "n": 1822,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 1704,
+          "artifact_0": 1128,
+          "artifact_1": 576,
+          "artifact_prevalence": 0.3380281690140845,
+          "artifact_wilson95": {
+            "low": 0.3159548224119291,
+            "high": 0.3608301641867862
+          },
+          "text_load_median": 31.68795,
+          "text_load_q25": 27.454,
+          "text_load_q75": 37.119625
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 118,
+          "artifact_0": 70,
+          "artifact_1": 48,
+          "artifact_prevalence": 0.4067796610169492,
+          "artifact_wilson95": {
+            "low": 0.32244480291963507,
+            "high": 0.4969926840167622
+          },
+          "text_load_median": 22.1308,
+          "text_load_q25": 21.021075000000003,
+          "text_load_q75": 24.378625
+        }
+      },
+      "missing_minus_present_pp": 6.875149200286468,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 77,
+      "n": 2335,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 2163,
+          "artifact_0": 1540,
+          "artifact_1": 623,
+          "artifact_prevalence": 0.28802588996763756,
+          "artifact_wilson95": {
+            "low": 0.26933098185699555,
+            "high": 0.30747238958159684
+          },
+          "text_load_median": 31.1445,
+          "text_load_q25": 26.8663,
+          "text_load_q75": 37.061099999999996
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 172,
+          "artifact_0": 129,
+          "artifact_1": 43,
+          "artifact_prevalence": 0.25,
+          "artifact_wilson95": {
+            "low": 0.19122773441714153,
+            "high": 0.3196953403982559
+          },
+          "text_load_median": 22.453400000000002,
+          "text_load_q25": 20.93525,
+          "text_load_q75": 24.152775
+        }
+      },
+      "missing_minus_present_pp": -3.802588996763756,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 78,
+      "n": 2146,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 2015,
+          "artifact_0": 1517,
+          "artifact_1": 498,
+          "artifact_prevalence": 0.24714640198511167,
+          "artifact_wilson95": {
+            "low": 0.22880529185833534,
+            "high": 0.26644977359130695
+          },
+          "text_load_median": 30.6223,
+          "text_load_q25": 27.1661,
+          "text_load_q75": 36.17275
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 131,
+          "artifact_0": 92,
+          "artifact_1": 39,
+          "artifact_prevalence": 0.29770992366412213,
+          "artifact_wilson95": {
+            "low": 0.22608043569395486,
+            "high": 0.38086537708847046
+          },
+          "text_load_median": 22.548,
+          "text_load_q25": 21.243450000000003,
+          "text_load_q75": 24.16015
+        }
+      },
+      "missing_minus_present_pp": 5.056352167901046,
+      "supported_min20_each_state": true
+    },
+    {
+      "cycle": 79,
+      "n": 2188,
+      "groups": {
+        "present": {
+          "availability": "present",
+          "n": 2083,
+          "artifact_0": 1451,
+          "artifact_1": 632,
+          "artifact_prevalence": 0.30340854536725875,
+          "artifact_wilson95": {
+            "low": 0.28404259630854173,
+            "high": 0.323498265725688
+          },
+          "text_load_median": 31.4989,
+          "text_load_q25": 27.971600000000002,
+          "text_load_q75": 35.626450000000006
+        },
+        "missing": {
+          "availability": "missing",
+          "n": 105,
+          "artifact_0": 64,
+          "artifact_1": 41,
+          "artifact_prevalence": 0.3904761904761905,
+          "artifact_wilson95": {
+            "low": 0.3026079173898631,
+            "high": 0.4860755470803229
+          },
+          "text_load_median": 22.228,
+          "text_load_q25": 20.4241,
+          "text_load_q75": 29.073
+        }
+      },
+      "missing_minus_present_pp": 8.706764510893173,
+      "supported_min20_each_state": true
+    }
+  ],
+  "text_load_sensitivity": {
+    "binning_rule": "Global qcut quantiles of text_load on all official Train rows. Binning uses neither artifact_signal nor availability.",
+    "quantile_edges": {
+      "5": [
+        16.3429,
+        26.18854,
+        29.60878,
+        33.04852,
+        38.02290000000001,
+        98.065
+      ],
+      "10": [
+        16.3429,
+        24.218500000000002,
+        26.18854,
+        27.914340000000003,
+        29.60878,
+        31.3103,
+        33.04852,
+        35.17438,
+        38.02290000000001,
+        42.8753,
+        98.065
+      ]
+    },
+    "common_text_load_support": {
+      "present_min_max": [
+        20.6456,
+        98.065
+      ],
+      "missing_min_max": [
+        16.3429,
+        77.5241
+      ],
+      "intersection_inclusive": [
+        20.6456,
+        77.5241
+      ],
+      "missing_rows_outside_intersection": 906,
+      "present_rows_outside_intersection": 65,
+      "rows_inside_intersection": 49637
+    },
+    "comparisons": {
+      "cycle_only": {
+        "scheme": "exact_cycle",
+        "strata": [
+          "_cycle"
+        ],
+        "minimum_n_each_state_per_cell": 20,
+        "cells_total": 33,
+        "cells_supported": 33,
+        "supported_cell_details": [
+          {
+            "_cycle": 47,
+            "n_present": 1241,
+            "artifact_1_present": 351,
+            "n_missing": 101,
+            "artifact_1_missing": 16,
+            "supported": true
+          },
+          {
+            "_cycle": 48,
+            "n_present": 894,
+            "artifact_1_present": 357,
+            "n_missing": 83,
+            "artifact_1_missing": 19,
+            "supported": true
+          },
+          {
+            "_cycle": 49,
+            "n_present": 1183,
+            "artifact_1_present": 288,
+            "n_missing": 72,
+            "artifact_1_missing": 12,
+            "supported": true
+          },
+          {
+            "_cycle": 50,
+            "n_present": 1021,
+            "artifact_1_present": 296,
+            "n_missing": 90,
+            "artifact_1_missing": 19,
+            "supported": true
+          },
+          {
+            "_cycle": 51,
+            "n_present": 1443,
+            "artifact_1_present": 513,
+            "n_missing": 92,
+            "artifact_1_missing": 25,
+            "supported": true
+          },
+          {
+            "_cycle": 52,
+            "n_present": 1452,
+            "artifact_1_present": 406,
+            "n_missing": 113,
+            "artifact_1_missing": 29,
+            "supported": true
+          },
+          {
+            "_cycle": 53,
+            "n_present": 1292,
+            "artifact_1_present": 306,
+            "n_missing": 79,
+            "artifact_1_missing": 25,
+            "supported": true
+          },
+          {
+            "_cycle": 54,
+            "n_present": 1175,
+            "artifact_1_present": 393,
+            "n_missing": 81,
+            "artifact_1_missing": 15,
+            "supported": true
+          },
+          {
+            "_cycle": 55,
+            "n_present": 1493,
+            "artifact_1_present": 479,
+            "n_missing": 115,
+            "artifact_1_missing": 40,
+            "supported": true
+          },
+          {
+            "_cycle": 56,
+            "n_present": 479,
+            "artifact_1_present": 123,
+            "n_missing": 85,
+            "artifact_1_missing": 37,
+            "supported": true
+          },
+          {
+            "_cycle": 57,
+            "n_present": 864,
+            "artifact_1_present": 347,
+            "n_missing": 98,
+            "artifact_1_missing": 55,
+            "supported": true
+          },
+          {
+            "_cycle": 58,
+            "n_present": 1105,
+            "artifact_1_present": 540,
+            "n_missing": 100,
+            "artifact_1_missing": 57,
+            "supported": true
+          },
+          {
+            "_cycle": 59,
+            "n_present": 1274,
+            "artifact_1_present": 527,
+            "n_missing": 109,
+            "artifact_1_missing": 51,
+            "supported": true
+          },
+          {
+            "_cycle": 60,
+            "n_present": 1393,
+            "artifact_1_present": 660,
+            "n_missing": 85,
+            "artifact_1_missing": 48,
+            "supported": true
+          },
+          {
+            "_cycle": 61,
+            "n_present": 1541,
+            "artifact_1_present": 729,
+            "n_missing": 91,
+            "artifact_1_missing": 58,
+            "supported": true
+          },
+          {
+            "_cycle": 62,
+            "n_present": 1412,
+            "artifact_1_present": 528,
+            "n_missing": 88,
+            "artifact_1_missing": 33,
+            "supported": true
+          },
+          {
+            "_cycle": 63,
+            "n_present": 1778,
+            "artifact_1_present": 831,
+            "n_missing": 105,
+            "artifact_1_missing": 62,
+            "supported": true
+          },
+          {
+            "_cycle": 64,
+            "n_present": 1698,
+            "artifact_1_present": 633,
+            "n_missing": 109,
+            "artifact_1_missing": 64,
+            "supported": true
+          },
+          {
+            "_cycle": 65,
+            "n_present": 1480,
+            "artifact_1_present": 534,
+            "n_missing": 87,
+            "artifact_1_missing": 36,
+            "supported": true
+          },
+          {
+            "_cycle": 66,
+            "n_present": 1631,
+            "artifact_1_present": 566,
+            "n_missing": 120,
+            "artifact_1_missing": 37,
+            "supported": true
+          },
+          {
+            "_cycle": 67,
+            "n_present": 1827,
+            "artifact_1_present": 625,
+            "n_missing": 126,
+            "artifact_1_missing": 73,
+            "supported": true
+          },
+          {
+            "_cycle": 68,
+            "n_present": 525,
+            "artifact_1_present": 150,
+            "n_missing": 52,
+            "artifact_1_missing": 21,
+            "supported": true
+          },
+          {
+            "_cycle": 69,
+            "n_present": 997,
+            "artifact_1_present": 409,
+            "n_missing": 82,
+            "artifact_1_missing": 32,
+            "supported": true
+          },
+          {
+            "_cycle": 70,
+            "n_present": 1511,
+            "artifact_1_present": 563,
+            "n_missing": 94,
+            "artifact_1_missing": 48,
+            "supported": true
+          },
+          {
+            "_cycle": 71,
+            "n_present": 1575,
+            "artifact_1_present": 591,
+            "n_missing": 114,
+            "artifact_1_missing": 39,
+            "supported": true
+          },
+          {
+            "_cycle": 72,
+            "n_present": 1687,
+            "artifact_1_present": 573,
+            "n_missing": 124,
+            "artifact_1_missing": 63,
+            "supported": true
+          },
+          {
+            "_cycle": 73,
+            "n_present": 1738,
+            "artifact_1_present": 566,
+            "n_missing": 142,
+            "artifact_1_missing": 56,
+            "supported": true
+          },
+          {
+            "_cycle": 74,
+            "n_present": 1679,
+            "artifact_1_present": 533,
+            "n_missing": 135,
+            "artifact_1_missing": 22,
+            "supported": true
+          },
+          {
+            "_cycle": 75,
+            "n_present": 1851,
+            "artifact_1_present": 526,
+            "n_missing": 106,
+            "artifact_1_missing": 35,
+            "supported": true
+          },
+          {
+            "_cycle": 76,
+            "n_present": 1704,
+            "artifact_1_present": 576,
+            "n_missing": 118,
+            "artifact_1_missing": 48,
+            "supported": true
+          },
+          {
+            "_cycle": 77,
+            "n_present": 2163,
+            "artifact_1_present": 623,
+            "n_missing": 172,
+            "artifact_1_missing": 43,
+            "supported": true
+          },
+          {
+            "_cycle": 78,
+            "n_present": 2015,
+            "artifact_1_present": 498,
+            "n_missing": 131,
+            "artifact_1_missing": 39,
+            "supported": true
+          },
+          {
+            "_cycle": 79,
+            "n_present": 2083,
+            "artifact_1_present": 632,
+            "n_missing": 105,
+            "artifact_1_missing": 41,
+            "supported": true
+          }
+        ],
+        "unsupported_cell_details": [],
+        "covered_rows_total": 50608,
+        "coverage_all_rows": 1.0,
+        "covered_present_rows": 47204,
+        "total_present_rows": 47204,
+        "coverage_present_group": 1.0,
+        "covered_missing_rows": 3404,
+        "total_missing_rows": 3404,
+        "coverage_missing_group": 1.0,
+        "supported_sample_raw_prevalence": {
+          "present": 0.3447165494449623,
+          "missing": 0.3813160987074031
+        },
+        "standardized_reference_prevalence": {
+          "present": 0.3446658448332166,
+          "missing": 0.38426197069952756
+        },
+        "standardized_missing_minus_present_pp": 3.9596125866310947,
+        "compared_denominator_definition": "The standardized rates use only supported-cell rows; report both group-specific denominator/coverage and pooled supported-cell rows above.",
+        "weight_definition": "Within a supported cell, weight=(n_present+n_missing)/total rows in supported cells; identical weights apply to both cell-specific rates."
+      },
+      "volume_only": [
+        {
+          "scheme": "global_5_quantile_bins",
+          "strata": [
+            "_volume_q5"
+          ],
+          "minimum_n_each_state_per_cell": 20,
+          "cells_total": 5,
+          "cells_supported": 5,
+          "supported_cell_details": [
+            {
+              "_volume_q5": 0,
+              "n_present": 7400,
+              "artifact_1_present": 3715,
+              "n_missing": 2722,
+              "artifact_1_missing": 1094,
+              "supported": true
+            },
+            {
+              "_volume_q5": 1,
+              "n_present": 9955,
+              "artifact_1_present": 3800,
+              "n_missing": 166,
+              "artifact_1_missing": 63,
+              "supported": true
+            },
+            {
+              "_volume_q5": 2,
+              "n_present": 9948,
+              "artifact_1_present": 3187,
+              "n_missing": 174,
+              "artifact_1_missing": 55,
+              "supported": true
+            },
+            {
+              "_volume_q5": 3,
+              "n_present": 9950,
+              "artifact_1_present": 2784,
+              "n_missing": 171,
+              "artifact_1_missing": 41,
+              "supported": true
+            },
+            {
+              "_volume_q5": 4,
+              "n_present": 9951,
+              "artifact_1_present": 2786,
+              "n_missing": 171,
+              "artifact_1_missing": 45,
+              "supported": true
+            }
+          ],
+          "unsupported_cell_details": [],
+          "covered_rows_total": 50608,
+          "coverage_all_rows": 1.0,
+          "covered_present_rows": 47204,
+          "total_present_rows": 47204,
+          "coverage_present_group": 1.0,
+          "covered_missing_rows": 3404,
+          "total_missing_rows": 3404,
+          "coverage_missing_group": 1.0,
+          "supported_sample_raw_prevalence": {
+            "present": 0.3447165494449623,
+            "missing": 0.3813160987074031
+          },
+          "standardized_reference_prevalence": {
+            "present": 0.35277717345764414,
+            "missing": 0.32008928544149007
+          },
+          "standardized_missing_minus_present_pp": -3.2687888016154076,
+          "compared_denominator_definition": "The standardized rates use only supported-cell rows; report both group-specific denominator/coverage and pooled supported-cell rows above.",
+          "weight_definition": "Within a supported cell, weight=(n_present+n_missing)/total rows in supported cells; identical weights apply to both cell-specific rates."
+        },
+        {
+          "scheme": "global_10_quantile_bins",
+          "strata": [
+            "_volume_q10"
+          ],
+          "minimum_n_each_state_per_cell": 20,
+          "cells_total": 10,
+          "cells_supported": 10,
+          "supported_cell_details": [
+            {
+              "_volume_q10": 0,
+              "n_present": 2451,
+              "artifact_1_present": 1318,
+              "n_missing": 2610,
+              "artifact_1_missing": 1039,
+              "supported": true
+            },
+            {
+              "_volume_q10": 1,
+              "n_present": 4949,
+              "artifact_1_present": 2397,
+              "n_missing": 112,
+              "artifact_1_missing": 55,
+              "supported": true
+            },
+            {
+              "_volume_q10": 2,
+              "n_present": 4990,
+              "artifact_1_present": 2013,
+              "n_missing": 71,
+              "artifact_1_missing": 34,
+              "supported": true
+            },
+            {
+              "_volume_q10": 3,
+              "n_present": 4965,
+              "artifact_1_present": 1787,
+              "n_missing": 95,
+              "artifact_1_missing": 29,
+              "supported": true
+            },
+            {
+              "_volume_q10": 4,
+              "n_present": 4977,
+              "artifact_1_present": 1718,
+              "n_missing": 85,
+              "artifact_1_missing": 34,
+              "supported": true
+            },
+            {
+              "_volume_q10": 5,
+              "n_present": 4971,
+              "artifact_1_present": 1469,
+              "n_missing": 89,
+              "artifact_1_missing": 21,
+              "supported": true
+            },
+            {
+              "_volume_q10": 6,
+              "n_present": 4982,
+              "artifact_1_present": 1369,
+              "n_missing": 78,
+              "artifact_1_missing": 21,
+              "supported": true
+            },
+            {
+              "_volume_q10": 7,
+              "n_present": 4968,
+              "artifact_1_present": 1415,
+              "n_missing": 93,
+              "artifact_1_missing": 20,
+              "supported": true
+            },
+            {
+              "_volume_q10": 8,
+              "n_present": 4975,
+              "artifact_1_present": 1686,
+              "n_missing": 86,
+              "artifact_1_missing": 23,
+              "supported": true
+            },
+            {
+              "_volume_q10": 9,
+              "n_present": 4976,
+              "artifact_1_present": 1100,
+              "n_missing": 85,
+              "artifact_1_missing": 22,
+              "supported": true
+            }
+          ],
+          "unsupported_cell_details": [],
+          "covered_rows_total": 50608,
+          "coverage_all_rows": 1.0,
+          "covered_present_rows": 47204,
+          "total_present_rows": 47204,
+          "coverage_present_group": 1.0,
+          "covered_missing_rows": 3404,
+          "total_missing_rows": 3404,
+          "coverage_missing_group": 1.0,
+          "supported_sample_raw_prevalence": {
+            "present": 0.3447165494449623,
+            "missing": 0.3813160987074031
+          },
+          "standardized_reference_prevalence": {
+            "present": 0.35457002588964237,
+            "missing": 0.3319847188775627
+          },
+          "standardized_missing_minus_present_pp": -2.2585307012079667,
+          "compared_denominator_definition": "The standardized rates use only supported-cell rows; report both group-specific denominator/coverage and pooled supported-cell rows above.",
+          "weight_definition": "Within a supported cell, weight=(n_present+n_missing)/total rows in supported cells; identical weights apply to both cell-specific rates."
+        }
+      ],
+      "period_x_volume": [
+        {
+          "scheme": "period_x_global_5_quantile_bins",
+          "strata": [
+            "_period",
+            "_volume_q5"
+          ],
+          "minimum_n_each_state_per_cell": 20,
+          "cells_total": 15,
+          "cells_supported": 15,
+          "supported_cell_details": [
+            {
+              "_period": 0,
+              "_volume_q5": 0,
+              "n_present": 1242,
+              "artifact_1_present": 532,
+              "n_missing": 809,
+              "artifact_1_missing": 237,
+              "supported": true
+            },
+            {
+              "_period": 0,
+              "_volume_q5": 1,
+              "n_present": 2658,
+              "artifact_1_present": 968,
+              "n_missing": 37,
+              "artifact_1_missing": 16,
+              "supported": true
+            },
+            {
+              "_period": 0,
+              "_volume_q5": 2,
+              "n_present": 2912,
+              "artifact_1_present": 976,
+              "n_missing": 47,
+              "artifact_1_missing": 14,
+              "supported": true
+            },
+            {
+              "_period": 0,
+              "_volume_q5": 3,
+              "n_present": 2849,
+              "artifact_1_present": 701,
+              "n_missing": 61,
+              "artifact_1_missing": 12,
+              "supported": true
+            },
+            {
+              "_period": 0,
+              "_volume_q5": 4,
+              "n_present": 2876,
+              "artifact_1_present": 682,
+              "n_missing": 55,
+              "artifact_1_missing": 13,
+              "supported": true
+            },
+            {
+              "_period": 1,
+              "_volume_q5": 0,
+              "n_present": 3017,
+              "artifact_1_present": 2041,
+              "n_missing": 877,
+              "artifact_1_missing": 480,
+              "supported": true
+            },
+            {
+              "_period": 1,
+              "_volume_q5": 1,
+              "n_present": 3331,
+              "artifact_1_present": 1451,
+              "n_missing": 44,
+              "artifact_1_missing": 18,
+              "supported": true
+            },
+            {
+              "_period": 1,
+              "_volume_q5": 2,
+              "n_present": 3254,
+              "artifact_1_present": 1216,
+              "n_missing": 56,
+              "artifact_1_missing": 20,
+              "supported": true
+            },
+            {
+              "_period": 1,
+              "_volume_q5": 3,
+              "n_present": 3181,
+              "artifact_1_present": 966,
+              "n_missing": 42,
+              "artifact_1_missing": 13,
+              "supported": true
+            },
+            {
+              "_period": 1,
+              "_volume_q5": 4,
+              "n_present": 2881,
+              "artifact_1_present": 649,
+              "n_missing": 53,
+              "artifact_1_missing": 9,
+              "supported": true
+            },
+            {
+              "_period": 2,
+              "_volume_q5": 0,
+              "n_present": 3141,
+              "artifact_1_present": 1142,
+              "n_missing": 1036,
+              "artifact_1_missing": 377,
+              "supported": true
+            },
+            {
+              "_period": 2,
+              "_volume_q5": 1,
+              "n_present": 3966,
+              "artifact_1_present": 1381,
+              "n_missing": 85,
+              "artifact_1_missing": 29,
+              "supported": true
+            },
+            {
+              "_period": 2,
+              "_volume_q5": 2,
+              "n_present": 3782,
+              "artifact_1_present": 995,
+              "n_missing": 71,
+              "artifact_1_missing": 21,
+              "supported": true
+            },
+            {
+              "_period": 2,
+              "_volume_q5": 3,
+              "n_present": 3920,
+              "artifact_1_present": 1117,
+              "n_missing": 68,
+              "artifact_1_missing": 16,
+              "supported": true
+            },
+            {
+              "_period": 2,
+              "_volume_q5": 4,
+              "n_present": 4194,
+              "artifact_1_present": 1455,
+              "n_missing": 63,
+              "artifact_1_missing": 23,
+              "supported": true
+            }
+          ],
+          "unsupported_cell_details": [],
+          "covered_rows_total": 50608,
+          "coverage_all_rows": 1.0,
+          "covered_present_rows": 47204,
+          "total_present_rows": 47204,
+          "coverage_present_group": 1.0,
+          "covered_missing_rows": 3404,
+          "total_missing_rows": 3404,
+          "coverage_missing_group": 1.0,
+          "supported_sample_raw_prevalence": {
+            "present": 0.3447165494449623,
+            "missing": 0.3813160987074031
+          },
+          "standardized_reference_prevalence": {
+            "present": 0.35172427270740614,
+            "missing": 0.3287433169665484
+          },
+          "standardized_missing_minus_present_pp": -2.2980955740857736,
+          "compared_denominator_definition": "The standardized rates use only supported-cell rows; report both group-specific denominator/coverage and pooled supported-cell rows above.",
+          "weight_definition": "Within a supported cell, weight=(n_present+n_missing)/total rows in supported cells; identical weights apply to both cell-specific rates."
+        },
+        {
+          "scheme": "period_x_global_10_quantile_bins",
+          "strata": [
+            "_period",
+            "_volume_q10"
+          ],
+          "minimum_n_each_state_per_cell": 20,
+          "cells_total": 30,
+          "cells_supported": 28,
+          "supported_cell_details": [
+            {
+              "_period": 0,
+              "_volume_q10": 0,
+              "n_present": 445,
+              "artifact_1_present": 211,
+              "n_missing": 785,
+              "artifact_1_missing": 226,
+              "supported": true
+            },
+            {
+              "_period": 0,
+              "_volume_q10": 1,
+              "n_present": 797,
+              "artifact_1_present": 321,
+              "n_missing": 24,
+              "artifact_1_missing": 11,
+              "supported": true
+            },
+            {
+              "_period": 0,
+              "_volume_q10": 3,
+              "n_present": 1439,
+              "artifact_1_present": 560,
+              "n_missing": 20,
+              "artifact_1_missing": 9,
+              "supported": true
+            },
+            {
+              "_period": 0,
+              "_volume_q10": 4,
+              "n_present": 1420,
+              "artifact_1_present": 499,
+              "n_missing": 20,
+              "artifact_1_missing": 6,
+              "supported": true
+            },
+            {
+              "_period": 0,
+              "_volume_q10": 5,
+              "n_present": 1492,
+              "artifact_1_present": 477,
+              "n_missing": 27,
+              "artifact_1_missing": 8,
+              "supported": true
+            },
+            {
+              "_period": 0,
+              "_volume_q10": 6,
+              "n_present": 1490,
+              "artifact_1_present": 423,
+              "n_missing": 28,
+              "artifact_1_missing": 5,
+              "supported": true
+            },
+            {
+              "_period": 0,
+              "_volume_q10": 7,
+              "n_present": 1359,
+              "artifact_1_present": 278,
+              "n_missing": 33,
+              "artifact_1_missing": 7,
+              "supported": true
+            },
+            {
+              "_period": 0,
+              "_volume_q10": 8,
+              "n_present": 1152,
+              "artifact_1_present": 328,
+              "n_missing": 24,
+              "artifact_1_missing": 5,
+              "supported": true
+            },
+            {
+              "_period": 0,
+              "_volume_q10": 9,
+              "n_present": 1724,
+              "artifact_1_present": 354,
+              "n_missing": 31,
+              "artifact_1_missing": 8,
+              "supported": true
+            },
+            {
+              "_period": 1,
+              "_volume_q10": 0,
+              "n_present": 1098,
+              "artifact_1_present": 784,
+              "n_missing": 832,
+              "artifact_1_missing": 450,
+              "supported": true
+            },
+            {
+              "_period": 1,
+              "_volume_q10": 1,
+              "n_present": 1919,
+              "artifact_1_present": 1257,
+              "n_missing": 45,
+              "artifact_1_missing": 30,
+              "supported": true
+            },
+            {
+              "_period": 1,
+              "_volume_q10": 2,
+              "n_present": 1683,
+              "artifact_1_present": 796,
+              "n_missing": 21,
+              "artifact_1_missing": 10,
+              "supported": true
+            },
+            {
+              "_period": 1,
+              "_volume_q10": 3,
+              "n_present": 1648,
+              "artifact_1_present": 655,
+              "n_missing": 23,
+              "artifact_1_missing": 8,
+              "supported": true
+            },
+            {
+              "_period": 1,
+              "_volume_q10": 4,
+              "n_present": 1654,
+              "artifact_1_present": 676,
+              "n_missing": 27,
+              "artifact_1_missing": 11,
+              "supported": true
+            },
+            {
+              "_period": 1,
+              "_volume_q10": 5,
+              "n_present": 1600,
+              "artifact_1_present": 540,
+              "n_missing": 29,
+              "artifact_1_missing": 9,
+              "supported": true
+            },
+            {
+              "_period": 1,
+              "_volume_q10": 7,
+              "n_present": 1564,
+              "artifact_1_present": 483,
+              "n_missing": 27,
+              "artifact_1_missing": 6,
+              "supported": true
+            },
+            {
+              "_period": 1,
+              "_volume_q10": 8,
+              "n_present": 1388,
+              "artifact_1_present": 383,
+              "n_missing": 28,
+              "artifact_1_missing": 3,
+              "supported": true
+            },
+            {
+              "_period": 1,
+              "_volume_q10": 9,
+              "n_present": 1493,
+              "artifact_1_present": 266,
+              "n_missing": 25,
+              "artifact_1_missing": 6,
+              "supported": true
+            },
+            {
+              "_period": 2,
+              "_volume_q10": 0,
+              "n_present": 908,
+              "artifact_1_present": 323,
+              "n_missing": 993,
+              "artifact_1_missing": 363,
+              "supported": true
+            },
+            {
+              "_period": 2,
+              "_volume_q10": 1,
+              "n_present": 2233,
+              "artifact_1_present": 819,
+              "n_missing": 43,
+              "artifact_1_missing": 14,
+              "supported": true
+            },
+            {
+              "_period": 2,
+              "_volume_q10": 2,
+              "n_present": 2088,
+              "artifact_1_present": 809,
+              "n_missing": 33,
+              "artifact_1_missing": 17,
+              "supported": true
+            },
+            {
+              "_period": 2,
+              "_volume_q10": 3,
+              "n_present": 1878,
+              "artifact_1_present": 572,
+              "n_missing": 52,
+              "artifact_1_missing": 12,
+              "supported": true
+            },
+            {
+              "_period": 2,
+              "_volume_q10": 4,
+              "n_present": 1903,
+              "artifact_1_present": 543,
+              "n_missing": 38,
+              "artifact_1_missing": 17,
+              "supported": true
+            },
+            {
+              "_period": 2,
+              "_volume_q10": 5,
+              "n_present": 1879,
+              "artifact_1_present": 452,
+              "n_missing": 33,
+              "artifact_1_missing": 4,
+              "supported": true
+            },
+            {
+              "_period": 2,
+              "_volume_q10": 6,
+              "n_present": 1875,
+              "artifact_1_present": 463,
+              "n_missing": 35,
+              "artifact_1_missing": 9,
+              "supported": true
+            },
+            {
+              "_period": 2,
+              "_volume_q10": 7,
+              "n_present": 2045,
+              "artifact_1_present": 654,
+              "n_missing": 33,
+              "artifact_1_missing": 7,
+              "supported": true
+            },
+            {
+              "_period": 2,
+              "_volume_q10": 8,
+              "n_present": 2435,
+              "artifact_1_present": 975,
+              "n_missing": 34,
+              "artifact_1_missing": 15,
+              "supported": true
+            },
+            {
+              "_period": 2,
+              "_volume_q10": 9,
+              "n_present": 1759,
+              "artifact_1_present": 480,
+              "n_missing": 29,
+              "artifact_1_missing": 8,
+              "supported": true
+            }
+          ],
+          "unsupported_cell_details": [
+            {
+              "_period": 0,
+              "_volume_q10": 2,
+              "n_present": 1219,
+              "artifact_1_present": 408,
+              "n_missing": 17,
+              "artifact_1_missing": 7,
+              "supported": false
+            },
+            {
+              "_period": 1,
+              "_volume_q10": 6,
+              "n_present": 1617,
+              "artifact_1_present": 483,
+              "n_missing": 15,
+              "artifact_1_missing": 7,
+              "supported": false
+            }
+          ],
+          "covered_rows_total": 47740,
+          "coverage_all_rows": 0.9433291179260196,
+          "covered_present_rows": 44368,
+          "total_present_rows": 47204,
+          "coverage_present_group": 0.9399203457334124,
+          "covered_missing_rows": 3372,
+          "total_missing_rows": 3404,
+          "coverage_missing_group": 0.9905992949471211,
+          "supported_sample_raw_prevalence": {
+            "present": 0.34666877028489,
+            "missing": 0.3807829181494662
+          },
+          "standardized_reference_prevalence": {
+            "present": 0.35515958576361695,
+            "missing": 0.3336327797891218
+          },
+          "standardized_missing_minus_present_pp": -2.152680597449513,
+          "compared_denominator_definition": "The standardized rates use only supported-cell rows; report both group-specific denominator/coverage and pooled supported-cell rows above.",
+          "weight_definition": "Within a supported cell, weight=(n_present+n_missing)/total rows in supported cells; identical weights apply to both cell-specific rates."
+        }
+      ]
+    },
+    "interpretation": "Different standardized contrasts can reflect composition and cell-support changes. They are descriptive sensitivity checks, not causal adjustment or proof that text_load confounds availability; supported-row and group-specific coverage must accompany the contrast."
+  },
+  "exact_cycle_standardization": {
+    "minimum_n_each_state": 20,
+    "supported_cycles": 33,
+    "all_cycles": 33,
+    "cycle_ids": [
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79
+    ],
+    "covered_rows": 50608,
+    "coverage_all_rows": 1.0,
+    "covered_missing_rows": 3404,
+    "coverage_missing_group": 1.0,
+    "covered_present_rows": 47204,
+    "coverage_present_group": 1.0,
+    "standardized_present_prevalence": 0.3446658448332166,
+    "standardized_missing_prevalence": 0.38426197069952756,
+    "standardized_missing_minus_present_pp": 3.9596125866310947,
+    "supported_cycle_direction_counts": {
+      "positive": 21,
+      "negative": 12,
+      "zero": 0
+    },
+    "cycle_gap_range_pp": [
+      -17.041319640980028,
+      23.727422003284076
+    ],
+    "cycle_gap_median_pp": 5.2982292637465065
+  },
+  "interpretation_limits": [
+    "Associations are descriptive and do not show that missingness causes either label.",
+    "Cycle standardization controls only cycle composition; it does not control text_load or the record-generation process.",
+    "Wilson intervals describe each raw prevalence separately; no adjusted contrast interval or hypothesis test is claimed.",
+    "Cycle and period results use development Train repeatedly examined elsewhere; they are sensitivity descriptions, not independent confirmation.",
+    "Missing versus present may represent different information-collection processes; missingness is not a text-quality measure."
+  ]
+}
