@@ -1,4 +1,4 @@
-# V3 batch1 bootstrap and C03 pilot status
+# V3 batch1 execution status
 
 The shared runner and transaction primitives are introduced in
 `src/models/optimization_v3_batch1.py`. Each card adapter exposes a
@@ -54,3 +54,18 @@ and `C03/gate.json`.
 
 No Test data or Kaggle result was used. The frozen C03 recipe is retired and
 will not enter continuation or full-six evaluation.
+
+## R01 pilot
+
+R01 is also **RETIRE**. The two LinearSVR fits converged without warnings
+(14,437 and 14,949 iterations). Primary MAE gain was +0.034940 against a +0.03
+minimum, H12 improved by +0.076438, and the W1/W4 window harms stayed within
+their limits. The supported W4 high-target tail (`threat_rank >= 95`, n=249)
+had +0.460013 MAE harm, above the frozen +0.25 guard. This was the sole failed
+gate. Independent QA verified both fits, row IDs, controls, hashes, metrics and
+the RETIRE decision.
+
+A supplemental, post-fit entry_friction diagnostic is saved separately. It is
+descriptive and does not change the frozen R01 gate. R01 will not enter
+continuation or full-six evaluation. See [`R01/RESULTS.md`](R01/RESULTS.md).
+No Test or Kaggle result was used.

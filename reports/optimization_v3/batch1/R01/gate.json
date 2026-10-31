@@ -1,0 +1,215 @@
+{
+  "card_id": "R01",
+  "checks": {
+    "W1_MAE_harm_max": true,
+    "W4_MAE_harm_max": true,
+    "independent_metric_and_prediction_reconstruction": true,
+    "pilot_H12_MAE_harm_max": true,
+    "pilot_primary_MAE_gain_min": true,
+    "supported_tail_or_missing_harm_max": false
+  },
+  "decision_basis": "Predeclared temporal pilot metrics and support-passing subgroup guards; no Test or Kaggle result used.",
+  "profile": "STANDARD",
+  "status": "RETIRE",
+  "supported_tail_or_missing_failures": [
+    {
+      "baseline_mae": 7.354027536026501,
+      "candidate_mae": 7.81404076471656,
+      "candidate_minus_baseline_mae": 0.4600132286900589,
+      "field": "target_tail",
+      "group": "high_ge95",
+      "n": 249,
+      "supported": true,
+      "tail_definition_uses_observed_target_after_prediction": true,
+      "view": "W4"
+    }
+  ],
+  "thresholds": {
+    "full_H12_MAE_harm_max": 0.05,
+    "full_nonnegative_windows_min": 4,
+    "full_primary_MAE_gain_min": 0.03,
+    "individual_pilot_view_MAE_harm_max": 0.5,
+    "pilot_H12_MAE_harm_max": 0.05,
+    "pilot_primary_MAE_gain_min": 0.03,
+    "supported_group_n_min": 100,
+    "supported_tail_or_missing_MAE_harm_max": 0.25
+  },
+  "view_subgroups": {
+    "H12": {
+      "rows": 38588,
+      "subgroups": {
+        "groups": {
+          "stream_missing": {
+            "missing": {
+              "baseline_mae": 14.325131948847591,
+              "candidate_mae": 14.361092555147016,
+              "candidate_minus_baseline_mae": 0.035960606299424214,
+              "n": 2578,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": false
+            },
+            "present": {
+              "baseline_mae": 14.027658904430465,
+              "candidate_mae": 13.943174103017276,
+              "candidate_minus_baseline_mae": -0.08448480141318981,
+              "n": 36010,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": false
+            }
+          },
+          "target_tail": {
+            "high_ge95": {
+              "baseline_mae": 10.242197755462715,
+              "candidate_mae": 10.353404858569208,
+              "candidate_minus_baseline_mae": 0.11120710310649251,
+              "n": 1955,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": true
+            },
+            "low_le5": {
+              "baseline_mae": 15.47074152305708,
+              "candidate_mae": 15.129337924119687,
+              "candidate_minus_baseline_mae": -0.3414035989373936,
+              "n": 1928,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": true
+            }
+          }
+        },
+        "support_minimum": 100
+      }
+    },
+    "W1": {
+      "rows": 4114,
+      "subgroups": {
+        "groups": {
+          "stream_missing": {
+            "missing": {
+              "baseline_mae": 13.833275642085468,
+              "candidate_mae": 13.79878684821834,
+              "candidate_minus_baseline_mae": -0.03448879386712811,
+              "n": 392,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": false
+            },
+            "present": {
+              "baseline_mae": 16.097894844464882,
+              "candidate_mae": 15.889178798259685,
+              "candidate_minus_baseline_mae": -0.2087160462051969,
+              "n": 3722,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": false
+            }
+          },
+          "target_tail": {
+            "high_ge95": {
+              "baseline_mae": 10.95190538014284,
+              "candidate_mae": 10.52201914799723,
+              "candidate_minus_baseline_mae": -0.42988623214560917,
+              "n": 213,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": true
+            },
+            "low_le5": {
+              "baseline_mae": 21.512208387237514,
+              "candidate_mae": 20.909341060408337,
+              "candidate_minus_baseline_mae": -0.6028673268291769,
+              "n": 205,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": true
+            }
+          }
+        },
+        "support_minimum": 100
+      }
+    },
+    "W4": {
+      "rows": 4950,
+      "subgroups": {
+        "groups": {
+          "stream_missing": {
+            "missing": {
+              "baseline_mae": 13.85992185549287,
+              "candidate_mae": 14.023916747770363,
+              "candidate_minus_baseline_mae": 0.16399489227749342,
+              "n": 342,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": false
+            },
+            "present": {
+              "baseline_mae": 11.276515164233006,
+              "candidate_mae": 11.367135977378247,
+              "candidate_minus_baseline_mae": 0.09062081314524129,
+              "n": 4608,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": false
+            }
+          },
+          "target_tail": {
+            "high_ge95": {
+              "baseline_mae": 7.354027536026501,
+              "candidate_mae": 7.81404076471656,
+              "candidate_minus_baseline_mae": 0.4600132286900589,
+              "n": 249,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": true
+            },
+            "low_le5": {
+              "baseline_mae": 9.740550072150272,
+              "candidate_mae": 9.761938849812738,
+              "candidate_minus_baseline_mae": 0.02138877766246594,
+              "n": 244,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": true
+            }
+          }
+        },
+        "support_minimum": 100
+      }
+    },
+    "primary": {
+      "rows": 9064,
+      "subgroups": {
+        "groups": {
+          "stream_missing": {
+            "missing": {
+              "baseline_mae": 13.845691180212624,
+              "candidate_mae": 13.903683885884268,
+              "candidate_minus_baseline_mae": 0.057992705671644273,
+              "n": 734,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": false
+            },
+            "present": {
+              "baseline_mae": 13.43079789770516,
+              "candidate_mae": 13.38766939626429,
+              "candidate_minus_baseline_mae": -0.04312850144087044,
+              "n": 8330,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": false
+            }
+          },
+          "target_tail": {
+            "high_ge95": {
+              "baseline_mae": 9.012789399222996,
+              "candidate_mae": 9.062524305060247,
+              "candidate_minus_baseline_mae": 0.049734905837251375,
+              "n": 462,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": true
+            },
+            "low_le5": {
+              "baseline_mae": 15.115137944294784,
+              "candidate_mae": 14.85151001500672,
+              "candidate_minus_baseline_mae": -0.263627929288063,
+              "n": 449,
+              "supported": true,
+              "tail_definition_uses_observed_target_after_prediction": true
+            }
+          }
+        },
+        "support_minimum": 100
+      }
+    }
+  }
+}

@@ -1,0 +1,128 @@
+{
+  "accepted_control": {
+    "manifest": "reports\\optimization_v2\\kaggle\\v2_reg_sparse_lgb25.json",
+    "manifest_sha256": "dd166e92089f24978244496a9a0afabc0d06551dbdc326579a7c898a8844e19a",
+    "pilot_control_is_exact_v2_three_component_champion": true,
+    "route": ".5625 rank50 LightGBM SVD32 + .1875 rank75 Hybrid Ridge + .25 rank50 sparse LGB"
+  },
+  "card_id": "R01",
+  "card_sha256": "51c960afd12dd07327ab4d93a12dffe49febc643957d86c6a21a7b4db7e72607",
+  "estimator": {
+    "class": "sklearn.svm.LinearSVR",
+    "convergence_rule": "record ConvergenceWarning and n_iter; halt before scoring if warning or max_iter reached; no post-score iteration rescue",
+    "inverse": "prediction=50*z+50",
+    "parameters_effective": {
+      "C": 1.0,
+      "dual": true,
+      "epsilon": 0.0,
+      "fit_intercept": true,
+      "intercept_scaling": 1.0,
+      "loss": "epsilon_insensitive",
+      "max_iter": 20000,
+      "random_state": 42,
+      "tol": 0.0001,
+      "verbose": 0
+    },
+    "parameters_explicit": {
+      "C": 1.0,
+      "dual": true,
+      "epsilon": 0.0,
+      "loss": "epsilon_insensitive",
+      "max_iter": 20000,
+      "random_state": 42,
+      "tol": 0.0001
+    },
+    "regularization_equivalence_claim": "not claimed equivalent to historical SGDRegressor",
+    "target_transform": "z=(threat_rank-50)/50"
+  },
+  "evaluation_views": {
+    "H12": [
+      [
+        55,
+        56,
+        67
+      ],
+      [
+        67,
+        68,
+        79
+      ]
+    ],
+    "W1": [
+      [
+        55,
+        56,
+        59
+      ]
+    ],
+    "W4": [
+      [
+        67,
+        68,
+        71
+      ]
+    ],
+    "primary": [
+      [
+        55,
+        56,
+        59
+      ],
+      [
+        67,
+        68,
+        71
+      ]
+    ]
+  },
+  "features": [
+    "impact_load",
+    "entry_friction",
+    "cycle_code",
+    "scope_pressure",
+    "text_load",
+    "scope_trace",
+    "org_spread",
+    "module_spread",
+    "telemetry_flag",
+    "org_code",
+    "module_code",
+    "pattern_code",
+    "signal_stream"
+  ],
+  "gates": {
+    "individual_pilot_view_MAE_harm_max": 0.5,
+    "pilot_H12_MAE_harm_max": 0.05,
+    "pilot_primary_MAE_gain_min": 0.03,
+    "supported_tail_or_missing_MAE_harm_max": 0.25
+  },
+  "metric": "MAE, positive gain = baseline MAE - candidate MAE",
+  "pilot_predictor_fit_count": 2,
+  "policy": ".75 current three-component champion + .25 within-cycle rank50(new target-scale predictor), clipped to [0,100]",
+  "preprocessing": {
+    "categorical_max_categories": 254,
+    "categorical_min_frequency": 30,
+    "missing_signal_stream_indicator": true,
+    "sparse_design": true,
+    "structured": "RegressionTextModel._structured_fit/_structured_transform; fold-fit imputers, scaling and rare-category OHE",
+    "svd": false,
+    "text": {
+      "dtype": "float64",
+      "max_features": 20000,
+      "min_df": 2,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "sublinear_tf": true
+    },
+    "text_and_structured_fit_scope": "fit rows of each cutoff only"
+  },
+  "status": "FROZEN_RECIPE_BEFORE_PILOT",
+  "support": {
+    "H12_rows": 38588,
+    "pilot_primary_rows": 9064,
+    "subgroup_n_min": 100
+  },
+  "test_data_used": false
+}
