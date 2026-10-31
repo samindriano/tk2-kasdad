@@ -250,7 +250,7 @@ def _validated_controls(controls: dict[str, Any], n_score: int) -> tuple[dict[st
         values = np.asarray(controls[name], dtype=np.float64)
         if values.shape != (n_score,) or not np.isfinite(values).all():
             raise ValueError(f"R21 control {name} is misaligned or nonfinite")
-        if np.any((values < 0.0) | (values > 100.0)):
+        if name != "baseline_sparse_raw" and np.any((values < 0.0) | (values > 100.0)):
             raise ValueError(f"R21 control {name} is outside [0,100]")
         arrays[name] = values
     rows = np.asarray(controls["control_rows"])

@@ -362,6 +362,44 @@ def _group_diagnostics(frame: pd.DataFrame, target: np.ndarray,
     return result
 
 
+def _fit_execution_accounting(validated_fit_count: int) -> dict[str, Any]:
+    """Report every R21 attempt, including failed calls from an earlier freeze."""
+    selected: list[dict[str, Any]] = []
+    if LEDGER_PATH.is_file():
+        for line_number, line in enumerate(LEDGER_PATH.read_text(encoding="utf-8").splitlines(), 1):
+            if not line.strip():
+                continue
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError as exc:
+                raise BatchIntegrityError(f"Invalid fit-ledger JSON on line {line_number}") from exc
+            if event.get("card_id") == CARD_ID and event.get("event") in {
+                "FIT_STARTED", "FIT_SAVED", "FIT_FAILED", "RESUMED_VERIFIED",
+            }:
+                selected.append(event)
+    starts = [item for item in selected if item.get("event") == "FIT_STARTED"]
+    saved = [item for item in selected if item.get("event") == "FIT_SAVED"]
+    failed = [item for item in selected if item.get("event") == "FIT_FAILED"]
+    return {
+        "reserved_predictor_fits": 2,
+        "successful_predictor_fits": int(validated_fit_count),
+        "adapter_attempts_started": len(starts),
+        "fit_saved_events": len(saved),
+        "failed_adapter_attempts": len(failed),
+        "attempt_event_pairs_complete": len(starts) == len(saved) + len(failed),
+        "total_recorded_attempt_seconds": float(sum(float(item.get("fit_seconds", 0.0))
+                                                     for item in saved + failed)),
+        "attempts": [
+            {key: item.get(key) for key in (
+                "event", "cutoff", "freeze_signature", "fit_rows", "score_rows",
+                "fit_predictor_count", "fit_seconds", "error_type", "error",
+            ) if key in item}
+            for item in selected
+        ],
+        "has_preserved_failed_prefit_attempt": bool(failed),
+    }
+
+
 def _recipe(card: Mapping[str, Any], views: Mapping[str, Any], card_sha: str) -> dict[str, Any]:
     from xgboost import XGBRegressor
     from src.models.regression_research_text import CATEGORICAL_FEATURES, STRUCTURED_FEATURES
@@ -715,6 +753,10 @@ def _verify_pilot(context: Mapping[str, Any], report: Mapping[str, Any]) -> dict
         "W4_MAE_harm_max": metrics["W4"]["gain_positive_is_better"] >= -float(thresholds["individual_pilot_view_MAE_harm_max"]),
         "supported_tail_or_missing_harm_max": len(group_failures) == 0,
     }
+    execution_accounting = _fit_execution_accounting(validated_fit_count=len(per_cutoff))
+    if (execution_accounting["successful_predictor_fits"] != 2
+            or not execution_accounting["attempt_event_pairs_complete"]):
+        raise BatchIntegrityError("R21 successful fit/attempt ledger accounting is incomplete")
     decision = "ADVANCE" if all(checks.values()) else "RETIRE"
     return {
         "card_id": CARD_ID, "status": "PASS", "decision": decision,
@@ -722,6 +764,7 @@ def _verify_pilot(context: Mapping[str, Any], report: Mapping[str, Any]) -> dict
         "cutoffs": [55, 67], "views": metrics,
         "group_support_minimum": MIN_GROUP_SUPPORT, "groups": groups,
         "supported_group_failures": group_failures,
+        "fit_execution_accounting": execution_accounting,
         "gate_checks": checks, "gate_thresholds": {key: float(thresholds[key]) for key in EXPECTED_GATE_KEYS},
         "metric_recomputed_from_train_labels_after_prediction": True,
         "validation_labels_passed_to_adapter": False,

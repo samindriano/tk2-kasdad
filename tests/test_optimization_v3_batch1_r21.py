@@ -12,6 +12,7 @@ from src.models.optimization_v3_batch1 import ensure_frozen, make_freeze_identit
 from src.models.optimization_v3_batch1_r21 import (
     FEATURE_NAMES,
     XGBoostSVD32Regressor,
+    _validated_controls,
     fit_predict,
     rank50_prediction,
     reconstruct_r21,
@@ -94,6 +95,22 @@ def test_r21_rejects_leaked_features_and_inconsistent_champion_controls():
     with pytest.raises(ValueError, match="does not reconstruct"):
         fit_predict(fit_x, fit_y, score_x,
                     controls=bad, card_id="R21", cutoff=55)
+
+
+def test_raw_sparse_control_may_exceed_target_range_if_finite_and_ranked_component_is_valid():
+    rows = np.arange(25, dtype=np.int64)
+    controls = _controls(rows)
+    controls["baseline_sparse_raw"] = np.full(25, 101.0)
+    controls["baseline_sparse_rank50"] = np.full(25, 75.5)
+    controls["baseline_prediction"] = np.clip(
+        0.75 * (0.75 * controls["baseline_lgb_svd32"]
+                + 0.25 * controls["baseline_hybrid_ridge"])
+        + 0.25 * controls["baseline_sparse_rank50"], 0.0, 100.0,
+    )
+    arrays, saved_rows = _validated_controls(controls, 25)
+    assert np.array_equal(saved_rows, rows)
+    assert np.all(arrays["baseline_sparse_raw"] == 101.0)
+    assert np.all((arrays["baseline_prediction"] >= 0.0) & (arrays["baseline_prediction"] <= 100.0))
 
 
 def test_r21_real_fit_runs_through_persisted_multiview_report_and_independent_reconstruction(tmp_path: Path):
