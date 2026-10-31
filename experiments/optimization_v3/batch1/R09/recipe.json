@@ -1,0 +1,234 @@
+{
+  "accepted_control": {
+    "manifest": "reports\\optimization_v2\\kaggle\\v2_reg_sparse_lgb25.json",
+    "manifest_sha256": "dd166e92089f24978244496a9a0afabc0d06551dbdc326579a7c898a8844e19a",
+    "pilot_control_is_exact_three_component_incumbent": true,
+    "route": ".5625 rank50 LightGBM SVD32 + .1875 rank75 Hybrid Ridge + .25 rank50 sparse LightGBM"
+  },
+  "canonical_queue_sha256": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+  "card_id": "R09",
+  "card_sha256": "a5d710133a4b6d9d23cddabd27c03856a0b378bdb242cbba2b6483e09cf39747",
+  "estimator": {
+    "alpha": 0.9,
+    "class": "lightgbm.LGBMRegressor",
+    "early_stopping": false,
+    "evaluation_set": null,
+    "inherited_l1_parameters": {
+      "boosting_type": "gbdt",
+      "colsample_bytree": 1.0,
+      "deterministic": true,
+      "force_col_wise": true,
+      "learning_rate": 0.05,
+      "max_depth": -1,
+      "min_child_samples": 40,
+      "min_child_weight": 0.001,
+      "n_estimators": 400,
+      "n_jobs": 2,
+      "num_leaves": 31,
+      "objective": "regression_l1",
+      "random_state": 42,
+      "reg_alpha": 0.0,
+      "reg_lambda": 1.0,
+      "subsample": 1.0,
+      "subsample_freq": 0,
+      "verbosity": -1
+    },
+    "lightgbm_version": "4.6.0",
+    "objective": "huber",
+    "only_declared_parameter_changes": {
+      "alpha": 0.9,
+      "objective": [
+        "regression_l1",
+        "huber"
+      ]
+    },
+    "parameters_effective_including_library_defaults": {
+      "alpha": 0.9,
+      "boosting_type": "gbdt",
+      "class_weight": null,
+      "colsample_bytree": 1.0,
+      "deterministic": true,
+      "force_col_wise": true,
+      "importance_type": "split",
+      "learning_rate": 0.05,
+      "max_depth": -1,
+      "min_child_samples": 40,
+      "min_child_weight": 0.001,
+      "min_split_gain": 0.0,
+      "n_estimators": 400,
+      "n_jobs": 2,
+      "num_leaves": 31,
+      "objective": "huber",
+      "random_state": 42,
+      "reg_alpha": 0.0,
+      "reg_lambda": 1.0,
+      "subsample": 1.0,
+      "subsample_for_bin": 200000,
+      "subsample_freq": 0,
+      "verbosity": -1
+    },
+    "parameters_explicit": {
+      "alpha": 0.9,
+      "boosting_type": "gbdt",
+      "colsample_bytree": 1.0,
+      "deterministic": true,
+      "force_col_wise": true,
+      "learning_rate": 0.05,
+      "max_depth": -1,
+      "min_child_samples": 40,
+      "min_child_weight": 0.001,
+      "n_estimators": 400,
+      "n_jobs": 2,
+      "num_leaves": 31,
+      "objective": "huber",
+      "random_state": 42,
+      "reg_alpha": 0.0,
+      "reg_lambda": 1.0,
+      "subsample": 1.0,
+      "subsample_freq": 0,
+      "verbosity": -1
+    },
+    "trees": 400
+  },
+  "evaluation_views": {
+    "H12": [
+      [
+        55,
+        56,
+        67
+      ],
+      [
+        67,
+        68,
+        79
+      ]
+    ],
+    "H12_E": [
+      [
+        55,
+        56,
+        67
+      ]
+    ],
+    "H12_L": [
+      [
+        67,
+        68,
+        79
+      ]
+    ],
+    "W1": [
+      [
+        55,
+        56,
+        59
+      ]
+    ],
+    "W4": [
+      [
+        67,
+        68,
+        71
+      ]
+    ],
+    "primary": [
+      [
+        55,
+        56,
+        59
+      ],
+      [
+        67,
+        68,
+        71
+      ]
+    ]
+  },
+  "expected_denominators": {
+    "H12": 38588,
+    "H12_E": 17685,
+    "H12_L": 20903,
+    "W1": 4114,
+    "W4": 4950,
+    "primary": 9064
+  },
+  "feature_allowlist": [
+    "impact_load",
+    "entry_friction",
+    "cycle_code",
+    "scope_pressure",
+    "text_load",
+    "scope_trace",
+    "org_spread",
+    "module_spread",
+    "telemetry_flag",
+    "org_code",
+    "module_code",
+    "pattern_code",
+    "signal_stream"
+  ],
+  "feature_roles": {
+    "record_id": "identity_only",
+    "threat_rank": "target_only"
+  },
+  "gates": {
+    "individual_pilot_view_MAE_harm_max": 0.5,
+    "pilot_H12_MAE_harm_max": 0.05,
+    "pilot_primary_MAE_gain_min": 0.03,
+    "supported_group_n_min": 100.0,
+    "supported_tail_or_missing_MAE_harm_max": 0.25
+  },
+  "metric": "MAE; positive gain = baseline MAE - candidate MAE",
+  "official_test_read": false,
+  "pilot_fit_rows": {
+    "55": 12020,
+    "67": 29705
+  },
+  "pilot_predictor_fit_count": 2,
+  "prediction_policy": ".75 exact current three-component champion + .25 rank50(new raw target-scale prediction), clip[0,100]; rank50 uses 50% raw and 50% average-rank percentile computed separately within each complete 12-cycle scoring cycle",
+  "preprocessing": {
+    "categorical_features": [
+      "org_code",
+      "module_code",
+      "pattern_code"
+    ],
+    "dense_matrix_dtype": "float64 for structured plus SVD32 design passed to LightGBM",
+    "missing_signal_indicator": true,
+    "score_rows_or_labels_used_to_fit_transform": false,
+    "structured_numeric": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code"
+    ],
+    "structured_recipe": "RegressionTextModel._structured_fit/_structured_transform; numeric median imputation, StandardScaler, OHE min_frequency=30/max_categories=254/handle_unknown=infrequent_if_exist",
+    "svd_fit_scope": "all rows with cycle<=cutoff only",
+    "svd_parameters": {
+      "algorithm": "randomized",
+      "n_components_requested": 32,
+      "n_iter": 7,
+      "random_state": 42
+    },
+    "text_fit_scope": "all rows with cycle<=cutoff only",
+    "text_tfidf_parameters": {
+      "dtype": "<class 'numpy.float64'>",
+      "max_features": 20000,
+      "min_df": 2,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "sublinear_tf": true
+    }
+  },
+  "status": "FROZEN_RECIPE_BEFORE_PILOT",
+  "supported_group_minimum": 100
+}
