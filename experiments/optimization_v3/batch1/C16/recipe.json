@@ -1,0 +1,173 @@
+{
+  "accepted_fullsix_control_metrics": {
+    "H12_macro_f1": 0.8029655654017788,
+    "primary_macro_f1": 0.8299435476765076
+  },
+  "base_lightgbm_parameters": {
+    "deterministic": true,
+    "force_col_wise": true,
+    "learning_rate": 0.05,
+    "min_child_samples": 50,
+    "n_estimators": 400,
+    "n_jobs": 2,
+    "num_leaves": 15,
+    "objective": "binary",
+    "random_state": 42,
+    "reg_alpha": 0.0,
+    "reg_lambda": 3.0,
+    "verbosity": -1
+  },
+  "card_id": "C16",
+  "evaluation_views": {
+    "H12": [
+      [
+        55,
+        56,
+        67
+      ],
+      [
+        67,
+        68,
+        79
+      ]
+    ],
+    "W1": [
+      [
+        55,
+        56,
+        59
+      ]
+    ],
+    "W4": [
+      [
+        67,
+        68,
+        71
+      ]
+    ],
+    "primary": [
+      [
+        55,
+        56,
+        59
+      ],
+      [
+        67,
+        68,
+        71
+      ]
+    ]
+  },
+  "feature_allowlist": [
+    "impact_load",
+    "entry_friction",
+    "cycle_code",
+    "scope_pressure",
+    "text_load",
+    "scope_trace",
+    "org_spread",
+    "module_spread",
+    "telemetry_flag",
+    "org_code",
+    "module_code",
+    "pattern_code",
+    "signal_stream"
+  ],
+  "fit_population": "all official Classification Train rows with 47 <= cycle_code <= cutoff; no row weights or downsampling",
+  "kaggle_access": false,
+  "lightgbm_parameters": {
+    "deterministic": true,
+    "force_col_wise": true,
+    "learning_rate": 0.05,
+    "min_child_samples": 100,
+    "n_estimators": 400,
+    "n_jobs": 2,
+    "num_leaves": 31,
+    "objective": "binary",
+    "random_state": 42,
+    "reg_alpha": 0.0,
+    "reg_lambda": 5.0,
+    "verbosity": -1
+  },
+  "only_parameter_changes": {
+    "min_child_samples": 100,
+    "num_leaves": 31,
+    "reg_lambda": 5.0
+  },
+  "pilot_gate": {
+    "full_H12_harm_max": 0.001,
+    "full_nonnegative_windows_min": 4,
+    "full_primary_gain_min": 0.0005,
+    "individual_pilot_view_harm_max": 0.005,
+    "pilot_H12_harm_max": 0.001,
+    "pilot_primary_gain_min": 0.0005,
+    "positive_and_negative_per_group_min": 30,
+    "positive_class_recall_harm_max": 0.02,
+    "supported_group_F1_harm_max": 0.01,
+    "supported_group_n_min": 200
+  },
+  "prediction_policy": {
+    "baseline": "fixed v3_cls_sparse25: 0.75 frozen C2_B + 0.25 original sparse expert on present; frozen CatBoost on missing",
+    "classification_threshold": 0.5,
+    "missing_stream": "frozen CatBoost missing-stream probability, unchanged",
+    "present_stream": "0.75 * frozen C2_B probability + 0.25 * new C16 moderate-capacity sparse expert probability"
+  },
+  "queue_recipe": {
+    "change": "Keep original word/structured matrix. Change leaves15\u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u212231, min_child50\u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122100, lambda3\u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u21225; keep400trees/lr0.05. Fixed simultaneous capacity/regularization recipe, not one-factor causal attribution.",
+    "condition": "No additional dependency",
+    "evaluation": "STANDARD",
+    "family": "sparse_capacity",
+    "id": "C16",
+    "name": "Moderate sparse-tree capacity",
+    "pilot_predictor_fits": 2,
+    "policy": "C_SPARSE_REPLACE",
+    "priority": "P2",
+    "task": "classification"
+  },
+  "resource_policy": {
+    "concurrent_training_jobs": 1,
+    "free_memory_reserve_bytes": 2147483648,
+    "job_memory_cap_bytes": 6442450944,
+    "threads": 2
+  },
+  "row_matched_control_metrics": {
+    "H12": {
+      "macro_f1": 0.8029655654017788,
+      "rows": 38588
+    },
+    "W1": {
+      "macro_f1": 0.8031600548696844,
+      "rows": 4114
+    },
+    "W4": {
+      "macro_f1": 0.8414177014153625,
+      "rows": 4950
+    },
+    "primary": {
+      "macro_f1": 0.8239724981677496,
+      "rows": 9064
+    }
+  },
+  "scoring_population": "STANDARD cutoff-55/67 views, row-aligned by saved Train row positions and record_id",
+  "source_model": "SparseTextBoostClassifier design with C16 fixed sparse-capacity changes",
+  "structured_recipe": "RegressionTextModel._structured_fit/_structured_transform; fit only on current cutoff's past rows",
+  "subgroup_support_rule": "guard n>=200 and each class count>=30; smaller or single-class groups descriptive only",
+  "test_data_used": false,
+  "text_recipe": {
+    "missing_stream": "empty document plus explicit binary missing column",
+    "parameters": {
+      "dtype": "float64",
+      "lowercase": true,
+      "max_df": 0.995,
+      "max_features": 20000,
+      "min_df": 3,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "strip_accents": "unicode",
+      "sublinear_tf": true
+    },
+    "vectorizer": "sklearn.feature_extraction.text.TfidfVectorizer"
+  }
+}
