@@ -1,0 +1,157 @@
+{
+  "card_id": "C12",
+  "classifier_parameters": {
+    "deterministic": true,
+    "force_col_wise": true,
+    "learning_rate": 0.05,
+    "min_child_samples": 50,
+    "n_estimators": 400,
+    "n_jobs": 2,
+    "num_leaves": 15,
+    "objective": "binary",
+    "random_state": 42,
+    "reg_alpha": 0.0,
+    "reg_lambda": 3.0,
+    "verbosity": -1
+  },
+  "evaluation": {
+    "fit_rows": {
+      "55": 12020,
+      "67": 29705
+    },
+    "minimum_group_support": 200,
+    "primary_population_note": "W1+W4 pilot, 9,064 rows; queue primary 0.8299435 is full-six and is not used as a pilot control metric",
+    "profile": "STANDARD",
+    "score_rows": {
+      "H12": 38588,
+      "W1": 4114,
+      "W4": 4950,
+      "primary": 9064
+    },
+    "views": {
+      "H12": [
+        [
+          55,
+          56,
+          67
+        ],
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "W1": [
+        [
+          55,
+          56,
+          59
+        ]
+      ],
+      "W4": [
+        [
+          67,
+          68,
+          71
+        ]
+      ],
+      "primary": [
+        [
+          55,
+          56,
+          59
+        ],
+        [
+          67,
+          68,
+          71
+        ]
+      ]
+    }
+  },
+  "feature_allowlist": [
+    "impact_load",
+    "entry_friction",
+    "cycle_code",
+    "scope_pressure",
+    "text_load",
+    "scope_trace",
+    "org_spread",
+    "module_spread",
+    "telemetry_flag",
+    "org_code",
+    "module_code",
+    "pattern_code",
+    "signal_stream"
+  ],
+  "fit_population": "all official Train rows with cycle_code <= the temporal cutoff",
+  "gate": {
+    "individual_pilot_view_harm_max": 0.005,
+    "pilot_H12_harm_max": 0.001,
+    "pilot_primary_gain_min": 0.0005,
+    "positive_and_negative_per_group_min": 30,
+    "positive_class_recall_harm_max": 0.02,
+    "supported_group_F1_harm_max": 0.01,
+    "supported_group_n_min": 200
+  },
+  "precondition": "C11 pilot must be ADVANCE with independent QA PASS; C12 is a character-only ablation, not a rescue experiment",
+  "prediction_policy": {
+    "stream_missing": "frozen CatBoost probability",
+    "stream_missing_rule": "null, empty, or whitespace-only signal_stream",
+    "stream_present": "0.75*frozen C2_B probability + 0.25*C12 character-only sparse LightGBM probability",
+    "threshold": 0.5
+  },
+  "queue_card": {
+    "card_path": "reports/optimization_v3/research_backlog/cards/C12.md",
+    "change": "Use only C11 character block plus original structured design and sparse classifier. Same fixed routing.",
+    "condition": "C11 pilot passes; ablation only, not a rescue of failed C11",
+    "evaluation": "STANDARD",
+    "evidence": [
+      "reports/optimization_v3/classification_sparse_full/fullsix.json"
+    ],
+    "family": "character_boost",
+    "id": "C12",
+    "implementation": "NOT_IMPLEMENTED",
+    "in_priority_prefix": false,
+    "name": "Character-only ablation",
+    "new_results": null,
+    "pilot_predictor_fits": 2,
+    "policy": "C_SPARSE_REPLACE",
+    "preflight_checks": [],
+    "priority": "P3",
+    "queue_order": 40,
+    "rationale": "Learner nonlinear berbeda dari character LR/Ridge yang gagal. Token hash-like memberi dasar subword yang lemah, sehingga prioritas rendah.",
+    "status": "PLANNED_NOT_RUN",
+    "task": "classification"
+  },
+  "resource_policy": {
+    "additional_resource_headroom_bytes": 0,
+    "free_memory_reserve_bytes": 2147483648,
+    "job_memory_cap_bytes": 6442450944,
+    "max_concurrent_training_jobs": 1,
+    "peak_estimate_is_not_observed": true,
+    "sparse_only": true,
+    "threads": 2
+  },
+  "single_recipe_change": {
+    "only_text_block": "char_wb TF-IDF ngrams 3-5, min_df=3, max_features=30000, sublinear_tf=True",
+    "word_tfidf_removed_from_C11_design": true
+  },
+  "structured_preprocessing": "C04 fit-only numeric scaling and sparse OHE; unchanged",
+  "task": "classification",
+  "tfidf_parameters": {
+    "char_wb": {
+      "analyzer": "char_wb",
+      "dtype": "float64",
+      "lowercase": true,
+      "max_features": 30000,
+      "min_df": 3,
+      "ngram_range": [
+        3,
+        5
+      ],
+      "strip_accents": "unicode",
+      "sublinear_tf": true
+    }
+  }
+}
