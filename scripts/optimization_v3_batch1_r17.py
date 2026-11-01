@@ -204,6 +204,47 @@ def _resource_gate() -> dict[str, Any]:
     return result
 
 
+def _validate_resource_postfit_doc(document: Mapping[str, Any], signature: str) -> bool:
+    resource = document.get("resource")
+    if (document.get("freeze_signature") != signature
+            or not isinstance(resource, Mapping)
+            or document.get("maximum_job_rss_bytes") != MAX_JOB_RSS_BYTES
+            or document.get("includes_candidate_and_independent_verification") is not True):
+        raise BatchIntegrityError("R17 postfit resource receipt identity/schema is invalid")
+    try:
+        peak = int(resource["process_peak_rss_bytes"])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise BatchIntegrityError("R17 postfit resource receipt lacks a valid process peak RSS") from exc
+    measured_pass = bool(0 <= peak <= MAX_JOB_RSS_BYTES)
+    expected_status = "PASS" if measured_pass else "JOB_RSS_CAP_EXCEEDED"
+    if (document.get("job_peak_rss_within_cap") is not measured_pass
+            or document.get("status") != expected_status):
+        raise BatchIntegrityError("R17 postfit resource receipt status/boolean disagrees with measured peak RSS")
+    return measured_pass
+
+
+def _validate_resource_preflight_doc(document: Mapping[str, Any], signature: str) -> None:
+    resource = document.get("resource")
+    if (document.get("freeze_signature") != signature
+            or document.get("status") != "PASS"
+            or document.get("before_candidate_fit") is not True
+            or not isinstance(resource, Mapping)
+            or resource.get("status") != "PASS"):
+        raise BatchIntegrityError("R17 prefit resource receipt identity/schema is invalid")
+    try:
+        available = int(resource["available_ram_bytes"])
+        process_rss = int(resource["process_rss_bytes"])
+        predicted_peak = int(resource["predicted_process_peak_rss_bytes"])
+        extra = int(resource["policy"]["estimated_additional_lp_rss_bytes"])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise BatchIntegrityError("R17 prefit resource receipt lacks required measurements") from exc
+    if (available < MIN_FREE_RAM_BYTES
+            or extra > available - RESERVED_SYSTEM_RAM_BYTES
+            or predicted_peak != process_rss + extra
+            or predicted_peak > MAX_JOB_RSS_BYTES):
+        raise BatchIntegrityError("R17 prefit resource receipt does not satisfy the frozen RAM gate")
+
+
 def _validate_r17_card(card: Mapping[str, Any], queue: Mapping[str, Any]) -> None:
     cards = {str(item["id"]): item for item in queue["cards"]}
     if cards.get(CARD_ID) != dict(card):
@@ -1061,11 +1102,10 @@ def _run_frozen(card: Mapping[str, Any], queue: Mapping[str, Any]) -> dict[str, 
     }
     if RESOURCE_PREFLIGHT_PATH.exists():
         saved_resource = json.loads(RESOURCE_PREFLIGHT_PATH.read_text(encoding="utf-8"))
-        if (saved_resource.get("freeze_signature") != signature
-                or saved_resource.get("status") != "PASS"):
-            raise BatchIntegrityError("Existing R17 resource preflight is not bound to this freeze")
+        _validate_resource_preflight_doc(saved_resource, signature)
         resource_preflight_doc = saved_resource
     else:
+        _validate_resource_preflight_doc(resource_preflight_doc, signature)
         _write_json_idempotent(RESOURCE_PREFLIGHT_PATH, resource_preflight_doc)
     target = _read_full_train_target_after_freeze(
         state["train_path"], identity["input_sha256"]["official_regression_train"], len(state["frame"]),
@@ -1111,10 +1151,10 @@ def _run_frozen(card: Mapping[str, Any], queue: Mapping[str, Any]) -> dict[str, 
     }
     if RESOURCE_POSTFIT_PATH.exists():
         saved_postfit = json.loads(RESOURCE_POSTFIT_PATH.read_text(encoding="utf-8"))
-        if saved_postfit.get("freeze_signature") != signature:
-            raise BatchIntegrityError("Existing R17 postfit resource report has a different freeze")
+        _validate_resource_postfit_doc(saved_postfit, signature)
         resource_postfit_doc = saved_postfit
     else:
+        _validate_resource_postfit_doc(resource_postfit_doc, signature)
         _write_json_idempotent(RESOURCE_POSTFIT_PATH, resource_postfit_doc)
     verification["resource_preflight"] = resource_preflight_doc
     verification["resource_postfit"] = resource_postfit_doc

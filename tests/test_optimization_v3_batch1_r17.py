@@ -8,9 +8,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from scripts import optimization_v3_batch1_r17 as r17runner
 from scripts.optimization_v3_batch1_verify import verify_report
 from src.models.optimization_v3_batch1 import make_freeze_identity, run_pilot
 from src.models import optimization_v3_batch1_r17 as r17
+from src.models.optimization_v3_batch1 import BatchIntegrityError
 
 
 LATE_VIEWS = {
@@ -280,3 +282,36 @@ def test_generic_late_pilot_runs_and_independent_metrics_reconstruct(
         int(np.isin(cycles, np.arange(low, high + 1)).sum())
         for _, low, high in LATE_VIEWS["primary"]
     )
+
+
+def test_resource_receipts_fail_closed_when_status_disagrees_with_rss() -> None:
+    signature = "a" * 64
+    valid_postfit = {
+        "freeze_signature": signature,
+        "maximum_job_rss_bytes": r17runner.MAX_JOB_RSS_BYTES,
+        "includes_candidate_and_independent_verification": True,
+        "status": "PASS",
+        "job_peak_rss_within_cap": True,
+        "resource": {"process_peak_rss_bytes": r17runner.MAX_JOB_RSS_BYTES - 1},
+    }
+    assert r17runner._validate_resource_postfit_doc(valid_postfit, signature) is True
+    tampered = {**valid_postfit, "job_peak_rss_within_cap": False}
+    with pytest.raises(BatchIntegrityError, match="disagrees with measured peak RSS"):
+        r17runner._validate_resource_postfit_doc(tampered, signature)
+
+    valid_preflight = {
+        "freeze_signature": signature, "status": "PASS", "before_candidate_fit": True,
+        "resource": {
+            "status": "PASS", "available_ram_bytes": 5 * r17runner.GIB,
+            "process_rss_bytes": 100,
+            "predicted_process_peak_rss_bytes": 100 + r17runner.GIB,
+            "policy": {"estimated_additional_lp_rss_bytes": r17runner.GIB},
+        },
+    }
+    r17runner._validate_resource_preflight_doc(valid_preflight, signature)
+    tampered_preflight = {
+        **valid_preflight,
+        "resource": {**valid_preflight["resource"], "predicted_process_peak_rss_bytes": 6 * r17runner.GIB + 1},
+    }
+    with pytest.raises(BatchIntegrityError, match="does not satisfy the frozen RAM gate"):
+        r17runner._validate_resource_preflight_doc(tampered_preflight, signature)
