@@ -1,5 +1,7 @@
 # V3 Batch 1 — rolling findings
 
+Campaign status: **PAUSED_FOR_REVIEW** at the user request. No continuation, final refit, Test inference, or Kaggle submission has started after the screening checkpoint. See [pause handoff](PAUSE_HANDOFF_01.md).
+
 Snapshot: 2026-11-01, after C11 pilot resume, R08/C20 completion, R19's row-matched revision 2 pilot and independent re-audit, C15's verified pilot, R22's pilot plus independent audit, R20's independently verified retirement, C12's independently audited retirement, R06's independently audited advance, R07's independently audited retirement, R10/R13 prerequisite skips, R11 revision-03 verification, and saved-output reconciliation of twelve stale or schema-divergent entries. See [reconciliation 01](RECONCILIATION_01.md). No refits were run for that reconciliation.
 
 Queue closure: **43/45 cards (95.6%)** have terminal saved pilot decisions; R10 and R13 are explicit prerequisite skips with zero predictor fits. All 45 IDs now have a resolved pilot-or-skip state. Twelve previously stale, `PARTIAL`, versioned, or lifecycle-mismatched entries were reconciled from saved outputs; none was refit. Pilot-card closure is not the later conditional continuation or finalist stage. The deduplicated reservation ledger is **94/180** after append-only migration of C06, R12, and C01 from the tracked ledger; details are in [reconciliation 01](RECONCILIATION_01.md).

@@ -1,17 +1,19 @@
 {
   "schema_version": 1,
   "generated_at_local_date": "2026-11-01",
-  "status": "PILOT_SCREENING_RECONCILED_CONTINUATION_PENDING",
+  "status": "PAUSED_FOR_REVIEW",
   "source_files": {
     "queue": "experiments/optimization_v3/research_backlog/queue.json",
     "queue_sha256": "b21226742923293853598f706ba249b4ea42fcdfe5bccf14b76175b21a2f6e80",
     "findings": "reports/optimization_v3/batch1/BATCH_FINDINGS.md",
-    "findings_sha256": "a66317d1fec8df3ca33dbc5e80fd2bcfcc4ad28b52e05e18e07191307ca4df06",
+    "findings_sha256": "4223bbec09e83dbfcb7700f5fae34ea188e69571c906d6c27cab97a91747952f",
     "runtime_budget_ledger": "experiments/runs/optimization_v3_batch1/batch_ledger.jsonl",
     "runtime_budget_ledger_sha256": "7a7c5f4de904dd6258067b6ca9eda2f83fb6f33889bbdad57f530721013e2cf1",
     "batch_ledger_sha256_not_self_referential": null,
     "reconciliation": "reports/optimization_v3/batch1/RECONCILIATION_01.md",
-    "reconciliation_sha256": "901285e0afe245321258c0723e4bf20a40ad4ce438f8c786b790a16defc5b72d"
+    "reconciliation_sha256": "901285e0afe245321258c0723e4bf20a40ad4ce438f8c786b790a16defc5b72d",
+    "pause_handoff": "reports/optimization_v3/batch1/PAUSE_HANDOFF_01.md",
+    "pause_handoff_sha256": "eba9721e540f51218379911d9fd7a13ff667a9950a33ee9b969c0cd931419046"
   },
   "pilot_screening": {
     "total_cards": 45,
@@ -30,7 +32,7 @@
     "legacy_migration_reservations": 3
   },
   "continuation_selection": {
-    "status": "SELECTED_PENDING_PRECONTINUATION_FREEZE",
+    "status": "SELECTED_PENDING_USER_REVIEW",
     "classification": [
       "C16",
       "C11"
@@ -115,7 +117,18 @@
     "estimated_additional_candidate_predictor_fits": 16,
     "remaining_budget_before_new_reservation": 86,
     "expected_remaining_if_16_fits_reserved": 70,
-    "note": "No continuation budget reservation or fit has yet been written/run; these are planning totals derived from four added cutoff origins per selected one-predictor STANDARD card."
+    "note": "No continuation budget reservation or fit has yet been written/run; these are planning totals derived from four added cutoff origins per selected one-predictor STANDARD card.",
+    "not_selected_advance": {
+      "classification": [
+        "C17"
+      ],
+      "regression": [
+        "R11",
+        "R21"
+      ],
+      "reason": "Two STANDARD candidates per task maximum, ranked on matched profile evidence while prioritizing distinct families. C17 shares sparse_capacity with C16; R21 shares xgb_loss with R22; R11 ranks below the selected regression pair."
+    },
+    "late_profile_advance_candidates": []
   },
   "cards": [
     {
@@ -327,7 +340,30 @@
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
           "scripts/optimization_v3_verify_sparse_classification.py": "683f073bad4dac04728fcf0045cd3d39b0f1a1e790352f9c0174ecb36a867699"
         }
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.primary_gain_at_least_0_0005"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-10-31T21:20:48.920053+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "C03:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "event": "CARD_FIT_BUDGET_RECONCILED"
+        }
+      ]
     },
     {
       "order": 2,
@@ -519,7 +555,30 @@
         "related_source_hashes": {
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e"
         }
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.supported_tail_or_missing_harm_max"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-10-31T21:20:48.932319+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "R01:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "event": "CARD_FIT_BUDGET_RECONCILED"
+        }
+      ]
     },
     {
       "order": 3,
@@ -733,7 +792,30 @@
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
           "scripts/optimization_v3_verify_sparse_classification.py": "683f073bad4dac04728fcf0045cd3d39b0f1a1e790352f9c0174ecb36a867699"
         }
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.primary_gain_at_least_0_0005"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-10-31T21:20:48.943954+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "C02:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "event": "CARD_FIT_BUDGET_RECONCILED"
+        }
+      ]
     },
     {
       "order": 4,
@@ -936,7 +1018,30 @@
         "related_source_hashes": {
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e"
         }
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.primary_mae_gain_at_least_0_03"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-10-31T21:21:07.299573+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "R02:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "event": "CARD_FIT_BUDGET_RECONCILED"
+        }
+      ]
     },
     {
       "order": 5,
@@ -1149,7 +1254,30 @@
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
           "scripts/optimization_v3_verify_sparse_classification.py": "683f073bad4dac04728fcf0045cd3d39b0f1a1e790352f9c0174ecb36a867699"
         }
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.primary_gain_at_least_0_0005"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-10-31T21:21:07.309331+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "C07:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "event": "CARD_FIT_BUDGET_RECONCILED"
+        }
+      ]
     },
     {
       "order": 6,
@@ -1309,7 +1437,24 @@
         "related_source_hashes": {
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e"
         }
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "result.gates.late_primary_gain_min_0_03",
+          "result.gates.supported_tail_or_missing_harm_max_0_25",
+          "verification.checks.independent_gate_reconstruction.late_primary_gain_min_0_03",
+          "verification.checks.independent_gate_reconstruction.supported_tail_or_missing_harm_max_0_25",
+          "verification.checks.test_or_sample_used"
+        ],
+        "supported_subgroup_failure_count": 1,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": []
     },
     {
       "order": 7,
@@ -1572,7 +1717,32 @@
           "scripts/optimization_v3_verify_sparse_classification.py": "683f073bad4dac04728fcf0045cd3d39b0f1a1e790352f9c0174ecb36a867699",
           "scripts/optimization_v3_verify_sparse_classification_fullsix.py": "acf3be75189f832af5d6ccc310326d1b0797c0e3d54eec6a1f7037ee0833d474"
         }
-      }
+      },
+      "qa_status": "PASS_WITH_CONTROL_SCOPE_RECONCILIATION",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "result.pilot_gate.pass",
+          "result.pilot_gate.primary_pass"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-10-31T21:30:16.655218+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "C09:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "at_utc": "2026-10-31T21:34:16.772331+00:00",
+          "event": "CARD_FIT_BUDGET_RECONCILED"
+        }
+      ]
     },
     {
       "order": 8,
@@ -1755,7 +1925,59 @@
         "related_source_hashes": {
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e"
         }
-      }
+      },
+      "qa_status": "INDEPENDENT_QA_PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "verification.gates.primary_gain_at_least_0_03"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-10-31T21:38:25.118808+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "R03:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "at_utc": "2026-10-31T21:38:25.142955+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 55,
+          "fit_rows": 12020,
+          "score_rows": 17685,
+          "freeze_signature": "d66b6f73efb6a114e084c8840ebe8bf103df51c18974283ea1476e13a84134da"
+        },
+        {
+          "at_utc": "2026-10-31T21:38:36.105955+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 55,
+          "fit_predictor_count": 1
+        },
+        {
+          "at_utc": "2026-10-31T21:38:36.136404+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 67,
+          "fit_rows": 29705,
+          "score_rows": 20903,
+          "freeze_signature": "d66b6f73efb6a114e084c8840ebe8bf103df51c18974283ea1476e13a84134da"
+        },
+        {
+          "at_utc": "2026-10-31T21:39:01.115769+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 67,
+          "fit_predictor_count": 1
+        },
+        {
+          "at_utc": "2026-10-31T21:39:49.976988+00:00",
+          "event": "CARD_FIT_BUDGET_RECONCILED"
+        }
+      ]
     },
     {
       "order": 9,
@@ -1979,7 +2201,60 @@
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
           "scripts/optimization_v3_verify_sparse_classification.py": "683f073bad4dac04728fcf0045cd3d39b0f1a1e790352f9c0174ecb36a867699"
         }
-      }
+      },
+      "qa_status": "INDEPENDENT_QA_PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.primary_gain_at_least_0_0005",
+          "verification.gate_checks.primary_gain_at_least_0_0005"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-10-31T21:52:17.214110+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "C04:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "at_utc": "2026-10-31T21:52:17.242255+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 55,
+          "fit_rows": 12020,
+          "score_rows": 17685,
+          "freeze_signature": "bd3a57b73ea0efb4fc1dbbf84a85229ee930a7e7f2e2efdafa4b088b67424672"
+        },
+        {
+          "at_utc": "2026-10-31T21:52:23.893622+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 55,
+          "fit_predictor_count": 1
+        },
+        {
+          "at_utc": "2026-10-31T21:52:23.918341+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 67,
+          "fit_rows": 29705,
+          "score_rows": 20903,
+          "freeze_signature": "bd3a57b73ea0efb4fc1dbbf84a85229ee930a7e7f2e2efdafa4b088b67424672"
+        },
+        {
+          "at_utc": "2026-10-31T21:52:40.181013+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 67,
+          "fit_predictor_count": 1
+        },
+        {
+          "at_utc": "2026-10-31T21:55:16.071347+00:00",
+          "event": "CARD_FIT_BUDGET_RECONCILED"
+        }
+      ]
     },
     {
       "order": 10,
@@ -2196,7 +2471,66 @@
         "related_source_hashes": {
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e"
         }
-      }
+      },
+      "qa_status": "INDEPENDENT_QA_PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.primary_gain_at_least_0_03",
+          "verification.gate_checks.primary_gain_at_least_0_03"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-10-31T22:14:20.019023+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "R16:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "at_utc": "2026-10-31T22:14:20.045902+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 55,
+          "fit_rows": 12020,
+          "score_rows": 17685,
+          "freeze_signature": "6503999dac3df6843da06abdced8372e79c2022c07d03b8b361a2504b7b062c8"
+        },
+        {
+          "at_utc": "2026-10-31T22:14:24.965720+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 55,
+          "fit_predictor_count": 1
+        },
+        {
+          "at_utc": "2026-10-31T22:14:24.994695+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 67,
+          "fit_rows": 29705,
+          "score_rows": 20903,
+          "freeze_signature": "6503999dac3df6843da06abdced8372e79c2022c07d03b8b361a2504b7b062c8"
+        },
+        {
+          "at_utc": "2026-10-31T22:14:33.914443+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 67,
+          "fit_predictor_count": 1
+        },
+        {
+          "at_utc": "2026-10-31T22:15:58.194483+00:00",
+          "event": "C_FIT_BUDGET_RECONCILED",
+          "budget_key": "R16:PILOT",
+          "reserved_predictor_fits": 2,
+          "successful_predictor_fits": 2,
+          "fit_saved_events": 2,
+          "fit_failed_events": 0,
+          "freeze_signature": "6503999dac3df6843da06abdced8372e79c2022c07d03b8b361a2504b7b062c8"
+        }
+      ]
     },
     {
       "order": 11,
@@ -2475,7 +2809,66 @@
           "scripts/optimization_v3_verify_sparse_classification.py": "683f073bad4dac04728fcf0045cd3d39b0f1a1e790352f9c0174ecb36a867699",
           "scripts/optimization_v3_verify_sparse_classification_fullsix.py": "acf3be75189f832af5d6ccc310326d1b0797c0e3d54eec6a1f7037ee0833d474"
         }
-      }
+      },
+      "qa_status": "INDEPENDENT_QA_PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.primary_gain_at_least_0_0005",
+          "verification.gate_checks.primary_gain_at_least_0_0005"
+        ],
+        "supported_subgroup_failure_count": 2,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-10-31T22:26:21.936594+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "C18:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "at_utc": "2026-10-31T22:26:21.962174+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 55,
+          "fit_rows": 12020,
+          "score_rows": 17685,
+          "freeze_signature": "ff43bc97a419162abc933d41bca7273379f974b5009df7e9b1a94310d4ac9896"
+        },
+        {
+          "at_utc": "2026-10-31T22:26:27.118402+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 55,
+          "fit_predictor_count": 1
+        },
+        {
+          "at_utc": "2026-10-31T22:26:27.147751+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 67,
+          "fit_rows": 29705,
+          "score_rows": 20903,
+          "freeze_signature": "ff43bc97a419162abc933d41bca7273379f974b5009df7e9b1a94310d4ac9896"
+        },
+        {
+          "at_utc": "2026-10-31T22:26:40.720996+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 67,
+          "fit_predictor_count": 1
+        },
+        {
+          "at_utc": "2026-10-31T22:27:21.765425+00:00",
+          "event": "C_FIT_BUDGET_RECONCILED",
+          "budget_key": "C18:PILOT",
+          "reserved_predictor_fits": 2,
+          "successful_predictor_fits": 2,
+          "fit_saved_events": 2,
+          "fit_failed_events": 0,
+          "freeze_signature": "ff43bc97a419162abc933d41bca7273379f974b5009df7e9b1a94310d4ac9896"
+        }
+      ]
     },
     {
       "order": 12,
@@ -2683,7 +3076,76 @@
         "related_source_hashes": {
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e"
         }
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "NONE_AT_PILOT_STAGE",
+        "failed_predeclared_checks": [],
+        "supported_subgroup_failure_count": 0,
+        "note": "Pilot gates and QA passed. Continuation/full-six is a later stage and remains paused for review."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-10-31T22:38:17.806026+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "R21:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "at_utc": "2026-10-31T22:38:17.831899+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 55,
+          "fit_rows": 12020,
+          "score_rows": 17685,
+          "freeze_signature": "410b90e23b058ab0d02f3af995302aabde2b21c044a93d1e5bf881c1f0400797"
+        },
+        {
+          "at_utc": "2026-10-31T22:38:17.911407+00:00",
+          "event": "FIT_FAILED",
+          "cutoff": 55,
+          "error_type": "ValueError",
+          "error": "R21 control baseline_sparse_raw is outside [0,100]"
+        },
+        {
+          "at_utc": "2026-10-31T22:40:14.782898+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 55,
+          "fit_rows": 12020,
+          "score_rows": 17685,
+          "freeze_signature": "518fefaedcdcb564b62f78f6673c812138a7c5c641e63c9fdd0c4fa052b6930a"
+        },
+        {
+          "at_utc": "2026-10-31T22:40:20.929903+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 55,
+          "fit_predictor_count": 1
+        },
+        {
+          "at_utc": "2026-10-31T22:40:20.968270+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 67,
+          "fit_rows": 29705,
+          "score_rows": 20903,
+          "freeze_signature": "518fefaedcdcb564b62f78f6673c812138a7c5c641e63c9fdd0c4fa052b6930a"
+        },
+        {
+          "at_utc": "2026-10-31T22:40:34.636118+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 67,
+          "fit_predictor_count": 1
+        },
+        {
+          "event": "C_FIT_BUDGET_RECONCILED",
+          "budget_key": "R21:PILOT",
+          "reserved_predictor_fits": 2,
+          "successful_predictor_fits": 2,
+          "fit_saved_events": 2,
+          "fit_failed_events": 1,
+          "freeze_signature": "518fefaedcdcb564b62f78f6673c812138a7c5c641e63c9fdd0c4fa052b6930a"
+        }
+      ]
     },
     {
       "order": 13,
@@ -2917,7 +3379,61 @@
           "scripts/optimization_v3_verify_sparse_classification.py": "683f073bad4dac04728fcf0045cd3d39b0f1a1e790352f9c0174ecb36a867699",
           "scripts/optimization_v3_verify_sparse_classification_fullsix.py": "acf3be75189f832af5d6ccc310326d1b0797c0e3d54eec6a1f7037ee0833d474"
         }
-      }
+      },
+      "qa_status": "INDEPENDENT_QA_PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "NONE_AT_PILOT_STAGE",
+        "failed_predeclared_checks": [],
+        "supported_subgroup_failure_count": 0,
+        "note": "Pilot gates and QA passed. Continuation/full-six is a later stage and remains paused for review."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-10-31T22:46:11.664322+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "C16:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "at_utc": "2026-10-31T22:46:11.690353+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 55,
+          "fit_rows": 12020,
+          "score_rows": 17685,
+          "freeze_signature": "292e893a063c5a967ddc9a42bf03f343b8e270365e0b325687fd6d36a9c37922"
+        },
+        {
+          "at_utc": "2026-10-31T22:46:19.614688+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 55,
+          "fit_predictor_count": 1
+        },
+        {
+          "at_utc": "2026-10-31T22:46:19.645195+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 67,
+          "fit_rows": 29705,
+          "score_rows": 20903,
+          "freeze_signature": "292e893a063c5a967ddc9a42bf03f343b8e270365e0b325687fd6d36a9c37922"
+        },
+        {
+          "at_utc": "2026-10-31T22:46:38.841435+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 67,
+          "fit_predictor_count": 1
+        },
+        {
+          "event": "C_FIT_BUDGET_RECONCILED",
+          "budget_key": "C16:PILOT",
+          "reserved_predictor_fits": 2,
+          "successful_predictor_fits": 2,
+          "fit_saved_events": 2,
+          "fit_failed_events": 0,
+          "freeze_signature": "292e893a063c5a967ddc9a42bf03f343b8e270365e0b325687fd6d36a9c37922"
+        }
+      ]
     },
     {
       "order": 14,
@@ -3130,7 +3646,66 @@
         "related_source_hashes": {
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e"
         }
-      }
+      },
+      "qa_status": "INDEPENDENT_QA_PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.pilot_primary_MAE_gain_min",
+          "verification.gate_checks.pilot_primary_MAE_gain_min"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-10-31T22:57:05.039477+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "R24:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "at_utc": "2026-10-31T22:57:05.069472+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 55,
+          "fit_rows": 12020,
+          "score_rows": 17685,
+          "freeze_signature": "dbb0538b0b38719ac9e57ba520514ff27a0226f7c43ecba75e7c14c9e7f24b51"
+        },
+        {
+          "at_utc": "2026-10-31T22:57:07.929181+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 55,
+          "fit_predictor_count": 1
+        },
+        {
+          "at_utc": "2026-10-31T22:57:07.956457+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 67,
+          "fit_rows": 29705,
+          "score_rows": 20903,
+          "freeze_signature": "dbb0538b0b38719ac9e57ba520514ff27a0226f7c43ecba75e7c14c9e7f24b51"
+        },
+        {
+          "at_utc": "2026-10-31T22:57:13.527129+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 67,
+          "fit_predictor_count": 1
+        },
+        {
+          "at_utc": "2026-10-31T22:57:54.735145+00:00",
+          "event": "C_FIT_BUDGET_RECONCILED",
+          "budget_key": "R24:PILOT",
+          "reserved_predictor_fits": 2,
+          "successful_predictor_fits": 2,
+          "fit_saved_events": 2,
+          "fit_failed_events": 0,
+          "freeze_signature": "dbb0538b0b38719ac9e57ba520514ff27a0226f7c43ecba75e7c14c9e7f24b51"
+        }
+      ]
     },
     {
       "order": 15,
@@ -3409,7 +3984,68 @@
           "scripts/optimization_v3_verify_sparse_classification.py": "683f073bad4dac04728fcf0045cd3d39b0f1a1e790352f9c0174ecb36a867699",
           "scripts/optimization_v3_verify_sparse_classification_fullsix.py": "acf3be75189f832af5d6ccc310326d1b0797c0e3d54eec6a1f7037ee0833d474"
         }
-      }
+      },
+      "qa_status": "INDEPENDENT_QA_PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.H12_harm_at_most_0_001",
+          "gate.checks.primary_gain_at_least_0_0005",
+          "verification.gate_checks.H12_harm_at_most_0_001",
+          "verification.gate_checks.primary_gain_at_least_0_0005"
+        ],
+        "supported_subgroup_failure_count": 2,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-10-31T23:03:27.592150+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "C13:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "at_utc": "2026-10-31T23:03:27.619607+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 55,
+          "fit_rows": 12020,
+          "score_rows": 17685,
+          "freeze_signature": "9f7bb0da6aeb3f7225a5f3d27dc065066129a26d2ffed066462012188e1217d4"
+        },
+        {
+          "at_utc": "2026-10-31T23:03:32.777094+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 55,
+          "fit_predictor_count": 1
+        },
+        {
+          "at_utc": "2026-10-31T23:03:32.806071+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 67,
+          "fit_rows": 29705,
+          "score_rows": 20903,
+          "freeze_signature": "9f7bb0da6aeb3f7225a5f3d27dc065066129a26d2ffed066462012188e1217d4"
+        },
+        {
+          "at_utc": "2026-10-31T23:03:39.629763+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 67,
+          "fit_predictor_count": 1
+        },
+        {
+          "at_utc": "2026-10-31T23:04:25.275444+00:00",
+          "event": "C_FIT_BUDGET_RECONCILED",
+          "budget_key": "C13:PILOT",
+          "reserved_predictor_fits": 2,
+          "successful_predictor_fits": 2,
+          "fit_saved_events": 2,
+          "fit_failed_events": 0,
+          "freeze_signature": "9f7bb0da6aeb3f7225a5f3d27dc065066129a26d2ffed066462012188e1217d4"
+        }
+      ]
     },
     {
       "order": 16,
@@ -3620,7 +4256,70 @@
         "related_source_hashes": {
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e"
         }
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.pilot_H12_MAE_harm_max",
+          "gate.checks.pilot_primary_MAE_gain_min",
+          "gate.checks.supported_tail_or_missing_harm_max",
+          "verification.gate_checks.pilot_H12_MAE_harm_max",
+          "verification.gate_checks.pilot_primary_MAE_gain_min",
+          "verification.gate_checks.supported_tail_or_missing_harm_max"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-10-31T23:11:39.801047+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "R09:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "at_utc": "2026-10-31T23:11:39.826082+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 55,
+          "fit_rows": 12020,
+          "score_rows": 17685,
+          "freeze_signature": "c9882d51ac48f5fc2d0a6869e630f6e00b0d9c1dc5747917cd0bd20b779dbc7b"
+        },
+        {
+          "at_utc": "2026-10-31T23:11:44.583585+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 55,
+          "fit_predictor_count": 1
+        },
+        {
+          "at_utc": "2026-10-31T23:11:44.612712+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 67,
+          "fit_rows": 29705,
+          "score_rows": 20903,
+          "freeze_signature": "c9882d51ac48f5fc2d0a6869e630f6e00b0d9c1dc5747917cd0bd20b779dbc7b"
+        },
+        {
+          "at_utc": "2026-10-31T23:11:52.073392+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 67,
+          "fit_predictor_count": 1
+        },
+        {
+          "at_utc": "2026-10-31T23:12:56.552545+00:00",
+          "event": "C_FIT_BUDGET_RECONCILED",
+          "budget_key": "R09:PILOT",
+          "reserved_predictor_fits": 2,
+          "successful_predictor_fits": 2,
+          "fit_saved_events": 2,
+          "fit_failed_events": 0,
+          "freeze_signature": "c9882d51ac48f5fc2d0a6869e630f6e00b0d9c1dc5747917cd0bd20b779dbc7b"
+        }
+      ]
     },
     {
       "order": 17,
@@ -3851,7 +4550,37 @@
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
           "scripts/optimization_v3_verify_sparse_classification.py": "683f073bad4dac04728fcf0045cd3d39b0f1a1e790352f9c0174ecb36a867699"
         }
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.primary_gain_at_least_0_0005"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-10-31T23:25:49.703961+00:00",
+          "event": "C_FIT_BUDGET_RECONCILED",
+          "budget_key": "C06:PILOT",
+          "reserved_predictor_fits": 2,
+          "successful_predictor_fits": 2,
+          "fit_saved_events": 2,
+          "fit_failed_events": 0,
+          "freeze_signature": "2f50b81a0b000f7e8bc591cbc9796092fba0227f888c83575b7abfcb44db308f"
+        },
+        {
+          "at_utc": "2026-11-01T08:45:09.822683+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "C06:PILOT",
+          "predictor_fits": 2
+        }
+      ]
     },
     {
       "order": 18,
@@ -4056,7 +4785,27 @@
         "related_source_hashes": {
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e"
         }
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.supported_tail_or_missing_harm_max"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-11-01T08:45:09.822683+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "R12:PILOT",
+          "predictor_fits": 2
+        }
+      ]
     },
     {
       "order": 19,
@@ -4705,7 +5454,30 @@
           "scripts/optimization_v3_verify_sparse_classification.py": "683f073bad4dac04728fcf0045cd3d39b0f1a1e790352f9c0174ecb36a867699",
           "scripts/optimization_v3_verify_sparse_classification_fullsix.py": "acf3be75189f832af5d6ccc310326d1b0797c0e3d54eec6a1f7037ee0833d474"
         }
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.full_H12_harm_max",
+          "gate.checks.full_nonnegative_windows_min",
+          "gate.checks.full_primary_gain_min",
+          "gate.checks.supported_subgroup_F1_and_positive_recall_guards"
+        ],
+        "supported_subgroup_failure_count": 8,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-11-01T08:45:09.822683+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "C01:PILOT",
+          "predictor_fits": 0
+        }
+      ]
     },
     {
       "order": 20,
@@ -4906,7 +5678,40 @@
         "related_source_hashes": {
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e"
         }
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "result.gates.supported_tail_or_missing_harm_max_0_25",
+          "verification.checks.all_pilot_gates_pass",
+          "verification.checks.calibration.67.state.OOF_target_cache_opened",
+          "verification.checks.calibration.67.state.fallback",
+          "verification.checks.calibration.67.state.outer_score_labels_passed_to_calibrator",
+          "verification.checks.calibration.67.state.test_data_used",
+          "verification.checks.calibration.67.state.threshold_or_weight_search",
+          "verification.checks.calibration.75.state.OOF_target_cache_opened",
+          "verification.checks.calibration.75.state.fallback",
+          "verification.checks.calibration.75.state.outer_score_labels_passed_to_calibrator",
+          "verification.checks.calibration.75.state.test_data_used",
+          "verification.checks.calibration.75.state.threshold_or_weight_search",
+          "verification.checks.gate_reconstruction.supported_tail_or_missing_harm_max_0_25",
+          "verification.checks.test_or_sample_used"
+        ],
+        "supported_subgroup_failure_count": 1,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-11-01T00:12:38.462321+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "R17:PILOT",
+          "predictor_fits": 2
+        }
+      ]
     },
     {
       "order": 21,
@@ -5162,7 +5967,28 @@
           "scripts/optimization_v3_verify_sparse_classification.py": "683f073bad4dac04728fcf0045cd3d39b0f1a1e790352f9c0174ecb36a867699",
           "scripts/optimization_v3_verify_sparse_classification_fullsix.py": "acf3be75189f832af5d6ccc310326d1b0797c0e3d54eec6a1f7037ee0833d474"
         }
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "verification.gate_checks.pass",
+          "verification.gate_checks.primary_pass"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-11-01T00:28:46.718481+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "C10:PILOT",
+          "predictor_fits": 2
+        }
+      ]
     },
     {
       "order": 22,
@@ -5373,7 +6199,35 @@
         "related_source_hashes": {
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e"
         }
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.pilot_primary_MAE_gain_at_least_0_03"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-11-01T00:37:28.946749+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "R05:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "event": "FIT_BUDGET_RECONCILED",
+          "budget_key": "R05:PILOT",
+          "reserved_predictor_fits": 2,
+          "successful_predictor_fits": 2,
+          "fit_failed_events": 0,
+          "freeze_signature": "6284a675fd79eb57db350939f4c76c836304b3f84a8fac65029fec23289fdb96"
+        }
+      ]
     },
     {
       "order": 23,
@@ -5647,7 +6501,38 @@
           "scripts/optimization_v3_verify_sparse_classification.py": "683f073bad4dac04728fcf0045cd3d39b0f1a1e790352f9c0174ecb36a867699",
           "scripts/optimization_v3_verify_sparse_classification_fullsix.py": "acf3be75189f832af5d6ccc310326d1b0797c0e3d54eec6a1f7037ee0833d474"
         }
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.primary_gain_min_0_0005",
+          "gate.checks.supported_subgroup_macro_f1_and_positive_recall_guards"
+        ],
+        "supported_subgroup_failure_count": 3,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-11-01T00:52:27.204901+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "C19:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "at_utc": "2026-11-01T00:53:48.4114368Z",
+          "event": "FIT_BUDGET_RECONCILED",
+          "budget_key": "C19:PILOT",
+          "reserved_predictor_fits": 2,
+          "successful_predictor_fits": 2,
+          "fit_saved_events": 2,
+          "fit_failed_events": 0,
+          "freeze_signature": "ebad34a7c3bf833939fa7526cd55d38a627616f60f518d426f130f4999af55be"
+        }
+      ]
     },
     {
       "order": 24,
@@ -5861,7 +6746,35 @@
         "related_source_hashes": {
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e"
         }
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.pilot_primary_MAE_gain_at_least_0_03"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-11-01T00:41:16.599927+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "R25:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "event": "FIT_BUDGET_RECONCILED",
+          "budget_key": "R25:PILOT",
+          "reserved_predictor_fits": 2,
+          "successful_predictor_fits": 2,
+          "fit_failed_events": 0,
+          "freeze_signature": "71270d89aadfe0cf49c89d91cf1b1fb01912095db50a437a1e1f8b201216242c"
+        }
+      ]
     },
     {
       "order": 25,
@@ -6077,7 +6990,37 @@
           "scripts/optimization_v3_verify_sparse_classification.py": "683f073bad4dac04728fcf0045cd3d39b0f1a1e790352f9c0174ecb36a867699",
           "scripts/optimization_v3_verify_sparse_classification_fullsix.py": "acf3be75189f832af5d6ccc310326d1b0797c0e3d54eec6a1f7037ee0833d474"
         }
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.primary_gain_min_0_0005"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-11-01T01:06:54.782179+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "C08:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "at_utc": "2026-11-01T01:07:26.895463+00:00",
+          "event": "FIT_BUDGET_RECONCILED",
+          "budget_key": "C08:PILOT",
+          "reserved_predictor_fits": 2,
+          "successful_predictor_fits": 2,
+          "fit_saved_events": 2,
+          "fit_failed_events": 0,
+          "freeze_signature": "a639764cd3695f87be8cec97ef21b3ee5b5846893dd07fcdf4af7c1b8dd382ad"
+        }
+      ]
     },
     {
       "order": 26,
@@ -6264,7 +7207,37 @@
         "related_source_hashes": {
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e"
         }
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.primary_gain_min_0_03"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-11-01T01:17:31.528299+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "R15:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "at_utc": "2026-11-01T01:21:22.892510+00:00",
+          "event": "FIT_BUDGET_RECONCILED",
+          "budget_key": "R15:PILOT",
+          "reserved_predictor_fits": 2,
+          "successful_predictor_fits": 2,
+          "fit_saved_events": 2,
+          "fit_failed_events": 0,
+          "freeze_signature": "9a1b5a5759889ce2e4e45236f1051d89d71a38dc917a6dd18ccf031a411f3c96"
+        }
+      ]
     },
     {
       "order": 27,
@@ -6498,7 +7471,52 @@
           "scripts/optimization_v3_verify_sparse_classification.py": "683f073bad4dac04728fcf0045cd3d39b0f1a1e790352f9c0174ecb36a867699",
           "scripts/optimization_v3_verify_sparse_classification_fullsix.py": "acf3be75189f832af5d6ccc310326d1b0797c0e3d54eec6a1f7037ee0833d474"
         }
-      }
+      },
+      "qa_status": "INDEPENDENT_QA_PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "NONE_AT_PILOT_STAGE",
+        "failed_predeclared_checks": [],
+        "supported_subgroup_failure_count": 0,
+        "note": "Pilot gates and QA passed. Continuation/full-six is a later stage and remains paused for review."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-11-01T01:25:19.744625+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "C17:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "at_utc": "2026-11-01T01:25:19.778407+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 55,
+          "fit_rows": 12020,
+          "score_rows": 17685,
+          "freeze_signature": "263006e00bcae8730fe1a904a8a633fc72e34a0464fb76262c274e263f1354c3"
+        },
+        {
+          "at_utc": "2026-11-01T01:25:27.445057+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 55,
+          "fit_predictor_count": 1
+        },
+        {
+          "at_utc": "2026-11-01T01:25:27.476996+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 67,
+          "fit_rows": 29705,
+          "score_rows": 20903,
+          "freeze_signature": "263006e00bcae8730fe1a904a8a633fc72e34a0464fb76262c274e263f1354c3"
+        },
+        {
+          "at_utc": "2026-11-01T01:25:45.372124+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 67,
+          "fit_predictor_count": 1
+        }
+      ]
     },
     {
       "order": 28,
@@ -6710,7 +7728,56 @@
         "related_source_hashes": {
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e"
         }
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.supported_tail_or_missing_harm_max",
+          "verification.gate_checks.supported_tail_or_missing_harm_max"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-11-01T01:44:27.943570+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "R23:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "at_utc": "2026-11-01T01:44:27.972686+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 55,
+          "fit_rows": 12020,
+          "score_rows": 17685,
+          "freeze_signature": "30251fd06b02169af6e3de776a33d0dc3e30506b6f32c1dcf7e06f22688b3167"
+        },
+        {
+          "at_utc": "2026-11-01T01:48:04.550010+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 55,
+          "fit_predictor_count": 1
+        },
+        {
+          "at_utc": "2026-11-01T01:48:04.580731+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 67,
+          "fit_rows": 29705,
+          "score_rows": 20903,
+          "freeze_signature": "30251fd06b02169af6e3de776a33d0dc3e30506b6f32c1dcf7e06f22688b3167"
+        },
+        {
+          "at_utc": "2026-11-01T02:01:46.510508+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 67,
+          "fit_predictor_count": 1
+        }
+      ]
     },
     {
       "order": 29,
@@ -7281,7 +8348,64 @@
           "scripts/optimization_v3_verify_sparse_classification.py": "683f073bad4dac04728fcf0045cd3d39b0f1a1e790352f9c0174ecb36a867699",
           "scripts/optimization_v3_verify_sparse_classification_fullsix.py": "acf3be75189f832af5d6ccc310326d1b0797c0e3d54eec6a1f7037ee0833d474"
         }
-      }
+      },
+      "qa_status": "INDEPENDENT_QA_PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.H12_harm_at_most_0_001",
+          "gate.checks.W1_harm_at_most_0_005",
+          "gate.checks.W4_harm_at_most_0_005",
+          "gate.checks.primary_gain_at_least_0_0005",
+          "gate.checks.supported_subgroup_guards",
+          "verification.gate_checks.H12_harm_at_most_0_001",
+          "verification.gate_checks.W1_harm_at_most_0_005",
+          "verification.gate_checks.W4_harm_at_most_0_005",
+          "verification.gate_checks.primary_gain_at_least_0_0005",
+          "verification.gate_checks.supported_subgroup_guards"
+        ],
+        "supported_subgroup_failure_count": 8,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-11-01T02:12:16.853646+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "C14:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "at_utc": "2026-11-01T02:12:16.937865+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 55,
+          "fit_rows": 12020,
+          "score_rows": 17685,
+          "freeze_signature": "06dd3ec8c30e9ce671ce8eaa493355cfdf862f2421ad4f11e2b37dfdd1ae2610"
+        },
+        {
+          "at_utc": "2026-11-01T02:12:23.027436+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 55,
+          "fit_predictor_count": 1
+        },
+        {
+          "at_utc": "2026-11-01T02:12:23.088645+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 67,
+          "fit_rows": 29705,
+          "score_rows": 20903,
+          "freeze_signature": "06dd3ec8c30e9ce671ce8eaa493355cfdf862f2421ad4f11e2b37dfdd1ae2610"
+        },
+        {
+          "at_utc": "2026-11-01T02:12:38.739808+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 67,
+          "fit_predictor_count": 1
+        }
+      ]
     },
     {
       "order": 30,
@@ -7505,7 +8629,71 @@
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
           "tests/test_optimization_v3_batch1_r04_runner.py": "ba651be29510d281d6fc13fcd5a0241df1df897d18524a23bea281e4dccb8e46"
         }
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.primary_mae_gain_at_least_0_03",
+          "verification.gate_checks.primary_mae_gain_at_least_0_03"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-11-01T03:16:16.466922+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "R04:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "at_utc": "2026-11-01T03:16:16.495140+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 55,
+          "fit_rows": 12020,
+          "score_rows": 17685,
+          "freeze_signature": "52637e1d286589a4892996a2a462a438c3c47d84ebf7ccba120f84c7e140d6df"
+        },
+        {
+          "at_utc": "2026-11-01T03:16:18.313183+00:00",
+          "event": "FIT_FAILED",
+          "cutoff": 55,
+          "error_type": "ValueError",
+          "error": "R04 control bridge missing ['control_rows']"
+        },
+        {
+          "at_utc": "2026-11-01T03:20:17.845926+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 55,
+          "fit_rows": 12020,
+          "score_rows": 17685,
+          "freeze_signature": "24ad53267566a063497d1b3b77784150d3ec6e6b346fd803c5894c066bf15b46"
+        },
+        {
+          "at_utc": "2026-11-01T03:20:25.486132+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 55,
+          "fit_predictor_count": 1
+        },
+        {
+          "at_utc": "2026-11-01T03:20:25.517463+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 67,
+          "fit_rows": 29705,
+          "score_rows": 20903,
+          "freeze_signature": "24ad53267566a063497d1b3b77784150d3ec6e6b346fd803c5894c066bf15b46"
+        },
+        {
+          "at_utc": "2026-11-01T03:20:38.497030+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 67,
+          "fit_predictor_count": 1
+        }
+      ]
     },
     {
       "order": 31,
@@ -7747,7 +8935,32 @@
           "scripts/optimization_v3_verify_sparse_classification.py": "683f073bad4dac04728fcf0045cd3d39b0f1a1e790352f9c0174ecb36a867699",
           "tests/test_optimization_v3_batch1_c05_runner.py": "7beea27ed8ec5a5fd9aff948634fc447e58d5bc87a67f931db39c6258133c2cb"
         }
-      }
+      },
+      "qa_status": "INDEPENDENT_QA_PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.primary_gain_at_least_0_0005",
+          "verification.gate_checks.primary_gain_at_least_0_0005"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-11-01T03:35:55.075078+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "C05:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "at_utc": "2026-11-01T03:40:29.663209+00:00",
+          "event": "CARD_FIT_BUDGET_RECONCILED"
+        }
+      ]
     },
     {
       "order": 32,
@@ -7998,7 +9211,32 @@
         "related_source_hashes": {
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e"
         }
-      }
+      },
+      "qa_status": "INDEPENDENT_QA_PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.supported_tail_or_missing_harm_at_most_0_25",
+          "verification.gate_checks.supported_tail_or_missing_harm_at_most_0_25"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-11-01T03:59:01.065969+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "R14:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "at_utc": "2026-11-01T04:05:00.437892+00:00",
+          "event": "CARD_FIT_BUDGET_RECONCILED"
+        }
+      ]
     },
     {
       "order": 33,
@@ -8242,7 +9480,24 @@
           "scripts/optimization_v3_verify_sparse_classification.py": "683f073bad4dac04728fcf0045cd3d39b0f1a1e790352f9c0174ecb36a867699",
           "tests/test_optimization_v3_batch1_c11_runner.py": "12df5303c076c604437c7953739c82990e25e433ba7f54a83990a3a86e99b78b"
         }
-      }
+      },
+      "qa_status": "INDEPENDENT_QA_PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "NONE_AT_PILOT_STAGE",
+        "failed_predeclared_checks": [],
+        "supported_subgroup_failure_count": 0,
+        "note": "Pilot gates and QA passed. Continuation/full-six is a later stage and remains paused for review."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-11-01T04:14:08.936760+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "C11:PILOT",
+          "predictor_fits": 2
+        }
+      ]
     },
     {
       "order": 34,
@@ -8455,7 +9710,60 @@
         "related_source_hashes": {
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e"
         }
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.pilot_H12_MAE_harm_max",
+          "gate.checks.pilot_primary_MAE_gain_min",
+          "gate.checks.supported_tail_or_missing_harm_max",
+          "verification.gate_checks.pilot_H12_MAE_harm_max",
+          "verification.gate_checks.pilot_primary_MAE_gain_min",
+          "verification.gate_checks.supported_tail_or_missing_harm_max"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-11-01T04:56:32.390682+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "R08:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "at_utc": "2026-11-01T04:56:32.437749+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 55,
+          "fit_rows": 12020,
+          "score_rows": 17685,
+          "freeze_signature": "da039f2ff667fe7f875394290bdc49e929ed5781edb8bd5f115fbe6099acb8d5"
+        },
+        {
+          "at_utc": "2026-11-01T04:56:40.364800+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 55,
+          "fit_predictor_count": 1
+        },
+        {
+          "at_utc": "2026-11-01T04:56:40.410437+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 67,
+          "fit_rows": 29705,
+          "score_rows": 20903,
+          "freeze_signature": "da039f2ff667fe7f875394290bdc49e929ed5781edb8bd5f115fbe6099acb8d5"
+        },
+        {
+          "at_utc": "2026-11-01T04:56:53.237114+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 67,
+          "fit_predictor_count": 1
+        }
+      ]
     },
     {
       "order": 35,
@@ -8754,7 +10062,25 @@
           "scripts/optimization_v3_batch1_c20_verify.py": "a9d79855685e5ab69756e97afa494a2435d6c12e32d03707bacf77ca289f3704",
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e"
         }
-      }
+      },
+      "qa_status": "INDEPENDENT_QA_PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.at_least_four_of_six_windows_nonnegative",
+          "gate.checks.full_H12_harm_at_most_0_001",
+          "gate.checks.full_primary_gain_at_least_0_0005",
+          "verification.gate_checks.at_least_four_of_six_windows_nonnegative",
+          "verification.gate_checks.full_H12_harm_at_most_0_001",
+          "verification.gate_checks.full_primary_gain_at_least_0_0005"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": []
     },
     {
       "order": 36,
@@ -8884,7 +10210,23 @@
           "scripts/optimization_v3_batch1_r19_revision2_verify.py": "975cc2730755667642f18dcee6b214dd62542a769d4806132cfb2ae0e6f5b6b2",
           "scripts/optimization_v3_batch1_r19_verify.py": "52c4d4c672ba8570af5dfb3548252d6a9fa18deb1bd01683e8a43168266afc51"
         }
-      }
+      },
+      "qa_status": "INDEPENDENT_QA_PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.pilot_primary_MAE_gain_min",
+          "gate.checks.supported_tail_or_missing_MAE_harm_max",
+          "result.gate_checks.late_primary_gain_at_least_0_03",
+          "result.gate_checks.supported_tail_or_missing_harm_at_most_0_25"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": []
     },
     {
       "order": 37,
@@ -9256,7 +10598,36 @@
           "scripts/optimization_v3_verify_sparse_classification.py": "683f073bad4dac04728fcf0045cd3d39b0f1a1e790352f9c0174ecb36a867699",
           "scripts/optimization_v3_verify_sparse_classification_fullsix.py": "acf3be75189f832af5d6ccc310326d1b0797c0e3d54eec6a1f7037ee0833d474"
         }
-      }
+      },
+      "qa_status": "INDEPENDENT_QA_PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.primary_gain_at_least_0_0005",
+          "gate.checks.supported_subgroup_guards",
+          "verification.gate_checks.primary_gain_at_least_0_0005",
+          "verification.gate_checks.supported_subgroup_guards"
+        ],
+        "supported_subgroup_failure_count": 5,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-11-01T05:55:04.256426+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "C15:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "event": "PILOT_DISPATCH_FAILED_BEFORE_FIT",
+          "error_type": "TypeError",
+          "attempted_predictor_fits": 0,
+          "freeze_signature": "3d4edad762f9ef2f54591f6649c66ede61e19e72ab6d5e7a0b1eff4f0334b684"
+        }
+      ]
     },
     {
       "order": 38,
@@ -9465,7 +10836,62 @@
         "related_source_hashes": {
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e"
         }
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "NONE_AT_PILOT_STAGE",
+        "failed_predeclared_checks": [],
+        "supported_subgroup_failure_count": 0,
+        "note": "Pilot gates and QA passed. Continuation/full-six is a later stage and remains paused for review."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-11-01T06:04:16.392070+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "R22:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "at_utc": "2026-11-01T06:04:16.437676+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 55,
+          "fit_rows": 12020,
+          "score_rows": 17685,
+          "freeze_signature": "21f218939856ec64d9808b7e0163d3eb890e814a312793b02bd7ff3bbb590ce0"
+        },
+        {
+          "at_utc": "2026-11-01T06:04:24.360400+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 55,
+          "fit_predictor_count": 1
+        },
+        {
+          "at_utc": "2026-11-01T06:04:24.412236+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 67,
+          "fit_rows": 29705,
+          "score_rows": 20903,
+          "freeze_signature": "21f218939856ec64d9808b7e0163d3eb890e814a312793b02bd7ff3bbb590ce0"
+        },
+        {
+          "at_utc": "2026-11-01T06:04:39.416513+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 67,
+          "fit_predictor_count": 1
+        },
+        {
+          "at_utc": "2026-11-01T06:10:35.983366+00:00",
+          "event": "FIT_BUDGET_RECONCILED",
+          "budget_key": "R22:PILOT",
+          "reserved_predictor_fits": 2,
+          "successful_predictor_fits": 2,
+          "fit_saved_events": 2,
+          "fit_failed_events": 0,
+          "freeze_signature": "21f218939856ec64d9808b7e0163d3eb890e814a312793b02bd7ff3bbb590ce0"
+        }
+      ]
     },
     {
       "order": 39,
@@ -9676,7 +11102,70 @@
         "related_source_hashes": {
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e"
         }
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.pilot_H12_MAE_harm_max",
+          "gate.checks.pilot_primary_MAE_gain_min",
+          "gate.checks.supported_tail_or_missing_harm_max",
+          "verification.gate_checks.pilot_H12_MAE_harm_max",
+          "verification.gate_checks.pilot_primary_MAE_gain_min",
+          "verification.gate_checks.supported_tail_or_missing_harm_max"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-11-01T06:23:35.935641+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "R20:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "at_utc": "2026-11-01T06:23:35.983872+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 55,
+          "fit_rows": 12020,
+          "score_rows": 17685,
+          "freeze_signature": "134401d71d213b073fe5a4385698e0dbe2e958d3df0ae6055fbb3ba2ae507edc"
+        },
+        {
+          "at_utc": "2026-11-01T06:23:39.345523+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 55,
+          "fit_predictor_count": 1
+        },
+        {
+          "at_utc": "2026-11-01T06:23:39.396556+00:00",
+          "event": "FIT_STARTED",
+          "cutoff": 67,
+          "fit_rows": 29705,
+          "score_rows": 20903,
+          "freeze_signature": "134401d71d213b073fe5a4385698e0dbe2e958d3df0ae6055fbb3ba2ae507edc"
+        },
+        {
+          "at_utc": "2026-11-01T06:23:44.736602+00:00",
+          "event": "FIT_SAVED",
+          "cutoff": 67,
+          "fit_predictor_count": 1
+        },
+        {
+          "at_utc": "2026-11-01T06:28:07.789544+00:00",
+          "event": "FIT_BUDGET_RECONCILED",
+          "budget_key": "R20:PILOT",
+          "reserved_predictor_fits": 2,
+          "successful_predictor_fits": 2,
+          "fit_saved_events": 2,
+          "fit_failed_events": 0,
+          "freeze_signature": "134401d71d213b073fe5a4385698e0dbe2e958d3df0ae6055fbb3ba2ae507edc"
+        }
+      ]
     },
     {
       "order": 40,
@@ -9924,7 +11413,38 @@
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
           "scripts/optimization_v3_verify_sparse_classification.py": "683f073bad4dac04728fcf0045cd3d39b0f1a1e790352f9c0174ecb36a867699"
         }
-      }
+      },
+      "qa_status": "INDEPENDENT_QA_PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.H12_harm_at_most_0_001",
+          "verification.gate_checks.H12_harm_at_most_0_001"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-11-01T06:48:43.463175+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "C12:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "at_utc": "2026-11-01T06:57:33.153561+00:00",
+          "event": "FIT_BUDGET_RECONCILED",
+          "budget_key": "C12:PILOT",
+          "reserved_predictor_fits": 2,
+          "successful_predictor_fits": 2,
+          "fit_saved_events": 2,
+          "fit_failed_events": 0,
+          "freeze_signature": "be1abc2c31744c5eb139b6f056afe529a765f559ce225f68f7905a508d6c3fc3"
+        }
+      ]
     },
     {
       "order": 41,
@@ -10138,7 +11658,33 @@
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
           "tests/test_optimization_v3_batch1_r06_runner.py": "5fa67584bb1e2902532b38fd008e01f56dd9456218ea55875d8ae4f96f5571e1"
         }
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "NONE_AT_PILOT_STAGE",
+        "failed_predeclared_checks": [],
+        "supported_subgroup_failure_count": 0,
+        "note": "Pilot gates and QA passed. Continuation/full-six is a later stage and remains paused for review."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-11-01T07:12:55.040919+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "R06:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "event": "FIT_BUDGET_RECONCILED",
+          "budget_key": "R06:PILOT",
+          "reserved_predictor_fits": 2,
+          "successful_predictor_fits": 2,
+          "fit_saved_events": 2,
+          "fit_failed_events": 0,
+          "freeze_signature": "02ae1b4e6e6424a8ac7f66fd0f1b955e478f6265c4f071989d9d8c5ef532c0a8"
+        }
+      ]
     },
     {
       "order": 42,
@@ -10352,7 +11898,37 @@
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
           "tests/test_optimization_v3_batch1_r07_runner.py": "7c84620a88729bf52e73eb612b0540cdeace5ff1eebdb27bbf634cdce374ce04"
         }
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "VALID_PILOT_GATE_FAILURE",
+        "failed_predeclared_checks": [
+          "gate.checks.pilot_H12_MAE_harm_at_most_0_05",
+          "gate.checks.pilot_primary_MAE_gain_at_least_0_03"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "A predeclared gate failed; see linked saved result and gate evidence.",
+        "note": "Terminal RETIRE based on valid saved Train evidence; QA passed, so no technical rework is pending."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-11-01T07:33:11.928440+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "R07:PILOT",
+          "predictor_fits": 2
+        },
+        {
+          "event": "FIT_BUDGET_RECONCILED",
+          "budget_key": "R07:PILOT",
+          "reserved_predictor_fits": 2,
+          "successful_predictor_fits": 2,
+          "fit_saved_events": 2,
+          "fit_failed_events": 0,
+          "freeze_signature": "201892c6bd4a9e31b8c8a2e98a23c4ee8b89036de3c5515d35725f45015e78b3"
+        }
+      ]
     },
     {
       "order": 43,
@@ -10457,7 +12033,25 @@
           "evidence.R09_verification_sha256": "83553d1a6cd31e343c2e72960be967bf60ae95e1defe06092ab3d968c2f75f3f"
         },
         "related_source_hashes": {}
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": "R09 condition failed: primary and H12 gains were negative and supported tails worsened at both origins.",
+      "pilot_blockers": {
+        "status": "PREREQUISITE_NOT_MET",
+        "failed_predeclared_checks": [
+          "gate.checks.R09_primary_gain_nonnegative",
+          "gate.checks.R09_H12_gain_nonnegative",
+          "gate.checks.R09_both_origin_supported_tail_improvement",
+          "gate.checks.R10_condition_passed",
+          "verification.checks.official_test_read",
+          "verification.checks.kaggle_access"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "R09 condition failed: primary and H12 gains were negative and supported tails worsened at both origins.",
+        "note": "Explicit zero-fit prerequisite skip; do not rerun without an authorized prerequisite amendment."
+      },
+      "runtime_budget_and_fit_events": []
     },
     {
       "order": 44,
@@ -10562,7 +12156,23 @@
           "evidence.R12_verification_sha256": "72bc362d4520977ab0a80aae517c56c26d9f5eb60657fe95f3491999ec2ef78e"
         },
         "related_source_hashes": {}
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": "R12 did not satisfy the declared prerequisite: per-origin within-cycle Spearman evidence is absent and aggregate primary/H12 MAE gates passed.",
+      "pilot_blockers": {
+        "status": "PREREQUISITE_NOT_MET",
+        "failed_predeclared_checks": [
+          "gate.checks.R12_missed_aggregate_MAE_gate",
+          "gate.checks.R13_condition_passed",
+          "verification.checks.official_test_read",
+          "verification.checks.kaggle_access"
+        ],
+        "supported_subgroup_failure_count": 0,
+        "reason": "R12 did not satisfy the declared prerequisite: per-origin within-cycle Spearman evidence is absent and aggregate primary/H12 MAE gates passed.",
+        "note": "Explicit zero-fit prerequisite skip; do not rerun without an authorized prerequisite amendment."
+      },
+      "runtime_budget_and_fit_events": []
     },
     {
       "order": 45,
@@ -10780,7 +12390,124 @@
           "scripts/optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
           "tests/test_optimization_v3_batch1_r07_runner.py": "7c84620a88729bf52e73eb612b0540cdeace5ff1eebdb27bbf634cdce374ce04"
         }
-      }
+      },
+      "qa_status": "PASS",
+      "qa_passed": true,
+      "skip_reason": null,
+      "pilot_blockers": {
+        "status": "NONE_AT_PILOT_STAGE",
+        "failed_predeclared_checks": [],
+        "supported_subgroup_failure_count": 0,
+        "note": "Pilot gates and QA passed. Continuation/full-six is a later stage and remains paused for review."
+      },
+      "runtime_budget_and_fit_events": [
+        {
+          "at_utc": "2026-11-01T08:24:11.974780+00:00",
+          "event": "BUDGET_RESERVED",
+          "budget_key": "R11:PILOT",
+          "predictor_fits": 18
+        },
+        {
+          "event": "FIT_BUDGET_RECONCILED",
+          "budget_key": "R11:PILOT",
+          "reserved_predictor_fits": 18,
+          "successful_predictor_fits": 18,
+          "fit_saved_events": 2,
+          "fit_failed_events": 0,
+          "freeze_signature": "ea5994e23e512940b6f68b62fb5e961177a41af6c431cc19446ab77bcbd60b45"
+        }
+      ]
     }
-  ]
+  ],
+  "status_reason": "User requested a safe campaign pause after the 45-card screening checkpoint.",
+  "continuation_execution": {
+    "status": "NOT_STARTED",
+    "selected_cards": [
+      "C16",
+      "C11",
+      "R22",
+      "R06"
+    ],
+    "new_fit_budget_reservation_written": false,
+    "requested_new_cutoffs": [
+      59,
+      63,
+      71,
+      75
+    ],
+    "cutoffs_executed": [],
+    "new_continuation_results_written_or_reviewed": false,
+    "pilot_cutoffs_already_saved": [
+      55,
+      67
+    ],
+    "results_already_seen": "Saved pilot outcomes for all 45 cards were reviewed in the screening table/ledger. For the four selected cards, saved pilot gains and gates were read; those are prior pilot evidence, not newly run continuation evaluation. Existing full-six control references in frozen artifacts are control provenance only.",
+    "blocker": "Existing batch1 card runners are pilot-specific. Do not use them for continuation. A separate continuation wrapper/freeze/output namespace, global budget reservation, fit-only provenance and independent six-window verifier must be prepared after user review."
+  },
+  "attempt_reconciliation": {
+    "candidate_predictor_fits_reserved": 94,
+    "candidate_predictor_fits_saved": 94,
+    "candidate_predictor_fits_failed": 2,
+    "remaining_reserved_budget": 86,
+    "fit_failures": [
+      {
+        "card_id": "R21",
+        "cutoff": 55,
+        "reason": "control baseline_sparse_raw outside [0,100]",
+        "outcome": "A subsequent cutoff-55 attempt under the amended freeze and cutoff 67 were saved."
+      },
+      {
+        "card_id": "R04",
+        "cutoff": 55,
+        "reason": "control bridge missing ['control_rows']",
+        "outcome": "A subsequent cutoff-55 attempt under the amended freeze and cutoff 67 were saved."
+      }
+    ],
+    "resource_interruption": [
+      {
+        "card_id": "C11",
+        "cutoff": 67,
+        "reason": "Free physical memory 0.49 GiB, below 2 GiB reserve; process working set 2.22 GiB. No bundle saved for the interrupted attempt.",
+        "outcome": "Cutoff 55 bundle was preserved and verified on resume; cutoff 67 later saved and verified. Final candidate predictor fits 2; no failed predictor fit counted."
+      }
+    ],
+    "dispatch_failure_before_fit": [
+      {
+        "card_id": "C15",
+        "attempted_predictor_fits": 0,
+        "reason": "Shared runner called with an unsupported task argument; no FIT_STARTED/model fit occurred. Later corrected pilot produced its saved result."
+      }
+    ],
+    "event_counts_in_per_card_attempt_logs": {
+      "FIT_STARTED": 41,
+      "FIT_SAVED": 40,
+      "FIT_INTERRUPTED_RESOURCE_PRESSURE": 1,
+      "RESUMED_VERIFIED": 1,
+      "PREFLIGHT_PASS": 13,
+      "RUNTIME_MEMORY_GATE_PASS": 1
+    },
+    "event_counts_in_runtime_budget_ledger": {
+      "FIT_FAILED": 2,
+      "PILOT_DISPATCH_FAILED_BEFORE_FIT": 1,
+      "FIT_STARTED": 34,
+      "FIT_SAVED": 32
+    },
+    "note": "Predictor-fit counts are the reconciled result counts; attempt event rows may aggregate multiple predictor heads (R11 has 18 predictor fits across two saved origin events). Failed/dispatch events are listed separately and not used to fabricate successful fit counts."
+  },
+  "campaign_pause": {
+    "status": "PAUSED_FOR_REVIEW",
+    "user_requested": true,
+    "goal_tracker_used": false,
+    "no_more_fits_or_test_kaggle_actions": true,
+    "latest_ram_snapshot_gib": {
+      "free": 8.57,
+      "total": 31.29,
+      "checked_after_user_pause_request": true
+    },
+    "process_snapshot": {
+      "python_training_processes": 0,
+      "training_lock_file_present": "experiments/runs/optimization_v3_batch1/.training.lock",
+      "lock_file_removed": false
+    }
+  }
 }
