@@ -483,7 +483,8 @@ def _build_frozen_preflight(*, write: bool) -> dict[str, Any]:
     old_r22 = _read_json(ROOT / "reports/optimization_v3/final_continuation/R22/result.json")
     if old_c16.get("qualification", {}).get("qualified") is not False:
         raise ExpandedCampaignError("C16 historical gate-failed verdict unexpectedly changed")
-    if old_r22.get("qualification", {}).get("qualified") is not True or old_r22.get("selected_policy") != "R22_ORIGINAL":
+    if (old_r22.get("qualification", {}).get("R22_ORIGINAL", {}).get("qualified") is not True
+            or old_r22.get("selected_policy") != "R22_ORIGINAL"):
         raise ExpandedCampaignError("R22_ORIGINAL historical qualified verdict unexpectedly changed")
 
     screening = _read_json(ROOT / "reports/optimization_v3/batch1/batch_ledger.json")
