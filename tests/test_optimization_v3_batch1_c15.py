@@ -66,6 +66,9 @@ def test_present_only_meta_head_and_missing_catboost_route():
         "stream_missing": missing_oof,
         "signal_stream": np.array(["sample"] * n_oof, dtype=object),
     }
+    # Official Train records are not globally ordered by cycle; score arrays must
+    # remain aligned by row position without requiring cross-block monotonicity.
+    oof = {key: value[::-1].copy() for key, value in oof.items()}
     fit = pd.DataFrame({"cycle_code": np.full(n_oof, 67),
                         "signal_stream": np.array(["fit"] * n_oof)}, index=oof_rows)
     fit["cycle_code"] = cycles

@@ -55,8 +55,9 @@ CARD_PATH = ROOT / "reports/optimization_v3/research_backlog/cards/C15.md"
 QUEUE_PATH = ROOT / "experiments/optimization_v3/research_backlog/queue.json"
 PREFIT_REVISION_01 = ROOT / "experiments/optimization_v3/batch1/C15"
 PREFIT_REVISION_02 = PREFIT_REVISION_01 / "revision_02"
-EXPERIMENT_DIR = PREFIT_REVISION_01 / "revision_03"
-REPORT_DIR = ROOT / "reports/optimization_v3/batch1/C15/revision_03"
+PREFIT_REVISION_03 = PREFIT_REVISION_01 / "revision_03"
+EXPERIMENT_DIR = PREFIT_REVISION_01 / "revision_04"
+REPORT_DIR = ROOT / "reports/optimization_v3/batch1/C15/revision_04"
 RUN_DIR = ROOT / "experiments/runs/optimization_v3_batch1/C15"
 RECIPE_PATH = EXPERIMENT_DIR / "recipe.json"
 FREEZE_PATH = EXPERIMENT_DIR / "freeze.json"
@@ -302,6 +303,8 @@ def _all_input_files(train_path: Path, card: Mapping[str, Any]) -> dict[str, Pat
         "superseded_prefit_freeze_revision_01": PREFIT_REVISION_01 / "freeze.json",
         "superseded_prefit_recipe_revision_02": PREFIT_REVISION_02 / "recipe.json",
         "superseded_prefit_freeze_revision_02": PREFIT_REVISION_02 / "freeze.json",
+        "superseded_prefit_recipe_revision_03": PREFIT_REVISION_03 / "recipe.json",
+        "superseded_prefit_freeze_revision_03": PREFIT_REVISION_03 / "freeze.json",
     }
     for origin in (55, 59, 63, 67, 71, 75):
         c2b_path, sparse_path, _ = _cache_paths(origin)
@@ -462,7 +465,7 @@ def _prepare(card: Mapping[str, Any], queue: Mapping[str, Any]) -> dict[str, Any
                                    evaluation_views=views, packages=PACKAGES)
     recipe = {
         "card_id": CARD_ID,
-        "revision": "revision_03; supersedes prefit-only revisions 01 and 02 after JSON canonicalization was enforced for tuple-valued views; no candidate prediction values were read before this revision.",
+        "revision": "revision_04; supersedes prefit-only revisions 01-03 after source row order was correctly treated as non-chronological; no candidate model fit or candidate prediction was produced by the earlier revisions.",
         "queue_recipe": {key: card[key] for key in ("id", "task", "name", "family", "change", "policy",
                         "pilot_predictor_fits", "evaluation", "condition")},
         "meta_model": {
@@ -480,6 +483,7 @@ def _prepare(card: Mapping[str, Any], queue: Mapping[str, Any]) -> dict[str, Any
             "cutoff67_support": {k: v for k, v in oof_support[67].items() if k != "rows"},
             "cutoff75_support": {k: v for k, v in oof_support[75].items() if k != "rows"},
             "fit_population": "present-stream official Train labels from exact disjoint OOF blocks strictly before each outer cutoff; rows from cycles 47-55 excluded",
+            "row_order": "Each saved score remains aligned by official Train row position; CSV row order is not assumed to be chronological across cycle blocks.",
         },
         "policy": {
             "cutoff55": "exact current champion fallback because authorized OOF support is unavailable",
@@ -605,8 +609,8 @@ def _load_oof_probabilities(context: Mapping[str, Any]) -> dict[int, dict[str, n
         all_stream.extend(frame.iloc[block_rows]["signal_stream"].tolist())
 
     rows = np.asarray(all_rows, dtype=np.int64)
-    if len(np.unique(rows)) != len(rows) or not np.array_equal(np.sort(rows), rows):
-        raise BatchIntegrityError("C15 assembled OOF rows are not sorted, unique Train positions")
+    if len(np.unique(rows)) != len(rows):
+        raise BatchIntegrityError("C15 assembled OOF rows are not unique Train positions")
     arrays = {
         "rows": rows,
         "c2b_probability": np.asarray(all_c2b, dtype=np.float64),
