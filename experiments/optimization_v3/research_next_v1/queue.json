@@ -1,0 +1,624 @@
+{
+  "schema_version": 1,
+  "batch_id": "optimization_v3_research_next_v1",
+  "status": "READY_TO_IMPLEMENT_NOT_YET_FROZEN_OR_RUN",
+  "mode": "ONE_CHAT_END_TO_END_RESEARCH_ONLY",
+  "entry_document": "reports/optimization_v3/research_next_v1/LUNA_HANDOFF.md",
+  "order": [
+    "N00",
+    "N01",
+    "N02",
+    "N03",
+    "N04",
+    "N05",
+    "N06"
+  ],
+  "deferred_not_in_execution_queue": [
+    "N07",
+    "N08"
+  ],
+  "boundaries": {
+    "data": "official Train only",
+    "test": false,
+    "sample_submission": false,
+    "kaggle": false,
+    "model_binaries_in_git": false,
+    "raw_data_in_git": false,
+    "notebooks": false,
+    "external_pretrained": false,
+    "other_task_labels": false,
+    "old_phase_retries": false
+  },
+  "ownership": {
+    "root": "one Luna MAIN; configured workers only in disjoint new files",
+    "training_jobs": 1,
+    "threads": 2,
+    "job_cap_gib": 6,
+    "free_ram_reserve_gib": 2,
+    "minimum_free_ram_gib": 4,
+    "namespace_source": "src/models/research_next_*.py; scripts/optimization_v3_research_next_*.py; tests/test_research_next_*.py",
+    "outputs": "experiments/runs/optimization_v3_research_next_v1",
+    "reports": "reports/optimization_v3/research_next_v1/results",
+    "protocols": "experiments/optimization_v3/research_next_v1/frozen"
+  },
+  "budget": {
+    "new_phase_cap": 60,
+    "old_phase_cap": 180,
+    "old_phase_snapshot_reserved": 175,
+    "old_snapshot_is_not_authority": true,
+    "old_ledger": "experiments/runs/optimization_v3_batch1/batch_ledger.jsonl",
+    "new_ledger": "experiments/runs/optimization_v3_research_next_v1/budget.jsonl",
+    "pilot_worst_case": 26,
+    "continuation_max": 24,
+    "control_replay_max": 6,
+    "technical_retry_max": 4,
+    "count_domain_and_auxiliary_fits": true,
+    "count_r11_heads_individually": true,
+    "count_started_unsaved_estimator_fits": true,
+    "synthetic_fits": "record separately as QA; never official-data research fits",
+    "authorization": "New cap of 60 applies only when the user launches the accompanying prompt; do not reset or spend this budget on the older campaign.",
+    "fit_unit": "One official-data estimator training call, including domain/router/quantile heads and started-unsaved calls. Learned preprocessing fits are separately logged, excluded from the 60 estimator-head cap, and must remain fit-only. Synthetic QA estimator fits are separately logged."
+  },
+  "controls": {
+    "classification": "v3_cls_sparse25: .75 C2_B + .25 original SparseTextBoostClassifier on present; CatBoost missing; threshold .50",
+    "regression": "R22_ORIGINAL: .75 legacy_three_component_champion + .25 rank50(raw_R22); clip[0,100]",
+    "legacy_regression": ".5625 mapped_LGB_SVD32 + .1875 mapped_hybrid_Ridge + .25 sparse_LGB_rank50",
+    "freeze_controls_once": true,
+    "do_not_select_control_by_public_score": true,
+    "regression_secondary_report_only": [
+      "R06_ORIGINAL; report against verified cache, not auto-promote based on public score"
+    ],
+    "expanded_independent_verification": "reports/optimization_v3/expanded_benchmark_v1_final_evaluation/{candidate}/verification.json"
+  },
+  "raw_train_sha256": {
+    "classification": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "regression": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082"
+  },
+  "views": {
+    "STANDARD": {
+      "pilot_origins": [
+        55,
+        67
+      ],
+      "primary": [
+        [
+          55,
+          56,
+          59
+        ],
+        [
+          67,
+          68,
+          71
+        ]
+      ],
+      "h12": [
+        [
+          55,
+          56,
+          67
+        ],
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "primary_rows": 9064,
+      "h12_rows": 38588,
+      "continuation_origins": [
+        59,
+        63,
+        71,
+        75
+      ]
+    },
+    "LATE": {
+      "pilot_origins": [
+        67,
+        75
+      ],
+      "primary": [
+        [
+          67,
+          68,
+          71
+        ],
+        [
+          75,
+          76,
+          79
+        ]
+      ],
+      "h12": [
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "primary_rows": 13441,
+      "h12_rows": 20903
+    },
+    "full_six": [
+      [
+        55,
+        56,
+        59
+      ],
+      [
+        59,
+        60,
+        63
+      ],
+      [
+        63,
+        64,
+        67
+      ],
+      [
+        67,
+        68,
+        71
+      ],
+      [
+        71,
+        72,
+        75
+      ],
+      [
+        75,
+        76,
+        79
+      ]
+    ],
+    "full_six_rows": 38588,
+    "late_primary": [
+      [
+        71,
+        72,
+        75
+      ],
+      [
+        75,
+        76,
+        79
+      ]
+    ],
+    "late_primary_rows": 15953,
+    "labels_are_reused_development": true
+  },
+  "gates": {
+    "classification": {
+      "primary_gain_min": 0.0005,
+      "h12_harm_max": 0.001,
+      "individual_primary_window_harm_max": 0.005,
+      "subgroup_f1_harm_max": 0.01,
+      "positive_recall_harm_max": 0.02,
+      "minimum_group_n": 200,
+      "minimum_each_class_n": 30,
+      "matched_control_primary_gain_min": 0.0002,
+      "full_nonnegative_windows_min": 4,
+      "full_late_primary_gain_strictly_positive": true,
+      "guard_fields": [
+        "entry_friction",
+        "stream_availability",
+        "fit_defined_text_load_quartile"
+      ]
+    },
+    "regression": {
+      "primary_gain_min": 0.03,
+      "h12_harm_max": 0.05,
+      "individual_primary_window_harm_max": 0.5,
+      "minimum_group_n": 100,
+      "tail_or_missing_harm_max": 0.25,
+      "matched_control_primary_gain_min": 0.01,
+      "full_nonnegative_windows_min": 4,
+      "full_late_primary_gain_strictly_positive": true,
+      "guard_fields": [
+        "stream_missing",
+        "observed_target_le5_evaluation_only",
+        "observed_target_ge95_evaluation_only"
+      ],
+      "protect_current_and_legacy_guard_baselines": true
+    },
+    "scope": "primary, H12, and EACH individual declared primary window; full-six includes W1..W6. Unsupported remains descriptive."
+  },
+  "continuation_selection": {
+    "max_classification": 1,
+    "classification_candidates": [
+      "N01",
+      "N02"
+    ],
+    "classification_order": "among candidates passing all pilot and matched-control gates, largest primary gain, then H12 gain, then more nonnegative pilot windows; exact tie N01 before N02",
+    "max_regression": 1,
+    "regression_priority": [
+      "N03",
+      "N04"
+    ],
+    "regression_order": "N03 first if it passes LATE gates and matched constant-arm gate; otherwise N04 if it passes STANDARD gates. Do not rank gains across profiles.",
+    "information_lanes_never_auto_promoted": [
+      "N05",
+      "N06"
+    ],
+    "run_all_queued_pilots_before_continuation": true
+  },
+  "cards": [
+    {
+      "id": "N00",
+      "task": "both",
+      "kind": "diagnostic",
+      "profile": "CACHE_ONLY",
+      "pilot_fits": 0,
+      "continuation_fits": 0,
+      "question": "Locate stable error mechanisms in verified expanded continuation without retraining.",
+      "implementation": [
+        "Reconcile old campaign terminal checkpoint, bundles and verifier status; blocked historical R11 is not a model-performance failure.",
+        "Freeze CURRENT controls listed in queue; do not change baseline based on new public score.",
+        "Recompute row-aligned primary/H12, EF/impact/availability, per-cycle signs and disagreement for controls and valid expanded candidates; use fit-defined bins.",
+        "Compute fixed N03 arms A/B anew: B has missing fallback A=R22, unlike the previous legacy-missing combination. Store this policy difference explicitly.",
+        "Produce complete resource/dependency/cache map for all queued lanes and a smoke-test checklist before the first official fit."
+      ],
+      "stop": "Corrupt shared raw/control lineage stops dependent tasks; absent nonessential historical R11 does not stop the queue.",
+      "sources": [
+        "reports/optimization_v3/expanded_benchmark_v1_final_evaluation",
+        "reports/optimization_v3/final_continuation",
+        "reports/optimization_v3/postscreen_review"
+      ],
+      "allowed_full_six_candidates": [
+        "C16",
+        "C17",
+        "C11",
+        "R22",
+        "R21",
+        "R06"
+      ],
+      "verification_reports": {
+        "C16": "reports/optimization_v3/final_continuation/C16/verification.json",
+        "C17": "reports/optimization_v3/expanded_benchmark_v1_final_evaluation/C17/verification.json",
+        "C11": "reports/optimization_v3/expanded_benchmark_v1_final_evaluation/C11/verification.json",
+        "R22": "reports/optimization_v3/final_continuation/R22/verification.json",
+        "R21": "reports/optimization_v3/expanded_benchmark_v1_final_evaluation/R21/verification.json",
+        "R06": "reports/optimization_v3/expanded_benchmark_v1_final_evaluation/R06/verification.json"
+      },
+      "verification_requirement": "Require report status PASS plus independently recheck each used NPZ/sidecar hash, identity, frozen recipe, source rows/IDs, temporal bounds and prediction reconstruction. Report PASS is not performance-gate PASS. Absent/invalid optional candidate is excluded and reported; invalid shared control blocks its dependent tasks. Do not assume preflight checked C11/C17/R21 merely because their reports pass.",
+      "r11_scope": "Pilot-only diagnostic if verified; full-six technical blocker remains UNKNOWN. No full-six fabrication or retry in this phase."
+    },
+    {
+      "id": "N01",
+      "task": "classification",
+      "kind": "candidate",
+      "profile": "STANDARD",
+      "pilot_fits": 4,
+      "continuation_fits": 8,
+      "question": "Do class-by-volume training weights add value beyond class rebalancing?",
+      "recipe": {
+        "model_source": "src/models/optimization_v3_sparse_classification.py::SparseTextBoostClassifier and PARAMS",
+        "change": "new adapter passes sample_weight to LGBMClassifier.fit; never edit original fit(X,y)",
+        "bins": "np.quantile fit finite parsed text_load at [.25,.5,.75]; collapse duplicate edges; use side=right; missing bin only if present in fit; unseen missing => weight1 and report",
+        "minimum_cell_n": 100,
+        "weights": "sqrt(n_fit/(2*G*n_class_bin)); clip [.5,2], normalize mean1; G is actual fit-bin count",
+        "class_control": "for each y, mean candidate weight among that class; identical total class mass",
+        "policy": ".75 frozen C2_B + .25 new sparse expert on present; frozen CB on missing; threshold .50",
+        "changes_forbidden": [
+          "threshold",
+          "features",
+          "tree params",
+          "fit population",
+          "weight sweep"
+        ]
+      },
+      "sources": [
+        "src/models/optimization_v3_sparse_classification.py",
+        "src/models/classification_models.py"
+      ],
+      "controls": [
+        "current class route",
+        "class-only weighted sparse expert"
+      ],
+      "preconditions": [
+        "every actual fit class-bin cell n>=100",
+        "all candidate weights finite positive; same class masses in control"
+      ],
+      "smoke": [
+        "nonempty/missing/tied text_load bins",
+        "sample_weight actually reaches estimator",
+        "candidate/control class mass equality"
+      ],
+      "eligibility": "task gates plus primary gain>=.0002 over class-only control"
+    },
+    {
+      "id": "N02",
+      "task": "classification",
+      "kind": "candidate",
+      "profile": "STANDARD",
+      "pilot_fits": 4,
+      "continuation_fits": 8,
+      "question": "Do degree-two interactions add information beyond the same main effects?",
+      "recipe": {
+        "model_source": "src/models/classification_models.py::ClassificationModel C2_B exact main-effect design",
+        "sketch": {
+          "class": "sklearn.kernel_approximation.PolynomialCountSketch",
+          "degree": 2,
+          "n_components": 1024,
+          "gamma": 1,
+          "coef0": 0,
+          "random_state": 42
+        },
+        "sketch_input": "L2-normalized COPY of exact C2_B main-effect matrix; retain original main effects unchanged",
+        "head": {
+          "C": 1,
+          "solver": "liblinear",
+          "max_iter": 2000,
+          "tol": 0.0001,
+          "class_weight": null,
+          "random_state": 42
+        },
+        "design": "CSR hstack original main effects + 1024 dense sketch columns converted safely to CSR; never densify raw TFIDF",
+        "policy": ".75 current class route + .25 new expert on present; missing remains exact CB; threshold .50",
+        "no_sketch_control": "same policy/head/preprocessing, no sketch; two counted fits even if C2_B reuse looks possible"
+      },
+      "sources": [
+        "src/models/classification_models.py"
+      ],
+      "controls": [
+        "current class route",
+        "same-learner no-sketch control"
+      ],
+      "preconditions": [
+        "sparse sketch API shape/determinism valid",
+        "conservative full fit+score transform+solver peak fits RAM policy"
+      ],
+      "smoke": [
+        "fit/transform C2_B design schema identical",
+        "all-empty text and unknown categories",
+        "float64 CSR/CSC conversions"
+      ],
+      "eligibility": "task gates plus primary gain>=.0002 over no-sketch control"
+    },
+    {
+      "id": "N03",
+      "task": "regression",
+      "kind": "candidate",
+      "profile": "LATE",
+      "pilot_fits": 2,
+      "continuation_fits": 3,
+      "question": "Can a past-only router retain useful R22/R06 complementarity while avoiding harm?",
+      "recipe": {
+        "arms": {
+          "A": "R22_ORIGINAL",
+          "B": "present: clip(.5*legacy_champion+.25*rank50(raw_R22)+.25*rank50(raw_R06),0,100); missing: A exactly"
+        },
+        "rank": "whole complete cycle, average ties, rank50=clip(.5 raw+.5 percentile,0,100)",
+        "router_target": "abs(y-B)-abs(y-A) from unique primary OOF blocks ending <= outer cutoff",
+        "router_features": [
+          "A",
+          "B",
+          "B_minus_A",
+          "abs_B_minus_A",
+          "parsed_impact_load",
+          "parsed_entry_friction",
+          "parsed_text_load"
+        ],
+        "router": {
+          "class": "HistGradientBoostingRegressor",
+          "loss": "squared_error",
+          "learning_rate": 0.1,
+          "max_depth": 2,
+          "max_leaf_nodes": 4,
+          "max_iter": 100,
+          "min_samples_leaf": 200,
+          "l2_regularization": 10,
+          "early_stopping": false,
+          "random_state": 42
+        },
+        "imputer": "median from router FIT OOF rows; all-missing numeric =>0, record flag; no outer preprocessing fit",
+        "minimum_present_oof_rows": 2000,
+        "decision": "choose B iff predicted loss difference < -.03; otherwise A",
+        "missing": "always A exact",
+        "constant_control": "choose B for all present iff mean PAST OOF loss difference < -.03; otherwise A",
+        "fallback": "origin55 exact A by design; any origin below minimum support exact A, report support; no fabricated pre56 OOF"
+      },
+      "sources": [
+        "src/models/optimization_v3_batch1_r22.py",
+        "src/models/optimization_v3_batch1_r06.py",
+        "reports/optimization_v3/regression_residual/FINDINGS.md"
+      ],
+      "controls": [
+        "A",
+        "B",
+        "past-only constant-arm control"
+      ],
+      "preconditions": [
+        "verified R22/R06 raw arrays and exact legacy baseline at all six origins",
+        "join by source rows/IDs; select complete cycles, do not assume entire bundle shapes equal",
+        "minimum support at67/75; at least one router-routed row across pilot or report no benefit"
+      ],
+      "smoke": [
+        "future labels perturbation cannot change fitted head",
+        "earliest55 fallback",
+        "tuple/list roundtrip",
+        "complete-cycle rank before missing route"
+      ],
+      "eligibility": "LATE task gates vs A plus primary MAE gain>=.01 over past-only constant control; legacy group protection also passes"
+    },
+    {
+      "id": "N04",
+      "task": "regression",
+      "kind": "candidate",
+      "profile": "STANDARD",
+      "pilot_fits": 8,
+      "continuation_fits": 16,
+      "question": "Does feature-based covariate weighting help beyond allocation by time?",
+      "recipe": {
+        "domain": "last four FIT cycles pseudo-recent=1; older FIT cycles source=0; no future validation/Test features",
+        "domain_features": "structured+word TFIDF; exclude record_id, explicit cycle_code and all task targets",
+        "domain_split": "two folds by odd/even fit cycle; both domain classes required in each training and held-out fold; fit domain preprocessing separately on each training fold",
+        "domain_model": {
+          "class": "LogisticRegression",
+          "C": 0.1,
+          "solver": "liblinear",
+          "max_iter": 2000,
+          "tol": 0.0001,
+          "class_weight": "balanced",
+          "random_state": 42
+        },
+        "weights": "balanced-domain p => odds p/(1-p) is density ratio under equal effective prior; p clipped [1e-6,1-1e-6]; source odds clip [.25,4], recent weight1, normalize mean1",
+        "task_model": "exact R22 design/parameters, only XGB.fit(sample_weight=weights) differs; new adapter, no frozen source edit",
+        "control": "same task model with weights permuted WITHIN fit cycle, seed=42+cutoff",
+        "policy": "replace raw_R22 in original R22 policy, retain .75 exact legacy champion +.25 rank50(new raw)",
+        "pre_task_skip": {
+          "domain_auc_range_inclusive": [
+            0.55,
+            0.95
+          ],
+          "minimum_ess_fraction": 0.5,
+          "maximum_source_fraction_at_clip_bounds": 0.2
+        }
+      },
+      "sources": [
+        "src/models/optimization_v3_batch1_r22.py",
+        "src/models/regression_research_text.py"
+      ],
+      "controls": [
+        "unweighted R22_ORIGINAL",
+        "within-cycle shuffled-weight task model"
+      ],
+      "preconditions": [
+        "paired domain folds supported",
+        "all weights finite positive",
+        "domain pre-task checks pass before fitting task models"
+      ],
+      "smoke": [
+        "no cycle/id/target enters domain model",
+        "balanced-prior odds formula",
+        "shuffled weights preserve exact per-cycle multiset",
+        "task transforms identical except estimator weights"
+      ],
+      "eligibility": "task gates plus primary MAE gain>=.01 over shuffled-weight model; auxiliary domain fits count even if scientific pre-task skip"
+    },
+    {
+      "id": "N05",
+      "task": "regression",
+      "kind": "information",
+      "profile": "LATE",
+      "pilot_fits": 4,
+      "continuation_fits": 0,
+      "question": "Does conditional interval width characterize uncertainty beyond constant past-residual intervals?",
+      "recipe": {
+        "model": "two LGBMRegressor quantile heads on exact R22 structured/OHE+TFIDF/SVD32 design",
+        "parameters": {
+          "boosting_type": "gbdt",
+          "objective": "quantile",
+          "alphas": [
+            0.1,
+            0.9
+          ],
+          "learning_rate": 0.05,
+          "n_estimators": 400,
+          "num_leaves": 31,
+          "min_child_samples": 40,
+          "min_child_weight": 0.001,
+          "reg_alpha": 0,
+          "reg_lambda": 1,
+          "subsample": 1,
+          "subsample_freq": 0,
+          "colsample_bytree": 1,
+          "random_state": 42,
+          "n_jobs": 2,
+          "verbosity": -1,
+          "deterministic": true,
+          "force_col_wise": true
+        },
+        "origins": [
+          67,
+          75
+        ],
+        "preprocessing": "one fit per origin shared by both quantile heads; no weighted task fits or early stopping",
+        "interval": "record raw crossing; clip endpoints[0,100]; sort pair, report crossing rate before sort",
+        "control": "A=R22 point score + q.1/q.9 of signed y-A from PAST unique primary OOF rows <=cutoff; clipped[0,100]",
+        "outputs": [
+          "pinball losses",
+          "nominal80% coverage",
+          "mean interval width",
+          "per-cycle/subgroup coverage",
+          "width vs absolute error descriptively"
+        ]
+      },
+      "sources": [
+        "src/models/optimization_v3_batch1_r22.py",
+        "src/models/regression_research_text.py"
+      ],
+      "controls": [
+        "past-residual constant-width interval"
+      ],
+      "preconditions": [
+        "past R22 OOF support>=2000 at67/75",
+        "four NEW quantile fits budgeted; saved R11 bundles lack survival probabilities"
+      ],
+      "smoke": [
+        "quantile head alpha values",
+        "crossing/empty-group handling",
+        "information lane cannot qualify as a point-prediction winner"
+      ],
+      "eligibility": "information only; no auto continuation/router feature add-on/model promotion"
+    },
+    {
+      "id": "N06",
+      "task": "regression",
+      "kind": "information",
+      "profile": "STANDARD",
+      "pilot_fits": 4,
+      "continuation_fits": 0,
+      "question": "Does R06 depend on anonymous character surface beyond recurring token identity?",
+      "recipe": {
+        "model": "exact original R06 char sparse L1 recipe; only deterministic token bijection changes input stream",
+        "seeds": [
+          42,
+          137
+        ],
+        "token_domains": {
+          "q": "q plus exactly7 hex digits (28-bit payload)",
+          "z": "z plus exactly6 hex digits (24-bit payload)"
+        },
+        "bijection": "6-round balanced Feistel on payload; halfbits14 for q,12 for z; round F = low halfbits of SHA256 UTF8('research_next_v1|seed|prefix|round|right_decimal'); (L,R)=(R,L xor F); retain prefix and zero-padded lowercase hex length",
+        "token_rule": "regex full tokens with original boundaries; preserve all separators, order, multiplicity, missing mask; unexpected token shape => pre-fit schema skip, not guessed hashing",
+        "future_rule": "mapping defined for entire numeric token domain, needs no future/Test lexicon or learned lookup",
+        "control": "cached original R06 raw/policy; optional word-TFIDF invariance via explicitly remapped frozen vocabulary indices/IDF, no new model fit",
+        "policy": "same .75 legacy champion +.25 rank50(renamed R06) as original, unchanged even if gate fails"
+      },
+      "sources": [
+        "src/models/optimization_v3_batch1_r06.py"
+      ],
+      "controls": [
+        "original R06"
+      ],
+      "preconditions": [
+        "all Train tokenizer tokens fit q/z observed domains",
+        "bijection inversion/collision/length/prefix tests pass for both seeds",
+        "original R06 cache valid"
+      ],
+      "smoke": [
+        "bijection inverse roundtrip",
+        "same token occurrence maps consistently",
+        "validation transformed with SAME mapping used during fit",
+        "no word-vocabulary tie selection claimed invariant unless indices preserved"
+      ],
+      "eligibility": "information only; no score-seeking seed selection or automatic promotion"
+    }
+  ],
+  "historical_cache_aliases": {
+    "R22_pilot": {
+      "prediction": "prediction",
+      "legacy": "baseline_prediction"
+    },
+    "R22_continuation": {
+      "prediction": "R22_ORIGINAL",
+      "legacy": "champion_prediction"
+    },
+    "R06_all": {
+      "prediction": "prediction",
+      "legacy": "baseline_prediction"
+    }
+  }
+}

@@ -1,0 +1,304 @@
+{
+  "execution_context": {
+    "amendment": "03; three N00 runs failed before metric due to cache horizon, baseline-key aliases, and origin-specific controls on overlapping H12 rows; no model fit or result output was produced",
+    "free_ram_gib_at_freeze": null,
+    "frozen_at_utc": "2026-11-01T15:27:04.344237+00:00",
+    "inherited_old_budget_snapshot": {
+      "effective_total_including_offledger": 177,
+      "event_rows": 237,
+      "old_global_cap": 180,
+      "old_phase_budget_reused": false,
+      "path": "experiments/runs/optimization_v3_batch1/batch_ledger.jsonl",
+      "previous_offledger_full_train_fits": 2,
+      "remaining_reserved_capacity": 5,
+      "reserved_predictor_fits": 175,
+      "sha256": "544c3a255358bc886ec6b6be646775eca495c35ffe0720097394f53ba89d4f44"
+    },
+    "kaggle_calls": 0,
+    "official_estimator_fits": 0,
+    "test_opened": false
+  },
+  "freeze_signature": "f0fbcab0611e9bbe5e784aaee96d96420da3153bcc955e50d07ca32496f81d9a",
+  "identity": {
+    "analysis_spec": {
+      "candidate_scope": [
+        "C16",
+        "C17",
+        "C11",
+        "R22",
+        "R21",
+        "R06"
+      ],
+      "classification_metric": "macro_f1_from_binary_confusion_counts",
+      "classification_threshold": 0.5,
+      "full_six_primary": [
+        [
+          55,
+          56,
+          59
+        ],
+        [
+          59,
+          60,
+          63
+        ],
+        [
+          63,
+          64,
+          67
+        ],
+        [
+          67,
+          68,
+          71
+        ],
+        [
+          71,
+          72,
+          75
+        ],
+        [
+          75,
+          76,
+          79
+        ]
+      ],
+      "group_views": {
+        "classification": [
+          "entry_friction",
+          "stream_availability",
+          "fit_text_load_quartile",
+          "fit_impact_load_quartile"
+        ],
+        "quartile_edges": [
+          0.25,
+          0.5,
+          0.75
+        ],
+        "quartile_fit_population": "rows with cycle_code <= the scoring origin",
+        "regression": [
+          "stream_availability",
+          "entry_friction",
+          "fit_impact_load_quartile",
+          "observed_target_tail_evaluation_only"
+        ]
+      },
+      "late_full_six_rows": 15953,
+      "late_h12": [
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "late_primary": [
+        [
+          67,
+          68,
+          71
+        ],
+        [
+          75,
+          76,
+          79
+        ]
+      ],
+      "n03_arms": {
+        "A": "R22_ORIGINAL",
+        "B_missing": "A exactly",
+        "B_present": "clip(.50*legacy+.25*rank50(raw_R22)+.25*rank50(raw_R06),0,100)",
+        "rank_scope": "complete cycle before availability filtering; average ties"
+      },
+      "r11_scope": "pilot_only_cutoffs_55_67_full_six_remains_unknown",
+      "regression_controls": [
+        "R22_ORIGINAL",
+        "protected_legacy_champion"
+      ],
+      "regression_metric": "mean_absolute_error",
+      "standard_h12": [
+        [
+          55,
+          56,
+          67
+        ],
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "standard_primary": [
+        [
+          55,
+          56,
+          59
+        ],
+        [
+          67,
+          68,
+          71
+        ]
+      ]
+    },
+    "batch_id": "optimization_v3_research_next_v1",
+    "card_id": "N00",
+    "dependency_versions": {
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "python": "3.13.5",
+      "scikit-learn": "1.8.0",
+      "scipy": "1.18.0"
+    },
+    "freeze_amendment": {
+      "amendment": "03",
+      "failed_attempts_before_metrics": [
+        {
+          "issue": "initial audit expected 12 score cycles for all origins and rejected C16/59; the Train targets were loaded, but no metric or candidate result was computed",
+          "official_estimator_fits": 0,
+          "outputs_published": 0,
+          "status": "FAILED_BEFORE_METRIC"
+        },
+        {
+          "issue": "R21 pilot schema stores the protected baseline under baseline_prediction; the Train targets were loaded, but no metric or candidate result was computed",
+          "official_estimator_fits": 0,
+          "outputs_published": 0,
+          "status": "FAILED_BEFORE_METRIC"
+        },
+        {
+          "issue": "class control map treated overlapping pilot H12 and continuation primary rows as if they came from the same training origin; the Train targets were loaded, but no metric or candidate result was computed",
+          "official_estimator_fits": 0,
+          "outputs_published": 0,
+          "status": "FAILED_BEFORE_METRIC"
+        }
+      ],
+      "reason": "class baseline controls vary by training origin; pilot H12 overlaps continuation primary windows, so compare controls within each origin and view rather than merging all rows into one origin-free map",
+      "supersedes_freeze_signature": "8a6ea8aae611d301239e71f3f2eada8de7c3e6571adb19f8fdc3a52b7f9bf6a0"
+    },
+    "queue_readiness_sha256": "44966873a5d7938eee3d8642ec583561d22143f836a9cc125a02150c0fc819ce",
+    "queue_sha256": "c22c13ea0ead142e32bfe7abc2655ec19c608d1f537db721e35dfc4c38b8eb45",
+    "raw_train_sha256": {
+      "classification": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+      "regression": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082"
+    },
+    "source_and_artifact_sha256": {
+      "experiments/optimization_v3/research_next_v1/frozen/N00/amendment_02/freeze.json": "c9774908894819d8abe0d4c3cc413ff8f0fb1fd691305ed9ca68a499ded2d23c",
+      "experiments/optimization_v3/research_next_v1/queue.json": "c22c13ea0ead142e32bfe7abc2655ec19c608d1f537db721e35dfc4c38b8eb45",
+      "experiments/runs/optimization_v3_batch1/C11/C11_fit55.json": "2caeb0d31ba029bdb46911769c5fa88cfe65b14ee89d30fdb87a2419b883f1c3",
+      "experiments/runs/optimization_v3_batch1/C11/C11_fit55.npz": "521de3d4bcce3206722a8af16228901d1df3f3c90cae92b6abcf379987f1d764",
+      "experiments/runs/optimization_v3_batch1/C11/C11_fit67.json": "0c46b5386ae010eb9565c60abed4943d8ec0ddee05a80e9274cac89671c207a6",
+      "experiments/runs/optimization_v3_batch1/C11/C11_fit67.npz": "f9e68c5541f91570b7fd9281389ede1521f44afcf7256ea956b8ba3b1017231c",
+      "experiments/runs/optimization_v3_batch1/C16/C16_fit55.json": "e569229e0586bb792b141b64109f8753e97bb6cf8902d94d16b8a114d8d67e20",
+      "experiments/runs/optimization_v3_batch1/C16/C16_fit55.npz": "7d900c7f66ebcd6f0fcb9d059534bb15cfa47d8073f1119bf046d4a9d0fd54c9",
+      "experiments/runs/optimization_v3_batch1/C16/C16_fit67.json": "034df0ee0fea7302906638e34fb991fae2a09f1c0f5fba29ed8d469a58c8bf6f",
+      "experiments/runs/optimization_v3_batch1/C16/C16_fit67.npz": "7aa025dc1c49d8a76c63d5e8efe27dcbafb600bf0f64a8ed3cbec8db82d31ab3",
+      "experiments/runs/optimization_v3_batch1/C17/C17_fit55.json": "e9caff7c9aca95e85825a55d96be12606b7fc5c0f5970182cb6ce40dcf432986",
+      "experiments/runs/optimization_v3_batch1/C17/C17_fit55.npz": "a3fa3f9cec5a07ca980f78c99ed6b5e06a89466ed05167b68481a6e5ece1d6e7",
+      "experiments/runs/optimization_v3_batch1/C17/C17_fit67.json": "3e87e4bd408e8d053fa279c2697953290d84854c7d3e974439ce97180323590e",
+      "experiments/runs/optimization_v3_batch1/C17/C17_fit67.npz": "02fa97729f406eb4314ff8f8e73ec218a27ce2a9a64d2278facce4ecd57682a9",
+      "experiments/runs/optimization_v3_batch1/R06/R06_fit55.json": "68e60624d79957075c755ac1c35bd40733d8b983cd2ec931b8186243de0100b0",
+      "experiments/runs/optimization_v3_batch1/R06/R06_fit55.npz": "ed52cf9c8958b693e49e4c2999015babe35aa8f350fea28eb313e492f19e5dd6",
+      "experiments/runs/optimization_v3_batch1/R06/R06_fit67.json": "faa11f25bfd37fded8db5f84244ce306d6f2027dc153fb143560304fcf91da1e",
+      "experiments/runs/optimization_v3_batch1/R06/R06_fit67.npz": "4bda0ac6838388ea46ca768e0998f7b0f9a9a1b6defb2b1e5399f6ff83154804",
+      "experiments/runs/optimization_v3_batch1/R11/revision_03/R11_fit55.json": "f4af19f865df8d816d9610c7415607cdbd948962b49de81326da7b288aa5283b",
+      "experiments/runs/optimization_v3_batch1/R11/revision_03/R11_fit55.npz": "8b33163e9c04d8c11d0c8294e3e6c4887815a633bac156dbf7f276279af98c6b",
+      "experiments/runs/optimization_v3_batch1/R11/revision_03/R11_fit67.json": "6a9cca26fdb6c336e579db6836a8180d1d0906d00c909133a3b88935e6b2229e",
+      "experiments/runs/optimization_v3_batch1/R11/revision_03/R11_fit67.npz": "7f20d008246de40f79bfbd8fdc20b00caade852822592358c42d3bd50acfbb44",
+      "experiments/runs/optimization_v3_batch1/R21/R21_fit55.json": "0bcd02dbedccc99f79fc5b104c36b4e56e0a2e136a5a6ba33e29dff2547f3bd2",
+      "experiments/runs/optimization_v3_batch1/R21/R21_fit55.npz": "830740f5806b0db7cea7071a0f0fbc35af28258369e8860147934701fd8ef074",
+      "experiments/runs/optimization_v3_batch1/R21/R21_fit67.json": "c588e7b3d5e0c7cf52f4662c018822e5801cc3cac457c96a56024cc53e9383e3",
+      "experiments/runs/optimization_v3_batch1/R21/R21_fit67.npz": "6a4f2b1b7993747d7d7f9ef5c31c8f89ec9a9818bdfbceffc4ca9930e48cb3db",
+      "experiments/runs/optimization_v3_batch1/R22/R22_fit55.json": "ad60bac203748ea3d50c4b6f6b33b77e94de0a0507e1e293cd0ca4a364e49716",
+      "experiments/runs/optimization_v3_batch1/R22/R22_fit55.npz": "7978b1326d251586d226daeafaa6412626028964bdeedc4a9688e61f1db930d7",
+      "experiments/runs/optimization_v3_batch1/R22/R22_fit67.json": "32ad552d372fe6f8024b65fadfd66354bf188565c64c8e4126923e1ce14537dd",
+      "experiments/runs/optimization_v3_batch1/R22/R22_fit67.npz": "cf8e02933e4fc9138b378fa1352ee64625484c8795cbdecc34b9d9604bd1d722",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1/C11/C11_fit59.json": "dcff8b8d335ac75b73e124494bb899de40d681f82114ccb56a2ed11cddf8779f",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1/C11/C11_fit59.npz": "218eff792a9109cc0d68c9b86cae65fb74d473874a87268db11a8a7105626ef3",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1/C11/C11_fit63.json": "e39044f0c1bb97d6c5cfe710d3491476ee35b0579bb9ecff6c847f4819999bb5",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1/C11/C11_fit63.npz": "ffc394db754d1935f295dfae7351a101af6808175e1d6f2a624554b19f378095",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1/C11/C11_fit71.json": "f5b46a6eb5e5e8ee4392ba8847d66f042f13c74a722b71fc8e7b606b81be961e",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1/C11/C11_fit71.npz": "277fb8b93c9d4ad4244f1d5f874d416e472c022791ec193ca01246b4e367e04a",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1/C11/C11_fit75.json": "900ebbbd4c51fd65fecf71792cb23aa9d95fe53a83c73e71e564b0219433accc",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1/C11/C11_fit75.npz": "6acabdf6b08fb1c0ad85ea2887712a2329b40c1e3ca2a62bd8d0b65f16a9cd5c",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1/C17/C17_fit59.json": "5fc8e671ade0051786917ec9d5b0ca696745a57cceaf05dda937bbf7b90955f5",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1/C17/C17_fit59.npz": "8353559d6bf29ef8e5b65dc595aed57230ec38c7a96cdf845951381eb979f2a9",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1/C17/C17_fit63.json": "b8e8475a2d7d652cf3d295ac5e36292d3f692cd7188f7cbc82e06b38274e46f6",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1/C17/C17_fit63.npz": "a573d4d4a7b0216330f2175942571b364eca22c9d2e2e3a1b4e4c479ad61e5ff",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1/C17/C17_fit71.json": "c16fee72be55027dee01956f84420b578beb780356c6e75f0db1f21fea302fb2",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1/C17/C17_fit71.npz": "11e48226d7a010c4e5b2e78fad4c5cdaa62a0cd21b2b351f6c311ed0f2501d3e",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1/C17/C17_fit75.json": "c79817dc434172ca71acf5a58c89adfda23ff724f49fe97907796b9a206abbb8",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1/C17/C17_fit75.npz": "43dbe5974c2589ce2d4e04efa52a5894c0f155f98a9af4d78b665e116846f359",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit59.json": "840addcfe5fb088d0df0e348b48ec11a86ccdff9392da8e7529c9e6f9e433ab7",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit59.npz": "6d55cd7fa59662d54816ed4be16470a437af615b5e6544ec0ab15ce10dbcf849",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit63.json": "0eecbe691404e56d38acce03630ac1339f38c50733ad60128624394894b4dea1",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit63.npz": "f6480ec474dbd9229b401eade141ff51a4bf911f68b10df14336b0a9b997c0c9",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit71.json": "f506ed8f0e97517d6af4d591d89e5cf4cea96640a47bb4d73235573f4c0b0aa8",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit71.npz": "47c97efd70dba87b8fd4187e31e85122d325528688553f7c9e8e6a81dcf58894",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit75.json": "61f3ab25d1cbc954cb74f47bdf823cc72113b1a2e19394c61802da1bdba7ca45",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit75.npz": "61ef463a5bf5ee06f3c68162b8a7f874664b2736161979342731de98b5e09abb",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R21/R21_fit59.json": "9d2c0d569e680375fa8eac2cd82ad54e8008c1fd70d4c8a0e9371867596a0b94",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R21/R21_fit59.npz": "fbb8b133eba9ce6e3bc4db758afb026f05f91aaf49827f125c84bfcbf18a7fed",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R21/R21_fit63.json": "0bcb1263dde21f9444be04c39771f9ec3bce6a69387e58f989f7230bd26d588e",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R21/R21_fit63.npz": "315b1bb34294e05c2907f53d8f8603df75269b3f00c31cbd4ea83a78a60c0433",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R21/R21_fit71.json": "37b4bb3a1deebc502ae7ccf84987238d485785748dac2c763ba147725db4d1ea",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R21/R21_fit71.npz": "1d12d4333cfe766f9dd1ac74f8c14f65bc07461532caab6f51dec7b9bd0e1a87",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R21/R21_fit75.json": "a736cc442e52a32c63804f11b561eaf56bff38fca42d1e01a601a53c926abfb6",
+      "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R21/R21_fit75.npz": "c7aab67b83f3e752d2dcc757c493daac7967c6215b39e2680a7f53db762198cc",
+      "experiments/runs/optimization_v3_final_continuation/C16/C16_fit59.json": "28f602286af2e71542a17d8efb4c91c9914297bd8f8746e8f2dacdbf67334d42",
+      "experiments/runs/optimization_v3_final_continuation/C16/C16_fit59.npz": "bff872a0c5de661a7e2997feb3d1953bbc2caaf1a6a7eedf87ea99f75e15cf26",
+      "experiments/runs/optimization_v3_final_continuation/C16/C16_fit63.json": "ff84c73861bd8fa107605292b9f69446adb200aea3db009f4b5e0cf088f3eabc",
+      "experiments/runs/optimization_v3_final_continuation/C16/C16_fit63.npz": "9194845881e823a010505f253b7e08476c6efeef5a209b9778c058186a700aa0",
+      "experiments/runs/optimization_v3_final_continuation/C16/C16_fit71.json": "501784414c91558b15ff48a94dbd9e5a02eb719b0cf1c27ebc4ff21533a7c158",
+      "experiments/runs/optimization_v3_final_continuation/C16/C16_fit71.npz": "94e69d5bd83b5edb1ae0337cfe78e8b59a61f2733bcbb580f7c810104f50aa47",
+      "experiments/runs/optimization_v3_final_continuation/C16/C16_fit75.json": "7a6f81eeb3d5d87ea53dfd6226a005eebc16415ea7346d695c96b9d061b592ce",
+      "experiments/runs/optimization_v3_final_continuation/C16/C16_fit75.npz": "5e5f25c35cd15b9332c950b78fe8b650cc6a8138a18d6546fa1728ac35c88708",
+      "experiments/runs/optimization_v3_final_continuation/R22/R22_fit59.json": "2b3b9616121a105adb170dc01b746b435e5e051732bb85d74e48c823f485cc9d",
+      "experiments/runs/optimization_v3_final_continuation/R22/R22_fit59.npz": "3682bdb816f510adf3cb53bef81ba9545111e872ca277ced1f6da9a52826f600",
+      "experiments/runs/optimization_v3_final_continuation/R22/R22_fit63.json": "5907965f2bd45a02fadcd59c6ab7e9a9c5216e41f73bf706fd097b5e4ad7489c",
+      "experiments/runs/optimization_v3_final_continuation/R22/R22_fit63.npz": "fe3374619abcb514fa6d99b5187603897d33a70549bbe2c03e882456c8506b83",
+      "experiments/runs/optimization_v3_final_continuation/R22/R22_fit71.json": "0846e8e6d57f19f14867532ac125b9aab6c89dc8541586d0627f9db603ccb4c1",
+      "experiments/runs/optimization_v3_final_continuation/R22/R22_fit71.npz": "5b5e6684a5afaaabf70afe6b253eb4f732bcdbcc7bdeb311a9f31561aa87d69b",
+      "experiments/runs/optimization_v3_final_continuation/R22/R22_fit75.json": "3925dd13f6b88f38dcb695b7332e2db67e876b6d745df6bbe913d502e28f7c8f",
+      "experiments/runs/optimization_v3_final_continuation/R22/R22_fit75.npz": "91981eb993becda4d6f2cad33fabdb8348fdbc8891c04af90e13e6b58e492a36",
+      "reports/optimization_v3/batch1/R11/revision_03/verification.json": "b98c92c5a2a63a82545443e6abb834829d9f6329e04833a07d1449b3c47791d3",
+      "reports/optimization_v3/expanded_benchmark_v1_final_evaluation/C11/verification.json": "d21904b763b422c84de9233ee8b50446179cc09de47082d8672b06a2cb32db52",
+      "reports/optimization_v3/expanded_benchmark_v1_final_evaluation/C17/verification.json": "e21659272a9340d632b850fa0a42dcaa1bcb8dc1f8dc8b5ec00b1d6c0a867529",
+      "reports/optimization_v3/expanded_benchmark_v1_final_evaluation/CAMPAIGN_REPORT.json": "1aedca15ef6e31f531243eed6fb77949a157dbb5ef23cf3aa814796f2728f073",
+      "reports/optimization_v3/expanded_benchmark_v1_final_evaluation/CAMPAIGN_SUMMARY.md": "d727e6642b51c6573a729093e56c50171a864f927f688c0ff95ce83a8021150b",
+      "reports/optimization_v3/expanded_benchmark_v1_final_evaluation/R06/verification.json": "ba65995d8c42ef2cf72a2c2b7c5c1a2a775eb59987c2a3cb4c37cc5bf25a2831",
+      "reports/optimization_v3/expanded_benchmark_v1_final_evaluation/R11_BLOCKER.json": "b42240d62e267433d5c7eec595ef50b490d73985fc9f8d807aae8da2a74ef923",
+      "reports/optimization_v3/expanded_benchmark_v1_final_evaluation/R21/verification.json": "c62ed1bece18861ec6c7cba89db8a42fc0c4b02bb8caf03ce0634d9e8bce4f6c",
+      "reports/optimization_v3/final_continuation/C16/verification.json": "c78f312333854e27024d76750e27f701892ee2bc26f839957dc156aed0c2f3c7",
+      "reports/optimization_v3/final_continuation/R22/verification.json": "5002f78f78b68576d90e533e792f254023d8c58c2e555634f4eed8e39204a9c4",
+      "reports/optimization_v3/research_next_v1/queue_readiness.json": "44966873a5d7938eee3d8642ec583561d22143f836a9cc125a02150c0fc819ce",
+      "reports/submissions/optimization_v3_expanded_v1/EXECUTION_FREEZE.json": "b8d1289a4cc479d0b71f86834c320394656f9037035eb121c30ab9d902693b8b",
+      "scripts/optimization_v3_batch1_c11.py": "0f188f5e5ade09d1454f1d50c5421ef7b0faefadd5dd1d0f6642a4478e0137d5",
+      "scripts/optimization_v3_batch1_c16.py": "82d7737a05c52addd2a15a6f385a406d614e8ff792e826bcacb7a7d8f79b8ee0",
+      "scripts/optimization_v3_batch1_c17.py": "c5964d5c4940abbcfb9d9dfd6c332a66bb09c2f06ad43d1647666f6a7fe2aa9a",
+      "scripts/optimization_v3_batch1_r06.py": "3a93862d1253256a48bd982a6b8f6ba8b1e8f0fc67056c014fef2c51f16482b4",
+      "scripts/optimization_v3_batch1_r21.py": "df8c2999fc828e8de9b59b8b476040f249928b1cc9c3546d2dfcf3526f54276c",
+      "scripts/optimization_v3_batch1_r22.py": "c6c2339bcf30d4ab979ebbe4f611936502baa0424f6494a1ee695dfec5656e91",
+      "scripts/optimization_v3_expanded_benchmark.py": "0fa312a0a8c2311ffd7e15efc9ede623e50103b5dac7f0321e49149124a2c6cc",
+      "scripts/optimization_v3_final_continuation_cls.py": "ba262456dd8d4d6e93923d48dd71a3f3b785419e13ef5ef279e1a695f78242b9",
+      "scripts/optimization_v3_final_continuation_r22.py": "c2df8346597bf8ae04bc8c859be0f3adf6abb9e5755ea57fde76415c63af2faa",
+      "scripts/optimization_v3_research_next_n00.py": "8f781e86057ea2c39953d1010cc94e9c6373cd47da4edea92dcb5863bcc4f5ee",
+      "scripts/optimization_v3_research_next_preflight.py": "5423a0023862d04201bfc37c8973b15fddcafa40e8cb8a235329648a917dba6b",
+      "src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+      "src/models/optimization_v3_batch1_c11.py": "bce82542d42ffad66d786723f411f59f6eb5f034f60199a9262aafc55fb13601",
+      "src/models/optimization_v3_batch1_c16.py": "6eeac099900911e2a876273d9a72c9475a329d89dac889eebe25a431190ab8d1",
+      "src/models/optimization_v3_batch1_c17.py": "21efb63cc584b2ee4fa6687bdd87f21709a993a218e1ed6be00fa105c3ba98e5",
+      "src/models/optimization_v3_batch1_r06.py": "37869d6125d48fc4afb2a3c439cbb19d5586f35f1cd3a501b762e42530fcd970",
+      "src/models/optimization_v3_batch1_r21.py": "8fdb06079b6f807be5cc30366e13f51b5d6a4b92219642a3404fd93bf2f78d43",
+      "src/models/optimization_v3_batch1_r22.py": "35bc5ede08696d6d82b0e0674aececdda0f5a7789fa35ebdd97cdaaf39171e22",
+      "src/models/optimization_v3_expanded_continuation.py": "fdf9683052ad3f6ab9ba5dff574e0511ffc3f7c642a9c5edeab6a3220207b99b",
+      "src/models/optimization_v3_final_continuation_c16.py": "f1be82998667ae76cea99beb53b4e1fc81b28cbe04d6a04b4962a6541f316e52",
+      "src/models/optimization_v3_final_continuation_r22.py": "ff9d6627e9d680e13cc582f322cbe5e214d8086753edf6e241ed648b417fb15c",
+      "src/models/optimization_v3_sparse_classification.py": "fb5b013fa59d0b748a3386dae90cb14789a0b4cbd9a5c7a115d5ddc3c443d5a3",
+      "src/models/research_next_contract.py": "486a3f144afbfc783a90ce3948f11cee69d702a05dd3ac113e93b3bda53d7185",
+      "src/models/round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+      "src/utils/paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555"
+    },
+    "source_commit": "3c5e688bcb0dc652e141958ed3000827ddfba923"
+  },
+  "schema_version": 1
+}

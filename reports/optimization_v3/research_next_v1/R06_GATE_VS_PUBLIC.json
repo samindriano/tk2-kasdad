@@ -1,0 +1,139 @@
+{
+  "source": "independent recomputation of verified saved Train predictions; no fit or Test data",
+  "models": {
+    "R22": {
+      "primary": {
+        "n": 38588,
+        "candidate_mae": 11.519690961763981,
+        "legacy_mae": 11.559390078665364,
+        "gain": 0.03969911690138245
+      },
+      "H12": {
+        "n": 38588,
+        "candidate_mae": 13.922659459355653,
+        "legacy_mae": 14.04753258299653,
+        "gain": 0.12487312364087934
+      },
+      "windows": {
+        "55": {
+          "n": 4114,
+          "candidate_mae": 15.743655623340285,
+          "legacy_mae": 15.882111974427762,
+          "gain": 0.138456351087477
+        },
+        "59": {
+          "n": 6493,
+          "candidate_mae": 11.833929330749198,
+          "legacy_mae": 11.908486043245157,
+          "gain": 0.07455671249595852
+        },
+        "63": {
+          "n": 7078,
+          "candidate_mae": 12.084101470428356,
+          "legacy_mae": 12.058230267064767,
+          "gain": -0.0258712033635895
+        },
+        "67": {
+          "n": 4950,
+          "candidate_mae": 11.390307110400984,
+          "legacy_mae": 11.455005081083685,
+          "gain": 0.06469797068270111
+        },
+        "71": {
+          "n": 7462,
+          "candidate_mae": 10.333223142594791,
+          "legacy_mae": 10.347945184390412,
+          "gain": 0.0147220417956202
+        },
+        "75": {
+          "n": 8491,
+          "candidate_mae": 9.88045353425426,
+          "legacy_mae": 9.90768341377724,
+          "gain": 0.027229879522980838
+        }
+      },
+      "supported_primary_window_failures": []
+    },
+    "R06": {
+      "primary": {
+        "n": 38588,
+        "candidate_mae": 11.50241307105386,
+        "legacy_mae": 11.559390078665364,
+        "gain": 0.05697700761150183
+      },
+      "H12": {
+        "n": 38588,
+        "candidate_mae": 13.944272932590284,
+        "legacy_mae": 14.04753258299653,
+        "gain": 0.10325965040624603
+      },
+      "windows": {
+        "55": {
+          "n": 4114,
+          "candidate_mae": 15.816833317596279,
+          "legacy_mae": 15.882111974427762,
+          "gain": 0.0652786568314827
+        },
+        "59": {
+          "n": 6493,
+          "candidate_mae": 11.857169551050681,
+          "legacy_mae": 11.908486043245157,
+          "gain": 0.051316492194475316
+        },
+        "63": {
+          "n": 7078,
+          "candidate_mae": 11.92688920119758,
+          "legacy_mae": 12.058230267064767,
+          "gain": 0.1313410658671863
+        },
+        "67": {
+          "n": 4950,
+          "candidate_mae": 11.396231716836489,
+          "legacy_mae": 11.455005081083685,
+          "gain": 0.05877336424719637
+        },
+        "71": {
+          "n": 7462,
+          "candidate_mae": 10.281664302969933,
+          "legacy_mae": 10.347945184390412,
+          "gain": 0.06628088142047872
+        },
+        "75": {
+          "n": 8491,
+          "candidate_mae": 9.921612722775233,
+          "legacy_mae": 9.90768341377724,
+          "gain": -0.013929308997992607
+        }
+      },
+      "supported_primary_window_failures": [
+        {
+          "origin": 55,
+          "group": "missing",
+          "n": 392,
+          "harm": 0.3955562085105022
+        }
+      ]
+    }
+  },
+  "R06_missing_W1_share_primary": 0.010158598528039806,
+  "R06_missing_W1_contribution_to_primary_MAE_harm": 0.004018296717531794,
+  "public_observed": {
+    "C11": 0.82739,
+    "C17": 0.82825,
+    "classification_control": 0.82908,
+    "R06_ORIGINAL": 11.1662,
+    "R21": 11.29314,
+    "R11": 11.39469,
+    "R22_ORIGINAL": 11.30535,
+    "regression_legacy": 11.3597
+  },
+  "public_source": "authenticated Kaggle pages read using Chrome; all five recent submissions COMPLETE",
+  "public_label_variance_unknown": true,
+  "private_unknown": true,
+  "recomputation_cache_hash_manifest": "queue_readiness.json#input_hashes",
+  "verification_sources": [
+    "reports/optimization_v3/expanded_benchmark_v1_final_evaluation/R06/verification.json",
+    "reports/optimization_v3/final_continuation/R22/verification.json"
+  ],
+  "public_observed_date": "2026-11-01 Asia/Jakarta"
+}
