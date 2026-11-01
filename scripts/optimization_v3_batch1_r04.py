@@ -52,11 +52,13 @@ from src.utils.paths import task_files
 
 
 CARD_ID = "R04"
+AMENDMENT_ID = "amendment_01_control_rows"
 QUEUE_PATH = ROOT / "experiments/optimization_v3/research_backlog/queue.json"
 CARD_PATH = ROOT / "reports/optimization_v3/research_backlog/cards/R04.md"
 EXPERIMENT_DIR = ROOT / "experiments/optimization_v3/batch1/R04"
-RECIPE_PATH = EXPERIMENT_DIR / "recipe.json"
-FREEZE_PATH = EXPERIMENT_DIR / "freeze.json"
+AMENDMENT_DIR = EXPERIMENT_DIR / AMENDMENT_ID
+RECIPE_PATH = AMENDMENT_DIR / "recipe.json"
+FREEZE_PATH = AMENDMENT_DIR / "freeze.json"
 RUN_DIR = ROOT / "experiments/runs/optimization_v3_batch1/R04"
 REPORT_DIR = ROOT / "reports/optimization_v3/batch1/R04"
 ENGINE_REPORT_PATH = RUN_DIR / "pilot_engine_report.json"
@@ -328,6 +330,7 @@ def _recipe_payload(card: Mapping[str, Any], views: Mapping[str, Any],
     gates = dict(queue["evaluation"]["regression_gate"])
     return {
         "card_id": CARD_ID,
+        "protocol_revision": AMENDMENT_ID,
         "queue_recipe": {key: card[key] for key in (
             "id", "task", "name", "family", "priority", "change", "policy",
             "pilot_predictor_fits", "evaluation", "condition",
@@ -528,9 +531,11 @@ def _control_loader(controls: Mapping[int, Mapping[str, np.ndarray]]):
         record = controls[int(cutoff)]
         if not np.array_equal(record["rows"], np.asarray(score_rows, dtype=np.int64)):
             raise BatchIntegrityError(f"R04 baseline control rows differ at cutoff {cutoff}")
-        return {key: value for key, value in record.items() if key not in {
+        output = {key: value for key, value in record.items() if key not in {
             "rows", "baseline_sparse_rank50", "ridge25_reconstruction_max_abs_error"
         }}
+        output["control_rows"] = np.asarray(record["rows"], dtype=np.int64)
+        return output
     return load
 
 
@@ -757,7 +762,7 @@ def run_card(card: Mapping[str, Any], queue: Mapping[str, Any], *,
     if preflight_only:
         return context["public"]
     if freeze_only:
-        EXPERIMENT_DIR.mkdir(parents=True, exist_ok=True)
+        RECIPE_PATH.parent.mkdir(parents=True, exist_ok=True)
         _write_or_match(RECIPE_PATH, context["recipe"])
         from src.models.optimization_v3_batch1 import ensure_frozen
         ensure_frozen(FREEZE_PATH, context["identity"])

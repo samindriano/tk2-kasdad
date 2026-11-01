@@ -12,6 +12,10 @@ Status snapshot: 2026-11-01. This document turns the existing canonical V3 queue
 
 The shared handbook is `LUNA_HANDOFF.md`. Its B0 harness, report contract, freeze procedure, resume rules, and campaign limits apply. In particular, require end-to-end synthetic aggregation before a new card's official fit, reserve declared fits first, use at most one two-thread model-training job at a time, and stay under the existing budget of 180 candidate predictor fits and 24 control/verification refits. Check actual remaining budget from the canonical ledger; a planned fit count is not proof of remaining budget.
 
+## R04 checkpoint
+
+The first R04 pilot attempt reserved the declared two fits and failed before `LightGBM.fit` at cutoff 55 because the control bridge omitted `control_rows`. It produced no model, bundle, or candidate score. Preserve the `FIT_STARTED`/`FIT_FAILED` ledger events; do not delete them or create a second reservation. The active frozen amendment is `experiments/optimization_v3/batch1/R04/amendment_01_control_rows/` (freeze identity `24ad53267566a063497d1b3b77784150d3ec6e6b346fd803c5894c066bf15b46`); it forwards the exact control row positions and is covered by unit and synthetic flow tests. Before retrying, verify the current report/ledger and that no other chat is training, then use the checked-in `--run-frozen-pilot` command. The pre-amendment parent `recipe.json` and `freeze.json` remain historical and must not be used for the pilot.
+
 ## Near-term candidates in canonical order
 
 Every card below still needs an actual file/status check, its own preflight, implementation/tests if absent, a frozen recipe, and independent verification. The fit counts are the card's declared pilot predictor fits only; retries, control refits, and later continuation are separate budget items.

@@ -70,17 +70,23 @@ def test_r04_actual_adapter_runs_through_synthetic_verification_and_gate(tmp_pat
     event_path = tmp_path / "events.jsonl"
     engine_report_path = tmp_path / "pilot_engine_report.json"
 
-    def controls(cutoff: int, score_rows: np.ndarray):
+    frozen_controls = {}
+    for cutoff in (55, 67):
+        score_rows = np.flatnonzero(
+            (frame["cycle_code"].to_numpy(dtype=np.int64) > cutoff)
+            & (frame["cycle_code"].to_numpy(dtype=np.int64) <= cutoff + 12)
+        )
         cycles = frame.iloc[score_rows]["cycle_code"].to_numpy(dtype=np.int64)
         ridge = np.full(len(score_rows), 50.0, dtype=np.float64)
         old_sparse_raw = np.full(len(score_rows), 25.0, dtype=np.float64)
-        return {
+        frozen_controls[cutoff] = {
+            "rows": score_rows.astype(np.int64, copy=False),
             "baseline_prediction": compose_r02_prediction(ridge, old_sparse_raw, cycles),
             "ridge25_prediction": ridge,
             "baseline_sparse_raw": old_sparse_raw,
             "cycle_code": cycles,
-            "control_rows": score_rows.astype(np.int64, copy=False),
         }
+    controls = r04_runner._control_loader(frozen_controls)
 
     received_fit_ids = []
 

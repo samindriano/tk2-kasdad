@@ -70,6 +70,25 @@ def test_r04_recipe_omits_volatile_memory_snapshot_values():
     assert first_summary["55"] == {"fit_rows": 12_020, "estimated_peak_gib": 1.55}
 
 
+def test_r04_control_loader_passes_row_identity_to_adapter():
+    rows = np.array([10, 11, 12], dtype=np.int64)
+    record = {
+        "rows": rows,
+        "baseline_prediction": np.array([20.0, 30.0, 40.0]),
+        "ridge25_prediction": np.array([21.0, 31.0, 41.0]),
+        "baseline_sparse_raw": np.array([22.0, 32.0, 42.0]),
+        "baseline_sparse_rank50": np.array([23.0, 33.0, 43.0]),
+        "ridge25_reconstruction_max_abs_error": 0.0,
+        "cycle_code": np.array([56, 56, 56]),
+    }
+    loaded = r04_runner._control_loader({55: record})(55, rows)
+
+    np.testing.assert_array_equal(loaded["control_rows"], rows)
+    np.testing.assert_array_equal(loaded["baseline_prediction"], record["baseline_prediction"])
+    assert "rows" not in loaded
+    assert "baseline_sparse_rank50" not in loaded
+
+
 def _synthetic_features(cycles: np.ndarray, start: int = 0) -> pd.DataFrame:
     row = np.arange(start, start + len(cycles), dtype=np.int64)
     colors = ("red", "blue", "green", "yellow")
