@@ -1,0 +1,160 @@
+{
+  "c16_freeze_signature": "c7a61632e4f5b8667293cc77e6d08addfe10c996fc5cfd146abb1b851405dbb6",
+  "created_at_utc": "2026-11-01T10:15:40.229404+00:00",
+  "current_available_ram_bytes": 8168165376,
+  "global_budget_before_reservation": {
+    "joint_reservation": null,
+    "joint_reservation_present": false,
+    "ledger_sha256": "7a7c5f4de904dd6258067b6ca9eda2f83fb6f33889bbdad57f530721013e2cf1",
+    "remaining_before_joint_reservation": 86,
+    "reservation_count": 40,
+    "reserved_total": 94
+  },
+  "global_training_lock": {
+    "available": true,
+    "file_deleted": false,
+    "lock_path": "experiments\\runs\\optimization_v3_batch1\\.training.lock",
+    "test": "OS-level nonblocking lock acquisition and release"
+  },
+  "kaggle_access": false,
+  "live_resource_checks": {
+    "C16": {
+      "59": {
+        "allowed_bytes": 6020698112,
+        "available_physical_bytes_before_fit": 8168181760,
+        "card_id": "C16",
+        "concurrent_training_jobs": 1,
+        "cutoff": 59,
+        "estimate_is_observed": false,
+        "estimated_peak_bytes": 1672377384,
+        "job_cap_bytes": 6442450944,
+        "required_free_reserve_bytes": 2147483648,
+        "status": "PASS",
+        "threads": 2
+      },
+      "63": {
+        "allowed_bytes": 6020698112,
+        "available_physical_bytes_before_fit": 8168181760,
+        "card_id": "C16",
+        "concurrent_training_jobs": 1,
+        "cutoff": 63,
+        "estimate_is_observed": false,
+        "estimated_peak_bytes": 1694365152,
+        "job_cap_bytes": 6442450944,
+        "required_free_reserve_bytes": 2147483648,
+        "status": "PASS",
+        "threads": 2
+      },
+      "71": {
+        "allowed_bytes": 6020698112,
+        "available_physical_bytes_before_fit": 8168181760,
+        "card_id": "C16",
+        "concurrent_training_jobs": 1,
+        "cutoff": 71,
+        "estimate_is_observed": false,
+        "estimated_peak_bytes": 1740663168,
+        "job_cap_bytes": 6442450944,
+        "required_free_reserve_bytes": 2147483648,
+        "status": "PASS",
+        "threads": 2
+      },
+      "75": {
+        "allowed_bytes": 6020714496,
+        "available_physical_bytes_before_fit": 8168198144,
+        "card_id": "C16",
+        "concurrent_training_jobs": 1,
+        "cutoff": 75,
+        "estimate_is_observed": false,
+        "estimated_peak_bytes": 1767748224,
+        "job_cap_bytes": 6442450944,
+        "required_free_reserve_bytes": 2147483648,
+        "status": "PASS",
+        "threads": 2
+      }
+    },
+    "R22": {
+      "59": {
+        "allowed_bytes": 6020714496,
+        "available_physical_bytes_before_fit": 8168198144,
+        "card_id": "R22",
+        "concurrent_training_jobs": 1,
+        "cutoff": 59,
+        "estimate_is_observed": false,
+        "estimated_peak_bytes": 2710229888,
+        "job_cap_bytes": 6442450944,
+        "required_free_reserve_bytes": 2147483648,
+        "status": "PASS",
+        "threads": 2
+      },
+      "63": {
+        "allowed_bytes": 6020714496,
+        "available_physical_bytes_before_fit": 8168198144,
+        "card_id": "R22",
+        "concurrent_training_jobs": 1,
+        "cutoff": 63,
+        "estimate_is_observed": false,
+        "estimated_peak_bytes": 2928394688,
+        "job_cap_bytes": 6442450944,
+        "required_free_reserve_bytes": 2147483648,
+        "status": "PASS",
+        "threads": 2
+      },
+      "71": {
+        "allowed_bytes": 6020714496,
+        "available_physical_bytes_before_fit": 8168198144,
+        "card_id": "R22",
+        "concurrent_training_jobs": 1,
+        "cutoff": 71,
+        "estimate_is_observed": false,
+        "estimated_peak_bytes": 3332535488,
+        "job_cap_bytes": 6442450944,
+        "required_free_reserve_bytes": 2147483648,
+        "status": "PASS",
+        "threads": 2
+      },
+      "75": {
+        "allowed_bytes": 6020714496,
+        "available_physical_bytes_before_fit": 8168198144,
+        "card_id": "R22",
+        "concurrent_training_jobs": 1,
+        "cutoff": 75,
+        "estimate_is_observed": false,
+        "estimated_peak_bytes": 3583258688,
+        "job_cap_bytes": 6442450944,
+        "required_free_reserve_bytes": 2147483648,
+        "status": "PASS",
+        "threads": 2
+      }
+    }
+  },
+  "official_fits_started": false,
+  "proposed_joint_reservation": {
+    "budget_key": "FINAL_CONTINUATION:C16_R22",
+    "card_id": "C16+R22",
+    "predictor_fits": 8,
+    "reserved": false
+  },
+  "r22_freeze_signature": "2ab551f7d29c920cda46c61b4a5793a6a0256bf582ee3f4619eff1640bd3a953",
+  "scope_amendment_signature": "b884d0f6dabd898108794da357a674699cff93bf69ecc6256331b2d81212c298",
+  "status": "READY_TO_RESERVE_AND_FIT",
+  "test_access": false,
+  "tests": {
+    "command": [
+      "C:\\Users\\Sam\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "-m",
+      "pytest",
+      "-q",
+      "tests\\test_optimization_v3_final_continuation_cls.py",
+      "tests\\test_optimization_v3_final_continuation_r22.py",
+      "tests\\test_optimization_v3_final_continuation_coordinator.py"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": "..............                                                           [100%]\n14 passed in 8.49s",
+    "test_sources_sha256": {
+      "tests/test_optimization_v3_final_continuation_cls.py": "9716d7b2dedcccd5da036233596e4bb22bb976c81076d9c6fb328643c63cc4ef",
+      "tests/test_optimization_v3_final_continuation_coordinator.py": "fe6d6a063530fb449d27701baf86793b9aec335cbef815a6595508143811d5dc",
+      "tests/test_optimization_v3_final_continuation_r22.py": "ecdc88cf3102b9b142280cbdd4514142a26a5a6a777493c39df8d635b4f1777c"
+    }
+  }
+}

@@ -1,0 +1,202 @@
+{
+  "card_id": "R22",
+  "decision_source": "reports/optimization_v3/final_continuation_plan/DECISION.md",
+  "experiment_id": "optimization_v3_final_continuation_R22",
+  "kaggle_access": false,
+  "late_rows_W5_W6": 15953,
+  "memory_policy": {
+    "free_memory_reserve_bytes": 2147483648,
+    "job_cap_bytes": 6442450944,
+    "resource_preflight": {
+      "59": {
+        "concurrent_training_jobs": 1,
+        "estimated_peak_bytes": 2710229888,
+        "estimated_peak_is_observed": false,
+        "feature_width_upper_bound": 840,
+        "fit_rows": 16134,
+        "fixed_overhead_bytes": 2147483648,
+        "free_memory_reserve_bytes": 2147483648,
+        "histogram_buffer_allowance_bytes": 20643840,
+        "job_cap_bytes": 6442450944,
+        "threads": 2
+      },
+      "63": {
+        "concurrent_training_jobs": 1,
+        "estimated_peak_bytes": 2928394688,
+        "estimated_peak_is_observed": false,
+        "feature_width_upper_bound": 840,
+        "fit_rows": 22627,
+        "fixed_overhead_bytes": 2147483648,
+        "free_memory_reserve_bytes": 2147483648,
+        "histogram_buffer_allowance_bytes": 20643840,
+        "job_cap_bytes": 6442450944,
+        "threads": 2
+      },
+      "71": {
+        "concurrent_training_jobs": 1,
+        "estimated_peak_bytes": 3332535488,
+        "estimated_peak_is_observed": false,
+        "feature_width_upper_bound": 840,
+        "fit_rows": 34655,
+        "fixed_overhead_bytes": 2147483648,
+        "free_memory_reserve_bytes": 2147483648,
+        "histogram_buffer_allowance_bytes": 20643840,
+        "job_cap_bytes": 6442450944,
+        "threads": 2
+      },
+      "75": {
+        "concurrent_training_jobs": 1,
+        "estimated_peak_bytes": 3583258688,
+        "estimated_peak_is_observed": false,
+        "feature_width_upper_bound": 840,
+        "fit_rows": 42117,
+        "fixed_overhead_bytes": 2147483648,
+        "free_memory_reserve_bytes": 2147483648,
+        "histogram_buffer_allowance_bytes": 20643840,
+        "job_cap_bytes": 6442450944,
+        "threads": 2
+      }
+    },
+    "threads": 2
+  },
+  "metric": "MAE; gain=champion_MAE-candidate_MAE; positive means candidate improves",
+  "new_cutoffs": [
+    59,
+    63,
+    71,
+    75
+  ],
+  "official_test_access": false,
+  "pilot_origins_reused": [
+    55,
+    67
+  ],
+  "postprocessing_policies": {
+    "R22_ORIGINAL": "clip(.75*champion + .25*clip(.5*raw + .5*(100*average_rank(raw within complete cycle)/cycle_n),0,100),0,100), all rows",
+    "R22_PCT_PRESENT": "clip(.75*champion + .25*(100*average_rank(raw within complete cycle)/cycle_n),0,100) for stream-present; exact champion for missing; rank all rows"
+  },
+  "predictor_fits": 4,
+  "primary_rows": 38588,
+  "qualification": {
+    "H12_harm_maximum": 0.05,
+    "group_MAE_harm_maximum": 0.25,
+    "group_support_minimum": 100,
+    "late_W5_W6_gain_strictly_positive": true,
+    "nonnegative_windows_minimum": 4,
+    "pct_present_additional_late_gain_vs_original_minimum": 0.03,
+    "pct_present_additional_primary_MAE_no_worse_than_original": true,
+    "primary_gain_minimum": 0.03
+  },
+  "queue_card": {
+    "card_path": "reports/optimization_v3/research_backlog/cards/R22.md",
+    "change": "Identical R21 design/parameters with reg:pseudohubererror/huber_slope5.0. Second and last xgb_loss recipe; no slope grid.",
+    "condition": "No additional dependency",
+    "evaluation": "STANDARD",
+    "evidence": [
+      "reports/optimization_v2/regression_repr/fullsix.json"
+    ],
+    "family": "xgb_loss",
+    "id": "R22",
+    "implementation": "NOT_IMPLEMENTED",
+    "in_priority_prefix": false,
+    "name": "XGBoost pseudo-Huber",
+    "new_results": null,
+    "pilot_predictor_fits": 2,
+    "policy": "R_AUX25",
+    "preflight_checks": [],
+    "priority": "P2",
+    "queue_order": 38,
+    "rationale": "L1 dan pseudo-Huber memberi dua loss berbeda pada implementasi boosting lain, tanpa pretrained data.",
+    "status": "PLANNED_NOT_RUN",
+    "task": "regression"
+  },
+  "schema_version": 1,
+  "training_recipe": {
+    "adapter_change": "admit only cutoffs 59/63/71/75 by initializing the unchanged parent and setting the validated cutoff; fit/predict code and all estimator/transforms unchanged",
+    "continuation_adapter": "src.models.optimization_v3_final_continuation_r22.FinalContinuationR22Regressor",
+    "early_stopping": false,
+    "estimator_parameters": {
+      "colsample_bytree": 0.8,
+      "device": "cpu",
+      "huber_slope": 5.0,
+      "learning_rate": 0.05,
+      "max_depth": 4,
+      "min_child_weight": 20,
+      "n_estimators": 600,
+      "n_jobs": 2,
+      "objective": "reg:pseudohubererror",
+      "random_state": 42,
+      "reg_lambda": 5.0,
+      "subsample": 1.0,
+      "tree_method": "hist",
+      "verbosity": 0
+    },
+    "feature_names": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code",
+      "signal_stream"
+    ],
+    "inherited_model_class": "src.models.optimization_v3_batch1_r22.XGBoostPseudoHuberSVD32Regressor",
+    "missing_stream_handling": "inherited _text_values normalization and explicit missing indicator; stream-missing ranks retain full-cycle raw-score denominator for PCT_PRESENT and use exact champion output",
+    "structured_preprocessing": "inherited R22 fit-only numeric median/imputation, scaling, and categorical one-hot transforms",
+    "svd_components_requested": 32,
+    "svd_parameters": {
+      "algorithm": "randomized",
+      "n_iter": 7,
+      "random_state": 42
+    },
+    "tfidf_parameters": {
+      "dtype": "<class 'numpy.float64'>",
+      "max_features": 20000,
+      "min_df": 2,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "sublinear_tf": true
+    },
+    "validation_labels_passed_to_fit": false
+  },
+  "views": {
+    "W1": [
+      55,
+      56,
+      59
+    ],
+    "W2": [
+      59,
+      60,
+      63
+    ],
+    "W3": [
+      63,
+      64,
+      67
+    ],
+    "W4": [
+      67,
+      68,
+      71
+    ],
+    "W5": [
+      71,
+      72,
+      75
+    ],
+    "W6": [
+      75,
+      76,
+      79
+    ]
+  }
+}
