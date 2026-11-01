@@ -1,0 +1,208 @@
+{
+  "accepted_fullsix_control_metrics": {
+    "H12_macro_f1": 0.8029655654017788,
+    "primary_macro_f1": 0.8299435476765076
+  },
+  "card_id": "C14",
+  "evaluation_views": {
+    "H12": [
+      [
+        55,
+        56,
+        67
+      ],
+      [
+        67,
+        68,
+        79
+      ]
+    ],
+    "W1": [
+      [
+        55,
+        56,
+        59
+      ]
+    ],
+    "W4": [
+      [
+        67,
+        68,
+        71
+      ]
+    ],
+    "primary": [
+      [
+        55,
+        56,
+        59
+      ],
+      [
+        67,
+        68,
+        71
+      ]
+    ]
+  },
+  "feature_allowlist": [
+    "impact_load",
+    "entry_friction",
+    "cycle_code",
+    "scope_pressure",
+    "text_load",
+    "scope_trace",
+    "org_spread",
+    "module_spread",
+    "telemetry_flag",
+    "org_code",
+    "module_code",
+    "pattern_code",
+    "signal_stream"
+  ],
+  "fit_population": "all official Classification Train rows with 47 <= cycle_code <= cutoff; no row weights or downsampling",
+  "kaggle_access": false,
+  "logistic_regression": {
+    "class": "sklearn.linear_model.LogisticRegression",
+    "inherited_unchanged_from": "classification_models._LR_PARAMS for C2_B",
+    "parameters": {
+      "C": 1.0,
+      "class_weight": null,
+      "max_iter": 2000,
+      "random_state": 42,
+      "solver": "liblinear",
+      "tol": 0.0001
+    }
+  },
+  "pilot_gate": {
+    "full_H12_harm_max": 0.001,
+    "full_nonnegative_windows_min": 4,
+    "full_primary_gain_min": 0.0005,
+    "individual_pilot_view_harm_max": 0.005,
+    "pilot_H12_harm_max": 0.001,
+    "pilot_primary_gain_min": 0.0005,
+    "positive_and_negative_per_group_min": 30,
+    "positive_class_recall_harm_max": 0.02,
+    "supported_group_F1_harm_max": 0.01,
+    "supported_group_n_min": 200
+  },
+  "prediction_policy": {
+    "baseline": "fixed v3_cls_sparse25: 0.75 frozen C2_B + 0.25 original sparse expert on present; frozen CatBoost on missing",
+    "classification_threshold": 0.5,
+    "missing_stream": "frozen CatBoost missing-stream probability, unchanged",
+    "present_stream": "0.75 * new C14 hybrid LogisticRegression probability + 0.25 * frozen sparse-binary probability",
+    "present_stream_weights": {
+      "frozen_sparse_binary": 0.25,
+      "new_C14_hybrid_LR": 0.75
+    }
+  },
+  "queue_recipe": {
+    "change": "RandomTreesEmbedding64trees/depth5/min_leaf30/seed42/2threads on fit-only scaled numeric/count metadata. Append sparse leaf indicators, original word TF-IDF, categorical OHE and missing indicator; original LR parameters.",
+    "condition": "No additional dependency",
+    "evaluation": "STANDARD",
+    "family": "random_partitions",
+    "id": "C14",
+    "name": "Random structured partitions + text LR",
+    "pilot_predictor_fits": 2,
+    "policy": "C_LR_REPLACE",
+    "priority": "P2",
+    "task": "classification"
+  },
+  "random_trees_embedding": {
+    "class": "sklearn.ensemble.RandomTreesEmbedding",
+    "input": "fit-only scaled numeric/count columns from structured preprocessing; categorical ordinal codes excluded",
+    "input_feature_names": [
+      "impact_load",
+      "impact_load__parsefail",
+      "impact_load__missing",
+      "entry_friction",
+      "entry_friction__parsefail",
+      "entry_friction__missing",
+      "cycle_code",
+      "cycle_code__parsefail",
+      "cycle_code__missing",
+      "scope_pressure",
+      "scope_pressure__parsefail",
+      "scope_pressure__missing",
+      "text_load",
+      "text_load__parsefail",
+      "text_load__missing",
+      "scope_trace",
+      "scope_trace__approximate",
+      "scope_trace__suffix_present",
+      "scope_trace__parsefail",
+      "scope_trace__missing",
+      "org_spread",
+      "org_spread__approximate",
+      "org_spread__suffix_present",
+      "org_spread__parsefail",
+      "org_spread__missing",
+      "module_spread",
+      "module_spread__approximate",
+      "module_spread__suffix_present",
+      "module_spread__parsefail",
+      "module_spread__missing",
+      "telemetry_flag",
+      "telemetry_flag__unknown",
+      "telemetry_flag__missing",
+      "org_code__missing",
+      "module_code__missing",
+      "pattern_code__missing"
+    ],
+    "input_width": 36,
+    "leaf_indicators_sparse": true,
+    "parameters": {
+      "max_depth": 5,
+      "min_samples_leaf": 30,
+      "n_estimators": 64,
+      "n_jobs": 2,
+      "random_state": 42,
+      "sparse_output": true
+    }
+  },
+  "resource_policy": {
+    "concurrent_training_jobs": 1,
+    "free_memory_reserve_bytes": 2147483648,
+    "job_memory_cap_bytes": 6442450944,
+    "threads": 2
+  },
+  "row_matched_control_metrics": {
+    "H12": {
+      "macro_f1": 0.8029655654017788,
+      "rows": 38588
+    },
+    "W1": {
+      "macro_f1": 0.8031600548696844,
+      "rows": 4114
+    },
+    "W4": {
+      "macro_f1": 0.8414177014153625,
+      "rows": 4950
+    },
+    "primary": {
+      "macro_f1": 0.8239724981677496,
+      "rows": 9064
+    }
+  },
+  "scoring_population": "STANDARD cutoff-55/67 views, row-aligned by saved Train row positions and record_id",
+  "source_model": "RandomTreesEmbedding leaf indicators + fit-only word TF-IDF/categorical OHE/missing indicator + inherited C2_B LogisticRegression",
+  "structured_recipe": "RegressionTextModel._structured_fit/_structured_transform; imputation/scaling/OHE fit only on current cutoff's past rows; RandomTreesEmbedding receives scaled numeric/count columns only",
+  "subgroup_support_rule": "guard n>=200 and each class count>=30; smaller or single-class groups descriptive only",
+  "test_data_used": false,
+  "text_recipe": {
+    "missing_stream": "empty document plus explicit binary missing column",
+    "parameters": {
+      "dtype": "float64",
+      "lowercase": true,
+      "max_df": 0.995,
+      "max_features": 20000,
+      "min_df": 3,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "strip_accents": "unicode",
+      "sublinear_tf": true
+    },
+    "vectorizer": "sklearn.feature_extraction.text.TfidfVectorizer"
+  }
+}
