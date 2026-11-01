@@ -1,0 +1,60 @@
+{
+  "card_id": "R19",
+  "status": "RETIRE",
+  "profile": "LATE",
+  "decision_basis": "Canonical R19 gates evaluated on the row-matched v2_reg_sparse_lgb25 late comparator; no Test or Kaggle evidence.",
+  "thresholds": {
+    "pilot_primary_MAE_gain_min": 0.03,
+    "pilot_H12_MAE_harm_max": 0.05,
+    "individual_pilot_view_MAE_harm_max": 0.5,
+    "supported_group_n_min": 100,
+    "supported_tail_or_missing_MAE_harm_max": 0.25
+  },
+  "checks": {
+    "pilot_primary_MAE_gain_min": false,
+    "pilot_H12_MAE_harm_max": true,
+    "individual_pilot_view_MAE_harm_max": true,
+    "supported_tail_or_missing_MAE_harm_max": false,
+    "supported_group_n_min": true
+  },
+  "observed": {
+    "primary_rows": 13441,
+    "primary_baseline_mae": 10.477525111059206,
+    "primary_candidate_mae": 10.464790083187697,
+    "primary_gain": 0.01273502787150882,
+    "H12_L_rows": 20903,
+    "H12_L_baseline_mae": 11.611685946326363,
+    "H12_L_candidate_mae": 11.593790625875306,
+    "H12_L_harm": -0.017895320451057017,
+    "W4_harm": -0.017304514129849125,
+    "W6_harm": -0.010071153536474142,
+    "maximum_supported_tail_or_missing_harm": 0.4210271087817592
+  },
+  "supported_group_failures": [
+    {
+      "view": "primary",
+      "field": "tail_low_le5",
+      "n": 686,
+      "baseline_mae": 8.710092494608089,
+      "candidate_mae": 9.123099440354924,
+      "candidate_minus_baseline_mae": 0.41300694574683483
+    },
+    {
+      "view": "H12_L",
+      "field": "tail_low_le5",
+      "n": 1048,
+      "baseline_mae": 9.27513828173195,
+      "candidate_mae": 9.696165390513709,
+      "candidate_minus_baseline_mae": 0.4210271087817592
+    }
+  ],
+  "frozen_runner_gate_checks": {
+    "late_primary_gain_at_least_0_03": false,
+    "H12_L_harm_at_most_0_5": true,
+    "W4_and_W6_harm_at_most_0_5": true,
+    "supported_tail_or_missing_harm_at_most_0_25": false
+  },
+  "canonical_gate_note": "The frozen runner implemented the H12_L guard as 0.5 rather than the card's 0.05. The observed H12_L harm is -0.017895, so it passes both; the RETIRE decision is unchanged because primary gain and supported low-tail gates fail.",
+  "results_sha256": "4a6d977dbbeee97383859afe433696c109e9fc0adf74a4f57b72a7068a281c19",
+  "verification_sha256": "fefef674327a8cba839a4f542540bbce44f12d892d0ddb6d0caea8c84d75ecdf"
+}

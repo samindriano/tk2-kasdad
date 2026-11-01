@@ -1,0 +1,384 @@
+{
+  "calibration_support_and_offsets": {
+    "67": {
+      "0": {
+        "median_y_minus_prediction": 0.9309918211253727,
+        "offset": 0.46549591056268635,
+        "raw_half_median_offset": 0.46549591056268635,
+        "rows": 8991,
+        "supported": true
+      },
+      "1": {
+        "median_y_minus_prediction": 0.6433878483957116,
+        "offset": 0.3216939241978558,
+        "raw_half_median_offset": 0.3216939241978558,
+        "rows": 4580,
+        "supported": true
+      },
+      "unknown": {
+        "median_y_minus_prediction": null,
+        "offset": 0.0,
+        "raw_half_median_offset": 0.0,
+        "rows": 0,
+        "supported": false
+      }
+    },
+    "75": {
+      "0": {
+        "median_y_minus_prediction": 0.9891732393503752,
+        "offset": 0.4945866196751876,
+        "raw_half_median_offset": 0.4945866196751876,
+        "rows": 8606,
+        "supported": true
+      },
+      "1": {
+        "median_y_minus_prediction": 0.9901675857370478,
+        "offset": 0.4950837928685239,
+        "raw_half_median_offset": 0.4950837928685239,
+        "rows": 3806,
+        "supported": true
+      },
+      "unknown": {
+        "median_y_minus_prediction": null,
+        "offset": 0.0,
+        "raw_half_median_offset": 0.0,
+        "rows": 0,
+        "supported": false
+      }
+    }
+  },
+  "calibration_windows": {
+    "67": [
+      [
+        59,
+        60,
+        63
+      ],
+      [
+        63,
+        64,
+        67
+      ]
+    ],
+    "75": [
+      [
+        67,
+        68,
+        71
+      ],
+      [
+        71,
+        72,
+        75
+      ]
+    ]
+  },
+  "card_id": "R19",
+  "cutoffs": [
+    55,
+    59,
+    63,
+    67,
+    71,
+    75
+  ],
+  "decision": "RETIRE",
+  "derived_unpinned_oof_cache_used": false,
+  "evaluation_profile": "LATE",
+  "fit_accounting": {
+    "cache_only": true,
+    "failed_fits": 0,
+    "predictor_fits": 0
+  },
+  "freeze_signature": "0a60d026dadd9d59a8b5fab9e58611a57e82e3fe85448c3011cfc02f3ab16677",
+  "gate_checks": {
+    "H12_L_harm_at_most_0_5": true,
+    "W4_and_W6_harm_at_most_0_5": true,
+    "late_primary_gain_at_least_0_03": false,
+    "supported_tail_or_missing_harm_at_most_0_25": false
+  },
+  "input_sha256": {
+    "data\\raw\\regression\\Train.csv": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+    "experiments\\optimization_v3\\champions_checkpoint1.json": "1a0e8d40c066d04260addacc17c3e2b1c61519eeae74b63471b1d7445d0f1008",
+    "experiments\\optimization_v3\\regression_diagnostics\\protocol.json": "8b00157897ae34cdd59c5fc3d403d66c050e1218a2bedcf2044b22cf3931472e",
+    "experiments\\optimization_v3\\research_backlog\\queue.json": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+    "experiments\\runs\\dual_reg_v1\\stage1_paired_blends.npz": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516",
+    "experiments\\runs\\optimization_v2_regression_repr\\fullsix_predictions.npz": "4b87b0da34069ea3d75490233c574fbd92283f8b6472a43d8c654a20a4b904c9",
+    "experiments\\runs\\optimization_v2_regression_repr\\pilot_predictions.npz": "eae6bea2dd6933de59ac0f63f54cc08124b59d4bcba91bbe05a7c5ec3dab9ff6",
+    "reports\\optimization_v2\\kaggle\\v2_reg_sparse_lgb25.json": "dd166e92089f24978244496a9a0afabc0d06551dbdc326579a7c898a8844e19a",
+    "reports\\optimization_v2\\regression_repr\\fullsix_verification_context.json": "f61198f5b7a839062e4b44819c55e429a698204e60974d470a19763a972cdf4b",
+    "reports\\optimization_v3\\research_backlog\\cards\\R19.md": "a3a6034b0853e03c3aecd027326ffb5b6a6837f65c9b2e6352ba02ec9f8b435f"
+  },
+  "kaggle_access": false,
+  "maximum_supported_tail_or_missing_harm": 0.4210271087817592,
+  "process_note": "A preparatory read-only worker transiently loaded target/prediction cache arrays while inspecting schema; it did not print or use their values. R19 outputs were reconstructed from pinned source caches after freeze. The audit is not strictly target/prediction-blind. The first revision 2 invocation returned the verdict but its wrapper omitted result persistence. This identical frozen scorer was rerun once to capture and persist the report; the recipe and sources were unchanged and no predictor fits were added.",
+  "route_counts": {
+    "H12_E_fallback_cycles_56_67": {
+      "EF0": 11704,
+      "EF1": 5981,
+      "rows": 17685,
+      "stream_missing": 1203,
+      "unknown_EF": 0
+    },
+    "H12_L_cycles_68_79": {
+      "EF0": 14344,
+      "EF1": 6559,
+      "rows": 20903,
+      "stream_missing": 1375,
+      "unknown_EF": 0
+    },
+    "W4_cycles_68_71": {
+      "EF0": 3418,
+      "EF1": 1532,
+      "rows": 4950,
+      "stream_missing": 342,
+      "unknown_EF": 0
+    },
+    "W6_cycles_76_79": {
+      "EF0": 5738,
+      "EF1": 2753,
+      "rows": 8491,
+      "stream_missing": 526,
+      "unknown_EF": 0
+    },
+    "calibration_at_67_cycles_60_67": {
+      "EF0": 8991,
+      "EF1": 4580,
+      "rows": 13571,
+      "stream_missing": 811,
+      "unknown_EF": 0
+    },
+    "calibration_at_75_cycles_68_75": {
+      "EF0": 8606,
+      "EF1": 3806,
+      "rows": 12412,
+      "stream_missing": 849,
+      "unknown_EF": 0
+    },
+    "primary_W4_plus_W6": {
+      "EF0": 9156,
+      "EF1": 4285,
+      "rows": 13441,
+      "stream_missing": 868,
+      "unknown_EF": 0
+    }
+  },
+  "sample_submission_used": false,
+  "source_commit": "722b8d44f8291502991b26a68d1c27648a0438b4",
+  "source_sha256": {
+    "scripts\\optimization_v3_batch1_r19.py": "c4e6312947692f0401f5388711526d2708fd7808727ff327302f73dc35f14efd",
+    "scripts\\optimization_v3_batch1_r19_revision2.py": "245bcfaaa090da33180dbad9c95444256f548498b651e985d4d682404b6de420",
+    "scripts\\optimization_v3_batch1_r19_revision2_verify.py": "975cc2730755667642f18dcee6b214dd62542a769d4806132cfb2ae0e6f5b6b2",
+    "scripts\\optimization_v3_batch1_r19_verify.py": "52c4d4c672ba8570af5dfb3548252d6a9fa18deb1bd01683e8a43168266afc51",
+    "scripts\\optimization_v3_reg_diagnostics.py": "e2af49bb45353fca5bf0c14093be9b0f0b02afe24289a1b5c30dfb584bbd3f55",
+    "src\\models\\optimization_v3_batch1.py": "746e12d408e74608e5b559bc7dcf4c10174df9f367859750987310adb6ae8ffd",
+    "src\\models\\optimization_v3_batch1_r19.py": "6b8766e7b1681e8a3d4f1dd0f0512420dddd5f758e4a232c57fd8e22ddfdba48"
+  },
+  "status": "PILOT_COMPLETE_RETIRE",
+  "supported_group_diagnostics": {
+    "H12_E": {
+      "EF0": {
+        "baseline_mae": 19.058255480186038,
+        "candidate_mae": 19.058255480186038,
+        "gate_applies": false,
+        "harm_candidate_minus_baseline": 0.0,
+        "rows": 11704,
+        "supported": true
+      },
+      "EF1": {
+        "baseline_mae": 12.755274007107976,
+        "candidate_mae": 12.755274007107976,
+        "gate_applies": false,
+        "harm_candidate_minus_baseline": 0.0,
+        "rows": 5981,
+        "supported": true
+      },
+      "EF_unknown": {
+        "baseline_mae": null,
+        "candidate_mae": null,
+        "gate_applies": false,
+        "harm_candidate_minus_baseline": null,
+        "rows": 0,
+        "supported": false
+      },
+      "stream_missing": {
+        "baseline_mae": 14.676051957433712,
+        "candidate_mae": 14.676051957433712,
+        "gate_applies": true,
+        "harm_candidate_minus_baseline": 0.0,
+        "rows": 1203,
+        "supported": true
+      },
+      "tail_high_ge95": {
+        "baseline_mae": 13.636034398681975,
+        "candidate_mae": 13.636034398681975,
+        "gate_applies": true,
+        "harm_candidate_minus_baseline": 0.0,
+        "rows": 898,
+        "supported": true
+      },
+      "tail_low_le5": {
+        "baseline_mae": 22.849141746817015,
+        "candidate_mae": 22.849141746817015,
+        "gate_applies": true,
+        "harm_candidate_minus_baseline": 0.0,
+        "rows": 880,
+        "supported": true
+      }
+    },
+    "H12_L": {
+      "EF0": {
+        "baseline_mae": 12.86212318119267,
+        "candidate_mae": 12.855014540580072,
+        "gate_applies": false,
+        "harm_candidate_minus_baseline": -0.007108640612598194,
+        "rows": 14344,
+        "supported": true
+      },
+      "EF1": {
+        "baseline_mae": 8.877081327188945,
+        "candidate_mae": 8.835596414482534,
+        "gate_applies": false,
+        "harm_candidate_minus_baseline": -0.041484912706410526,
+        "rows": 6559,
+        "supported": true
+      },
+      "EF_unknown": {
+        "baseline_mae": null,
+        "candidate_mae": null,
+        "gate_applies": false,
+        "harm_candidate_minus_baseline": null,
+        "rows": 0,
+        "supported": false
+      },
+      "stream_missing": {
+        "baseline_mae": 14.018108843153694,
+        "candidate_mae": 14.074795006215,
+        "gate_applies": true,
+        "harm_candidate_minus_baseline": 0.056686163061305805,
+        "rows": 1375,
+        "supported": true
+      },
+      "tail_high_ge95": {
+        "baseline_mae": 7.35888147768514,
+        "candidate_mae": 7.1394129962029345,
+        "gate_applies": true,
+        "harm_candidate_minus_baseline": -0.2194684814822052,
+        "rows": 1057,
+        "supported": true
+      },
+      "tail_low_le5": {
+        "baseline_mae": 9.27513828173195,
+        "candidate_mae": 9.696165390513709,
+        "gate_applies": true,
+        "harm_candidate_minus_baseline": 0.4210271087817592,
+        "rows": 1048,
+        "supported": true
+      }
+    },
+    "primary": {
+      "EF0": {
+        "baseline_mae": 11.621497662645886,
+        "candidate_mae": 11.59336597423045,
+        "gate_applies": false,
+        "harm_candidate_minus_baseline": -0.028131688415436784,
+        "rows": 9156,
+        "supported": true
+      },
+      "EF1": {
+        "baseline_mae": 8.033134753456487,
+        "candidate_mae": 8.053298634322482,
+        "gate_applies": false,
+        "harm_candidate_minus_baseline": 0.02016388086599541,
+        "rows": 4285,
+        "supported": true
+      },
+      "EF_unknown": {
+        "baseline_mae": null,
+        "candidate_mae": null,
+        "gate_applies": false,
+        "harm_candidate_minus_baseline": null,
+        "rows": 0,
+        "supported": false
+      },
+      "stream_missing": {
+        "baseline_mae": 13.329498966699504,
+        "candidate_mae": 13.379955007637221,
+        "gate_applies": true,
+        "harm_candidate_minus_baseline": 0.05045604093771772,
+        "rows": 868,
+        "supported": true
+      },
+      "tail_high_ge95": {
+        "baseline_mae": 6.372311536678182,
+        "candidate_mae": 6.165114020040348,
+        "gate_applies": true,
+        "harm_candidate_minus_baseline": -0.2071975166378337,
+        "rows": 683,
+        "supported": true
+      },
+      "tail_low_le5": {
+        "baseline_mae": 8.710092494608089,
+        "candidate_mae": 9.123099440354924,
+        "gate_applies": true,
+        "harm_candidate_minus_baseline": 0.41300694574683483,
+        "rows": 686,
+        "supported": true
+      }
+    }
+  },
+  "target_read_from_official_train_only": true,
+  "test_data_used": false,
+  "train_sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+  "views": {
+    "H12_E": {
+      "baseline_mae": 16.92661102497089,
+      "candidate_mae": 16.92661102497089,
+      "gain_positive_is_better": 0.0,
+      "harm_candidate_minus_baseline": 0.0,
+      "offset_cutoffs": "none_exact_fallback",
+      "rows": 17685
+    },
+    "H12_L": {
+      "baseline_mae": 11.611685946326363,
+      "candidate_mae": 11.593790625875306,
+      "gain_positive_is_better": 0.017895320451057017,
+      "harm_candidate_minus_baseline": -0.017895320451057017,
+      "offset_cutoffs": [
+        67
+      ],
+      "rows": 20903
+    },
+    "W4": {
+      "baseline_mae": 11.455005081083685,
+      "candidate_mae": 11.437700566953836,
+      "gain_positive_is_better": 0.017304514129849125,
+      "harm_candidate_minus_baseline": -0.017304514129849125,
+      "offset_cutoffs": [
+        67
+      ],
+      "rows": 4950
+    },
+    "W6": {
+      "baseline_mae": 9.90768341377724,
+      "candidate_mae": 9.897612260240766,
+      "gain_positive_is_better": 0.010071153536474142,
+      "harm_candidate_minus_baseline": -0.010071153536474142,
+      "offset_cutoffs": [
+        75
+      ],
+      "rows": 8491
+    },
+    "primary": {
+      "baseline_mae": 10.477525111059206,
+      "candidate_mae": 10.464790083187697,
+      "gain_positive_is_better": 0.01273502787150882,
+      "harm_candidate_minus_baseline": -0.01273502787150882,
+      "offset_cutoffs": [
+        67,
+        75
+      ],
+      "rows": 13441
+    }
+  }
+}

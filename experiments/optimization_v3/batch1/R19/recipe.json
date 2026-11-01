@@ -1,0 +1,208 @@
+{
+  "baseline": "current three-component champion reconstructed from pinned caches",
+  "cache_row_metadata": {
+    "55": {
+      "row_keys": {
+        "base": "rows_55",
+        "sparse": "rows_lgbm_sparse_l1_55"
+      },
+      "score_cycle_max": 67,
+      "score_cycle_min": 56,
+      "score_rows": 17685
+    },
+    "59": {
+      "row_keys": {
+        "base": "rows_59",
+        "sparse": "rows_lgbm_sparse_l1_59"
+      },
+      "score_cycle_max": 63,
+      "score_cycle_min": 60,
+      "score_rows": 6493
+    },
+    "63": {
+      "row_keys": {
+        "base": "rows_63",
+        "sparse": "rows_lgbm_sparse_l1_63"
+      },
+      "score_cycle_max": 67,
+      "score_cycle_min": 64,
+      "score_rows": 7078
+    },
+    "67": {
+      "rows": 13571,
+      "unique_rows": 13571
+    },
+    "71": {
+      "row_keys": {
+        "base": "rows_71",
+        "sparse": "rows_lgbm_sparse_l1_71"
+      },
+      "score_cycle_max": 75,
+      "score_cycle_min": 72,
+      "score_rows": 7462
+    },
+    "75": {
+      "rows": 12412,
+      "unique_rows": 12412
+    },
+    "H12_E": {
+      "rows": 17685,
+      "unique_rows": 17685
+    },
+    "H12_L": {
+      "rows": 20903,
+      "unique_rows": 20903
+    },
+    "W4": {
+      "rows": 4950,
+      "unique_rows": 4950
+    },
+    "W6": {
+      "rows": 8491,
+      "unique_rows": 8491
+    },
+    "primary": {
+      "rows": 13441,
+      "unique_rows": 13441
+    }
+  },
+  "calibration_cutoffs": [
+    67,
+    75
+  ],
+  "calibration_rule": "For EF0/EF1 with >=200 prequential OOF rows: clip(0.5*median(threat_rank - champion_prediction), -2, 2); unknown/unsupported EF offset=0",
+  "calibration_windows": {
+    "67": [
+      [
+        59,
+        60,
+        63
+      ],
+      [
+        63,
+        64,
+        67
+      ]
+    ],
+    "75": [
+      [
+        67,
+        68,
+        71
+      ],
+      [
+        71,
+        72,
+        75
+      ]
+    ]
+  },
+  "card_id": "R19",
+  "champion_formula": "clip(0.75*blend_ridge25 + 0.25*cyclewise_rank50(raw_sparse_lgb_l1), 0, 100)",
+  "control_H12_L_mae_rounded": 14.047533,
+  "control_primary_mae_rounded": 11.55939,
+  "feature_only_support": {
+    "H12_E_fallback_cycles_56_67": {
+      "EF0": 11704,
+      "EF1": 5981,
+      "rows": 17685,
+      "stream_missing": 1203,
+      "unknown_EF": 0
+    },
+    "H12_L_cycles_68_79": {
+      "EF0": 14344,
+      "EF1": 6559,
+      "rows": 20903,
+      "stream_missing": 1375,
+      "unknown_EF": 0
+    },
+    "W4_cycles_68_71": {
+      "EF0": 3418,
+      "EF1": 1532,
+      "rows": 4950,
+      "stream_missing": 342,
+      "unknown_EF": 0
+    },
+    "W6_cycles_76_79": {
+      "EF0": 5738,
+      "EF1": 2753,
+      "rows": 8491,
+      "stream_missing": 526,
+      "unknown_EF": 0
+    },
+    "calibration_at_67_cycles_60_67": {
+      "EF0": 8991,
+      "EF1": 4580,
+      "rows": 13571,
+      "stream_missing": 811,
+      "unknown_EF": 0
+    },
+    "calibration_at_75_cycles_68_75": {
+      "EF0": 8606,
+      "EF1": 3806,
+      "rows": 12412,
+      "stream_missing": 849,
+      "unknown_EF": 0
+    },
+    "primary_W4_plus_W6": {
+      "EF0": 9156,
+      "EF1": 4285,
+      "rows": 13441,
+      "stream_missing": 868,
+      "unknown_EF": 0
+    }
+  },
+  "kaggle_access": false,
+  "new_model_fits": 0,
+  "post_adjustment_clip": [
+    0.0,
+    100.0
+  ],
+  "rank_rule": "within each score cycle, 0.5*raw + 0.5*100*average_rank(raw)/n; clip [0,100]",
+  "score_boundary": "each cutoff's calibration cycles end before that cutoff's score cycles start",
+  "score_windows": {
+    "H12_E": [
+      [
+        55,
+        56,
+        67
+      ]
+    ],
+    "H12_L": [
+      [
+        67,
+        68,
+        79
+      ]
+    ],
+    "W4": [
+      [
+        67,
+        68,
+        71
+      ]
+    ],
+    "W6": [
+      [
+        75,
+        76,
+        79
+      ]
+    ],
+    "primary": [
+      [
+        67,
+        68,
+        71
+      ],
+      [
+        75,
+        76,
+        79
+      ]
+    ]
+  },
+  "task": "regression",
+  "test_or_sample_access": false,
+  "unverified_derived_cache_excluded": "experiments/runs/optimization_v3_reg_diagnostics/oof_residuals.npz"
+}

@@ -1,0 +1,40 @@
+{
+  "card_id": "R19",
+  "amendment": 1,
+  "status": "RETIRE_CONFIRMED_WITH_TRANSPARENT_CONTROL_AND_REPORTING_CORRECTIONS",
+  "scope": "Evidence provenance, row-matched control selection, report persistence, independent QA indexing, and canonical gate interpretation only; no recipe or metric changes.",
+  "attempt_1": {
+    "status": "INVALID_CONTROL_WINDOW_MISMATCH_NOT_SCORED",
+    "freeze_signature": "453651c3df7e66af43eed3434fa67434483512bb36360ab403dfb2a9fda6dadf",
+    "observed_late_primary_mae": 10.477525111,
+    "incorrect_fullsix_control_primary_mae": 11.559390,
+    "offsets_fitted": false,
+    "candidate_metrics_computed": false,
+    "note": "The fixed card reference was the Ridge25/fullsix comparator and did not match the requested late W4+W6 current-champion population. The scorer failed closed before fitting offsets or scoring a candidate. The original freeze and recipe remain unchanged."
+  },
+  "revision_2": {
+    "freeze_signature": "0a60d026dadd9d59a8b5fab9e58611a57e82e3fe85448c3011cfc02f3ab16677",
+    "row_matched_control": {
+      "champion": "v2_reg_sparse_lgb25",
+      "historical_report": "reports/optimization_v2/regression_repr/fullsix_verification_context.json",
+      "historical_report_sha256": "f61198f5b7a839062e4b44819c55e429a698204e60974d470a19763a972cdf4b",
+      "primary_W4_plus_W6_mae": 10.477525111059206,
+      "H12_L_mae": 11.611685946326363
+    },
+    "decision": "RETIRE",
+    "reason": "Primary gain +0.012735 is below +0.03; supported tail_low_le5 harms +0.413 to +0.421 exceed +0.25. H12_L and W4/W6 aggregate harm guards pass."
+  },
+  "process_notes": [
+    "A preparatory worker transiently loaded target/prediction arrays while checking schema; it reported no values and computed no metrics. The audit was not strictly target/prediction-blind.",
+    "The first revision 2 run returned RETIRE but its wrapper did not persist results.json. The same frozen scorer was run again once to persist its full report; no model fit or recipe change occurred.",
+    "The verifier source pinned in revision 2 had a segment/full-view mask length bug. A separate post-freeze independent verifier corrected only the QA indexing and reproduced both baseline and candidate metrics. Its SHA-256 is recorded in verification.json.",
+    "The frozen runner used an H12_L harm limit of 0.5 instead of the canonical 0.05. The observed harm of -0.017895 passes the stricter canonical limit, so this discrepancy does not change RETIRE. gate.json records both checks."
+  ],
+  "persistence_receipt_correction": "persistence.json's note says the helper invoked the frozen verifier; it actually invoked the separate post-freeze independent re-audit. verification.json and its recorded source hash identify the checker used; no result or metric changed.",
+  "boundaries": {
+    "predictor_fits": 0,
+    "test_or_sample_access": false,
+    "kaggle_access": false,
+    "model_or_kaggle_selection_changed": false
+  }
+}
