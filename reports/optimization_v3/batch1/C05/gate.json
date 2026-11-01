@@ -1,0 +1,23 @@
+{
+  "baseline_scope_note": "Primary is W1+W4 (9,064 rows); queue full-six primary is not a pilot comparator.",
+  "card_id": "C05",
+  "checks": {
+    "H12_harm_at_most_0_001": true,
+    "W1_harm_at_most_0_005": true,
+    "W4_harm_at_most_0_005": true,
+    "primary_gain_at_least_0_0005": false,
+    "supported_subgroup_guards": true
+  },
+  "decision_basis": "Frozen temporal pilot gates and exact row-matched controls; no Test/Kaggle evidence.",
+  "status": "RETIRE",
+  "supported_subgroup_failures": [],
+  "thresholds": {
+    "individual_pilot_view_harm_max": 0.005,
+    "pilot_H12_harm_max": 0.001,
+    "pilot_primary_gain_min": 0.0005,
+    "positive_and_negative_per_group_min": 30,
+    "positive_class_recall_harm_max": 0.02,
+    "supported_group_F1_harm_max": 0.01,
+    "supported_group_n_min": 200
+  }
+}
