@@ -67,7 +67,14 @@ def _source_commit() -> str:
 
 
 def _current_inventory() -> tuple[dict[str, Any], dict[str, Any], dict[str, str], dict[str, str]]:
-    cls_context, reg_context = base._load_contexts()
+    from scripts import optimization_v3_final_continuation_cls as cls_source
+    from scripts import optimization_v3_final_continuation_r22 as reg_source
+
+    cls_context = cls_source._context()
+    reg_context = reg_source.prepare_context(context_only_no_fit=True)
+    if (len(cls_context["frame"]) != 50_608 or len(reg_context["frame"]) != 50_608
+            or not np.array_equal(cls_context["cycles"], reg_context["cycles"])):
+        raise RecoveryError("Official Train row/cycle populations differ from the frozen recovery scope")
     artifacts = base._active_card_artifacts()
     sources, inputs, _ = base._source_and_input_inventory(artifacts, cls_context, reg_context)
     return cls_context, reg_context, sources, inputs
@@ -117,8 +124,9 @@ def prepare() -> dict[str, Any]:
     parent_sources = parent_identity.get("source_sha256", {})
     changed = sorted(path for path in set(parent_sources) | set(sources)
                      if parent_sources.get(path) != sources.get(path))
-    allowed_change = "scripts/optimization_v3_expanded_benchmark.py"
-    if changed != [allowed_change]:
+    allowed_changes = ["scripts/optimization_v3_expanded_benchmark.py",
+                       "scripts/optimization_v3_final_continuation_r22.py"]
+    if changed != allowed_changes:
         raise RecoveryError(f"Unexpected source drift versus parent freeze: {changed}")
     if inputs != parent_identity.get("input_sha256"):
         raise RecoveryError("Official Train/control/cache inputs changed versus parent freeze")
@@ -199,7 +207,7 @@ def prepare() -> dict[str, Any]:
         "input_sha256": inputs,
         "source_drift_from_parent": {
             "changed_paths": changed,
-            "interpretation": "NPZ bundle storage now writes mapping-valued control audits to hash-bound JSON sidecars and verifies them on read; estimator, features, preprocessing, fit rows, prediction, and gates are unchanged.",
+            "interpretation": "NPZ bundle storage now writes mapping-valued control audits to hash-bound JSON sidecars and verifies them on read. The R22 context loader also has an explicit context_only_no_fit option that skips only its future-fit reservation check; all data/cache/resource/lock checks remain enabled. No R22 estimator fit is run. Candidate estimators, features, preprocessing, fit rows, prediction, and gates are unchanged.",
         },
         "recovery_scope": {
             "retry_candidates": list(RECOVERY_CANDIDATES),

@@ -418,7 +418,13 @@ def _make_recipe(card: Mapping[str, Any], resource: Mapping[str, Any]) -> dict[s
     }
 
 
-def prepare_context() -> dict[str, Any]:
+def prepare_context(*, context_only_no_fit: bool = False) -> dict[str, Any]:
+    """Prepare validated Train/control context; optionally skip only R22's future-fit reservation guard.
+
+    ``context_only_no_fit=True`` is for callers that need verified Train controls
+    but will not launch an R22 estimator fit. All data, cache, resource, and lock
+    checks still run. The default preserves the historical eight-fit budget gate.
+    """
     queue = r22_pilot.load_queue(r22_pilot.QUEUE_PATH)
     card = next(item for item in queue["cards"] if item.get("id") == CARD_ID)
     train_path, frame, target, cycles = r22_pilot._read_train()
@@ -493,7 +499,7 @@ def prepare_context() -> dict[str, Any]:
         raise BatchIntegrityError(f"R22 static resource estimate is blocked: {resources}")
     if not live_lock_check["available"]:
         raise BatchIntegrityError("Global V3 training lock is currently held")
-    if budget_snapshot["reserved_total"] + 8 > MAX_SUCCESSFUL_FITS:
+    if not context_only_no_fit and budget_snapshot["reserved_total"] + 8 > MAX_SUCCESSFUL_FITS:
         raise BatchIntegrityError(f"Joint eight-fit reservation exceeds remaining cap: {budget_snapshot}")
     if PREFLIGHT_PATH.is_file():
         old_preflight = _read_json(PREFLIGHT_PATH)
@@ -571,6 +577,7 @@ def prepare_context() -> dict[str, Any]:
         "lock_check": live_lock_check,
         "budget_snapshot": budget_snapshot,
         "budget_snapshot_pre_reservation": budget_before_reservation,
+        "context_only_no_fit": bool(context_only_no_fit),
         "identity": identity_seed,
         "signature": json_sha256(identity_seed),
         "recipe": recipe,
