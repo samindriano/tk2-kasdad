@@ -1,0 +1,53 @@
+{
+  "card_id": "R07",
+  "status": "INDEPENDENT_QA_PASS",
+  "review_scope": "Read-only saved-output audit and rerun of the report verifier; no refit, Test access, or Kaggle access.",
+  "freeze_signature": "201892c6bd4a9e31b8c8a2e98a23c4ee8b89036de3c5515d35725f45015e78b3",
+  "official_train_sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+  "checks": {
+    "freeze_and_source_input_hashes_pass": true,
+    "fit_populations_and_record_id_alignment_pass": true,
+    "fit_fingerprints_and_feature_allowlist_pass": true,
+    "independent_incumbent_and_candidate_reconstruction_pass": true,
+    "exact_view_metrics_match_reports": true,
+    "fit_and_attempt_accounting_pass": true,
+    "nmf_convergence_diagnostics_present": true,
+    "supported_subgroup_guards_pass": true,
+    "official_test_read": false,
+    "kaggle_accessed": false
+  },
+  "fit_accounting": {
+    "cutoffs": [55, 67],
+    "fit_rows": {"55": 12020, "67": 29705},
+    "score_rows": {"55": 17685, "67": 20903},
+    "fit_started_events": 2,
+    "fit_saved_events": 2,
+    "fit_failed_events": 0,
+    "predictor_fit_calls": 2,
+    "vectorizer_fit_calls": 2,
+    "nmf_fit_calls": 2,
+    "fit_seconds": {"55": 8.863221999956295, "67": 15.817019199952483},
+    "technical_retries": 0
+  },
+  "views": {
+    "W1": {"rows": 4114, "baseline_mae": 15.882111974427762, "candidate_mae": 15.947171003229014, "gain": -0.0650590288012527},
+    "W4": {"rows": 4950, "baseline_mae": 11.455005081083685, "candidate_mae": 11.554988545639432, "gain": -0.09998346455574669},
+    "primary": {"rows": 9064, "baseline_mae": 13.464395831218011, "candidate_mae": 13.54852767080752, "gain": -0.08413183958950832},
+    "H12": {"rows": 38588, "baseline_mae": 14.04753258299653, "candidate_mae": 14.132629438917373, "gain": -0.0850968559208436}
+  },
+  "nmf_convergence": {
+    "55": {"n_iter_": 75, "max_iter": 200, "reconstruction_err_": 96.76618508339912, "converged": true, "fit_convergence_warning_count": 0, "score_transform_convergence_warning_count": 0},
+    "67": {"n_iter_": 76, "max_iter": 200, "reconstruction_err_": 152.27696260186926, "converged": true, "fit_convergence_warning_count": 0, "score_transform_convergence_warning_count": 0}
+  },
+  "gate": {
+    "status": "RETIRE",
+    "primary_gain_at_least_0_03": false,
+    "H12_harm_at_most_0_05": false,
+    "W1_harm_at_most_0_5": true,
+    "W4_harm_at_most_0_5": true,
+    "supported_tail_or_missing_group_harms": true,
+    "supported_guard_failures": [],
+    "largest_guarded_harm": {"view": "H12", "group": "target_le_5", "rows": 1928, "harm": 0.1538402334531579}
+  },
+  "nonblocking_warning": "LightGBM reported negative categorical values would be treated as missing; this matches the existing native-category preprocessing convention and did not prevent independent verification."
+}
