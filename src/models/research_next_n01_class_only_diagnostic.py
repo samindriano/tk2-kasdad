@@ -25,5 +25,3 @@ class N01ClassOnlyDiagnosticClassifier(ClassByVolumeSparseClassifier):
         self.cutoff = cutoff
         self.weight_kind = "class_only"
         self._fitted = False
-
-\n
