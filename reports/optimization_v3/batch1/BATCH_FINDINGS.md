@@ -1,6 +1,8 @@
 # V3 Batch 1 — rolling findings
 
-Snapshot: 2026-11-01, repository commit `a9d42dc` (C05 protocol freeze). This is a rolling index built from the canonical queue and per-card reports present in the repository; it does not claim that missing reports were executed or validated.
+Snapshot: 2026-11-01, after R14 saved-output verification v2. This is a rolling index built from the canonical queue and per-card reports present in the repository; it does not claim that missing reports were executed or validated.
+
+Queue closure: **20/45 cards (44.4%)** now have terminal pilot decisions with saved gates; this counts R14 and excludes cards still awaiting QA or missing a gate. This is pilot-card progress, not the later conditional continuations and finalist stage.
 
 For each row, metrics are copied from that card’s `results.json`; statuses come from its saved `verification.json` and `gate.json`. `NO_REPORT` and `PARTIAL` remain unresolved. Gains use each card’s declared pilot view, so raw gains from different populations are not directly ranked.
 
@@ -37,7 +39,7 @@ For each row, metrics are copied from that card’s `results.json`; statuses com
 | 29 | **C14** | PILOT_COMPLETE_RETIRE; QA INDEPENDENT_QA_PASS | FAIL_VALID_EVIDENCE | 9064; -0.006724 | 38588; -0.002919 | 2 / 0 | [results](C14/results.json), [QA](C14/verification.json), [gate](C14/gate.json) |
 | 30 | **R04** | RETIRE; QA PASS | RETIRE | 9064; +0.021887 | 38588; +0.014318 | 2 / ? | [results](R04/results.json), [QA](R04/verification.json), [gate](R04/gate.json) |
 | 31 | **C05** | PILOT_COMPLETE_RETIRE; QA INDEPENDENT_QA_PASS | RETIRE | 9064; -0.001260 | 38588; -0.000284 | 2 / 0 | [results](C05/results.json), [QA](C05/verification.json), [gate](C05/gate.json) |
-| 32 | **R14** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
+| 32 | **R14** | PILOT_COMPLETE_RETIRE; QA INDEPENDENT_QA_PASS | RETIRE | 9064; +0.043122 | 38588; +0.026910 | 2 / 0 | [results](R14/results.json), [QA](R14/verification.json), [gate](R14/gate.json), [amendment](R14/report_amendment_01.json) |
 | 33 | **C11** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
 | 34 | **R08** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
 | 35 | **C20** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
@@ -61,10 +63,18 @@ For each row, metrics are copied from that card’s `results.json`; statuses com
 - Two predictor fits were saved (cutoffs 55 and 67), with zero failed attempts and 22.262 seconds total fit time. Peak memory was estimated at 2.04 GB / 2.78 GB, not observed.
 - Independent verification passed and was repeated from the saved bundles; the repeated verification, gate, and fit accounting exactly matched the published reports. No Test data or Kaggle was used. C05 does not advance to full-six.
 - Audit note: `attempts.jsonl` contains the four fit lifecycle events; the frozen runner’s intended `PREFLIGHT_PASS` append is unreachable. The complete preflight snapshot remains in `results.json`. [Report amendment](C05/report_amendment_01.json) records this logging-only limitation without changing metrics or refitting.
-- Next eligible lane: **R14**, subject to a fresh support, data, RAM, budget, and single-job preflight.
+- Next eligible lane: **C11**, subject to a fresh support, data, RAM, budget, and single-job preflight.
+
+## R14 — completed saved-output verification
+
+- **Verdict: RETIRE.** The saved EF1-only specialist passed the primary gain gate (+0.043122 MAE on the exact 9,064-row W1+W4 primary), H12 harm guard (−0.026910), and W1/W4 harm guards. It failed the supported tail/missing guard: maximum harm was **+0.555867** on the supported H12_L `threat_rank >= 95` subgroup (n=1,057), above the +0.25 limit.
+- Both frozen predictor fits (cutoffs 55 and 67) were reused; no refit occurred. Independent row, ID, fit-population, target-digest, incumbent-route, and candidate-route checks passed. No Test, SampleSubmission, or Kaggle access was used.
+- The first post-fit verifier stopped before publishing due to two report-layer defects: it compared the 9,064-row pilot primary to a 38,588-row V2 full-six metric (11.559390), and its subgroup-harm aggregation had an invalid nested lookup. Amendment 01 documents these corrections. The exact row-matched R14 primary incumbent is 13.464396 on 9,064 rows; the V2 full-six value remains provenance only. H12 remains 14.047533 on 38,588 rows.
+- Active verifier: `scripts/verify_optimization_v3_batch1_r14_v2.py`; frozen recipe and runner remain unchanged. See `reports/optimization_v3/batch1/R14/report_amendment_01.json` for source hashes and the defect record.
+- Next eligible lane: **C11**, subject to its own support, RAM, dependency, budget, and single-training-job preflight.
 
 ## Ledger and scope notes
 
-- The active budget ledger used by the runner is `experiments/runs/optimization_v3_batch1/batch_ledger.jsonl`; it records 54 of 180 candidate predictor fits reserved after C05 and contains the C05 `CARD_FIT_BUDGET_RECONCILED` evidence event. Runtime fit bundles remain ignored by Git.
+- The active budget ledger used by the runner is `experiments/runs/optimization_v3_batch1/batch_ledger.jsonl`; it records 56 of 180 candidate predictor fits reserved after R14 and contains reconciled fit evidence for C05 and R14. Runtime fit bundles remain ignored by Git.
 - The tracked `reports/optimization_v3/batch1/batch_ledger.jsonl` is an older partial reservation snapshot (8 entries); it is not a complete mirror of the runtime ledger and must not be used to infer remaining global budget.
 - V3 remains active. This file is an interim evidence index; it does not close the remaining conditional queue or authorize Test/Kaggle access for pilots.

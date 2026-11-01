@@ -4,7 +4,7 @@ Status snapshot: 2026-11-01. This document turns the existing canonical V3 queue
 
 ## Scope and current guardrails
 
-- **R04 and C05 are complete**; do not repeat their fits or verdicts. Continue from the next actually eligible card, R14, after checking its current card and dependencies.
+- **R04, C05, and R14 are complete**; do not repeat their fits or verdicts. Continue from the next actually eligible card, C11, after checking its current card and dependencies.
 - During each pilot and continuation, use official Train only. Do not open Test or SampleSubmission or access Kaggle in these stages. A qualifying finalist may proceed to full-Train refit, Test inference, or submission only after the handoff's full-six/support/source gates pass and the current V3 authorization, Kaggle team/rules/deadline/quota, global budget, manifest, and idempotency checks all pass.
 - Preserve EDA, notebooks, prior experiments, frozen protocols, teammate work, and accepted submissions. Do not edit the canonical queue or relax a card's recipe, support, fit budget, or gate.
 - When this map was first written, cards after R04 were still `PLANNED_NOT_RUN` and had no runner. C05 now has a frozen runner and a verified RETIRE report. For remaining cards, check the current repo before acting; never invent a command before its runner exists and passes synthetic validation.
@@ -21,14 +21,18 @@ C05 is complete and **RETIRE**. The two frozen predictor fits (cutoffs 55 and 67
 
 The frozen C05 runner’s intended `PREFLIGHT_PASS` append is unreachable; its per-card attempt log therefore contains the four fit lifecycle events only. The complete preflight snapshot is retained inside C05 `results.json`, and `report_amendment_01.json` records this logging limitation without changing the result or refitting.
 
+## R14 checkpoint
+
+R14 is complete and **RETIRE**. Both declared EF1 specialist fits (cutoffs 55 and 67) were independently verified from their saved bundles; no refit occurred. On the exact 9,064-row W1+W4 primary, MAE improved from 13.464396 to 13.421274 (gain +0.043122), passing the +0.03 gate. H12 gain was +0.026910, so H12 harm was −0.026910; W1 and W4 harm were −0.087481 and −0.006254. The supported tail/missing guard failed: H12_L `threat_rank >= 95` (n=1,057) had MAE harm +0.555867, above +0.25. Independent verification passed the row/ID, fit-population, route-reconstruction, and leakage-boundary checks. A v1 report assertion compared the 9,064-row R14 primary to a 38,588-row V2 full-six statistic and its group aggregation had a nested-lookup bug; `report_amendment_01.json` records the corrected row-matched comparison and verifier hashes. The V2 full-six value is provenance only. Do not repeat R14 or continue it to full-six. The next eligible lane is **C11**.
+
 ## Near-term candidates in canonical order
 
 Every card below that is not marked complete needs an actual file/status check, its own preflight, implementation/tests if absent, a frozen recipe, and independent verification. The fit counts are the card's declared pilot predictor fits only; retries, control refits, and later continuation are separate budget items.
 
 | Queue order | Lane | Pilot fits | Fixed question / useful next step | Conditions and fail-closed checks |
 |---:|---|---:|---|---|
-| 31 | **C05 — Rare-term retention** | 2 | **Complete: RETIRE.** Primary gain −0.001260 failed the +0.0005 gate; H12 and both individual pilot windows passed their harm guards. | No continuation or further cap/`min_df` configurations. Continue to R14. |
-| 32 | **R14 — EF1 sparse specialist** | 2 | Test a target-scale Regression expert only on parsed `entry_friction == 1`; other rows retain the exact incumbent. | Require at least 500 EF1 rows in each fit and at least 100 EF1 validation rows in each scored view. EF means `entry_friction`, never `telemetry_flag`. No within-subgroup rank mapping. |
+| 31 | **C05 — Rare-term retention** | 2 | **Complete: RETIRE.** Primary gain −0.001260 failed the +0.0005 gate; H12 and both individual pilot windows passed their harm guards. | No continuation or further cap/`min_df` configurations. R14 is also complete; next is C11. |
+| 32 | **R14 — EF1 sparse specialist** | 2 | **Complete: RETIRE.** Primary MAE gain +0.043122 passed, but supported H12_L high-tail harm +0.555867 failed the +0.25 guard. | No full-six continuation. Keep the v2 saved-output verifier and amendment; next eligible card is C11. |
 | 33 | **C11 — Word + character sparse boosting** | 2 | Add the fixed `char_wb(3,5)` block to the existing word representation and sparse classifier. | Estimate RAM and vocabulary from Train folds first. Keep the design sparse; do not densify. |
 | 34 | **R08 — Row-local token statistics** | 2 | Add token count, unique-token count, TTR, and character count to the existing structured + SVD32 Regression recipe. | TTR for an empty stream is fixed at 0. Omit `repeated_fraction` because it is exactly `1 - TTR`. This is a predictive ablation, not a causal claim about EDA A. |
 | 35 | **C20 — Cached fixed-q80 recomposition** | 0 | Reconstruct the already-defined q80 route over all six cutoffs using existing sparse/C2_B/CB predictions. | No threshold search and no model fit. Verify every cache, row identity, source lineage, and complete six-cutoff coverage; if any required cache is absent or mismatched, record `BLOCKED_INPUT`. |
@@ -69,7 +73,7 @@ Do not stop the whole queue for a card-local negative result. Retire or skip tha
 
 ## Ready-to-paste Luna prompt
 
-> Lanjutkan V3 research di repository `samindriano/tk2-kasdad` memakai Luna MAIN dan Orchestra yang terpasang. Baca `reports/optimization_v3/research_backlog/LUNA_HANDOFF.md`, dokumen `LUNA_OVERNIGHT_LANE_PLAN.md`, dan kartu canonical untuk setiap ID. Verifikasi HEAD, status Git, branch/worktree, ledger, report, cache, source hash, dan ownership aktual; dokumen lama hanya snapshot. R04 dan C05 sudah memiliki verdict tersimpan; jangan mengulang fit. Mulai dari R14 sebagai lane eligible berikutnya, lalu lanjutkan antrean conditional dalam urutan canonical.
+> Lanjutkan V3 research di repository `samindriano/tk2-kasdad` memakai Luna MAIN dan Orchestra yang terpasang. Baca `reports/optimization_v3/research_backlog/LUNA_HANDOFF.md`, dokumen `LUNA_OVERNIGHT_LANE_PLAN.md`, dan kartu canonical untuk setiap ID. Verifikasi HEAD, status Git, branch/worktree, ledger, report, cache, source hash, dan ownership aktual; dokumen lama hanya snapshot. R04, C05, dan R14 sudah memiliki verdict tersimpan; jangan mengulang fit. Mulai dari C11 sebagai lane eligible berikutnya, lalu lanjutkan antrean conditional dalam urutan canonical.
 >
 > Untuk setiap kartu yang implementasinya belum ada, buat adapter dan runner baru, uji sintaks, jalankan tes dan synthetic end-to-end sampai report aggregation, independent verification, dan gate, lalu freeze recipe/source/input/dependency/gates sebelum official Train fit. Jalankan hanya fit yang dideklarasikan setelah resource, support, dependency, dan budget preflight lulus. Gunakan dua thread maksimal dan hanya satu job training global pada satu waktu. Jika chat/worktree lain sedang training, lanjutkan read-only/implementation/preparation atau tunggu; jangan mulai job kedua. Jangan pernah mengarang command script sebelum runner-nya dibuat dan diuji.
 >

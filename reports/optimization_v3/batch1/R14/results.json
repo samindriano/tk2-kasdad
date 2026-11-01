@@ -1,0 +1,955 @@
+{
+  "boundary": {
+    "official_train_only": true,
+    "test_sample_kaggle_used": false
+  },
+  "card_id": "R14",
+  "engine_report": {
+    "card_id": "R14",
+    "cutoffs": [
+      55,
+      67
+    ],
+    "expected_fit_count_from_card": 2,
+    "fit_count_matches_card": true,
+    "fit_predictor_count": 2,
+    "freeze_signature": "aaf89c3f5364098ecf597a47125b5d7e1f5e13f02413340f89b6bc346d0b2622",
+    "outcome_reuse_warning": "Temporal development outcomes are repeatedly reused; no untouched holdout claim.",
+    "schema_version": 1,
+    "status": "PILOT_SAVED_AWAITING_INDEPENDENT_QA",
+    "task": "regression",
+    "test_data_used": false,
+    "views": {
+      "H12": {
+        "baseline": {
+          "mae": 14.04753258299653,
+          "n": 38588
+        },
+        "candidate": {
+          "mae": 14.020623054614116,
+          "n": 38588
+        },
+        "gain_positive_is_better": 0.026909528382413228,
+        "rows": 38588
+      },
+      "W1": {
+        "baseline": {
+          "mae": 15.882111974427762,
+          "n": 4114
+        },
+        "candidate": {
+          "mae": 15.79463050008872,
+          "n": 4114
+        },
+        "gain_positive_is_better": 0.0874814743390413,
+        "rows": 4114
+      },
+      "W4": {
+        "baseline": {
+          "mae": 11.455005081083685,
+          "n": 4950
+        },
+        "candidate": {
+          "mae": 11.44875126724902,
+          "n": 4950
+        },
+        "gain_positive_is_better": 0.006253813834664612,
+        "rows": 4950
+      },
+      "primary": {
+        "baseline": {
+          "mae": 13.464395831218011,
+          "n": 9064
+        },
+        "candidate": {
+          "mae": 13.421274122931118,
+          "n": 9064
+        },
+        "gain_positive_is_better": 0.04312170828689332,
+        "rows": 9064
+      }
+    }
+  },
+  "fit_accounting": {
+    "attempt_log": "reports/optimization_v3/batch1/R14/attempts.jsonl",
+    "budget_reserved_predictor_fits": 2,
+    "cutoffs": {
+      "55": {
+        "ef1_fit_rows": 3362,
+        "failed_attempt_count": 0,
+        "fit_attempt_count": 1,
+        "fit_predictor_count": 1,
+        "fit_saved_event_count": 1,
+        "fit_seconds": 4.411089599947445,
+        "outer_fit_rows": 12020,
+        "resource_preflight_status": "PASS",
+        "resume_verified_event_count": 0,
+        "score_rows": 17685,
+        "successful_bundle_count": 1
+      },
+      "67": {
+        "ef1_fit_rows": 9343,
+        "failed_attempt_count": 0,
+        "fit_attempt_count": 1,
+        "fit_predictor_count": 1,
+        "fit_saved_event_count": 1,
+        "fit_seconds": 10.91072130005341,
+        "outer_fit_rows": 29705,
+        "resource_preflight_status": "PASS",
+        "resume_verified_event_count": 0,
+        "score_rows": 20903,
+        "successful_bundle_count": 1
+      }
+    },
+    "failed_attempts": 0,
+    "global_budget": {
+      "cap": 180,
+      "card_predictor_fits": 2,
+      "card_reservation_present": true,
+      "existing_R14_card_id": "R14",
+      "existing_R14_reservation": 2,
+      "next_total": 56,
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\experiments\\runs\\optimization_v3_batch1\\batch_ledger.jsonl",
+      "reserved_total": 56,
+      "status": "PASS"
+    },
+    "verified_successful_predictor_fits": 2
+  },
+  "gate": {
+    "card_id": "R14",
+    "checks": {
+      "H12_harm_at_most_0_05": true,
+      "W1_W4_harm_at_most_0_5": true,
+      "primary_gain_at_least_0_03": true,
+      "supported_tail_or_missing_harm_at_most_0_25": false
+    },
+    "decision_basis": "Frozen row-exact temporal pilot and independent verification only; no Test/Kaggle evidence.",
+    "freeze_signature": "aaf89c3f5364098ecf597a47125b5d7e1f5e13f02413340f89b6bc346d0b2622",
+    "observed": {
+      "H12_harm": -0.026909528382413228,
+      "W1_harm": -0.0874814743390413,
+      "W4_harm": -0.006253813834664612,
+      "max_supported_tail_or_missing_harm": 0.55586684745015,
+      "primary_gain": 0.04312170828689332
+    },
+    "status": "RETIRE",
+    "thresholds": {
+      "individual_pilot_view_MAE_harm_max": 0.5,
+      "pilot_H12_MAE_harm_max": 0.05,
+      "pilot_primary_MAE_gain_min": 0.03,
+      "supported_group_n_min": 100,
+      "supported_tail_or_missing_MAE_harm_max": 0.25
+    }
+  },
+  "preflight": {
+    "budget_preflight": {
+      "cap": 180,
+      "card_predictor_fits": 2,
+      "card_reservation_present": false,
+      "existing_R14_card_id": null,
+      "existing_R14_reservation": null,
+      "next_total": 56,
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\experiments\\runs\\optimization_v3_batch1\\batch_ledger.jsonl",
+      "reserved_total": 54,
+      "status": "PASS"
+    },
+    "candidate_prediction_or_metric_computed": false,
+    "card_id": "R14",
+    "control_lineage": {
+      "fullsix_freeze_sha256": "bb38f5fb7df09f0642ad18f064373f2b7051ed64e8b5d260ccb2d31b84ef909c",
+      "fullsix_prediction_cache_sha256": "4b87b0da34069ea3d75490233c574fbd92283f8b6472a43d8c654a20a4b904c9",
+      "fullsix_report_sha256": "a9686473998722b8f86a0f6a4489b4e3a75a6b6ba20c661ac564e6a5e61aea48",
+      "manifest_recipe_id": "v2_reg_sparse_lgb25",
+      "manifest_status": "PREPARED_AND_QA_PASS",
+      "old_sparse_pilot_cache_sha256": "eae6bea2dd6933de59ac0f63f54cc08124b59d4bcba91bbe05a7c5ec3dab9ff6",
+      "old_sparse_pilot_verified": true,
+      "pilot_report_sha256": "2a1bb2d4db3fd531478de2aeedaf4e380472f39f1439a40abef9511042dec653",
+      "pilot_verification_sha256": "4e42ee044d9832c47e4fbf6305a1c4a86fa42e0b089080cf3befd74811bbb740",
+      "ridge25_cache_sha256": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516"
+    },
+    "freeze_exists": false,
+    "freeze_identity_sha256": "aaf89c3f5364098ecf597a47125b5d7e1f5e13f02413340f89b6bc346d0b2622",
+    "input_sha256": {
+      "canonical_R14_card": "609888542877ca8c03f7d1dac075b202359115ca7eb52ae09ae3208c102e8f5e",
+      "canonical_queue": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+      "incumbent_accepted_sparse_fullsix_freeze": "bb38f5fb7df09f0642ad18f064373f2b7051ed64e8b5d260ccb2d31b84ef909c",
+      "incumbent_accepted_sparse_fullsix_prediction_cache": "4b87b0da34069ea3d75490233c574fbd92283f8b6472a43d8c654a20a4b904c9",
+      "incumbent_accepted_sparse_fullsix_report": "a9686473998722b8f86a0f6a4489b4e3a75a6b6ba20c661ac564e6a5e61aea48",
+      "incumbent_accepted_sparse_pilot_prediction_cache": "eae6bea2dd6933de59ac0f63f54cc08124b59d4bcba91bbe05a7c5ec3dab9ff6",
+      "incumbent_accepted_sparse_pilot_report": "2a1bb2d4db3fd531478de2aeedaf4e380472f39f1439a40abef9511042dec653",
+      "incumbent_accepted_sparse_pilot_verification": "4e42ee044d9832c47e4fbf6305a1c4a86fa42e0b089080cf3befd74811bbb740",
+      "incumbent_accepted_v2_reg_sparse_lgb25_manifest": "dd166e92089f24978244496a9a0afabc0d06551dbdc326579a7c898a8844e19a",
+      "incumbent_canonical_card": "c16de95d965865a6fd56bcfa249042455e4a73102a7b649cc8abda373a3d4c97",
+      "incumbent_canonical_queue": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+      "incumbent_read_only_feasibility_report": "7d164a372e000f1e078cc6fcd50d68861e30b5870c4b526d49213d5b6b79ee3d",
+      "incumbent_ridge25_and_paired_prediction_cache": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516",
+      "official_regression_train": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082"
+    },
+    "memory_estimate": {
+      "55": {
+        "allowed_bytes": 5476265984,
+        "available_physical_bytes": 7623749632,
+        "concurrent_training_jobs": 1,
+        "csr_bytes_upper_bound": 46996904,
+        "estimated_peak_bytes": 1674139896,
+        "estimated_peak_is_observed": false,
+        "fit_population": "parsed entry_friction == 1",
+        "fit_rows": 3362,
+        "free_memory_reserve_bytes": 2147483648,
+        "free_ram_minimum_pass": true,
+        "free_ram_reserve_bytes": 2147483648,
+        "job_cap_bytes": 6442450944,
+        "minimum_free_ram_bytes": 4294967296,
+        "sparse_only": true,
+        "status": "PASS",
+        "structured_width_upper_bound": 807,
+        "threads": 2,
+        "unigram_bigram_nnz_upper_bound": 219129
+      },
+      "67": {
+        "allowed_bytes": 5466271744,
+        "available_physical_bytes": 7613755392,
+        "concurrent_training_jobs": 1,
+        "csr_bytes_upper_bound": 130250096,
+        "estimated_peak_bytes": 1923899472,
+        "estimated_peak_is_observed": false,
+        "fit_population": "parsed entry_friction == 1",
+        "fit_rows": 9343,
+        "free_memory_reserve_bytes": 2147483648,
+        "free_ram_minimum_pass": true,
+        "free_ram_reserve_bytes": 2147483648,
+        "job_cap_bytes": 6442450944,
+        "minimum_free_ram_bytes": 4294967296,
+        "sparse_only": true,
+        "status": "PASS",
+        "structured_width_upper_bound": 807,
+        "threads": 2,
+        "unigram_bigram_nnz_upper_bound": 586815
+      }
+    },
+    "official_train_sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+    "preflight_report_is_read_only": true,
+    "python_version": "3.13.5",
+    "recipe": {
+      "card_id": "R14",
+      "control_metrics": {
+        "H12_mae": 14.04753258299653,
+        "primary_mae": 11.559390078665364
+      },
+      "evaluation": {
+        "cutoffs": [
+          55,
+          67
+        ],
+        "fit_rows": {
+          "55": 12020,
+          "67": 29705
+        },
+        "horizon_cycles": 12,
+        "profile": "STANDARD",
+        "view_rows": {
+          "H12": 38588,
+          "W1": 4114,
+          "W4": 4950,
+          "primary": 9064
+        },
+        "views": {
+          "H12": [
+            [
+              55,
+              56,
+              67
+            ],
+            [
+              67,
+              68,
+              79
+            ]
+          ],
+          "W1": [
+            [
+              55,
+              56,
+              59
+            ]
+          ],
+          "W4": [
+            [
+              67,
+              68,
+              71
+            ]
+          ],
+          "primary": [
+            [
+              55,
+              56,
+              59
+            ],
+            [
+              67,
+              68,
+              71
+            ]
+          ]
+        }
+      },
+      "feature_allowlist": [
+        "impact_load",
+        "entry_friction",
+        "cycle_code",
+        "scope_pressure",
+        "text_load",
+        "scope_trace",
+        "org_spread",
+        "module_spread",
+        "telemetry_flag",
+        "org_code",
+        "module_code",
+        "pattern_code",
+        "signal_stream"
+      ],
+      "feature_roles": {
+        "record_id": "identity_only",
+        "threat_rank": "fit_target_only"
+      },
+      "fit_population": "outer cycle fit rows AND parsed entry_friction == 1",
+      "gate": {
+        "individual_pilot_view_MAE_harm_max": 0.5,
+        "pilot_H12_MAE_harm_max": 0.05,
+        "pilot_primary_MAE_gain_min": 0.03,
+        "supported_group_n_min": 100,
+        "supported_tail_or_missing_MAE_harm_max": 0.25
+      },
+      "kaggle_used": false,
+      "minimum_support": {
+        "EF1_fit_rows_per_cutoff": 500,
+        "EF1_validation_rows_per_view": 100
+      },
+      "model": {
+        "class": "src.models.optimization_v2_regression.SparseHybridRegressor",
+        "design": "CSR sparse matrix; no densification; missing-stream indicator retained",
+        "early_stopping": false,
+        "estimator": "lightgbm.LGBMRegressor",
+        "objective": "regression_l1",
+        "parameters": {
+          "boosting_type": "gbdt",
+          "colsample_bytree": 1.0,
+          "deterministic": true,
+          "force_col_wise": true,
+          "learning_rate": 0.05,
+          "max_depth": -1,
+          "min_child_samples": 40,
+          "min_child_weight": 0.001,
+          "n_estimators": 400,
+          "n_jobs": 2,
+          "num_leaves": 31,
+          "objective": "regression_l1",
+          "random_state": 42,
+          "reg_alpha": 0.0,
+          "reg_lambda": 1.0,
+          "subsample": 1.0,
+          "subsample_freq": 0,
+          "verbosity": -1
+        },
+        "preprocessing": "structured parser/imputer/scaler/OHE and TF-IDF fit only on the EF1 outer-fit rows",
+        "recipe": "lgbm_sparse_l1",
+        "target_transform": "identity threat_rank in [0,100]",
+        "tfidf": {
+          "dtype": "float64",
+          "max_features": 20000,
+          "min_df": 2,
+          "ngram_range": [
+            1,
+            2
+          ],
+          "sublinear_tf": true
+        }
+      },
+      "prediction_policy": {
+        "EF1": "clip(0.75*incumbent + 0.25*clip(raw_EF1_expert,0,100),0,100)",
+        "card_wording_interpretation": "Clip the raw target-scale expert prediction to [0,100] before blending; clip the final blend again as a range guard.",
+        "fit_predictor_fits": 2,
+        "incumbent": "accepted v2_reg_sparse_lgb25, reconstructed row-exactly from frozen caches",
+        "other_rows": "incumbent copied exactly",
+        "subgroup_rank_or_calibration": "none"
+      },
+      "queue_recipe": {
+        "card_path": "reports/optimization_v3/research_backlog/cards/R14.md",
+        "change": "Train original sparse L1 model only on parsed entry_friction==1; predict raw target scale and clip0..100. Only EF1 rows use25% raw expert+75%incumbent; other rows exact incumbent. No subgroup re-ranking.",
+        "condition": "No additional dependency",
+        "evaluation": "STANDARD",
+        "evidence": [
+          "reports/optimization_v3/regression_diagnostics/diagnostics.json"
+        ],
+        "family": "specialist_EF",
+        "id": "R14",
+        "implementation": "NOT_IMPLEMENTED",
+        "in_priority_prefix": false,
+        "name": "EF1 sparse specialist",
+        "new_results": null,
+        "pilot_predictor_fits": 2,
+        "policy": "R_EF25_RAW",
+        "preflight_checks": [
+          ">=500 EF1 fit rows and>=100 subgroup validation rows/view; telemetry_flag is not EF"
+        ],
+        "priority": "P2",
+        "queue_order": 32,
+        "rationale": "Kontras residual EF berulang, tetapi subset lebih kecil dan conditional target bukan uniform 0\u00e2\u20ac\u201c100.",
+        "status": "PLANNED_NOT_RUN",
+        "task": "regression"
+      },
+      "resource_policy": {
+        "concurrent_training_jobs": 1,
+        "free_RAM_reserve_bytes": 2147483648,
+        "job_memory_cap_bytes": 6442450944,
+        "minimum_free_RAM_bytes": 4294967296,
+        "resource_estimate_is_observed": false,
+        "threads": 2
+      },
+      "support_snapshot": {
+        "definition": "EF1 is parsed entry_friction == 1; telemetry_flag is not used",
+        "entry_friction_parse_missing_rows": 0,
+        "fit": {
+          "55": {
+            "EF1_fit_rows": 3362,
+            "minimum_pass": true,
+            "outer_fit_rows": 12020
+          },
+          "67": {
+            "EF1_fit_rows": 9343,
+            "minimum_pass": true,
+            "outer_fit_rows": 29705
+          }
+        },
+        "minimum_fit_rows": 500,
+        "minimum_validation_rows_per_view": 100,
+        "score_cycle_counts": {
+          "55": {
+            "56": {
+              "EF1_rows": 183,
+              "rows": 564
+            },
+            "57": {
+              "EF1_rows": 310,
+              "rows": 962
+            },
+            "58": {
+              "EF1_rows": 434,
+              "rows": 1205
+            },
+            "59": {
+              "EF1_rows": 474,
+              "rows": 1383
+            },
+            "60": {
+              "EF1_rows": 525,
+              "rows": 1478
+            },
+            "61": {
+              "EF1_rows": 529,
+              "rows": 1632
+            },
+            "62": {
+              "EF1_rows": 545,
+              "rows": 1500
+            },
+            "63": {
+              "EF1_rows": 698,
+              "rows": 1883
+            },
+            "64": {
+              "EF1_rows": 615,
+              "rows": 1807
+            },
+            "65": {
+              "EF1_rows": 526,
+              "rows": 1567
+            },
+            "66": {
+              "EF1_rows": 533,
+              "rows": 1751
+            },
+            "67": {
+              "EF1_rows": 609,
+              "rows": 1953
+            }
+          },
+          "67": {
+            "68": {
+              "EF1_rows": 178,
+              "rows": 577
+            },
+            "69": {
+              "EF1_rows": 332,
+              "rows": 1079
+            },
+            "70": {
+              "EF1_rows": 533,
+              "rows": 1605
+            },
+            "71": {
+              "EF1_rows": 489,
+              "rows": 1689
+            },
+            "72": {
+              "EF1_rows": 546,
+              "rows": 1811
+            },
+            "73": {
+              "EF1_rows": 531,
+              "rows": 1880
+            },
+            "74": {
+              "EF1_rows": 527,
+              "rows": 1814
+            },
+            "75": {
+              "EF1_rows": 670,
+              "rows": 1957
+            },
+            "76": {
+              "EF1_rows": 600,
+              "rows": 1822
+            },
+            "77": {
+              "EF1_rows": 733,
+              "rows": 2335
+            },
+            "78": {
+              "EF1_rows": 646,
+              "rows": 2146
+            },
+            "79": {
+              "EF1_rows": 774,
+              "rows": 2188
+            }
+          }
+        },
+        "views": {
+          "H12": {
+            "EF1_rows": 12540,
+            "minimum_pass": true,
+            "rows": 38588
+          },
+          "H12_E": {
+            "EF1_rows": 5981,
+            "minimum_pass": true,
+            "rows": 17685
+          },
+          "H12_L": {
+            "EF1_rows": 6559,
+            "minimum_pass": true,
+            "rows": 20903
+          },
+          "W1": {
+            "EF1_rows": 1401,
+            "minimum_pass": true,
+            "rows": 4114
+          },
+          "W4": {
+            "EF1_rows": 1532,
+            "minimum_pass": true,
+            "rows": 4950
+          },
+          "primary": {
+            "EF1_rows": 2933,
+            "minimum_pass": true,
+            "rows": 9064
+          }
+        }
+      },
+      "test_or_sample_used": false
+    },
+    "scope": "official Regression Train/support/cache/resource/budget preflight; no candidate fit, prediction, label metric, Test, SampleSubmission, or Kaggle access",
+    "source_sha256": {
+      "scripts\\optimization_v3_batch1_r03.py": "683dbdcaaacdf40a4446a25ee2773682f97d1319eb62fafa5adeb253498235d0",
+      "scripts\\optimization_v3_batch1_r14.py": "18122ed85ab67354816dff78913d0a106537fc680cf829af838adb5116fe3518",
+      "scripts\\optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
+      "scripts\\optimization_v3_reg_diagnostics.py": "e2af49bb45353fca5bf0c14093be9b0f0b02afe24289a1b5c30dfb584bbd3f55",
+      "src\\models\\optimization_v2_regression.py": "b235cfd93c8cc0a207cfcea79892b925f9dfdfe515491a459d6ca1b6142cb590",
+      "src\\models\\optimization_v3_batch1.py": "746e12d408e74608e5b559bc7dcf4c10174df9f367859750987310adb6ae8ffd",
+      "src\\models\\optimization_v3_batch1_r03.py": "eec5407f1e2d86b18c2fb5dfd56e50de6acd858827e21ccb2038912c0def5d12",
+      "src\\models\\optimization_v3_batch1_r14.py": "b93fbb778dd1fb090a3518e2c0b139b8c509df9a9a83c9f382c8e746d4c1896f",
+      "src\\models\\regression_research_tabular.py": "674d7e52c485583729b8fe999dc133c39aae8dd85abd005a598e2caea9af99f9",
+      "src\\models\\regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+      "src\\models\\regression_round2_models.py": "f56f7ee2c337acdf2cbe7160719faf62b1e3d3470a7f656b044ce0890d677e09",
+      "src\\models\\round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+      "src\\utils\\paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555",
+      "tests\\test_optimization_v3_batch1_r03.py": "34dbfdbb01f371d1a6a8def875f02539fec8b2cca1f3cc5836706980e7c4db9b"
+    },
+    "status": "PREFLIGHT_PASS",
+    "support": {
+      "definition": "EF1 is parsed entry_friction == 1; telemetry_flag is not used",
+      "entry_friction_parse_missing_rows": 0,
+      "fit": {
+        "55": {
+          "EF1_fit_rows": 3362,
+          "minimum_pass": true,
+          "outer_fit_rows": 12020
+        },
+        "67": {
+          "EF1_fit_rows": 9343,
+          "minimum_pass": true,
+          "outer_fit_rows": 29705
+        }
+      },
+      "minimum_fit_rows": 500,
+      "minimum_validation_rows_per_view": 100,
+      "score_cycle_counts": {
+        "55": {
+          "56": {
+            "EF1_rows": 183,
+            "rows": 564
+          },
+          "57": {
+            "EF1_rows": 310,
+            "rows": 962
+          },
+          "58": {
+            "EF1_rows": 434,
+            "rows": 1205
+          },
+          "59": {
+            "EF1_rows": 474,
+            "rows": 1383
+          },
+          "60": {
+            "EF1_rows": 525,
+            "rows": 1478
+          },
+          "61": {
+            "EF1_rows": 529,
+            "rows": 1632
+          },
+          "62": {
+            "EF1_rows": 545,
+            "rows": 1500
+          },
+          "63": {
+            "EF1_rows": 698,
+            "rows": 1883
+          },
+          "64": {
+            "EF1_rows": 615,
+            "rows": 1807
+          },
+          "65": {
+            "EF1_rows": 526,
+            "rows": 1567
+          },
+          "66": {
+            "EF1_rows": 533,
+            "rows": 1751
+          },
+          "67": {
+            "EF1_rows": 609,
+            "rows": 1953
+          }
+        },
+        "67": {
+          "68": {
+            "EF1_rows": 178,
+            "rows": 577
+          },
+          "69": {
+            "EF1_rows": 332,
+            "rows": 1079
+          },
+          "70": {
+            "EF1_rows": 533,
+            "rows": 1605
+          },
+          "71": {
+            "EF1_rows": 489,
+            "rows": 1689
+          },
+          "72": {
+            "EF1_rows": 546,
+            "rows": 1811
+          },
+          "73": {
+            "EF1_rows": 531,
+            "rows": 1880
+          },
+          "74": {
+            "EF1_rows": 527,
+            "rows": 1814
+          },
+          "75": {
+            "EF1_rows": 670,
+            "rows": 1957
+          },
+          "76": {
+            "EF1_rows": 600,
+            "rows": 1822
+          },
+          "77": {
+            "EF1_rows": 733,
+            "rows": 2335
+          },
+          "78": {
+            "EF1_rows": 646,
+            "rows": 2146
+          },
+          "79": {
+            "EF1_rows": 774,
+            "rows": 2188
+          }
+        }
+      },
+      "views": {
+        "H12": {
+          "EF1_rows": 12540,
+          "minimum_pass": true,
+          "rows": 38588
+        },
+        "H12_E": {
+          "EF1_rows": 5981,
+          "minimum_pass": true,
+          "rows": 17685
+        },
+        "H12_L": {
+          "EF1_rows": 6559,
+          "minimum_pass": true,
+          "rows": 20903
+        },
+        "W1": {
+          "EF1_rows": 1401,
+          "minimum_pass": true,
+          "rows": 4114
+        },
+        "W4": {
+          "EF1_rows": 1532,
+          "minimum_pass": true,
+          "rows": 4950
+        },
+        "primary": {
+          "EF1_rows": 2933,
+          "minimum_pass": true,
+          "rows": 9064
+        }
+      }
+    },
+    "test_sample_kaggle_access": false,
+    "train_path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\data\\raw\\regression\\Train.csv",
+    "training_slot_preflight": {
+      "error": null,
+      "max_concurrent_jobs": 1,
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\experiments\\runs\\optimization_v3_batch1\\.training.lock",
+      "status": "PASS"
+    }
+  },
+  "resource_note": "Memory values are conservative estimates, not observed peak RSS.",
+  "status": "PILOT_COMPLETE_RETIRE",
+  "verification": {
+    "card_id": "R14",
+    "control_metric_population_audit": {
+      "R14_H12": {
+        "baseline_mae": 14.04753258299653,
+        "meaning": "Full H12 temporal control; equals the accepted V2 H12 incumbent reference.",
+        "rows": 38588
+      },
+      "R14_primary_W1_W4": {
+        "baseline_mae": 13.464395831218011,
+        "meaning": "Row-matched incumbent on the R14 STANDARD pilot primary population (W1+W4).",
+        "rows": 9064
+      },
+      "V2_fullsix_primary_reference": {
+        "asserted_equal_to_R14_primary": false,
+        "mae": 11.559390078665364,
+        "meaning": "Full-six-window V2 candidate metric; provenance only, not the R14 pilot primary comparator.",
+        "rows": 38588
+      },
+      "source": "reports/optimization_v2/regression_repr/fullsix.json"
+    },
+    "control_reconstruction": "0.75*cached Ridge25 + 0.25*independently recomputed rank50(cached sparse raw), clipped [0,100]",
+    "cutoffs": [
+      55,
+      67
+    ],
+    "decision": "RETIRE",
+    "expert_clipping_order": "Raw expert clipped to [0,100] before the 25% blend; final blend clipped again.",
+    "fit_population_independently_verified": true,
+    "fit_predictor_count": 2,
+    "freeze_signature": "aaf89c3f5364098ecf597a47125b5d7e1f5e13f02413340f89b6bc346d0b2622",
+    "frozen_runner_sha256": "18122ed85ab67354816dff78913d0a106537fc680cf829af838adb5116fe3518",
+    "gate_checks": {
+      "H12_harm_at_most_0_05": true,
+      "W1_W4_harm_at_most_0_5": true,
+      "primary_gain_at_least_0_03": true,
+      "supported_tail_or_missing_harm_at_most_0_25": false
+    },
+    "gate_definition": {
+      "individual_pilot_view_MAE_harm_max": 0.5,
+      "pilot_H12_MAE_harm_max": 0.05,
+      "pilot_primary_MAE_gain_min": 0.03,
+      "supported_group_n_min": 100,
+      "supported_tail_or_missing_MAE_harm_max": 0.25
+    },
+    "individual_pilot_view_harms": {
+      "W1": -0.0874814743390413,
+      "W4": -0.006253813834664612
+    },
+    "kaggle_used": false,
+    "maximum_supported_tail_or_missing_harm": 0.55586684745015,
+    "route_reconstruction": "EF1 only: 0.75*incumbent + 0.25*clipped raw expert; all others array-equal incumbent",
+    "sample_submission_used": false,
+    "status": "INDEPENDENT_QA_PASS",
+    "supported_subgroup_metrics": {
+      "H12_E": {
+        "EF0": {
+          "baseline_mae": 19.058255480186038,
+          "candidate_mae": 19.058255480186038,
+          "harm_candidate_minus_baseline": 0.0,
+          "n": 11704,
+          "supported": true
+        },
+        "EF1": {
+          "baseline_mae": 12.755274007107976,
+          "candidate_mae": 12.547298190668304,
+          "harm_candidate_minus_baseline": -0.20797581643967256,
+          "n": 5981,
+          "supported": true
+        },
+        "stream_missing": {
+          "baseline_mae": 14.676051957433712,
+          "candidate_mae": 14.690834821441438,
+          "harm_candidate_minus_baseline": 0.014782864007726104,
+          "n": 1203,
+          "supported": true
+        },
+        "tail_high_ge95": {
+          "baseline_mae": 13.636034398681975,
+          "candidate_mae": 13.946682582478275,
+          "harm_candidate_minus_baseline": 0.31064818379629955,
+          "n": 898,
+          "supported": true
+        },
+        "tail_low_le5": {
+          "baseline_mae": 22.849141746817015,
+          "candidate_mae": 22.849141746817015,
+          "harm_candidate_minus_baseline": 0.0,
+          "n": 880,
+          "supported": true
+        }
+      },
+      "H12_L": {
+        "EF0": {
+          "baseline_mae": 12.86212318119267,
+          "candidate_mae": 12.86212318119267,
+          "harm_candidate_minus_baseline": 0.0,
+          "n": 14344,
+          "supported": true
+        },
+        "EF1": {
+          "baseline_mae": 8.877081327188945,
+          "candidate_mae": 8.908415139798354,
+          "harm_candidate_minus_baseline": 0.03133381260940915,
+          "n": 6559,
+          "supported": true
+        },
+        "stream_missing": {
+          "baseline_mae": 14.018108843153694,
+          "candidate_mae": 14.053439927049565,
+          "harm_candidate_minus_baseline": 0.03533108389587092,
+          "n": 1375,
+          "supported": true
+        },
+        "tail_high_ge95": {
+          "baseline_mae": 7.35888147768514,
+          "candidate_mae": 7.91474832513529,
+          "harm_candidate_minus_baseline": 0.55586684745015,
+          "n": 1057,
+          "supported": true
+        },
+        "tail_low_le5": {
+          "baseline_mae": 9.27513828173195,
+          "candidate_mae": 9.27513828173195,
+          "harm_candidate_minus_baseline": 0.0,
+          "n": 1048,
+          "supported": true
+        }
+      },
+      "primary": {
+        "EF0": {
+          "baseline_mae": 14.875832528940338,
+          "candidate_mae": 14.875832528940338,
+          "harm_candidate_minus_baseline": 0.0,
+          "n": 6131,
+          "supported": true
+        },
+        "EF1": {
+          "baseline_mae": 10.513997469903453,
+          "candidate_mae": 10.380736247976277,
+          "harm_candidate_minus_baseline": -0.13326122192717627,
+          "n": 2933,
+          "supported": true
+        },
+        "stream_missing": {
+          "baseline_mae": 13.845691180212624,
+          "candidate_mae": 13.884445768696173,
+          "harm_candidate_minus_baseline": 0.03875458848354896,
+          "n": 734,
+          "supported": true
+        },
+        "tail_high_ge95": {
+          "baseline_mae": 9.012789399222996,
+          "candidate_mae": 9.333163387716317,
+          "harm_candidate_minus_baseline": 0.320373988493321,
+          "n": 462,
+          "supported": true
+        },
+        "tail_low_le5": {
+          "baseline_mae": 15.115137944294784,
+          "candidate_mae": 15.115137944294784,
+          "harm_candidate_minus_baseline": 0.0,
+          "n": 449,
+          "supported": true
+        }
+      }
+    },
+    "target_rows_used_for_fit": "outer temporal fit rows with parsed entry_friction == 1 only",
+    "test_data_used": false,
+    "verification_version": "R14 saved-output verifier v2",
+    "verifier_script_sha256": "c307d1328b84348092f6bf5aee78c4623f571eca797089f4fa9b501badfe67e5",
+    "views": {
+      "H12": {
+        "baseline_mae": 14.04753258299653,
+        "candidate_mae": 14.020623054614116,
+        "gain_positive_is_better": 0.026909528382413228,
+        "rows": 38588
+      },
+      "H12_E": {
+        "baseline_mae": 16.92661102497089,
+        "candidate_mae": 16.85627439177181,
+        "gain_positive_is_better": 0.07033663319908001,
+        "rows": 17685
+      },
+      "H12_L": {
+        "baseline_mae": 11.611685946326363,
+        "candidate_mae": 11.621517954980867,
+        "gain_positive_is_better": -0.009832008654504065,
+        "rows": 20903
+      },
+      "W1": {
+        "baseline_mae": 15.882111974427762,
+        "candidate_mae": 15.79463050008872,
+        "gain_positive_is_better": 0.0874814743390413,
+        "rows": 4114
+      },
+      "W4": {
+        "baseline_mae": 11.455005081083685,
+        "candidate_mae": 11.44875126724902,
+        "gain_positive_is_better": 0.006253813834664612,
+        "rows": 4950
+      },
+      "primary": {
+        "baseline_mae": 13.464395831218011,
+        "candidate_mae": 13.421274122931118,
+        "gain_positive_is_better": 0.04312170828689332,
+        "rows": 9064
+      }
+    }
+  }
+}

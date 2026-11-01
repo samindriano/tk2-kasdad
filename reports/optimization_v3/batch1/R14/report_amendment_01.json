@@ -1,0 +1,74 @@
+{
+  "amendment": 1,
+  "card_id": "R14",
+  "corrected_metrics": {
+    "H12": {
+      "baseline_mae": 14.04753258299653,
+      "candidate_mae": 14.020623054614116,
+      "gain_positive_is_better": 0.026909528382413228,
+      "rows": 38588
+    },
+    "W1": {
+      "baseline_mae": 15.882111974427762,
+      "candidate_mae": 15.79463050008872,
+      "gain_positive_is_better": 0.0874814743390413,
+      "rows": 4114
+    },
+    "W4": {
+      "baseline_mae": 11.455005081083685,
+      "candidate_mae": 11.44875126724902,
+      "gain_positive_is_better": 0.006253813834664612,
+      "rows": 4950
+    },
+    "decision": "RETIRE",
+    "gate_checks": {
+      "H12_harm_at_most_0_05": true,
+      "W1_W4_harm_at_most_0_5": true,
+      "primary_gain_at_least_0_03": true,
+      "supported_tail_or_missing_harm_at_most_0_25": false
+    },
+    "maximum_supported_tail_or_missing_harm": 0.55586684745015,
+    "primary": {
+      "baseline_mae": 13.464395831218011,
+      "candidate_mae": 13.421274122931118,
+      "gain_positive_is_better": 0.04312170828689332,
+      "rows": 9064
+    }
+  },
+  "fit_bundles": {
+    "R14_fit55.json": "276e4c2b391ad6aa1a6c9c65d93de16ff9a058896bfb7a02310c471f4bb33658",
+    "R14_fit55.npz": "84fa9470281239957f602f9dc44c7e38c1066adde8f4bb539789d12f1439eae7",
+    "R14_fit67.json": "2a5c453525ad308c6ca169d15b8f6d091a5024d37ea669d47e06f91c25034efa",
+    "R14_fit67.npz": "8ff4405eca4e9c6ff5455a07ea6c2b216ff9e727282214619b1495e7f2b00e0d"
+  },
+  "fit_bundles_reused_without_refit": true,
+  "freeze_signature": "aaf89c3f5364098ecf597a47125b5d7e1f5e13f02413340f89b6bc346d0b2622",
+  "frozen_protocol_unchanged": true,
+  "frozen_runner_sha256": "18122ed85ab67354816dff78913d0a106537fc680cf829af838adb5116fe3518",
+  "no_model_or_frozen_protocol_changed": true,
+  "no_test_sample_or_kaggle_used": true,
+  "v1_report_defects": [
+    {
+      "correction": "Verify the R14 primary against its exact row-matched W1+W4 incumbent, and retain the full-six V2 number as provenance only.",
+      "evidence": {
+        "R14_row_matched_W1_W4": {
+          "baseline_mae": 13.464395831218011,
+          "rows": 9064
+        },
+        "V2_fullsix": {
+          "mae": 11.559390078665364,
+          "path": "reports/optimization_v2/regression_repr/fullsix.json",
+          "rows": 38588,
+          "sha256": "a9686473998722b8f86a0f6a4489b4e3a75a6b6ba20c661ac564e6a5e61aea48"
+        }
+      },
+      "issue": "The primary baseline assertion compared the 9,064-row W1+W4 pilot denominator to a 38,588-row V2 full-six metric."
+    },
+    {
+      "correction": "Aggregate supported tail/missing harm values directly across primary, H12_E, and H12_L.",
+      "issue": "The subgroup gate aggregation indexed each group row as if it were a nested mapping, causing KeyError after valid pilot bundles had been saved."
+    }
+  ],
+  "verification_version": "R14 saved-output verifier v2",
+  "verifier_script_sha256": "c307d1328b84348092f6bf5aee78c4623f571eca797089f4fa9b501badfe67e5"
+}
