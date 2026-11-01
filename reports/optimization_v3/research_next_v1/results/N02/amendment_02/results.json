@@ -1,0 +1,281 @@
+{
+  "card_id": "N02",
+  "decision": "ADVANCE",
+  "fit_accounting": {
+    "fit_receipts": {
+      "N02:PILOT:55:no_sketch": {
+        "receipt_sha256": "14c3f05bdea1bb3ad35dadac0e47235688222a035f266217507a2e68d829c6bf",
+        "status": "FIT_SAVED"
+      },
+      "N02:PILOT:55:sketch": {
+        "receipt_sha256": "1e070124a6f8ac51da02225e3e149c220b3bbae299d1d3a85366b63fef476220",
+        "status": "FIT_SAVED"
+      },
+      "N02:PILOT:67:no_sketch": {
+        "receipt_sha256": "e1cf93ede5048c0451ae564c468428948308bf72fd2c74e671724101828dca3b",
+        "status": "FIT_SAVED"
+      },
+      "N02:PILOT:67:sketch": {
+        "receipt_sha256": "0e99a11ba5ac776c2f0e17030fd5b95fe866bf01ad0dc3474c61604bd5229c3e",
+        "status": "FIT_SAVED"
+      }
+    },
+    "new_phase_budget": {
+      "active_reserved": 8,
+      "authorized_cap": 60,
+      "category_reservations": {
+        "continuation": 0,
+        "control_replay": 0,
+        "pilot": 8,
+        "technical_retry": 0
+      },
+      "event_rows": 21,
+      "failed_or_interrupted_started": 0,
+      "released_unused": 0,
+      "remaining_capacity_after_reservations": 52,
+      "reserved_total": 8,
+      "saved": 8,
+      "started_and_consumed": 8
+    },
+    "official_estimator_fits": 4,
+    "reserved_fit_count": 4,
+    "synthetic_fits_excluded": true
+  },
+  "freeze_signature": "a1303fc66fb7408d1ebfbf29fa23bb20640e906a6e59ac2b58b11df1292853a8",
+  "gate": {
+    "card_id": "N02",
+    "checks": {
+      "H12_harm_at_most_0_001": true,
+      "W1_harm_at_most_0_005": true,
+      "W4_harm_at_most_0_005": true,
+      "primary_gain_at_least_0_0005": true,
+      "primary_gain_over_no_sketch_at_least_0_0002": true,
+      "supported_primary_subgroup_guards": true
+    },
+    "decision": "ADVANCE",
+    "selection_rule": "N02 continuation eligibility requires every frozen pilot gate and at least 0.0002 primary Macro F1 gain over the separately fitted no-sketch control; compare with N01 only after both pilots are complete.",
+    "status": "PASS",
+    "supported_primary_subgroup_failures": [],
+    "thresholds": {
+      "full_late_primary_gain_strictly_positive": true,
+      "full_nonnegative_windows_min": 4,
+      "guard_fields": [
+        "entry_friction",
+        "stream_availability",
+        "fit_defined_text_load_quartile"
+      ],
+      "h12_harm_max": 0.001,
+      "individual_primary_window_harm_max": 0.005,
+      "matched_control_primary_gain_min": 0.0002,
+      "minimum_each_class_n": 30,
+      "minimum_group_n": 200,
+      "positive_recall_harm_max": 0.02,
+      "primary_gain_min": 0.0005,
+      "subgroup_f1_harm_max": 0.01
+    }
+  },
+  "independent_verification": {
+    "bundle_receipts": {
+      "N02:PILOT:55:no_sketch": "14c3f05bdea1bb3ad35dadac0e47235688222a035f266217507a2e68d829c6bf",
+      "N02:PILOT:55:sketch": "1e070124a6f8ac51da02225e3e149c220b3bbae299d1d3a85366b63fef476220",
+      "N02:PILOT:67:no_sketch": "e1cf93ede5048c0451ae564c468428948308bf72fd2c74e671724101828dca3b",
+      "N02:PILOT:67:sketch": "0e99a11ba5ac776c2f0e17030fd5b95fe866bf01ad0dc3474c61604bd5229c3e"
+    },
+    "fit_population_by_origin": {
+      "55": 12020,
+      "67": 29705
+    },
+    "kaggle_access": false,
+    "metrics": "independent binary confusion-count Macro F1 at threshold 0.50",
+    "route_reconstruction": "PASS",
+    "sample_submission_used": false,
+    "score_labels_passed_to_fit": false,
+    "score_population_by_origin": {
+      "55": 17685,
+      "67": 20903
+    },
+    "status": "INDEPENDENT_QA_PASS",
+    "test_data_used": false
+  },
+  "kaggle_access": false,
+  "no_test_or_kaggle_used": true,
+  "primary_group_summary": {
+    "supported_gate_failures": [],
+    "supported_group_count": 16,
+    "unsupported_group_count": 0
+  },
+  "profile": "STANDARD",
+  "sample_submission_used": false,
+  "source_sha256": {
+    "data/raw/classification/Train.csv": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "experiments/optimization_v3/research_next_v1/frozen/N00/amendment_05/freeze.json": "da99d3751f5e09b023d83e319f77ba2f60f5a96ae46fc4a21add1bb8d316d8a3",
+    "experiments/optimization_v3/research_next_v1/frozen/N01/freeze.json": "ae40427eadd6a02d92bd1bc7b4c189e56867455129df50873653d735a4c3e437",
+    "experiments/optimization_v3/research_next_v1/frozen/N02/freeze.json": "484fbca9f7b6c38886567e4f6e649139d0d929f5e05d6facd893757baa7b9563",
+    "experiments/optimization_v3/research_next_v1/queue.json": "c22c13ea0ead142e32bfe7abc2655ec19c608d1f537db721e35dfc4c38b8eb45",
+    "experiments/runs/optimization_v3_batch1/C16/C16_fit55.json": "e569229e0586bb792b141b64109f8753e97bb6cf8902d94d16b8a114d8d67e20",
+    "experiments/runs/optimization_v3_batch1/C16/C16_fit55.npz": "7d900c7f66ebcd6f0fcb9d059534bb15cfa47d8073f1119bf046d4a9d0fd54c9",
+    "experiments/runs/optimization_v3_batch1/C16/C16_fit67.json": "034df0ee0fea7302906638e34fb991fae2a09f1c0f5fba29ed8d469a58c8bf6f",
+    "experiments/runs/optimization_v3_batch1/C16/C16_fit67.npz": "7aa025dc1c49d8a76c63d5e8efe27dcbafb600bf0f64a8ed3cbec8db82d31ab3",
+    "experiments/runs/optimization_v3_batch1/batch_ledger.jsonl": "544c3a255358bc886ec6b6be646775eca495c35ffe0720097394f53ba89d4f44",
+    "reports/optimization_v3/final_continuation/C16/verification.json": "c78f312333854e27024d76750e27f701892ee2bc26f839957dc156aed0c2f3c7",
+    "reports/optimization_v3/research_next_v1/queue_readiness.json": "44966873a5d7938eee3d8642ec583561d22143f836a9cc125a02150c0fc819ce",
+    "reports/optimization_v3/research_next_v1/results/N00/amendment_05/summary.json": "e7ff5a4c145f54b59c0ad16feaad09e2dcd82ef830c81ec0faff3e04f83a5e9b",
+    "reports/optimization_v3/research_next_v1/results/N01/preflight.json": "31879cc9bcea5f8f2850df15e8adf3cb5bfe70d2bbaccd22ec65267707806d95",
+    "scripts/optimization_v3_batch1_c16.py": "82d7737a05c52addd2a15a6f385a406d614e8ff792e826bcacb7a7d8f79b8ee0",
+    "scripts/optimization_v3_research_next_n00.py": "dc81b0089d8acd5f4a8c12a8db67c94ab8d24764b730d99144208e6e09f6d03b",
+    "scripts/optimization_v3_research_next_n01.py": "55b83477db45555b0bee2686ee62831bf33f0e423ce9eabb62cb52bd79fb2461",
+    "scripts/optimization_v3_research_next_n02.py": "c6fe2e2322ba8d59f8ee54a145c752a0997ad4e59ce53fccc6a9ecbf196f3d89",
+    "scripts/optimization_v3_research_next_preflight.py": "5423a0023862d04201bfc37c8973b15fddcafa40e8cb8a235329648a917dba6b",
+    "src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+    "src/models/optimization_v3_batch1_c16.py": "6eeac099900911e2a876273d9a72c9475a329d89dac889eebe25a431190ab8d1",
+    "src/models/optimization_v3_sparse_classification.py": "fb5b013fa59d0b748a3386dae90cb14789a0b4cbd9a5c7a115d5ddc3c443d5a3",
+    "src/models/regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+    "src/models/regression_round2_models.py": "f56f7ee2c337acdf2cbe7160719faf62b1e3d3470a7f656b044ce0890d677e09",
+    "src/models/research_next_budget.py": "b19ca985ff28a2f3c80415bf48374e04ad064b003876f1f6d6c077dab7ed73a8",
+    "src/models/research_next_contract.py": "486a3f144afbfc783a90ce3948f11cee69d702a05dd3ac113e93b3bda53d7185",
+    "src/models/research_next_n01.py": "480e0a958c7ac060ce7c3f921d071020a50d0d0d13c952d7a3860d3ea7c1ae37",
+    "src/models/research_next_n02.py": "638bade6b81b9c07391c5eca8688f906e5cfc000a8b5ee1fb38a2af3400b29fd",
+    "src/models/round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+    "src/utils/paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555",
+    "tests/test_research_next_n01.py": "b9cd6c5090cc240598c1f811a5dd93dd95d2f4c6a88eb69de9b3f26126b91305",
+    "tests/test_research_next_n02.py": "6e5e3131c4127fd3fc0d24291101382ed63e67e95c5c53e39e9fb8fd9b8d5c65"
+  },
+  "status": "PILOT_COMPLETE_ADVANCE",
+  "task": "classification",
+  "test_data_used": false,
+  "threshold": 0.5,
+  "views": {
+    "H12": {
+      "candidate": {
+        "fn": 4302,
+        "fp": 2487,
+        "macro_f1": 0.8036553129938825,
+        "n": 38588,
+        "positive_recall": 0.692296688362778,
+        "tn": 22120,
+        "tp": 9679
+      },
+      "current_route": {
+        "fn": 4099,
+        "fp": 2775,
+        "macro_f1": 0.8029655654017788,
+        "n": 38588,
+        "positive_recall": 0.7068163936771332,
+        "tn": 21832,
+        "tp": 9882
+      },
+      "gain_candidate_vs_current": 0.0006897475921037177,
+      "gain_candidate_vs_no_sketch": 0.0012054663362955909,
+      "n_unique_rows": 38588,
+      "no_sketch_control": {
+        "fn": 4090,
+        "fp": 2807,
+        "macro_f1": 0.8024498466575869,
+        "n": 38588,
+        "positive_recall": 0.707460124454617,
+        "tn": 21800,
+        "tp": 9891
+      },
+      "prediction_disagreement_vs_current": 0.013590485269685993
+    },
+    "W1": {
+      "candidate": {
+        "fn": 559,
+        "fp": 200,
+        "macro_f1": 0.8039475745424671,
+        "n": 4114,
+        "positive_recall": 0.6781807714450202,
+        "tn": 2177,
+        "tp": 1178
+      },
+      "current_route": {
+        "fn": 556,
+        "fp": 207,
+        "macro_f1": 0.8031600548696844,
+        "n": 4114,
+        "positive_recall": 0.6799078871617732,
+        "tn": 2170,
+        "tp": 1181
+      },
+      "gain_candidate_vs_current": 0.0007875196727826772,
+      "gain_candidate_vs_no_sketch": 0.0020038405271218807,
+      "n_unique_rows": 4114,
+      "no_sketch_control": {
+        "fn": 557,
+        "fp": 211,
+        "macro_f1": 0.8019437340153452,
+        "n": 4114,
+        "positive_recall": 0.6793321819228555,
+        "tn": 2166,
+        "tp": 1180
+      },
+      "prediction_disagreement_vs_current": 0.009590244165564326
+    },
+    "W4": {
+      "candidate": {
+        "fn": 400,
+        "fp": 328,
+        "macro_f1": 0.8417436063731882,
+        "n": 4950,
+        "positive_recall": 0.784133837021047,
+        "tn": 2769,
+        "tp": 1453
+      },
+      "current_route": {
+        "fn": 387,
+        "fp": 345,
+        "macro_f1": 0.8414177014153625,
+        "n": 4950,
+        "positive_recall": 0.7911494873178629,
+        "tn": 2752,
+        "tp": 1466
+      },
+      "gain_candidate_vs_current": 0.0003259049578256956,
+      "gain_candidate_vs_no_sketch": -0.0009862878304186529,
+      "n_unique_rows": 4950,
+      "no_sketch_control": {
+        "fn": 378,
+        "fp": 349,
+        "macro_f1": 0.8427298942036069,
+        "n": 4950,
+        "positive_recall": 0.7960064759848894,
+        "tn": 2748,
+        "tp": 1475
+      },
+      "prediction_disagreement_vs_current": 0.010133326853241628
+    },
+    "primary": {
+      "candidate": {
+        "fn": 959,
+        "fp": 528,
+        "macro_f1": 0.8244958704111787,
+        "n": 9064,
+        "positive_recall": 0.7328690807799443,
+        "tn": 4946,
+        "tp": 2631
+      },
+      "current_route": {
+        "fn": 943,
+        "fp": 552,
+        "macro_f1": 0.8239724981677496,
+        "n": 9064,
+        "positive_recall": 0.7373259052924791,
+        "tn": 4922,
+        "tp": 2647
+      },
+      "gain_candidate_vs_current": 0.0005233722434290211,
+      "gain_candidate_vs_no_sketch": 0.0003576455798726119,
+      "n_unique_rows": 9064,
+      "no_sketch_control": {
+        "fn": 935,
+        "fp": 560,
+        "macro_f1": 0.824138224831306,
+        "n": 9064,
+        "positive_recall": 0.7395543175487466,
+        "tn": 4914,
+        "tp": 2655
+      },
+      "prediction_disagreement_vs_current": 0.009886830584805571
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "card_id": "N02",
+  "checks": {
+    "H12_harm_at_most_0_001": true,
+    "W1_harm_at_most_0_005": true,
+    "W4_harm_at_most_0_005": true,
+    "primary_gain_at_least_0_0005": true,
+    "primary_gain_over_no_sketch_at_least_0_0002": true,
+    "supported_primary_subgroup_guards": true
+  },
+  "decision": "ADVANCE",
+  "selection_rule": "N02 continuation eligibility requires every frozen pilot gate and at least 0.0002 primary Macro F1 gain over the separately fitted no-sketch control; compare with N01 only after both pilots are complete.",
+  "status": "PASS",
+  "supported_primary_subgroup_failures": [],
+  "thresholds": {
+    "full_late_primary_gain_strictly_positive": true,
+    "full_nonnegative_windows_min": 4,
+    "guard_fields": [
+      "entry_friction",
+      "stream_availability",
+      "fit_defined_text_load_quartile"
+    ],
+    "h12_harm_max": 0.001,
+    "individual_primary_window_harm_max": 0.005,
+    "matched_control_primary_gain_min": 0.0002,
+    "minimum_each_class_n": 30,
+    "minimum_group_n": 200,
+    "positive_recall_harm_max": 0.02,
+    "primary_gain_min": 0.0005,
+    "subgroup_f1_harm_max": 0.01
+  }
+}
