@@ -1,0 +1,20 @@
+{
+  "card_id": "R10",
+  "status": "PASS",
+  "verification_scope": "prerequisite_only",
+  "method": "independent read-only audit plus main-agent recheck",
+  "checks": {
+    "R09_result_and_gate_hashes_recorded": true,
+    "R09_primary_and_H12_values_match_saved_verification": true,
+    "both_origin_supported_tail_failures_meet_n_min_100": true,
+    "no_R10_fit_or_budget_reservation": true,
+    "official_test_read": false,
+    "kaggle_access": false
+  },
+  "evidence": {
+    "R09_results_sha256": "17fed77b36238dab98527fc641b44e7d91a489892df5d99c018aba27832314e4",
+    "R09_gate_sha256": "1142ef6f7342944f8ceef52757fb96d4fcc3533a940358389acccc5fb358e1ef",
+    "R09_verification_sha256": "83553d1a6cd31e343c2e72960be967bf60ae95e1defe06092ab3d968c2f75f3f"
+  },
+  "warning": "PASS covers prerequisite audit only; no R10 model or prediction was verified."
+}

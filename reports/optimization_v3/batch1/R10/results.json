@@ -1,0 +1,58 @@
+{
+  "card_id": "R10",
+  "status": "SKIPPED_PREREQUISITE",
+  "decision": "SKIPPED",
+  "candidate_fit_performed": false,
+  "predictor_fits_reserved": 0,
+  "predictor_fit_attempts": 0,
+  "successful_predictor_fits": 0,
+  "source_repo_head": "9e88b5b",
+  "reason": "R09 condition failed: primary and H12 gains were negative and supported tails worsened at both origins.",
+  "r09_evidence": {
+    "results_sha256": "17fed77b36238dab98527fc641b44e7d91a489892df5d99c018aba27832314e4",
+    "gate_sha256": "1142ef6f7342944f8ceef52757fb96d4fcc3533a940358389acccc5fb358e1ef",
+    "verification_sha256": "83553d1a6cd31e343c2e72960be967bf60ae95e1defe06092ab3d968c2f75f3f",
+    "official_regression_train_sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+    "freeze_signature": "c9882d51ac48f5fc2d0a6869e630f6e00b0d9c1dc5747917cd0bd20b779dbc7b",
+    "primary_gain": {
+      "mae_gain_positive_is_better": -0.03642547339713076,
+      "rows": 9064
+    },
+    "H12_gain": {
+      "mae_gain_positive_is_better": -0.08165452770117554,
+      "rows": 38588
+    },
+    "W1_gain": {
+      "mae_gain_positive_is_better": 0.0742228843929702,
+      "rows": 4114
+    },
+    "W4_gain": {
+      "mae_gain_positive_is_better": -0.12838655298268442,
+      "rows": 4950
+    },
+    "supported_tail_harm_W1": {
+      "low": {
+        "mae_harm": 1.980956892663663,
+        "n": 205
+      },
+      "high": {
+        "mae_harm": 2.80576674313504,
+        "n": 213
+      }
+    },
+    "supported_tail_harm_W4": {
+      "low": {
+        "mae_harm": 3.333156855403727,
+        "n": 244
+      },
+      "high": {
+        "mae_harm": 2.871956531254402,
+        "n": 249
+      }
+    }
+  },
+  "official_test_read": false,
+  "kaggle_access": false,
+  "ram_observation_gib_available": 8.86,
+  "ram_note": "Observed 2026-11-01 during prerequisite review; no training job was started."
+}

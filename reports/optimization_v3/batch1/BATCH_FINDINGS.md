@@ -1,8 +1,8 @@
 # V3 Batch 1 — rolling findings
 
-Snapshot: 2026-11-01, after C11 pilot resume, R08/C20 completion, R19's row-matched revision 2 pilot and independent re-audit, C15's verified pilot, R22's pilot plus independent audit, R20's independently verified retirement, C12's independently audited retirement, R06's independently audited advance, and R07's independently audited retirement. This is a rolling index built from the canonical queue and per-card reports present in the repository; it does not claim that missing reports were executed or validated.
+Snapshot: 2026-11-01, after C11 pilot resume, R08/C20 completion, R19's row-matched revision 2 pilot and independent re-audit, C15's verified pilot, R22's pilot plus independent audit, R20's independently verified retirement, C12's independently audited retirement, R06's independently audited advance, R07's independently audited retirement, and R10/R13 prerequisite skips. This is a rolling index built from the canonical queue and per-card reports present in the repository; it does not claim that missing reports were executed or validated.
 
-Queue closure: **30/45 cards (66.7%)** now have terminal pilot decisions with saved gates; this includes R19, C15, R22, R20, C12, R06, and R07 and excludes cards still awaiting QA or missing a gate. This is pilot-card progress, not the later conditional continuations and finalist stage.
+Queue closure: **30/45 cards (66.7%)** have terminal pilot decisions with saved gates. Two additional cards, R10 and R13, are explicitly skipped because their predeclared prerequisites failed or were not evidenced; they used zero predictor fits and are not counted as pilots. This is pilot-card progress, not the later conditional continuations and finalist stage.
 
 For each row, metrics are copied from that card’s `results.json`; statuses come from its saved `verification.json` and `gate.json`. `NO_REPORT` and `PARTIAL` remain unresolved. Gains use each card’s declared pilot view, so raw gains from different populations are not directly ranked.
 
@@ -50,8 +50,8 @@ For each row, metrics are copied from that card’s `results.json`; statuses com
 | 40 | **C12** | PILOT_COMPLETE_RETIRE; INDEPENDENT_QA_PASS; budget reconciled | RETIRE | 9064; +0.001177 | 38588; -0.001155 | 2 / 0 | [results](C12/results.json), [QA](C12/verification.json), [independent QA](C12/independent_qa.json), [gate](C12/gate.json), [attempts](C12/attempts.jsonl), [budget](C12/budget_reconciliation.json), [summary](C12/summary.json), [freeze revision 2](../../../experiments/optimization_v3/batch1/C12/freeze_revision_02.json) |
 | 41 | **R06** | PILOT_COMPLETE_ADVANCE; INDEPENDENT_QA_PASS; budget reconciled | ADVANCE | 9064; +0.061726 | 38588; +0.103260 | 2 / 0 | [results](R06/results.json), [QA](R06/verification.json), [independent QA](R06/independent_qa.json), [gate](R06/gate.json), [attempts](R06/attempts.jsonl), [budget](R06/budget_reconciliation.json), [summary](R06/summary.md), [freeze revision 2](../../../experiments/optimization_v3/batch1/R06/freeze_revision_02.json) |
 | 42 | **R07** | PILOT_COMPLETE_RETIRE; INDEPENDENT_QA_PASS; budget reconciled | RETIRE | 9064; -0.084132 | 38588; -0.085097 | 2 / 0 | [results](R07/results.json), [QA](R07/verification.json), [independent QA](R07/independent_qa.json), [gate](R07/gate.json), [attempts](R07/attempts.jsonl), [budget](R07/budget_reconciliation.json), [summary](R07/summary.md), [freeze](../../../experiments/optimization_v3/batch1/R07/freeze.json) |
-| 43 | **R10** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
-| 44 | **R13** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
+| 43 | **R10** | SKIPPED_PREREQUISITE; audit PASS; 0 fits | SKIPPED | — | — | 0 / 0 | [results](R10/results.json), [QA](R10/verification.json), [gate](R10/gate.json), [summary](R10/summary.md) |
+| 44 | **R13** | SKIPPED_PREREQUISITE; audit PASS; 0 fits | SKIPPED | — | — | 0 / 0 | [results](R13/results.json), [QA](R13/verification.json), [gate](R13/gate.json), [summary](R13/summary.md) |
 | 45 | **R11** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
 
 ## C05 — historical lane note

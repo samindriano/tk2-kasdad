@@ -1,0 +1,20 @@
+{
+  "card_id": "R13",
+  "status": "PASS",
+  "verification_scope": "prerequisite_only",
+  "method": "independent read-only audit plus main-agent recheck",
+  "checks": {
+    "R12_primary_and_H12_metrics_match_saved_artifacts": true,
+    "R12_aggregate_MAE_gate_passes": true,
+    "required_per_origin_spearman_absent_from_saved_artifacts": true,
+    "no_R13_fit_or_budget_reservation": true,
+    "official_test_read": false,
+    "kaggle_access": false
+  },
+  "evidence": {
+    "R12_pilot_sha256": "50d053e7fbdbcce1d063a2353b252d0557bdf20f7de04eb02d5339cf00aac169",
+    "R12_gate_sha256": "fa70bf56878c7e63bfc9170feda074a1b4a500a2340e1dae73536daaa31c5f50",
+    "R12_verification_sha256": "72bc362d4520977ab0a80aae517c56c26d9f5eb60657fe95f3491999ec2ef78e"
+  },
+  "warning": "PASS covers prerequisite audit only; no R13 model or prediction was verified."
+}
