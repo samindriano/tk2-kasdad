@@ -1,0 +1,272 @@
+{
+  "calibration": "minimize sum(abs(y - intercept - slope * champion_oof_prediction)); slope >= 0",
+  "card_id": "R17",
+  "card_sha256": "7ac17b1e0e9e901b4a1a11c9c9110831b1af2c9bcef8a784fb2e4039777bcc7e",
+  "full_six_continuation_if_pilot_gate_passes": {
+    "additional_solve_count": 2,
+    "calibration_solve_cutoffs": [
+      63,
+      71
+    ],
+    "cutoff_55_fallback": true,
+    "cutoff_59_fallback_below_minimum": true,
+    "no_external_promotion_from_late_pilot": true,
+    "reuse_frozen_pilot_calibrations": [
+      67,
+      75
+    ],
+    "windows": {
+      "W1": [
+        56,
+        59
+      ],
+      "W2": [
+        60,
+        63
+      ],
+      "W3": [
+        64,
+        67
+      ],
+      "W4": [
+        68,
+        71
+      ],
+      "W5": [
+        72,
+        75
+      ],
+      "W6": [
+        76,
+        79
+      ]
+    }
+  },
+  "gates": {
+    "full_H12_MAE_harm_max": 0.05,
+    "full_nonnegative_windows_min": 4,
+    "full_primary_MAE_gain_min": 0.03,
+    "individual_pilot_view_MAE_harm_max": 0.5,
+    "pilot_H12_MAE_harm_max": 0.05,
+    "pilot_primary_MAE_gain_min": 0.03,
+    "supported_group_n_min": 100,
+    "supported_tail_or_missing_MAE_harm_max": 0.25
+  },
+  "history_policy": {
+    "exact_champion_oof_cycles": "56..outer cutoff inclusive",
+    "minimum_rows": 5000,
+    "no_champion_oof_fabrication_for_cycles_52_55": true,
+    "source_cutoff_by_cycle": {
+      "56": 55,
+      "57": 55,
+      "58": 55,
+      "59": 55,
+      "60": 59,
+      "61": 59,
+      "62": 59,
+      "63": 59,
+      "64": 63,
+      "65": 63,
+      "66": 63,
+      "67": 63,
+      "68": 67,
+      "69": 67,
+      "70": 67,
+      "71": 67,
+      "72": 71,
+      "73": 71,
+      "74": 71,
+      "75": 71,
+      "76": 75,
+      "77": 75,
+      "78": 75,
+      "79": 75
+    },
+    "support_by_cutoff": {
+      "55": {
+        "complete_cycle_support": true,
+        "cycles": [],
+        "fallback": true,
+        "rows": 0,
+        "solver_minimum_met": false
+      },
+      "59": {
+        "complete_cycle_support": true,
+        "cycles": [
+          56,
+          57,
+          58,
+          59
+        ],
+        "fallback": true,
+        "rows": 4114,
+        "solver_minimum_met": false
+      },
+      "63": {
+        "complete_cycle_support": true,
+        "cycles": [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63
+        ],
+        "fallback": false,
+        "rows": 10607,
+        "solver_minimum_met": true
+      },
+      "67": {
+        "complete_cycle_support": true,
+        "cycles": [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67
+        ],
+        "fallback": false,
+        "rows": 17685,
+        "solver_minimum_met": true
+      },
+      "71": {
+        "complete_cycle_support": true,
+        "cycles": [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71
+        ],
+        "fallback": false,
+        "rows": 22635,
+        "solver_minimum_met": true
+      },
+      "75": {
+        "complete_cycle_support": true,
+        "cycles": [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75
+        ],
+        "fallback": false,
+        "rows": 30097,
+        "solver_minimum_met": true
+      }
+    }
+  },
+  "official_train_target_values_in_recipe": false,
+  "pilot": {
+    "candidate_metric_freeze": true,
+    "evaluation": "LATE: W4+W6 primary, H12_L and separate exact-champion H12_E",
+    "future_score_labels_passed_to_adapter": false,
+    "solver_calls": 2,
+    "views": {
+      "H12_L": [
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "W4": [
+        [
+          67,
+          68,
+          71
+        ]
+      ],
+      "W6": [
+        [
+          75,
+          76,
+          79
+        ]
+      ],
+      "primary": [
+        [
+          67,
+          68,
+          71
+        ],
+        [
+          75,
+          76,
+          79
+        ]
+      ]
+    }
+  },
+  "prediction_policy": {
+    "fallback": "return exact champion predictions unchanged",
+    "full_six_cutoffs": [
+      55,
+      59,
+      63,
+      67,
+      71,
+      75
+    ],
+    "future_prediction": "clip(intercept + slope * exact champion prediction, 0, 100)",
+    "pilot_cutoffs": [
+      67,
+      75
+    ]
+  },
+  "preprocessing_fits": 0,
+  "queue_sha256": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+  "resource_policy": {
+    "dense_lp_storage_forbidden": true,
+    "estimated_additional_solver_rss_gib": 1.0,
+    "maximum_job_rss_gib": 6.0,
+    "minimum_free_ram_gib": 4.0,
+    "sparse_lp_matrix_bytes_upper_estimate_at_max_history_rows_30097": 3370872,
+    "system_reserve_gib": 2.0
+  },
+  "schema_version": 1,
+  "solver": {
+    "failure_policy": "exact champion identity fallback",
+    "implementation": "scipy.optimize.linprog(method=highs)",
+    "sparse_constraints": true,
+    "threads": 2,
+    "variables": "intercept (free), slope (nonnegative), one nonnegative absolute residual per history row"
+  },
+  "test_or_sample_used": false
+}

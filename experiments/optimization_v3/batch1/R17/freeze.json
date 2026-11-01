@@ -1,0 +1,627 @@
+{
+  "card_id": "R17",
+  "created_at_utc": "2026-11-01T00:12:30.184777+00:00",
+  "identity": {
+    "card": {
+      "card_path": "reports/optimization_v3/research_backlog/cards/R17.md",
+      "change": "On exact champion prequential OOF56..cutoff, solve min sum|y-a-b*p| with b>=0 inside LP; use returned a,b and clip0..100. Require5000 OOF rows. If solver fails fallback incumbent. No fit51 champion fabrication; early cutoffs fallback.",
+      "condition": "No additional dependency",
+      "evaluation": "LATE",
+      "evidence": [
+        "reports/optimization_v3/regression_residual/verification.json",
+        "reports/optimization_v3/regression_diagnostics/diagnostics.json"
+      ],
+      "family": "calibration_affine",
+      "id": "R17",
+      "implementation": "NOT_IMPLEMENTED",
+      "in_priority_prefix": true,
+      "name": "OOF nonnegative affine L1 calibration",
+      "new_results": null,
+      "pilot_predictor_fits": 2,
+      "policy": "R_CALIBRATE",
+      "preflight_checks": [
+        "Strict OOF score chronology; evaluate67/75 W4+W6 and H12_L, early H12 unchanged"
+      ],
+      "priority": "P2",
+      "queue_order": 20,
+      "rationale": "Peta L1 berdimensi rendah menguji skala/lokasi; slope nonnegatif mempertahankan urutan.",
+      "status": "PLANNED_NOT_RUN",
+      "task": "regression"
+    },
+    "evaluation_views": {
+      "H12_L": [
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "W4": [
+        [
+          67,
+          68,
+          71
+        ]
+      ],
+      "W6": [
+        [
+          75,
+          76,
+          79
+        ]
+      ],
+      "primary": [
+        [
+          67,
+          68,
+          71
+        ],
+        [
+          75,
+          76,
+          79
+        ]
+      ]
+    },
+    "feature_names": [
+      "cycle_code"
+    ],
+    "input_sha256": {
+      "accepted_regression_manifest": "dd166e92089f24978244496a9a0afabc0d06551dbdc326579a7c898a8844e19a",
+      "cache_only_diagnostics": "8d634debd1dbc6a3eed5250593b9c213570b4fb139b0b9a623a8d704159916df",
+      "canonical_card": "990bb8484a6ee835ea1431bd3fb1738e957154e82bb47a689a0a6bda571f25b8",
+      "canonical_queue": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+      "current_champion_oof_cache": "283a6e91ebc904de6152103f2a1f20362d52bf82fd21172e2f8b37d48721e4a5",
+      "official_regression_train": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+      "paired_lgb_ridge_cache": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516",
+      "r17_card": "7ac17b1e0e9e901b4a1a11c9c9110831b1af2c9bcef8a784fb2e4039777bcc7e",
+      "regression_distributional_freeze": "cce68bf9b903f2a0f75691b4dabf3527374f6a06c0c285512472b961c244d39a",
+      "regression_fullsix_report": "a9686473998722b8f86a0f6a4489b4e3a75a6b6ba20c661ac564e6a5e61aea48",
+      "regression_residual_freeze": "d8119aa2e3b745ffefe338d7407a468acd9d97075d7179bfe3f5abefdf873064",
+      "regression_subgroup_diagnostics": "6954fbdd9eb1c95794787ff54cf8a9b8c88dc97373ad9a8bf8e0aefdcaf1551e",
+      "sparse_regression_fullsix_cache": "4b87b0da34069ea3d75490233c574fbd92283f8b6472a43d8c654a20a4b904c9",
+      "sparse_regression_pilot_cache": "eae6bea2dd6933de59ac0f63f54cc08124b59d4bcba91bbe05a7c5ec3dab9ff6"
+    },
+    "package_versions": {
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "scipy": "1.18.0"
+    },
+    "r17_preflight": {
+      "exact_control_blocks": {
+        "55": {
+          "champion_prediction_sha256": "5d18edd9bb9eb4e3634d4120786558a7deaa690b50d84e43c9c1850a70e49fc5",
+          "cycles_sha256": "50c5adf8b6cdf38e088ee874693064f51510938998410f5c98c7aa28b5f08b69",
+          "record_id_sha256": "0cd08cce7f77ad804bafdf518ec787bb63ec35ea1d16d8971990b743656ad220",
+          "row_exact": true,
+          "row_positions_sha256": "cb5b951a81753b28e4a9eeb42f8b7e5703bb89eac5cb8d5b2f0127210c6e3b27",
+          "rows": 17685
+        },
+        "59": {
+          "champion_prediction_sha256": "1b0619774a59d7aabfc20d427ea47177c514335a2cffad3e5338e6735bc6c11d",
+          "cycles_sha256": "d92c73940268c1427406c5847dd0420abe082d9afdac5df4f4eed5101282ca12",
+          "record_id_sha256": "b3469c1de59aa3caaea96f73c3af673e979430349cce95e53ca86991c190be22",
+          "row_exact": true,
+          "row_positions_sha256": "86f783c614356f6c3ecce13c7f526a42d6792c7d8c5aad5f17d0ac0776d1175a",
+          "rows": 6493
+        },
+        "63": {
+          "champion_prediction_sha256": "1a109d8c5b379b651e4f839c546dbc745ef81728a4057e00b109e1113e7ffd54",
+          "cycles_sha256": "28e4acc598544a86555e481967097c946346e68a15c87fc67c44067fb2f9d2ef",
+          "record_id_sha256": "59714163c6bc9a704fb0337cdf8a6c36e7a08ae46afadbce8124b33657aee625",
+          "row_exact": true,
+          "row_positions_sha256": "ca671e36fb129c9da6ab5eda0ae2e976df6d40e85a434d12e67c4c4368219612",
+          "rows": 7078
+        },
+        "67": {
+          "champion_prediction_sha256": "6994b2d91695ac411d45d341ddc37760ad923fd6c5282e9c3e5ce5f119009957",
+          "cycles_sha256": "a8153631d25e8e1c1574c0bfa0b5eef13e774a58e6aa02b5a07888a1149a938a",
+          "record_id_sha256": "bb7c59726105e7c6478f6fe366d125023aa3427cb159d10749b2c2662b613cad",
+          "row_exact": true,
+          "row_positions_sha256": "05697c3bacf3844a1cdc42dbb92056d26007770b92c002d103fa339323abc5e2",
+          "rows": 20903
+        },
+        "71": {
+          "champion_prediction_sha256": "54f34022bec3ac37767879071d8ddb0854694a6ee2e22d55cdaaaff07bbc9898",
+          "cycles_sha256": "387f6f3e24dd7ac9878c1f33dfe6a013fd7842f3f51508b4bba5ca4ddcf319be",
+          "record_id_sha256": "552f0bc02b595eb1a361419c8f2ad191745e273be1f6743720fbcf9af41d28f8",
+          "row_exact": true,
+          "row_positions_sha256": "a1837f896e577daac49775554e4eec7cb2afd72bbdf468cf11055b2e8003a737",
+          "rows": 7462
+        },
+        "75": {
+          "champion_prediction_sha256": "e6e67ff8b1297bf6e26d5b5d431939b425fb67f14b314a27db72472780ac453c",
+          "cycles_sha256": "c39a2d01f97b453f29a4edc8e68656e750c5ec2d002a43768f8d89c1f28bf877",
+          "record_id_sha256": "065b48ba12bdeb674b8eebfafe3e5101c5e674bbb59798cbaa68582626dd41a6",
+          "row_exact": true,
+          "row_positions_sha256": "b0f77b26524e2c31606d84890d85605cf829019b17484ccb9df8be2deef25d33",
+          "rows": 8491
+        }
+      },
+      "fold_reconstruction": [
+        {
+          "champion_and_components_exact": true,
+          "rows": 4114,
+          "scored_cycles": [
+            56,
+            59
+          ],
+          "source_cutoff": 55
+        },
+        {
+          "champion_and_components_exact": true,
+          "rows": 6493,
+          "scored_cycles": [
+            60,
+            63
+          ],
+          "source_cutoff": 59
+        },
+        {
+          "champion_and_components_exact": true,
+          "rows": 7078,
+          "scored_cycles": [
+            64,
+            67
+          ],
+          "source_cutoff": 63
+        },
+        {
+          "champion_and_components_exact": true,
+          "rows": 4950,
+          "scored_cycles": [
+            68,
+            71
+          ],
+          "source_cutoff": 67
+        },
+        {
+          "champion_and_components_exact": true,
+          "rows": 7462,
+          "scored_cycles": [
+            72,
+            75
+          ],
+          "source_cutoff": 71
+        },
+        {
+          "champion_and_components_exact": true,
+          "rows": 8491,
+          "scored_cycles": [
+            76,
+            79
+          ],
+          "source_cutoff": 75
+        }
+      ],
+      "history_support": {
+        "55": {
+          "complete_cycle_support": true,
+          "cycles": [],
+          "fallback": true,
+          "rows": 0,
+          "solver_minimum_met": false
+        },
+        "59": {
+          "complete_cycle_support": true,
+          "cycles": [
+            56,
+            57,
+            58,
+            59
+          ],
+          "fallback": true,
+          "rows": 4114,
+          "solver_minimum_met": false
+        },
+        "63": {
+          "complete_cycle_support": true,
+          "cycles": [
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63
+          ],
+          "fallback": false,
+          "rows": 10607,
+          "solver_minimum_met": true
+        },
+        "67": {
+          "complete_cycle_support": true,
+          "cycles": [
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            65,
+            66,
+            67
+          ],
+          "fallback": false,
+          "rows": 17685,
+          "solver_minimum_met": true
+        },
+        "71": {
+          "complete_cycle_support": true,
+          "cycles": [
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            65,
+            66,
+            67,
+            68,
+            69,
+            70,
+            71
+          ],
+          "fallback": false,
+          "rows": 22635,
+          "solver_minimum_met": true
+        },
+        "75": {
+          "complete_cycle_support": true,
+          "cycles": [
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            65,
+            66,
+            67,
+            68,
+            69,
+            70,
+            71,
+            72,
+            73,
+            74,
+            75
+          ],
+          "fallback": false,
+          "rows": 30097,
+          "solver_minimum_met": true
+        }
+      },
+      "oof_primary_rows": 38588,
+      "oof_target_arrays_opened": false,
+      "source_cutoff_by_cycle": {
+        "56": 55,
+        "57": 55,
+        "58": 55,
+        "59": 55,
+        "60": 59,
+        "61": 59,
+        "62": 59,
+        "63": 59,
+        "64": 63,
+        "65": 63,
+        "66": 63,
+        "67": 63,
+        "68": 67,
+        "69": 67,
+        "70": 67,
+        "71": 67,
+        "72": 71,
+        "73": 71,
+        "74": 71,
+        "75": 71,
+        "76": 75,
+        "77": 75,
+        "78": 75,
+        "79": 75
+      },
+      "target_column_read": false,
+      "test_or_sample_accessed": false
+    },
+    "recipe": {
+      "calibration": "minimize sum(abs(y - intercept - slope * champion_oof_prediction)); slope >= 0",
+      "card_id": "R17",
+      "card_sha256": "7ac17b1e0e9e901b4a1a11c9c9110831b1af2c9bcef8a784fb2e4039777bcc7e",
+      "full_six_continuation_if_pilot_gate_passes": {
+        "additional_solve_count": 2,
+        "calibration_solve_cutoffs": [
+          63,
+          71
+        ],
+        "cutoff_55_fallback": true,
+        "cutoff_59_fallback_below_minimum": true,
+        "no_external_promotion_from_late_pilot": true,
+        "reuse_frozen_pilot_calibrations": [
+          67,
+          75
+        ],
+        "windows": {
+          "W1": [
+            56,
+            59
+          ],
+          "W2": [
+            60,
+            63
+          ],
+          "W3": [
+            64,
+            67
+          ],
+          "W4": [
+            68,
+            71
+          ],
+          "W5": [
+            72,
+            75
+          ],
+          "W6": [
+            76,
+            79
+          ]
+        }
+      },
+      "gates": {
+        "full_H12_MAE_harm_max": 0.05,
+        "full_nonnegative_windows_min": 4,
+        "full_primary_MAE_gain_min": 0.03,
+        "individual_pilot_view_MAE_harm_max": 0.5,
+        "pilot_H12_MAE_harm_max": 0.05,
+        "pilot_primary_MAE_gain_min": 0.03,
+        "supported_group_n_min": 100,
+        "supported_tail_or_missing_MAE_harm_max": 0.25
+      },
+      "history_policy": {
+        "exact_champion_oof_cycles": "56..outer cutoff inclusive",
+        "minimum_rows": 5000,
+        "no_champion_oof_fabrication_for_cycles_52_55": true,
+        "source_cutoff_by_cycle": {
+          "56": 55,
+          "57": 55,
+          "58": 55,
+          "59": 55,
+          "60": 59,
+          "61": 59,
+          "62": 59,
+          "63": 59,
+          "64": 63,
+          "65": 63,
+          "66": 63,
+          "67": 63,
+          "68": 67,
+          "69": 67,
+          "70": 67,
+          "71": 67,
+          "72": 71,
+          "73": 71,
+          "74": 71,
+          "75": 71,
+          "76": 75,
+          "77": 75,
+          "78": 75,
+          "79": 75
+        },
+        "support_by_cutoff": {
+          "55": {
+            "complete_cycle_support": true,
+            "cycles": [],
+            "fallback": true,
+            "rows": 0,
+            "solver_minimum_met": false
+          },
+          "59": {
+            "complete_cycle_support": true,
+            "cycles": [
+              56,
+              57,
+              58,
+              59
+            ],
+            "fallback": true,
+            "rows": 4114,
+            "solver_minimum_met": false
+          },
+          "63": {
+            "complete_cycle_support": true,
+            "cycles": [
+              56,
+              57,
+              58,
+              59,
+              60,
+              61,
+              62,
+              63
+            ],
+            "fallback": false,
+            "rows": 10607,
+            "solver_minimum_met": true
+          },
+          "67": {
+            "complete_cycle_support": true,
+            "cycles": [
+              56,
+              57,
+              58,
+              59,
+              60,
+              61,
+              62,
+              63,
+              64,
+              65,
+              66,
+              67
+            ],
+            "fallback": false,
+            "rows": 17685,
+            "solver_minimum_met": true
+          },
+          "71": {
+            "complete_cycle_support": true,
+            "cycles": [
+              56,
+              57,
+              58,
+              59,
+              60,
+              61,
+              62,
+              63,
+              64,
+              65,
+              66,
+              67,
+              68,
+              69,
+              70,
+              71
+            ],
+            "fallback": false,
+            "rows": 22635,
+            "solver_minimum_met": true
+          },
+          "75": {
+            "complete_cycle_support": true,
+            "cycles": [
+              56,
+              57,
+              58,
+              59,
+              60,
+              61,
+              62,
+              63,
+              64,
+              65,
+              66,
+              67,
+              68,
+              69,
+              70,
+              71,
+              72,
+              73,
+              74,
+              75
+            ],
+            "fallback": false,
+            "rows": 30097,
+            "solver_minimum_met": true
+          }
+        }
+      },
+      "official_train_target_values_in_recipe": false,
+      "pilot": {
+        "candidate_metric_freeze": true,
+        "evaluation": "LATE: W4+W6 primary, H12_L and separate exact-champion H12_E",
+        "future_score_labels_passed_to_adapter": false,
+        "solver_calls": 2,
+        "views": {
+          "H12_L": [
+            [
+              67,
+              68,
+              79
+            ]
+          ],
+          "W4": [
+            [
+              67,
+              68,
+              71
+            ]
+          ],
+          "W6": [
+            [
+              75,
+              76,
+              79
+            ]
+          ],
+          "primary": [
+            [
+              67,
+              68,
+              71
+            ],
+            [
+              75,
+              76,
+              79
+            ]
+          ]
+        }
+      },
+      "prediction_policy": {
+        "fallback": "return exact champion predictions unchanged",
+        "full_six_cutoffs": [
+          55,
+          59,
+          63,
+          67,
+          71,
+          75
+        ],
+        "future_prediction": "clip(intercept + slope * exact champion prediction, 0, 100)",
+        "pilot_cutoffs": [
+          67,
+          75
+        ]
+      },
+      "preprocessing_fits": 0,
+      "queue_sha256": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+      "resource_policy": {
+        "dense_lp_storage_forbidden": true,
+        "estimated_additional_solver_rss_gib": 1.0,
+        "maximum_job_rss_gib": 6.0,
+        "minimum_free_ram_gib": 4.0,
+        "sparse_lp_matrix_bytes_upper_estimate_at_max_history_rows_30097": 3370872,
+        "system_reserve_gib": 2.0
+      },
+      "schema_version": 1,
+      "solver": {
+        "failure_policy": "exact champion identity fallback",
+        "implementation": "scipy.optimize.linprog(method=highs)",
+        "sparse_constraints": true,
+        "threads": 2,
+        "variables": "intercept (free), slope (nonnegative), one nonnegative absolute residual per history row"
+      },
+      "test_or_sample_used": false
+    },
+    "schema_version": 1,
+    "source_sha256": {
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1.py": "c93dd71ed2b512f32bf8916f59b0af56bff212934efb8825b0e8a680da72e969",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_r17.py": "2db3069d9a5c917c01a4fbc4687a68bf5e23071446b6c2606be19e5506182fd5",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_r18.py": "36648e183f8ec9b3dcc5372fa24a0c73f0384b2636315b622ca6db5c33e8f069",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_reg_diagnostics.py": "e2af49bb45353fca5bf0c14093be9b0f0b02afe24289a1b5c30dfb584bbd3f55",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1.py": "d21ac914d0d1f516a93e431116556dabdbe7313a21fd2b1b04a73371bd56f420",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1_r17.py": "1d5d74cdf8215b8df654f5492cfa9ba396873e2bcbf58075550d9da1f331619d",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1_r18.py": "0b02a8958a778f0d333b78b4d2387e656a0a8abd6704ed5dfae46fcd43d36efa",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\utils\\paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\tests\\test_optimization_v3_batch1_r17.py": "7daf34fb8d5d28d8676f9e7e124d297d2f782d1404994efc4f7867024aa706b3"
+    },
+    "test_data_used": false,
+    "validation_labels_passed_to_adapter": false
+  },
+  "schema_version": 1,
+  "signature": "20b12df924c9a33d757df03c622a34ec24eb8da27676b17f9aa488066021c3ac"
+}
