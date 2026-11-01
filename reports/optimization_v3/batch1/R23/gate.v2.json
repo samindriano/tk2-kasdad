@@ -1,0 +1,52 @@
+{
+  "card_id": "R23",
+  "checks": {
+    "W1_MAE_harm_max": true,
+    "W4_MAE_harm_max": true,
+    "pilot_H12_MAE_harm_max": true,
+    "pilot_primary_MAE_gain_min": true,
+    "supported_tail_or_missing_harm_max": false
+  },
+  "decision_basis": "Predeclared temporal metrics and support-passing group guards; no Test or Kaggle evidence.",
+  "profile": "STANDARD",
+  "status": "RETIRE",
+  "supported_group_failures": [
+    {
+      "baseline_mae": 13.833275642085468,
+      "candidate_mae": 14.32189058214007,
+      "candidate_minus_baseline_mae": 0.4886149400546014,
+      "field": "signal_stream_missing",
+      "guard_applies": true,
+      "n": 392,
+      "supported": true,
+      "view": "W1"
+    },
+    {
+      "baseline_mae": 7.354027536026501,
+      "candidate_mae": 7.617740255409711,
+      "candidate_minus_baseline_mae": 0.26371271938320984,
+      "field": "target_ge_95",
+      "guard_applies": true,
+      "n": 249,
+      "supported": true,
+      "view": "W4"
+    },
+    {
+      "baseline_mae": 13.845691180212624,
+      "candidate_mae": 14.189712104588013,
+      "candidate_minus_baseline_mae": 0.3440209243753891,
+      "field": "signal_stream_missing",
+      "guard_applies": true,
+      "n": 734,
+      "supported": true,
+      "view": "primary"
+    }
+  ],
+  "thresholds": {
+    "individual_pilot_view_MAE_harm_max": 0.5,
+    "pilot_H12_MAE_harm_max": 0.05,
+    "pilot_primary_MAE_gain_min": 0.03,
+    "supported_group_n_min": 100.0,
+    "supported_tail_or_missing_MAE_harm_max": 0.25
+  }
+}
