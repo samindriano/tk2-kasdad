@@ -1,0 +1,24 @@
+{
+  "card_id": "R04",
+  "checks": {
+    "H12_harm_at_most_0_05": true,
+    "W1_harm_at_most_0_5": true,
+    "W4_harm_at_most_0_5": true,
+    "primary_mae_gain_at_least_0_03": false,
+    "supported_tail_or_missing_group_harms": true
+  },
+  "decision": "RETIRE",
+  "decision_basis": "Frozen STANDARD temporal metrics, exact row-matched Ridge25+sparse controls, independent route reconstruction and predeclared tail/missing guards; no Test/Kaggle evidence.",
+  "status": "RETIRE",
+  "supported_subgroup_failures": [],
+  "thresholds": {
+    "full_H12_MAE_harm_max": 0.05,
+    "full_nonnegative_windows_min": 4,
+    "full_primary_MAE_gain_min": 0.03,
+    "individual_pilot_view_MAE_harm_max": 0.5,
+    "pilot_H12_MAE_harm_max": 0.05,
+    "pilot_primary_MAE_gain_min": 0.03,
+    "supported_group_n_min": 100,
+    "supported_tail_or_missing_MAE_harm_max": 0.25
+  }
+}

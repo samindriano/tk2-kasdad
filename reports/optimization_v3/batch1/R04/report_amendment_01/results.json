@@ -1,0 +1,810 @@
+{
+  "R02_completion_condition": {
+    "R02_primary_gain": 0.022196095313315567,
+    "card_id": "R02",
+    "condition_met": true,
+    "cutoffs": [
+      55,
+      67
+    ],
+    "freeze_signature": "6a485f4c4ec1b0d157e759a31faebab9b7765e63ac7c49cf125334767a743d87",
+    "gate_sha256": "1823401f8b491a8b67dc4a0542d609032f605699fd53135fec0dbc400d838d41",
+    "reserved_predictor_fits": 2,
+    "results_sha256": "6aa5d0cbc5cee9e7c513fb16513016d159a6428f7c65eeeefdfa9498602155ec",
+    "status": "RETIRE",
+    "successful_predictor_fits": 2,
+    "verification_sha256": "e165736d86b05e5b44db88ca8c184a3d3330c04aeb102b11a1f1c621135acdda",
+    "verification_status": "PASS"
+  },
+  "card_id": "R04",
+  "cutoffs": [
+    55,
+    67
+  ],
+  "expected_fit_count_from_card": 2,
+  "fit_accounting": {
+    "folds": {
+      "55": {
+        "bundle_npz_sha256": "58fad2588e05468c3e9cf688f68d628bcf7fef988f15fcdc95f3971b4b4bacb2",
+        "design_nnz": 1146728,
+        "failed_attempts": 1,
+        "fit_attempts": 2,
+        "fit_predictor_count": 1,
+        "fit_rows": 12020,
+        "fit_seconds": 7.495687899994664,
+        "model_state_sha256": "f778b5fc7694efc4d16cd41ac31100b36e9957e3aed7bde92e4fd6a5fae03e84",
+        "resource_preflight": {
+          "allowed_job_ram_gib": 5.659004211425781,
+          "available_ram_gib": 7.659004211425781,
+          "combined_sparse_design_bytes_upper_bound": 17661320,
+          "combined_sparse_design_nnz_upper_bound": 1097822,
+          "concurrent_training_jobs": 1,
+          "cutoff": 55,
+          "dense_full_word_matrix": false,
+          "estimated_peak_gib": 1.5493451580405235,
+          "estimated_peak_is_observed": false,
+          "fit_hashing_diagnostics": {
+            "bucket_self_check_rows": 128,
+            "collision_bucket_count": 36656,
+            "collision_definition": "distinct word/bigram identities beyond occupied buckets across this text batch; repeated identical terms are not collisions",
+            "collision_excess": 45341,
+            "document_count": 12020,
+            "hash_function": "sklearn murmurhash3_32(seed=0), bucket=abs(signed_hash)%n_features",
+            "matrix_csr_bytes": 10192908,
+            "matrix_nnz": 845402,
+            "matrix_shape": [
+              12020,
+              262144
+            ],
+            "ngram_occurrence_count": 974834,
+            "occupied_hash_buckets": 125661,
+            "unique_ngram_identities": 171002
+          },
+          "fit_rows": 12020,
+          "free_ram_reserve_gib": 2.0,
+          "hashing_learns_vocabulary_or_idf": false,
+          "hashing_parameters": {
+            "alternate_sign": false,
+            "analyzer": "word",
+            "binary": false,
+            "dtype": "float64",
+            "lowercase": true,
+            "n_features": 262144,
+            "ngram_range": [
+              1,
+              2
+            ],
+            "norm": null,
+            "strip_accents": "unicode",
+            "token_pattern": "(?u)\\b\\w\\w+\\b"
+          },
+          "maximum_job_gib": 6.0,
+          "minimum_free_ram_gib": 4.0,
+          "score_hashing_diagnostics": {
+            "bucket_self_check_rows": 128,
+            "collision_bucket_count": 52235,
+            "collision_definition": "distinct word/bigram identities beyond occupied buckets across this text batch; repeated identical terms are not collisions",
+            "collision_excess": 68525,
+            "document_count": 17685,
+            "hash_function": "sklearn murmurhash3_32(seed=0), bucket=abs(signed_hash)%n_features",
+            "matrix_csr_bytes": 13658116,
+            "matrix_nnz": 1132281,
+            "matrix_shape": [
+              17685,
+              262144
+            ],
+            "ngram_occurrence_count": 1290528,
+            "occupied_hash_buckets": 147121,
+            "unique_ngram_identities": 215646
+          },
+          "score_rows": 17685,
+          "status": "PASS",
+          "structured_nnz_upper_bound": 252420,
+          "threads": 2
+        },
+        "score_rows": 17685,
+        "training_warnings": []
+      },
+      "67": {
+        "bundle_npz_sha256": "e0e0d0e05f0b224fbb41864607ba3034372d29a415211012e57d68fc09b63b5b",
+        "design_nnz": 2722337,
+        "failed_attempts": 0,
+        "fit_attempts": 1,
+        "fit_predictor_count": 1,
+        "fit_rows": 29705,
+        "fit_seconds": 12.81433309998829,
+        "model_state_sha256": "6cb1bdd4f2bd8db47598d7791031a9125cc89a8e6d8ead71f83111f7dca25910",
+        "resource_preflight": {
+          "allowed_job_ram_gib": 5.660198211669922,
+          "available_ram_gib": 7.660198211669922,
+          "combined_sparse_design_bytes_upper_bound": 41861456,
+          "combined_sparse_design_nnz_upper_bound": 2601488,
+          "concurrent_training_jobs": 1,
+          "cutoff": 67,
+          "dense_full_word_matrix": false,
+          "estimated_peak_gib": 1.6169595569372177,
+          "estimated_peak_is_observed": false,
+          "fit_hashing_diagnostics": {
+            "bucket_self_check_rows": 128,
+            "collision_bucket_count": 97615,
+            "collision_definition": "distinct word/bigram identities beyond occupied buckets across this text batch; repeated identical terms are not collisions",
+            "collision_excess": 149226,
+            "document_count": 29705,
+            "hash_function": "sklearn murmurhash3_32(seed=0), bucket=abs(signed_hash)%n_features",
+            "matrix_csr_bytes": 23851020,
+            "matrix_nnz": 1977683,
+            "matrix_shape": [
+              29705,
+              262144
+            ],
+            "ngram_occurrence_count": 2265362,
+            "occupied_hash_buckets": 190384,
+            "unique_ngram_identities": 339610
+          },
+          "fit_rows": 29705,
+          "free_ram_reserve_gib": 2.0,
+          "hashing_learns_vocabulary_or_idf": false,
+          "hashing_parameters": {
+            "alternate_sign": false,
+            "analyzer": "word",
+            "binary": false,
+            "dtype": "float64",
+            "lowercase": true,
+            "n_features": 262144,
+            "ngram_range": [
+              1,
+              2
+            ],
+            "norm": null,
+            "strip_accents": "unicode",
+            "token_pattern": "(?u)\\b\\w\\w+\\b"
+          },
+          "maximum_job_gib": 6.0,
+          "minimum_free_ram_gib": 4.0,
+          "score_hashing_diagnostics": {
+            "bucket_self_check_rows": 128,
+            "collision_bucket_count": 66977,
+            "collision_definition": "distinct word/bigram identities beyond occupied buckets across this text batch; repeated identical terms are not collisions",
+            "collision_excess": 92538,
+            "document_count": 20903,
+            "hash_function": "sklearn murmurhash3_32(seed=0), bucket=abs(signed_hash)%n_features",
+            "matrix_csr_bytes": 17072484,
+            "matrix_nnz": 1415739,
+            "matrix_shape": [
+              20903,
+              262144
+            ],
+            "ngram_occurrence_count": 1613652,
+            "occupied_hash_buckets": 163485,
+            "unique_ngram_identities": 256023
+          },
+          "score_rows": 20903,
+          "status": "PASS",
+          "structured_nnz_upper_bound": 623805,
+          "threads": 2
+        },
+        "score_rows": 20903,
+        "training_warnings": []
+      }
+    },
+    "peak_memory_observed": false,
+    "reserved_predictor_fits": 2,
+    "successful_predictor_fits": 2,
+    "total_fit_seconds": 20.310020999982953
+  },
+  "fit_count_matches_card": true,
+  "fit_predictor_count": 2,
+  "freeze_signature": "24ad53267566a063497d1b3b77784150d3ec6e6b346fd803c5894c066bf15b46",
+  "gate": {
+    "card_id": "R04",
+    "checks": {
+      "H12_harm_at_most_0_05": true,
+      "W1_harm_at_most_0_5": true,
+      "W4_harm_at_most_0_5": true,
+      "primary_mae_gain_at_least_0_03": false,
+      "supported_tail_or_missing_group_harms": true
+    },
+    "decision": "RETIRE",
+    "decision_basis": "Frozen STANDARD temporal metrics, exact row-matched Ridge25+sparse controls, independent route reconstruction and predeclared tail/missing guards; no Test/Kaggle evidence.",
+    "status": "RETIRE",
+    "supported_subgroup_failures": [],
+    "thresholds": {
+      "full_H12_MAE_harm_max": 0.05,
+      "full_nonnegative_windows_min": 4,
+      "full_primary_MAE_gain_min": 0.03,
+      "individual_pilot_view_MAE_harm_max": 0.5,
+      "pilot_H12_MAE_harm_max": 0.05,
+      "pilot_primary_MAE_gain_min": 0.03,
+      "supported_group_n_min": 100,
+      "supported_tail_or_missing_MAE_harm_max": 0.25
+    }
+  },
+  "independent_verification": {
+    "card_id": "R04",
+    "decision": "RETIRE",
+    "freeze_signature": "24ad53267566a063497d1b3b77784150d3ec6e6b346fd803c5894c066bf15b46",
+    "gate_checks": {
+      "H12_harm_at_most_0_05": true,
+      "W1_harm_at_most_0_5": true,
+      "W4_harm_at_most_0_5": true,
+      "primary_mae_gain_at_least_0_03": false,
+      "supported_tail_or_missing_group_harms": true
+    },
+    "independent_metric_implementation": "scripts/optimization_v3_batch1_verify.py",
+    "kaggle_access": false,
+    "status": "PASS",
+    "subgroup_diagnostics": {
+      "maximum_supported_tail_or_missing_MAE_harm": 0.25,
+      "minimum_support": 100,
+      "supported_guard_failures": [],
+      "views": {
+        "H12": {
+          "entry_friction_0": {
+            "evidence_status": "SUPPORTED",
+            "mae_harm_candidate_minus_control": -0.020424459806921647,
+            "n": 26048,
+            "numeric_guard_applies": false,
+            "supported": true
+          },
+          "entry_friction_1": {
+            "evidence_status": "SUPPORTED",
+            "mae_harm_candidate_minus_control": -0.0016347983755711226,
+            "n": 12540,
+            "numeric_guard_applies": false,
+            "supported": true
+          },
+          "stream_missing": {
+            "evidence_status": "SUPPORTED",
+            "mae_harm_candidate_minus_control": -0.02812940107736317,
+            "n": 2578,
+            "numeric_guard_applies": true,
+            "supported": true
+          },
+          "stream_present": {
+            "evidence_status": "SUPPORTED",
+            "mae_harm_candidate_minus_control": -0.013329605795695088,
+            "n": 36010,
+            "numeric_guard_applies": false,
+            "supported": true
+          },
+          "target_ge_95": {
+            "evidence_status": "SUPPORTED",
+            "mae_harm_candidate_minus_control": -0.022881845267434642,
+            "n": 1955,
+            "numeric_guard_applies": true,
+            "supported": true
+          },
+          "target_le_5": {
+            "evidence_status": "SUPPORTED",
+            "mae_harm_candidate_minus_control": -0.15250476179574868,
+            "n": 1928,
+            "numeric_guard_applies": true,
+            "supported": true
+          }
+        },
+        "primary": {
+          "entry_friction_0": {
+            "evidence_status": "SUPPORTED",
+            "mae_harm_candidate_minus_control": -0.02367839645895664,
+            "n": 6131,
+            "numeric_guard_applies": false,
+            "supported": true
+          },
+          "entry_friction_1": {
+            "evidence_status": "SUPPORTED",
+            "mae_harm_candidate_minus_control": -0.01814303807148754,
+            "n": 2933,
+            "numeric_guard_applies": false,
+            "supported": true
+          },
+          "stream_missing": {
+            "evidence_status": "SUPPORTED",
+            "mae_harm_candidate_minus_control": -0.05450474507532377,
+            "n": 734,
+            "numeric_guard_applies": true,
+            "supported": true
+          },
+          "stream_present": {
+            "evidence_status": "SUPPORTED",
+            "mae_harm_candidate_minus_control": -0.019013120824521224,
+            "n": 8330,
+            "numeric_guard_applies": false,
+            "supported": true
+          },
+          "target_ge_95": {
+            "evidence_status": "SUPPORTED",
+            "mae_harm_candidate_minus_control": -0.10820472586954466,
+            "n": 462,
+            "numeric_guard_applies": true,
+            "supported": true
+          },
+          "target_le_5": {
+            "evidence_status": "SUPPORTED",
+            "mae_harm_candidate_minus_control": -0.0782375271545277,
+            "n": 449,
+            "numeric_guard_applies": true,
+            "supported": true
+          }
+        }
+      }
+    },
+    "test_data_used": false,
+    "views": {
+      "H12": {
+        "baseline": 14.04753258299653,
+        "candidate": 14.03321422753161,
+        "gain_positive_is_better": 0.014318355464919108,
+        "metric": "mae",
+        "n": 38588
+      },
+      "W1": {
+        "baseline": 15.882111974427762,
+        "candidate": 15.854449093335425,
+        "gain_positive_is_better": 0.027662881092336278,
+        "metric": "mae",
+        "n": 4114
+      },
+      "W4": {
+        "baseline": 11.455005081083685,
+        "candidate": 11.437918073701933,
+        "gain_positive_is_better": 0.017087007381752173,
+        "metric": "mae",
+        "n": 4950
+      },
+      "primary": {
+        "baseline": 13.464395831218011,
+        "candidate": 13.44250860931228,
+        "gain_positive_is_better": 0.02188722190573067,
+        "metric": "mae",
+        "n": 9064
+      }
+    }
+  },
+  "input_sha256": {
+    "accepted_regression_manifest": "dd166e92089f24978244496a9a0afabc0d06551dbdc326579a7c898a8844e19a",
+    "cache_only_diagnostics": "8d634debd1dbc6a3eed5250593b9c213570b4fb139b0b9a623a8d704159916df",
+    "canonical_card": "ac7fd6372ead62ee527804c9ce14657e96af209d81c9b521259629822853dea8",
+    "canonical_queue": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+    "official_regression_train": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+    "paired_lgb_ridge_cache": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516",
+    "r02_frozen_freeze": "22e91becc295d8f4ee3a3f05a4ebaff8753c7c2d840ccbdbd4322df6d0ac27b1",
+    "r02_gate": "1823401f8b491a8b67dc4a0542d609032f605699fd53135fec0dbc400d838d41",
+    "r02_results": "6aa5d0cbc5cee9e7c513fb16513016d159a6428f7c65eeeefdfa9498602155ec",
+    "r02_verification": "e165736d86b05e5b44db88ca8c184a3d3330c04aeb102b11a1f1c621135acdda",
+    "regression_fullsix_report": "a9686473998722b8f86a0f6a4489b4e3a75a6b6ba20c661ac564e6a5e61aea48",
+    "regression_subgroup_diagnostics": "6954fbdd9eb1c95794787ff54cf8a9b8c88dc97373ad9a8bf8e0aefdcaf1551e",
+    "sparse_regression_fullsix_cache": "4b87b0da34069ea3d75490233c574fbd92283f8b6472a43d8c654a20a4b904c9",
+    "sparse_regression_pilot_cache": "eae6bea2dd6933de59ac0f63f54cc08124b59d4bcba91bbe05a7c5ec3dab9ff6"
+  },
+  "kaggle_used": false,
+  "outcome_reuse_warning": "Temporal development outcomes are repeatedly reused; no untouched holdout claim.",
+  "preflight": {
+    "R02_condition": {
+      "R02_primary_gain": 0.022196095313315567,
+      "card_id": "R02",
+      "condition_met": true,
+      "cutoffs": [
+        55,
+        67
+      ],
+      "freeze_signature": "6a485f4c4ec1b0d157e759a31faebab9b7765e63ac7c49cf125334767a743d87",
+      "gate_sha256": "1823401f8b491a8b67dc4a0542d609032f605699fd53135fec0dbc400d838d41",
+      "reserved_predictor_fits": 2,
+      "results_sha256": "6aa5d0cbc5cee9e7c513fb16513016d159a6428f7c65eeeefdfa9498602155ec",
+      "status": "RETIRE",
+      "successful_predictor_fits": 2,
+      "verification_sha256": "e165736d86b05e5b44db88ca8c184a3d3330c04aeb102b11a1f1c621135acdda",
+      "verification_status": "PASS"
+    },
+    "budget": {
+      "cap": 180,
+      "existing_r04_reservation": {
+        "at_utc": "2026-11-01T03:16:16.466922+00:00",
+        "budget_key": "R04:PILOT",
+        "cap": 180,
+        "card_id": "R04",
+        "event": "BUDGET_RESERVED",
+        "predictor_fits": 2,
+        "reserved_total_after": 52
+      },
+      "next_total": 52,
+      "reserved_total": 52,
+      "status": "PASS"
+    },
+    "candidate_fit_performed": false,
+    "card_id": "R04",
+    "fit_rows": {
+      "55": 12020,
+      "67": 29705
+    },
+    "freeze_identity_sha256": "24ad53267566a063497d1b3b77784150d3ec6e6b346fd803c5894c066bf15b46",
+    "freeze_written": false,
+    "hashing_preflight": {
+      "55": {
+        "allowed_job_ram_gib": 5.681247711181641,
+        "available_ram_gib": 7.681247711181641,
+        "combined_sparse_design_bytes_upper_bound": 17661320,
+        "combined_sparse_design_nnz_upper_bound": 1097822,
+        "concurrent_training_jobs": 1,
+        "cutoff": 55,
+        "dense_full_word_matrix": false,
+        "estimated_peak_gib": 1.5493451580405235,
+        "estimated_peak_is_observed": false,
+        "fit_hashing_diagnostics": {
+          "bucket_self_check_rows": 128,
+          "collision_bucket_count": 36656,
+          "collision_definition": "distinct word/bigram identities beyond occupied buckets across this text batch; repeated identical terms are not collisions",
+          "collision_excess": 45341,
+          "document_count": 12020,
+          "hash_function": "sklearn murmurhash3_32(seed=0), bucket=abs(signed_hash)%n_features",
+          "matrix_csr_bytes": 10192908,
+          "matrix_nnz": 845402,
+          "matrix_shape": [
+            12020,
+            262144
+          ],
+          "ngram_occurrence_count": 974834,
+          "occupied_hash_buckets": 125661,
+          "unique_ngram_identities": 171002
+        },
+        "fit_rows": 12020,
+        "free_ram_reserve_gib": 2.0,
+        "hashing_learns_vocabulary_or_idf": false,
+        "hashing_parameters": {
+          "alternate_sign": false,
+          "analyzer": "word",
+          "binary": false,
+          "dtype": "float64",
+          "lowercase": true,
+          "n_features": 262144,
+          "ngram_range": [
+            1,
+            2
+          ],
+          "norm": null,
+          "strip_accents": "unicode",
+          "token_pattern": "(?u)\\b\\w\\w+\\b"
+        },
+        "maximum_job_gib": 6.0,
+        "minimum_free_ram_gib": 4.0,
+        "score_hashing_diagnostics": {
+          "bucket_self_check_rows": 128,
+          "collision_bucket_count": 52235,
+          "collision_definition": "distinct word/bigram identities beyond occupied buckets across this text batch; repeated identical terms are not collisions",
+          "collision_excess": 68525,
+          "document_count": 17685,
+          "hash_function": "sklearn murmurhash3_32(seed=0), bucket=abs(signed_hash)%n_features",
+          "matrix_csr_bytes": 13658116,
+          "matrix_nnz": 1132281,
+          "matrix_shape": [
+            17685,
+            262144
+          ],
+          "ngram_occurrence_count": 1290528,
+          "occupied_hash_buckets": 147121,
+          "unique_ngram_identities": 215646
+        },
+        "score_rows": 17685,
+        "status": "PASS",
+        "structured_nnz_upper_bound": 252420,
+        "threads": 2
+      },
+      "67": {
+        "allowed_job_ram_gib": 5.616321563720703,
+        "available_ram_gib": 7.616321563720703,
+        "combined_sparse_design_bytes_upper_bound": 41861456,
+        "combined_sparse_design_nnz_upper_bound": 2601488,
+        "concurrent_training_jobs": 1,
+        "cutoff": 67,
+        "dense_full_word_matrix": false,
+        "estimated_peak_gib": 1.6169595569372177,
+        "estimated_peak_is_observed": false,
+        "fit_hashing_diagnostics": {
+          "bucket_self_check_rows": 128,
+          "collision_bucket_count": 97615,
+          "collision_definition": "distinct word/bigram identities beyond occupied buckets across this text batch; repeated identical terms are not collisions",
+          "collision_excess": 149226,
+          "document_count": 29705,
+          "hash_function": "sklearn murmurhash3_32(seed=0), bucket=abs(signed_hash)%n_features",
+          "matrix_csr_bytes": 23851020,
+          "matrix_nnz": 1977683,
+          "matrix_shape": [
+            29705,
+            262144
+          ],
+          "ngram_occurrence_count": 2265362,
+          "occupied_hash_buckets": 190384,
+          "unique_ngram_identities": 339610
+        },
+        "fit_rows": 29705,
+        "free_ram_reserve_gib": 2.0,
+        "hashing_learns_vocabulary_or_idf": false,
+        "hashing_parameters": {
+          "alternate_sign": false,
+          "analyzer": "word",
+          "binary": false,
+          "dtype": "float64",
+          "lowercase": true,
+          "n_features": 262144,
+          "ngram_range": [
+            1,
+            2
+          ],
+          "norm": null,
+          "strip_accents": "unicode",
+          "token_pattern": "(?u)\\b\\w\\w+\\b"
+        },
+        "maximum_job_gib": 6.0,
+        "minimum_free_ram_gib": 4.0,
+        "score_hashing_diagnostics": {
+          "bucket_self_check_rows": 128,
+          "collision_bucket_count": 66977,
+          "collision_definition": "distinct word/bigram identities beyond occupied buckets across this text batch; repeated identical terms are not collisions",
+          "collision_excess": 92538,
+          "document_count": 20903,
+          "hash_function": "sklearn murmurhash3_32(seed=0), bucket=abs(signed_hash)%n_features",
+          "matrix_csr_bytes": 17072484,
+          "matrix_nnz": 1415739,
+          "matrix_shape": [
+            20903,
+            262144
+          ],
+          "ngram_occurrence_count": 1613652,
+          "occupied_hash_buckets": 163485,
+          "unique_ngram_identities": 256023
+        },
+        "score_rows": 20903,
+        "status": "PASS",
+        "structured_nnz_upper_bound": 623805,
+        "threads": 2
+      }
+    },
+    "input_sha256": {
+      "accepted_regression_manifest": "dd166e92089f24978244496a9a0afabc0d06551dbdc326579a7c898a8844e19a",
+      "cache_only_diagnostics": "8d634debd1dbc6a3eed5250593b9c213570b4fb139b0b9a623a8d704159916df",
+      "canonical_card": "ac7fd6372ead62ee527804c9ce14657e96af209d81c9b521259629822853dea8",
+      "canonical_queue": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+      "official_regression_train": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+      "paired_lgb_ridge_cache": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516",
+      "r02_frozen_freeze": "22e91becc295d8f4ee3a3f05a4ebaff8753c7c2d840ccbdbd4322df6d0ac27b1",
+      "r02_gate": "1823401f8b491a8b67dc4a0542d609032f605699fd53135fec0dbc400d838d41",
+      "r02_results": "6aa5d0cbc5cee9e7c513fb16513016d159a6428f7c65eeeefdfa9498602155ec",
+      "r02_verification": "e165736d86b05e5b44db88ca8c184a3d3330c04aeb102b11a1f1c621135acdda",
+      "regression_fullsix_report": "a9686473998722b8f86a0f6a4489b4e3a75a6b6ba20c661ac564e6a5e61aea48",
+      "regression_subgroup_diagnostics": "6954fbdd9eb1c95794787ff54cf8a9b8c88dc97373ad9a8bf8e0aefdcaf1551e",
+      "sparse_regression_fullsix_cache": "4b87b0da34069ea3d75490233c574fbd92283f8b6472a43d8c654a20a4b904c9",
+      "sparse_regression_pilot_cache": "eae6bea2dd6933de59ac0f63f54cc08124b59d4bcba91bbe05a7c5ec3dab9ff6"
+    },
+    "kaggle_access": false,
+    "official_train_sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+    "row_matched_baseline_metrics": {
+      "H12": {
+        "mae": 14.04753258299653,
+        "rows": 38588
+      },
+      "W1": {
+        "mae": 15.882111974427762,
+        "rows": 4114
+      },
+      "W4": {
+        "mae": 11.455005081083685,
+        "rows": 4950
+      },
+      "primary": {
+        "mae": 13.464395831218011,
+        "rows": 9064
+      }
+    },
+    "score_rows": {
+      "55": 17685,
+      "67": 20903
+    },
+    "source_sha256": {
+      "scripts\\optimization_v3_batch1.py": "c93dd71ed2b512f32bf8916f59b0af56bff212934efb8825b0e8a680da72e969",
+      "scripts\\optimization_v3_batch1_r02.py": "30e8d5324f66f30d02176f37d006d6461608839d697259bcd8636dcb67b8ffbe",
+      "scripts\\optimization_v3_batch1_r04.py": "135383e1ed1fdb5c071d8ebf3ff1d5cbfaf0a644de5c798edebc509b8bca9d18",
+      "scripts\\optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
+      "scripts\\optimization_v3_reg_diagnostics.py": "e2af49bb45353fca5bf0c14093be9b0f0b02afe24289a1b5c30dfb584bbd3f55",
+      "src\\models\\classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+      "src\\models\\optimization_v2_regression.py": "b235cfd93c8cc0a207cfcea79892b925f9dfdfe515491a459d6ca1b6142cb590",
+      "src\\models\\optimization_v3_batch1.py": "d21ac914d0d1f516a93e431116556dabdbe7313a21fd2b1b04a73371bd56f420",
+      "src\\models\\optimization_v3_batch1_r02.py": "9ec87ca8d52f1b645013fec6570c19e871e681b477196fd450c2994d759ccd76",
+      "src\\models\\optimization_v3_batch1_r04.py": "44d6e2b1146525866e2b45826ff414c7717027b8df3d35f649ba0e828734e28d",
+      "src\\models\\regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+      "src\\models\\regression_round2_models.py": "f56f7ee2c337acdf2cbe7160719faf62b1e3d3470a7f656b044ce0890d677e09",
+      "src\\models\\round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+      "src\\utils\\paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555",
+      "tests\\test_optimization_v3_batch1_r04.py": "6811b882673c64ab60149b16e2fd892c743474d313a9bc123408490d411ccced",
+      "tests\\test_optimization_v3_batch1_r04_runner.py": "ba651be29510d281d6fc13fcd5a0241df1df897d18524a23bea281e4dccb8e46"
+    },
+    "status": "PREFLIGHT_PASS",
+    "test_data_read": false,
+    "view_rows": {
+      "H12": 38588,
+      "W1": 4114,
+      "W4": 4950,
+      "primary": 9064
+    }
+  },
+  "report_amendment": {
+    "bundle_npz_sha256": {
+      "55": "58fad2588e05468c3e9cf688f68d628bcf7fef988f15fcdc95f3971b4b4bacb2",
+      "67": "e0e0d0e05f0b224fbb41864607ba3034372d29a415211012e57d68fc09b63b5b"
+    },
+    "candidate_model_refit": false,
+    "id": "R04_REPORT_AMENDMENT_01",
+    "metrics_and_verdict_unchanged": true,
+    "prediction_bundles_changed": false,
+    "reason": "Correct the bundle hash field using the sidecar npz_sha256 key and independently verify each NPZ byte hash.",
+    "source_freeze_signature": "24ad53267566a063497d1b3b77784150d3ec6e6b346fd803c5894c066bf15b46"
+  },
+  "resource_evidence_limit": "Per-fit memory is a pre-fit upper-bound estimate; peak process RSS was not observed.",
+  "sample_submission_used": false,
+  "schema_version": 1,
+  "source_sha256": {
+    "scripts\\optimization_v3_batch1.py": "c93dd71ed2b512f32bf8916f59b0af56bff212934efb8825b0e8a680da72e969",
+    "scripts\\optimization_v3_batch1_r02.py": "30e8d5324f66f30d02176f37d006d6461608839d697259bcd8636dcb67b8ffbe",
+    "scripts\\optimization_v3_batch1_r04.py": "135383e1ed1fdb5c071d8ebf3ff1d5cbfaf0a644de5c798edebc509b8bca9d18",
+    "scripts\\optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
+    "scripts\\optimization_v3_reg_diagnostics.py": "e2af49bb45353fca5bf0c14093be9b0f0b02afe24289a1b5c30dfb584bbd3f55",
+    "src\\models\\classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+    "src\\models\\optimization_v2_regression.py": "b235cfd93c8cc0a207cfcea79892b925f9dfdfe515491a459d6ca1b6142cb590",
+    "src\\models\\optimization_v3_batch1.py": "d21ac914d0d1f516a93e431116556dabdbe7313a21fd2b1b04a73371bd56f420",
+    "src\\models\\optimization_v3_batch1_r02.py": "9ec87ca8d52f1b645013fec6570c19e871e681b477196fd450c2994d759ccd76",
+    "src\\models\\optimization_v3_batch1_r04.py": "44d6e2b1146525866e2b45826ff414c7717027b8df3d35f649ba0e828734e28d",
+    "src\\models\\regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+    "src\\models\\regression_round2_models.py": "f56f7ee2c337acdf2cbe7160719faf62b1e3d3470a7f656b044ce0890d677e09",
+    "src\\models\\round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+    "src\\utils\\paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555",
+    "tests\\test_optimization_v3_batch1_r04.py": "6811b882673c64ab60149b16e2fd892c743474d313a9bc123408490d411ccced",
+    "tests\\test_optimization_v3_batch1_r04_runner.py": "ba651be29510d281d6fc13fcd5a0241df1df897d18524a23bea281e4dccb8e46"
+  },
+  "status": "RETIRE",
+  "subgroups": {
+    "maximum_supported_tail_or_missing_MAE_harm": 0.25,
+    "minimum_support": 100,
+    "supported_guard_failures": [],
+    "views": {
+      "H12": {
+        "entry_friction_0": {
+          "evidence_status": "SUPPORTED",
+          "mae_harm_candidate_minus_control": -0.020424459806921647,
+          "n": 26048,
+          "numeric_guard_applies": false,
+          "supported": true
+        },
+        "entry_friction_1": {
+          "evidence_status": "SUPPORTED",
+          "mae_harm_candidate_minus_control": -0.0016347983755711226,
+          "n": 12540,
+          "numeric_guard_applies": false,
+          "supported": true
+        },
+        "stream_missing": {
+          "evidence_status": "SUPPORTED",
+          "mae_harm_candidate_minus_control": -0.02812940107736317,
+          "n": 2578,
+          "numeric_guard_applies": true,
+          "supported": true
+        },
+        "stream_present": {
+          "evidence_status": "SUPPORTED",
+          "mae_harm_candidate_minus_control": -0.013329605795695088,
+          "n": 36010,
+          "numeric_guard_applies": false,
+          "supported": true
+        },
+        "target_ge_95": {
+          "evidence_status": "SUPPORTED",
+          "mae_harm_candidate_minus_control": -0.022881845267434642,
+          "n": 1955,
+          "numeric_guard_applies": true,
+          "supported": true
+        },
+        "target_le_5": {
+          "evidence_status": "SUPPORTED",
+          "mae_harm_candidate_minus_control": -0.15250476179574868,
+          "n": 1928,
+          "numeric_guard_applies": true,
+          "supported": true
+        }
+      },
+      "primary": {
+        "entry_friction_0": {
+          "evidence_status": "SUPPORTED",
+          "mae_harm_candidate_minus_control": -0.02367839645895664,
+          "n": 6131,
+          "numeric_guard_applies": false,
+          "supported": true
+        },
+        "entry_friction_1": {
+          "evidence_status": "SUPPORTED",
+          "mae_harm_candidate_minus_control": -0.01814303807148754,
+          "n": 2933,
+          "numeric_guard_applies": false,
+          "supported": true
+        },
+        "stream_missing": {
+          "evidence_status": "SUPPORTED",
+          "mae_harm_candidate_minus_control": -0.05450474507532377,
+          "n": 734,
+          "numeric_guard_applies": true,
+          "supported": true
+        },
+        "stream_present": {
+          "evidence_status": "SUPPORTED",
+          "mae_harm_candidate_minus_control": -0.019013120824521224,
+          "n": 8330,
+          "numeric_guard_applies": false,
+          "supported": true
+        },
+        "target_ge_95": {
+          "evidence_status": "SUPPORTED",
+          "mae_harm_candidate_minus_control": -0.10820472586954466,
+          "n": 462,
+          "numeric_guard_applies": true,
+          "supported": true
+        },
+        "target_le_5": {
+          "evidence_status": "SUPPORTED",
+          "mae_harm_candidate_minus_control": -0.0782375271545277,
+          "n": 449,
+          "numeric_guard_applies": true,
+          "supported": true
+        }
+      }
+    }
+  },
+  "task": "regression",
+  "test_data_used": false,
+  "views": {
+    "H12": {
+      "baseline": {
+        "mae": 14.04753258299653,
+        "n": 38588
+      },
+      "candidate": {
+        "mae": 14.03321422753161,
+        "n": 38588
+      },
+      "gain_positive_is_better": 0.014318355464919108,
+      "rows": 38588
+    },
+    "W1": {
+      "baseline": {
+        "mae": 15.882111974427762,
+        "n": 4114
+      },
+      "candidate": {
+        "mae": 15.854449093335425,
+        "n": 4114
+      },
+      "gain_positive_is_better": 0.027662881092336278,
+      "rows": 4114
+    },
+    "W4": {
+      "baseline": {
+        "mae": 11.455005081083685,
+        "n": 4950
+      },
+      "candidate": {
+        "mae": 11.437918073701933,
+        "n": 4950
+      },
+      "gain_positive_is_better": 0.017087007381752173,
+      "rows": 4950
+    },
+    "primary": {
+      "baseline": {
+        "mae": 13.464395831218011,
+        "n": 9064
+      },
+      "candidate": {
+        "mae": 13.44250860931228,
+        "n": 9064
+      },
+      "gain_positive_is_better": 0.02188722190573067,
+      "rows": 9064
+    }
+  }
+}
