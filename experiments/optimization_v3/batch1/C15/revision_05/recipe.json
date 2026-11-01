@@ -1,0 +1,322 @@
+{
+  "card_id": "C15",
+  "expected_rows": {
+    "H12_E": 17685,
+    "H12_L": 20903,
+    "W4": 4950,
+    "W6": 8491,
+    "primary": 13441
+  },
+  "fit_rows_by_cutoff": {
+    "55": 12020,
+    "67": 29705,
+    "75": 42117
+  },
+  "gate": {
+    "individual_pilot_view_harm_max": 0.005,
+    "pilot_H12_harm_max": 0.001,
+    "pilot_primary_gain_min": 0.0005,
+    "positive_and_negative_per_group_min": 30,
+    "positive_class_recall_harm_max": 0.02,
+    "supported_group_F1_harm_max": 0.01,
+    "supported_group_n_min": 200
+  },
+  "meta_model": {
+    "class": "sklearn.linear_model.LogisticRegression",
+    "clip_epsilon": 1e-06,
+    "input_features": [
+      "logit(C2_B probability)",
+      "logit(raw sparse-binary probability)"
+    ],
+    "parameters": {
+      "C": 1.0,
+      "class_weight": null,
+      "fit_intercept": true,
+      "max_iter": 2000,
+      "penalty": "l2 (scikit-learn default)",
+      "random_state": 42,
+      "solver": "liblinear",
+      "tol": 0.0001
+    },
+    "threshold": 0.5
+  },
+  "no_test_sample_or_kaggle": true,
+  "oof_design": {
+    "blocks": [
+      {
+        "cycle_end": 59,
+        "cycle_start": 56,
+        "origin_cutoff": 55,
+        "rows": 4114
+      },
+      {
+        "cycle_end": 63,
+        "cycle_start": 60,
+        "origin_cutoff": 59,
+        "rows": 6493
+      },
+      {
+        "cycle_end": 67,
+        "cycle_start": 64,
+        "origin_cutoff": 63,
+        "rows": 7078
+      },
+      {
+        "cycle_end": 71,
+        "cycle_start": 68,
+        "origin_cutoff": 67,
+        "rows": 4950
+      },
+      {
+        "cycle_end": 75,
+        "cycle_start": 72,
+        "origin_cutoff": 71,
+        "rows": 7462
+      }
+    ],
+    "cutoff67_support": {
+      "blocks": [
+        {
+          "cycle_end": 59,
+          "cycle_start": 56,
+          "origin_cutoff": 55,
+          "rows": 4114
+        },
+        {
+          "cycle_end": 63,
+          "cycle_start": 60,
+          "origin_cutoff": 59,
+          "rows": 6493
+        },
+        {
+          "cycle_end": 67,
+          "cycle_start": 64,
+          "origin_cutoff": 63,
+          "rows": 7078
+        }
+      ],
+      "cycle_max": 67,
+      "cycle_min": 56,
+      "present_class_counts": {
+        "0": 9839,
+        "1": 6643
+      },
+      "present_rows": 16482,
+      "support_pass": true,
+      "total_rows": 17685
+    },
+    "cutoff75_support": {
+      "blocks": [
+        {
+          "cycle_end": 59,
+          "cycle_start": 56,
+          "origin_cutoff": 55,
+          "rows": 4114
+        },
+        {
+          "cycle_end": 63,
+          "cycle_start": 60,
+          "origin_cutoff": 59,
+          "rows": 6493
+        },
+        {
+          "cycle_end": 67,
+          "cycle_start": 64,
+          "origin_cutoff": 63,
+          "rows": 7078
+        },
+        {
+          "cycle_end": 71,
+          "cycle_start": 68,
+          "origin_cutoff": 67,
+          "rows": 4950
+        },
+        {
+          "cycle_end": 75,
+          "cycle_start": 72,
+          "origin_cutoff": 71,
+          "rows": 7462
+        }
+      ],
+      "cycle_max": 75,
+      "cycle_min": 56,
+      "present_class_counts": {
+        "0": 17491,
+        "1": 10554
+      },
+      "present_rows": 28045,
+      "support_pass": true,
+      "total_rows": 30097
+    },
+    "fit_population": "present-stream official Train labels from exact disjoint OOF blocks strictly before each outer cutoff; rows from cycles 47-55 excluded",
+    "row_order": "Each saved score remains aligned by official Train row position; CSV row order is not assumed to be chronological across cycle blocks."
+  },
+  "policy": {
+    "baseline": "v3_cls_sparse25; 0.75*C2_B + 0.25*raw sparse probability when present, CatBoost when missing",
+    "cutoff55": "exact current champion fallback because authorized OOF support is unavailable",
+    "cutoff67_and_75_present": "C15 logistic regression fitted only on present-stream OOF rows",
+    "missing_stream": "exact accepted CatBoost probability",
+    "threshold": 0.5
+  },
+  "queue_recipe": {
+    "change": "LR C1/liblinear/max_iter2000 on clipped logits of C2_B and raw sparse binary probabilities from genuinely past disjoint OOF blocks. Present-only meta fit. Use only cycle56+ OOF; no invented fit51 sparse vector. Early cutoffs retain current route when OOF support insufficient.",
+    "condition": "No additional dependency",
+    "evaluation": "LATE",
+    "family": "score_meta",
+    "id": "C15",
+    "name": "Two-score prequential meta-head",
+    "pilot_predictor_fits": 2,
+    "policy": "C_META",
+    "task": "classification"
+  },
+  "resource_policy": {
+    "estimated_additional_bytes": 268435456,
+    "job_memory_cap_bytes": 6442450944,
+    "minimum_free_bytes": 4294967296,
+    "reserve_bytes": 2147483648,
+    "threads": 2
+  },
+  "revision": "revision_05; supersedes prefit-only revisions 01-04 after matching the shared runner's exact call signature; no candidate model fit or candidate prediction was produced by the earlier revisions.",
+  "row_matched_control": {
+    "H12_L": {
+      "class0_f1": 0.8776522748865195,
+      "class1_f1": 0.7402704115933368,
+      "confusion_matrix": [
+        [
+          12471,
+          1705
+        ],
+        [
+          1772,
+          4955
+        ]
+      ],
+      "macro_f1": 0.8089613432399282,
+      "n": 20903,
+      "positive_recall": 0.7365839155641445
+    },
+    "W4": {
+      "class0_f1": 0.8826170622193714,
+      "class1_f1": 0.8002183406113537,
+      "confusion_matrix": [
+        [
+          2752,
+          345
+        ],
+        [
+          387,
+          1466
+        ]
+      ],
+      "macro_f1": 0.8414177014153625,
+      "n": 4950,
+      "positive_recall": 0.7911494873178629
+    },
+    "W6": {
+      "class0_f1": 0.8975322765157705,
+      "class1_f1": 0.7356661045531198,
+      "confusion_matrix": [
+        [
+          5492,
+          499
+        ],
+        [
+          755,
+          1745
+        ]
+      ],
+      "macro_f1": 0.8165991905344452,
+      "n": 8491,
+      "positive_recall": 0.698
+    },
+    "accepted_manifest": "reports/optimization_v3/kaggle/v3_cls_sparse25.json",
+    "accepted_manifest_sha256": "6e7c2cb50fe6d0ee4767a44c40f152b6538b933fab6cf7082659b16d791f7d1e",
+    "champion_checkpoint_sha256": "1a0e8d40c066d04260addacc17c3e2b1c61519eeae74b63471b1d7445d0f1008",
+    "fullsix_report_sha256": "09097787e3b0c8bb3dbd5661b990ac768c9e9ab46cf3f32db7ae7a4e9e95929a",
+    "fullsix_verification_sha256": "8d93d596351f9fd078d166b5384527bd59d56ccb741571479d3b2e2ca1d50af7",
+    "fullsix_wrapper_sha256": "b43c8a5fa961494017a7a71eb3677a0a8b8a269ecc20d89003442c50ac07225b",
+    "primary_W4_plus_W6": {
+      "class0_f1": 0.8924975641442027,
+      "class1_f1": 0.7637963843958135,
+      "confusion_matrix": [
+        [
+          8244,
+          844
+        ],
+        [
+          1142,
+          3211
+        ]
+      ],
+      "macro_f1": 0.828146974270008,
+      "n": 13441,
+      "positive_recall": 0.7376521938892717
+    },
+    "provenance_note": "W4/W6 confusion matrices were summed before computing Macro F1; controls use the accepted v3_cls_sparse25 full-six report.",
+    "route": {
+      "kind": "availability_present_blend",
+      "missing": "CB_MISSING",
+      "present": [
+        {
+          "model": "C2_B",
+          "weight": 0.75
+        },
+        {
+          "model": "SPARSE_BINARY",
+          "weight": 0.25
+        }
+      ],
+      "threshold": 0.5
+    }
+  },
+  "subgroup_edges": {
+    "definition": "text_load quartiles from unlabeled feature values in cycles 47-55, matching accepted full-six report",
+    "edges": [
+      28.16705,
+      32.046549999999996,
+      36.749525
+    ]
+  },
+  "views": {
+    "H12_E": [
+      [
+        55,
+        56,
+        67
+      ]
+    ],
+    "H12_L": [
+      [
+        67,
+        68,
+        79
+      ]
+    ],
+    "W4": [
+      [
+        67,
+        68,
+        71
+      ]
+    ],
+    "W6": [
+      [
+        75,
+        76,
+        79
+      ]
+    ],
+    "primary": [
+      [
+        67,
+        68,
+        71
+      ],
+      [
+        75,
+        76,
+        79
+      ]
+    ]
+  }
+}

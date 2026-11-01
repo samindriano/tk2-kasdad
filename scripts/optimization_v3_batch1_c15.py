@@ -56,9 +56,11 @@ QUEUE_PATH = ROOT / "experiments/optimization_v3/research_backlog/queue.json"
 PREFIT_REVISION_01 = ROOT / "experiments/optimization_v3/batch1/C15"
 PREFIT_REVISION_02 = PREFIT_REVISION_01 / "revision_02"
 PREFIT_REVISION_03 = PREFIT_REVISION_01 / "revision_03"
-EXPERIMENT_DIR = PREFIT_REVISION_01 / "revision_04"
-REPORT_DIR = ROOT / "reports/optimization_v3/batch1/C15/revision_04"
+PREFIT_REVISION_04 = PREFIT_REVISION_01 / "revision_04"
+EXPERIMENT_DIR = PREFIT_REVISION_01 / "revision_05"
+REPORT_DIR = ROOT / "reports/optimization_v3/batch1/C15/revision_05"
 RUN_DIR = ROOT / "experiments/runs/optimization_v3_batch1/C15"
+ATTEMPTS_PATH = RUN_DIR / "attempts.jsonl"
 RECIPE_PATH = EXPERIMENT_DIR / "recipe.json"
 FREEZE_PATH = EXPERIMENT_DIR / "freeze.json"
 ENGINE_REPORT_PATH = RUN_DIR / "pilot_engine_report.json"
@@ -305,6 +307,8 @@ def _all_input_files(train_path: Path, card: Mapping[str, Any]) -> dict[str, Pat
         "superseded_prefit_freeze_revision_02": PREFIT_REVISION_02 / "freeze.json",
         "superseded_prefit_recipe_revision_03": PREFIT_REVISION_03 / "recipe.json",
         "superseded_prefit_freeze_revision_03": PREFIT_REVISION_03 / "freeze.json",
+        "superseded_prefit_recipe_revision_04": PREFIT_REVISION_04 / "recipe.json",
+        "superseded_prefit_freeze_revision_04": PREFIT_REVISION_04 / "freeze.json",
     }
     for origin in (55, 59, 63, 67, 71, 75):
         c2b_path, sparse_path, _ = _cache_paths(origin)
@@ -465,7 +469,7 @@ def _prepare(card: Mapping[str, Any], queue: Mapping[str, Any]) -> dict[str, Any
                                    evaluation_views=views, packages=PACKAGES)
     recipe = {
         "card_id": CARD_ID,
-        "revision": "revision_04; supersedes prefit-only revisions 01-03 after source row order was correctly treated as non-chronological; no candidate model fit or candidate prediction was produced by the earlier revisions.",
+        "revision": "revision_05; supersedes prefit-only revisions 01-04 after matching the shared runner's exact call signature; no candidate model fit or candidate prediction was produced by the earlier revisions.",
         "queue_recipe": {key: card[key] for key in ("id", "task", "name", "family", "change", "policy",
                         "pilot_predictor_fits", "evaluation", "condition")},
         "meta_model": {
@@ -887,9 +891,9 @@ def run_card(card: Mapping[str, Any], queue: Mapping[str, Any], *,
     engine = run_pilot(
         card=card, artifact_dir=RUN_DIR, budget_ledger_path=LEDGER_PATH,
         max_successful_fits=int(queue["execution_preset"]["max_successful_new_predictor_fits"]),
-        task="classification", frame=frame, target=target, features=FEATURE_NAMES,
+        frame=frame, target=target, feature_names=FEATURE_NAMES,
         evaluation_views=views, adapter=adapter, control_loader=controls_loader,
-        freeze_path=FREEZE_PATH, freeze_identity=context["identity"],
+        freeze_path=FREEZE_PATH, freeze_identity=context["identity"], event_path=ATTEMPTS_PATH,
         report_path=ENGINE_REPORT_PATH, threads=THREADS,
     )
     results, verification, gate = _independent_qa(context, engine, context["oof_support"])
