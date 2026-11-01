@@ -97,6 +97,8 @@ JOB_MEMORY_CAP_BYTES = 6 * 1024**3
 FREE_RAM_RESERVE_BYTES = 2 * 1024**3
 MINIMUM_FREE_BYTES = 4 * 1024**3
 THREADS = 2
+TOKENIZATION_ALLOWANCE_BYTES = 512 * 1024**2
+MODEL_RUNTIME_ALLOWANCE_BYTES = 1024**3
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -292,20 +294,37 @@ def reconstruct_c08(arrays: dict[str, np.ndarray]) -> tuple[np.ndarray, np.ndarr
 
 def _memory_estimate(fit_features: pd.DataFrame, score_features: pd.DataFrame,
                      available_bytes: int | None = None) -> dict[str, Any]:
-    docs, _missing = _text_values(fit_features["signal_stream"])
+    docs, fit_missing = _text_values(fit_features["signal_stream"])
+    score_docs, score_missing = _text_values(score_features["signal_stream"])
     vectorizer = TfidfVectorizer(**dict(_TFIDF_PARAMS))
     text = vectorizer.fit_transform(docs).tocsr()
     if text.shape[1] < 1:
         raise ValueError("SKIPPED_SUPPORT: fit-only TF-IDF has no columns")
-    (structured, _processor, _scaler, _encoder, _numeric_positions,
+    score_text = vectorizer.transform(score_docs).tocsr()
+    (structured, processor, scaler, encoder, numeric_positions,
      structured_state) = RegressionTextModel._structured_fit(fit_features)
+    score_structured, _score_unknown = RegressionTextModel._structured_transform(
+        score_features, processor, scaler, encoder, numeric_positions
+    )
     structured_design = sparse.hstack((structured, sparse.csr_matrix((len(fit_features), 3))), format="csr")
-    fit_design = sparse.hstack((structured_design, text, sparse.csr_matrix((len(fit_features), 1))), format="csr")
+    fit_design = sparse.hstack((
+        structured_design, text, sparse.csr_matrix(fit_missing.astype(np.float64).reshape(-1, 1))
+    ), format="csr")
+    score_design = sparse.hstack((
+        score_structured, sparse.csr_matrix((len(score_features), 3)), score_text,
+        sparse.csr_matrix(score_missing.astype(np.float64).reshape(-1, 1)),
+    ), format="csr")
     score_rows = len(score_features)
     csr_bytes = int(fit_design.data.nbytes + fit_design.indices.nbytes + fit_design.indptr.nbytes)
-    score_scratch_bytes = int(score_rows * (structured_design.shape[1] + text.shape[1] + 4) * 8 * 2)
+    score_csr_bytes = int(score_design.data.nbytes + score_design.indices.nbytes + score_design.indptr.nbytes)
+    # Both fit and predict paths hstack CSR blocks; bound temporary copies from
+    # sparse assembly instead of treating the vocabulary-wide score matrix as dense.
+    score_scratch_bytes = int(5 * score_csr_bytes)
     rate_arrays_bytes = int((len(fit_features) + score_rows) * 3 * (8 + 4 + 1))
-    estimated_peak = int(1.5 * 1024**3 + 5 * csr_bytes + score_scratch_bytes + 2 * rate_arrays_bytes)
+    estimated_peak = int(
+        TOKENIZATION_ALLOWANCE_BYTES + MODEL_RUNTIME_ALLOWANCE_BYTES
+        + 5 * csr_bytes + score_scratch_bytes + 2 * rate_arrays_bytes
+    )
     available = int(psutil.virtual_memory().available if available_bytes is None else available_bytes)
     allowed = min(JOB_MEMORY_CAP_BYTES, available - FREE_RAM_RESERVE_BYTES)
     result = {
@@ -314,11 +333,16 @@ def _memory_estimate(fit_features: pd.DataFrame, score_features: pd.DataFrame,
         "score_rows": int(score_rows),
         "tfidf_vocabulary_width": int(text.shape[1]),
         "tfidf_nnz": int(text.nnz),
+        "score_tfidf_nnz": int(score_text.nnz),
         "sparse_fit_design_width": int(fit_design.shape[1]),
         "fit_design_nnz": int(fit_design.nnz),
         "fit_sparse_design_bytes": csr_bytes,
+        "score_design_nnz": int(score_design.nnz),
+        "score_sparse_design_bytes": score_csr_bytes,
         "score_scratch_bytes_upper_bound": score_scratch_bytes,
         "ordered_rate_arrays_bytes_upper_bound": rate_arrays_bytes,
+        "tokenization_allowance_bytes": TOKENIZATION_ALLOWANCE_BYTES,
+        "model_runtime_allowance_bytes": MODEL_RUNTIME_ALLOWANCE_BYTES,
         "estimated_additional_peak_bytes": estimated_peak,
         "estimate_is_observed_rss": False,
         "available_ram_bytes": available,
@@ -330,7 +354,7 @@ def _memory_estimate(fit_features: pd.DataFrame, score_features: pd.DataFrame,
         "concurrent_training_jobs": 1,
         "structured_preprocessing": structured_state,
     }
-    del text, structured_design, fit_design, structured, vectorizer
+    del text, score_text, structured_design, fit_design, score_design, structured, score_structured, vectorizer
     gc.collect()
     return result
 
@@ -627,7 +651,9 @@ def _resource_guarded_adapter(fit_features: pd.DataFrame, fit_target: np.ndarray
         key: estimate[key] for key in (
             "estimated_additional_peak_bytes", "available_ram_bytes", "allowed_bytes",
             "tfidf_vocabulary_width", "tfidf_nnz", "sparse_fit_design_width",
-            "fit_design_nnz", "fit_sparse_design_bytes",
+            "fit_design_nnz", "fit_sparse_design_bytes", "score_tfidf_nnz",
+            "score_design_nnz", "score_sparse_design_bytes", "score_scratch_bytes_upper_bound",
+            "tokenization_allowance_bytes", "model_runtime_allowance_bytes",
         )
     }
     return result

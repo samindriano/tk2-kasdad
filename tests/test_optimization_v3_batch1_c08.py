@@ -249,6 +249,23 @@ def test_c08_fit_accounting_accepts_retries_and_verified_resume_bundles(monkeypa
     assert resume_accounting["fit_origins_saved"] == [55, 67]
 
 
+def test_c08_memory_preflight_bounds_sparse_score_design(monkeypatch):
+    fit_features = _features(np.repeat(np.array([47, 48], dtype=np.int64), 40))
+    score_features = _features(np.repeat(np.array([49, 50], dtype=np.int64), 20))
+    estimate = c08_runner._memory_estimate(
+        fit_features, score_features, available_bytes=8 * 1024**3
+    )
+    former_dense_bound = len(score_features) * (estimate["sparse_fit_design_width"] + 4) * 8 * 2
+    assert estimate["status"] == "PASS"
+    assert estimate["score_design_nnz"] > 0
+    assert estimate["score_scratch_bytes_upper_bound"] == 5 * estimate["score_sparse_design_bytes"]
+    assert estimate["score_scratch_bytes_upper_bound"] < former_dense_bound
+    assert estimate["estimated_additional_peak_bytes"] >= (
+        estimate["tokenization_allowance_bytes"] + estimate["model_runtime_allowance_bytes"]
+        + 5 * estimate["fit_sparse_design_bytes"] + estimate["score_scratch_bytes_upper_bound"]
+    )
+
+
 def test_c08_validates_controls_and_reconstructs_c_sparse_replace_route():
     n = 5
     missing = np.array([False, True, False, True, False])
