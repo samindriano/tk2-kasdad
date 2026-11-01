@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "authorized_base_head": "6ffbb80c19277279ce022536dab26fd69c539f21",
+  "authorization": {
+    "classification": {
+      "competition": "tp2-classification-cyber-vulnerability-kasdd-gasal-2026-2027",
+      "message": "Samuel C16 Experimental Benchmark - Gate Exception Authorized",
+      "submission_limit": 1,
+      "gate_exception_acknowledged": true,
+      "qualification_must_remain_failed": true
+    },
+    "regression": {
+      "competition": "tp2-regression-cyber-vulnerability-kasdd-gasal-2026-2027",
+      "message": "Samuel R22 Original - Full-Six Qualified Benchmark",
+      "submission_limit": 1,
+      "recipe": "R22_ORIGINAL only"
+    }
+  },
+  "data": {
+    "train_rows": 50608,
+    "test_rows": 29421,
+    "ordered_test_ids_sha256": "0e325676d1e91ac8d594390a6fa44bee70270da489cdcb323b6fc8bff66f01ea",
+    "classification": {
+      "train": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+      "test": "4e6c381d582ed24f92d17f620f4f0ad25e2e0def29eb57a91a5482867f6afe3c",
+      "sample": "889f97d69659a64945421d841dcf96e5813020606f29b2992d4b9560cecdcba7"
+    },
+    "regression": {
+      "train": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+      "test": "4e6c381d582ed24f92d17f620f4f0ad25e2e0def29eb57a91a5482867f6afe3c",
+      "sample": "63a51f4b7dfbb0eec9800099407abd8be14d25ec18a533cd39dc854ffc190a32"
+    }
+  },
+  "continuation_evidence": {
+    "campaign_summary": {
+      "path": "reports/optimization_v3/final_continuation/CAMPAIGN_SUMMARY.md",
+      "sha256": "efca1b81651ffe975695c0ec6afb80e1a0a1fc2cf5946a7db959b92a718b07d2"
+    },
+    "decision": {
+      "path": "reports/optimization_v3/final_continuation_plan/DECISION.md",
+      "sha256": "1272e0f10b90a91fa00866b4e2b60c286a8385025e40f6cfcba980602bf61eea"
+    },
+    "c16_results": {
+      "path": "reports/optimization_v3/final_continuation/C16/results.json",
+      "sha256": "ca443e92a7710880db9560556e0f4472ba07d48832aad83c1f89d7bab0a7b8e2",
+      "freeze_signature": "c7a61632e4f5b8667293cc77e6d08addfe10c996fc5cfd146abb1b851405dbb6",
+      "must_remain_qualified": false
+    },
+    "r22_continuation": {
+      "path": "reports/optimization_v3/final_continuation/R22/R22_CONTINUATION.md",
+      "sha256": "993d15a27a576cad47b8d53c5cbc02f11e63f503b2187db8f8193a64169762aa",
+      "freeze_signature": "2ab551f7d29c920cda46c61b4a5793a6a0256bf582ee3f4619eff1640bd3a953",
+      "selected_policy": "R22_ORIGINAL"
+    },
+    "r22_result_json": {
+      "path": "reports/optimization_v3/final_continuation/R22/result.json",
+      "sha256": "5333a1f0a400adf67725c7701b100b2478f50535c97f401be803f715a46122ea",
+      "freeze_signature": "2ab551f7d29c920cda46c61b4a5793a6a0256bf582ee3f4619eff1640bd3a953"
+    }
+  },
+  "classification": {
+    "continuation_freeze_signature": "c7a61632e4f5b8667293cc77e6d08addfe10c996fc5cfd146abb1b851405dbb6",
+    "comparison_champion": {
+      "reference": "57837821",
+      "public_macro_f1": 0.82908,
+      "manifest": "reports/optimization_v3/kaggle/v3_cls_sparse25.json"
+    },
+    "component_recipe": ".75 C2_B + .25 C16 for stream-present rows; exact CB_MISSING for stream-missing rows",
+    "threshold": 0.5,
+    "new_fit_component": "ModerateSparseCapacityClassifier",
+    "tree_changes": {
+      "num_leaves": 31,
+      "min_child_samples": 100,
+      "reg_lambda": 5.0
+    },
+    "reuse_manifest": "reports/optimization_v3/kaggle/v3_cls_sparse25.json",
+    "reuse_manifest_sha256": "6e7c2cb50fe6d0ee4767a44c40f152b6538b933fab6cf7082659b16d791f7d1e",
+    "reuse_cache": "experiments/runs/optimization_v3_inference/v3_cls_sparse25.npz",
+    "reuse_cache_sha256": "31ef6945ae74a14b1e4ff46220667ac3a08de3401120257e7932745c927d6103",
+    "reused_models": {
+      "C2_B": "49758d1c61d68847a21b0e9dd7f5765513320dedc7359c47f715441725e6fb70",
+      "CB_MISSING": "0779620b5f5b436fbce03e4270e3ea06045eb9f9cd89c831aea4adddd0a482bf"
+    },
+    "internal_qualification": "GATE_FAILED_EXPERIMENTAL_ONLY"
+  },
+  "regression": {
+    "continuation_freeze_signature": "2ab551f7d29c920cda46c61b4a5793a6a0256bf582ee3f4619eff1640bd3a953",
+    "recipe": "R22_ORIGINAL",
+    "component_recipe": "clip(.75*three-component champion + .25*clip(.5*raw + .5*100*average_rank(raw within full cycle)/cycle_n,0,100),0,100)",
+    "rank_ties": "average",
+    "new_fit_component": "XGBoostPseudoHuberSVD32Regressor",
+    "xgboost": {
+      "objective": "reg:pseudohubererror",
+      "huber_slope": 5.0,
+      "tree_method": "hist",
+      "device": "cpu",
+      "n_estimators": 600,
+      "max_depth": 4,
+      "learning_rate": 0.05,
+      "min_child_weight": 20,
+      "reg_lambda": 5.0,
+      "colsample_bytree": 0.8,
+      "subsample": 1.0,
+      "n_jobs": 2,
+      "random_state": 42,
+      "verbosity": 0
+    },
+    "champion": {
+      "reference": "57835122",
+      "public_mae": 11.3597,
+      "manifest": "reports/optimization_v2/kaggle/v2_reg_sparse_lgb25.json",
+      "manifest_sha256": "dd166e92089f24978244496a9a0afabc0d06551dbdc326579a7c898a8844e19a",
+      "csv": "submissions/dual_campaign/optimization_v2/v2_reg_sparse_lgb25.csv",
+      "csv_sha256": "8fcbe15be832be339b1604efb9c17d02c5dfc7b57853ccf2de4fbe7000c77591",
+      "components": [
+        {"model": "lgb", "params_id": "base", "weight": 0.5625, "rank_weight": 0.5},
+        {"model": "ridge", "weight": 0.1875, "rank_weight": 0.75},
+        {"model": "lgbm_sparse_l1", "weight": 0.25, "rank_weight": 0.5}
+      ]
+    }
+  },
+  "resources": {
+    "training_jobs_at_once": 1,
+    "threads": 2,
+    "job_memory_cap_bytes": 6442450944,
+    "free_ram_reserve_bytes": 2147483648,
+    "classification_peak_estimate_bytes": 2147483648,
+    "regression_peak_estimate_formula": "5 * 50608 * 840 * 8 + 840 * 256 * 16 * 2 * 3 + 2 GiB"
+  },
+  "prohibited": [
+    "C16 qualification/gates may not be changed",
+    "Do not use R22_PCT_PRESENT, R22+R06, R16, or another regression recipe",
+    "Do not change historical artifacts or notebooks",
+    "Do not use Test labels or Test data for discovery/selection",
+    "Do not submit more than once per competition",
+    "Do not upload if live quota, ledger, rules, or authentication cannot be verified"
+  ]
+}
