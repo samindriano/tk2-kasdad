@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "card_id": "C12",
+  "status": "INDEPENDENT_QA_PASS",
+  "review_type": "read-only worker audit plus saved-output verifier replay",
+  "reviewed_source_commit": "e83d271da6bcef469d16a42f4c873d2a8713df5c",
+  "freeze_signature": "be1abc2c31744c5eb139b6f056afe529a765f559ce225f68f7905a508d6c3fc3",
+  "official_train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+  "official_train_rows": 50608,
+  "source_hashes_match_freeze": true,
+  "fit_and_score_populations": {
+    "55": {"fit_rows": 12020, "score_rows": 17685, "score_cycles": [56, 67]},
+    "67": {"fit_rows": 29705, "score_rows": 20903, "score_cycles": [68, 79]}
+  },
+  "row_id_and_target_alignment": "PASS",
+  "metric_reconstruction": {
+    "primary": {"rows": 9064, "baseline_macro_f1": 0.8239724981677496, "candidate_macro_f1": 0.8251499396515773, "gain": 0.0011774414838277014},
+    "H12": {"rows": 38588, "baseline_macro_f1": 0.8029655654017788, "candidate_macro_f1": 0.8018101155730395, "gain": -0.0011554498287392745}
+  },
+  "supported_subgroup_failures": 0,
+  "attempts": {"preflight_pass": 1, "fit_started": 2, "fit_saved": 2, "fit_failed": 0, "technical_retries": 0},
+  "test_data_used": false,
+  "sample_submission_access": false,
+  "kaggle_access": false,
+  "decision": "RETIRE",
+  "decision_reason": "Primary gain passed (+0.001177), but H12 harm (-0.001155) exceeded the frozen 0.001 limit; other pilot and supported-subgroup checks passed.",
+  "amendment_required": false
+}
