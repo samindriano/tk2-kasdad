@@ -1,0 +1,360 @@
+{
+  "created_at_utc": "2026-11-01T07:32:20.147060+00:00",
+  "identity": {
+    "candidate_recipe": {
+      "card_id": "R07",
+      "convergence_capture": [
+        "n_iter_",
+        "reconstruction_err_",
+        "ConvergenceWarning"
+      ],
+      "feature_allowlist": [
+        "impact_load",
+        "entry_friction",
+        "cycle_code",
+        "scope_pressure",
+        "text_load",
+        "scope_trace",
+        "org_spread",
+        "module_spread",
+        "telemetry_flag",
+        "org_code",
+        "module_code",
+        "pattern_code",
+        "signal_stream"
+      ],
+      "fit_rows": {
+        "55": 12020,
+        "67": 29705
+      },
+      "implementation_compatibility": {
+        "coordinate_descent_layout_workaround": "C-contiguous copies of nndsvda-initialized W/H to satisfy the installed sklearn CD extension; initialization values and public estimator parameters are unchanged",
+        "scikit_learn_version": "1.8.0"
+      },
+      "lightgbm_parameters": {
+        "boosting_type": "gbdt",
+        "colsample_bytree": 1.0,
+        "deterministic": true,
+        "force_col_wise": true,
+        "learning_rate": 0.05,
+        "max_depth": -1,
+        "min_child_samples": 40,
+        "min_child_weight": 0.001,
+        "n_estimators": 400,
+        "n_jobs": 2,
+        "num_leaves": 31,
+        "objective": "regression_l1",
+        "random_state": 42,
+        "reg_alpha": 0.0,
+        "reg_lambda": 1.0,
+        "subsample": 1.0,
+        "subsample_freq": 0,
+        "verbosity": -1
+      },
+      "missing_stream_indicator": true,
+      "model": "LightGBM regression_l1; structured native design + fit-only TF-IDF and NMF32 factors + missing-stream indicator",
+      "nmf": {
+        "alpha_H": "same",
+        "alpha_W": 0.0,
+        "beta_loss": "frobenius",
+        "init": "nndsvda",
+        "l1_ratio": 0.0,
+        "max_iter": 200,
+        "n_components": 32,
+        "random_state": 42,
+        "shuffle": false,
+        "solver": "cd",
+        "tol": 0.0001,
+        "verbose": 0
+      },
+      "policy": "clip(0.75*current_three_component_champion + 0.25*rank50(raw R07),0,100)",
+      "predictor_fits": 2,
+      "preprocessing_fit_calls_per_cutoff": {
+        "nmf32": 1,
+        "structured_native_preprocessor": 1,
+        "word_tfidf": 1
+      },
+      "profile": "STANDARD",
+      "rank50": "within each complete score cycle; average ties; percentile=100*rank/n; rank50=0.5*raw+0.5*percentile; clip[0,100]",
+      "score_rows": {
+        "55": 17685,
+        "67": 20903
+      },
+      "semantic_interpretation": "NMF factor dimensions are predictive representations only; no semantic interpretation is assigned.",
+      "structured_preprocessing": "RegressionResearchLGBText base fit-only structured native-category preprocessing; NMF is applied only to nonnegative text TF-IDF",
+      "test_data_used": false,
+      "text_vectorizer": {
+        "analyzer": "word",
+        "binary": false,
+        "decode_error": "strict",
+        "dtype": "float64",
+        "encoding": "utf-8",
+        "input": "content",
+        "lowercase": true,
+        "max_df": 1.0,
+        "max_features": 20000,
+        "min_df": 2,
+        "ngram_range": [
+          1,
+          2
+        ],
+        "norm": "l2",
+        "preprocessor": null,
+        "smooth_idf": true,
+        "stop_words": null,
+        "strip_accents": null,
+        "sublinear_tf": true,
+        "token_pattern": "(?u)\\b\\w\\w+\\b",
+        "tokenizer": null,
+        "use_idf": true,
+        "vocabulary": null
+      },
+      "views": {
+        "H12": [
+          [
+            55,
+            56,
+            67
+          ],
+          [
+            67,
+            68,
+            79
+          ]
+        ],
+        "W1": [
+          [
+            55,
+            56,
+            59
+          ]
+        ],
+        "W4": [
+          [
+            67,
+            68,
+            71
+          ]
+        ],
+        "primary": [
+          [
+            55,
+            56,
+            59
+          ],
+          [
+            67,
+            68,
+            71
+          ]
+        ]
+      }
+    },
+    "candidate_recipe_sha256": "8230b54ef804ef3d0d8c2e636b2e50f6a98b1eceff9ff14bfc8b68c0477f23dd",
+    "card": {
+      "card_path": "reports/optimization_v3/research_backlog/cards/R07.md",
+      "change": "TF-IDF fit-only\u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122NMF32/init nndsvda/solvercd/frobenius/max_iter200/seed42; structured native design + original SVD32 LightGBM parameters. No factor semantics.",
+      "condition": "No additional dependency",
+      "evaluation": "STANDARD",
+      "evidence": [
+        "reports/regression_research/FINDINGS.md"
+      ],
+      "family": "nmf",
+      "id": "R07",
+      "implementation": "NOT_IMPLEMENTED",
+      "in_priority_prefix": false,
+      "name": "NMF32 nonnegative text factors",
+      "new_results": null,
+      "pilot_predictor_fits": 2,
+      "policy": "R_AUX25",
+      "preflight_checks": [
+        "NMF only on nonnegative text block, not scaled structured values; inspect convergence and RAM"
+      ],
+      "priority": "P3",
+      "queue_order": 42,
+      "rationale": "Geometri faktor nonnegatif berbeda dari SVD. Konvergensi dan manfaat belum diketahui.",
+      "status": "PLANNED_NOT_RUN",
+      "task": "regression"
+    },
+    "control_cache_hashes": {
+      "data/raw/regression/Train.csv": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+      "experiments/runs/dual_reg_v1/stage1_paired_blends.npz": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516",
+      "experiments/runs/optimization_v2_regression_repr/fullsix_predictions.npz": "4b87b0da34069ea3d75490233c574fbd92283f8b6472a43d8c654a20a4b904c9",
+      "experiments/runs/optimization_v2_regression_repr/pilot_predictions.npz": "eae6bea2dd6933de59ac0f63f54cc08124b59d4bcba91bbe05a7c5ec3dab9ff6",
+      "reports/optimization_v2/regression_repr/fullsix.json": "a9686473998722b8f86a0f6a4489b4e3a75a6b6ba20c661ac564e6a5e61aea48",
+      "reports/optimization_v2/regression_repr/fullsix_subgroup_diagnostics.json": "6954fbdd9eb1c95794787ff54cf8a9b8c88dc97373ad9a8bf8e0aefdcaf1551e"
+    },
+    "control_preflight_identity_sha256": "8f01b8356c1152a7a5329b5e7cfe915abcdd1ed702a1920c535446ae864f35df",
+    "evaluation_views": {
+      "H12": [
+        [
+          55,
+          56,
+          67
+        ],
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "W1": [
+        [
+          55,
+          56,
+          59
+        ]
+      ],
+      "W4": [
+        [
+          67,
+          68,
+          71
+        ]
+      ],
+      "primary": [
+        [
+          55,
+          56,
+          59
+        ],
+        [
+          67,
+          68,
+          71
+        ]
+      ]
+    },
+    "feature_names": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code",
+      "signal_stream"
+    ],
+    "input_sha256": {
+      "accepted_regression_manifest": "dd166e92089f24978244496a9a0afabc0d06551dbdc326579a7c898a8844e19a",
+      "cache_only_diagnostics": "8d634debd1dbc6a3eed5250593b9c213570b4fb139b0b9a623a8d704159916df",
+      "canonical_card": "2ee1260510d3b0240ae5bcb0edbc852493e06672ca08be8236346454a65a4a27",
+      "canonical_queue": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+      "official_regression_train": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+      "paired_lgb_ridge_cache": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516",
+      "regression_fullsix_report": "a9686473998722b8f86a0f6a4489b4e3a75a6b6ba20c661ac564e6a5e61aea48",
+      "regression_subgroup_diagnostics": "6954fbdd9eb1c95794787ff54cf8a9b8c88dc97373ad9a8bf8e0aefdcaf1551e",
+      "sparse_regression_fullsix_cache": "4b87b0da34069ea3d75490233c574fbd92283f8b6472a43d8c654a20a4b904c9",
+      "sparse_regression_pilot_cache": "eae6bea2dd6933de59ac0f63f54cc08124b59d4bcba91bbe05a7c5ec3dab9ff6"
+    },
+    "package_versions": {
+      "lightgbm": "4.6.0",
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "psutil": "7.0.0",
+      "scikit-learn": "1.8.0",
+      "scipy": "1.18.0",
+      "threadpoolctl": "3.6.0"
+    },
+    "python_version": "3.13.5",
+    "recipe_record_sha256": "5072befc196bd9b5fe282fb2ce48a76e638cdcd5c04dac126c8c0967392fe524",
+    "resource_preflight": {
+      "candidate_fit_performed": false,
+      "concurrent_training_jobs": 1,
+      "convergence_capture_during_fit": [
+        "n_iter_",
+        "reconstruction_err_",
+        "ConvergenceWarning"
+      ],
+      "convergence_measured": false,
+      "cutoffs": {
+        "55": {
+          "candidate_fit_performed": false,
+          "estimated_peak_bytes": 779244892,
+          "estimated_peak_is_observed": false,
+          "fit_missing_stream_rows": 826,
+          "fit_rows": 12020,
+          "fit_score_document_bytes_upper": 42982988,
+          "nmf_components_requested": 32,
+          "nmf_factor_workspace_bytes_estimated": 17844480,
+          "nmf_fit_performed": false,
+          "nmf_support_sufficient": true,
+          "score_missing_stream_rows": 1203,
+          "score_rows": 17685,
+          "score_tfidf_csr_bytes_observed": 9808444,
+          "score_tfidf_nnz": 811475,
+          "status": "PASS",
+          "structured_design_bytes_estimated": 10693800,
+          "structured_design_width": 45,
+          "tfidf_csr_bytes_observed": 7962468,
+          "tfidf_density": 0.0027434775374376038,
+          "tfidf_features": 20000,
+          "tfidf_nnz": 659532,
+          "tfidf_nonnegative_and_finite": true
+        },
+        "67": {
+          "candidate_fit_performed": false,
+          "estimated_peak_bytes": 925272828,
+          "estimated_peak_is_observed": false,
+          "fit_missing_stream_rows": 2029,
+          "fit_rows": 29705,
+          "fit_score_document_bytes_upper": 73581476,
+          "nmf_components_requested": 32,
+          "nmf_factor_workspace_bytes_estimated": 23195648,
+          "nmf_fit_performed": false,
+          "nmf_support_sufficient": true,
+          "score_missing_stream_rows": 1375,
+          "score_rows": 20903,
+          "score_tfidf_csr_bytes_observed": 12648096,
+          "score_tfidf_nnz": 1047040,
+          "status": "PASS",
+          "structured_design_bytes_estimated": 18218880,
+          "structured_design_width": 45,
+          "tfidf_csr_bytes_observed": 18285252,
+          "tfidf_density": 0.002548172024911631,
+          "tfidf_features": 20000,
+          "tfidf_nnz": 1513869,
+          "tfidf_nonnegative_and_finite": true
+        }
+      },
+      "free_memory_reserve_bytes": 2147483648,
+      "job_memory_cap_bytes": 6442450944,
+      "minimum_free_memory_bytes": 4294967296,
+      "nmf_dense_factors_only": true,
+      "nmf_fit_performed": false,
+      "resource_estimator": "actual fold-specific CSR bytes + conservative sparse/factor/design/document multipliers and fixed LightGBM overhead",
+      "status": "PASS",
+      "tfidf_input_sparse_only": true,
+      "threads": 2
+    },
+    "schema_version": 1,
+    "source_commit": "214cc395bd44a65b1d70524094c09561e225a762",
+    "source_sha256": {
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1.py": "c93dd71ed2b512f32bf8916f59b0af56bff212934efb8825b0e8a680da72e969",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_r02.py": "30e8d5324f66f30d02176f37d006d6461608839d697259bcd8636dcb67b8ffbe",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_r07.py": "21b74060bb3e78704a66e4a213e1b013cc79375222fd36a93484cc6472567ee0",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_reg_diagnostics.py": "e2af49bb45353fca5bf0c14093be9b0f0b02afe24289a1b5c30dfb584bbd3f55",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v2_regression.py": "b235cfd93c8cc0a207cfcea79892b925f9dfdfe515491a459d6ca1b6142cb590",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1.py": "746e12d408e74608e5b559bc7dcf4c10174df9f367859750987310adb6ae8ffd",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1_r02.py": "9ec87ca8d52f1b645013fec6570c19e871e681b477196fd450c2994d759ccd76",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1_r07.py": "b0248b2eb33b9b927294d8eda050d66652e529f90525870fa05760cea19f1607",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_research_tabular.py": "674d7e52c485583729b8fe999dc133c39aae8dd85abd005a598e2caea9af99f9",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_round2_models.py": "f56f7ee2c337acdf2cbe7160719faf62b1e3d3470a7f656b044ce0890d677e09",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\utils\\paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\tests\\test_optimization_v3_batch1_r07_model.py": "e61cf22b2a7e3c5b74ae6557a3526439e561e9729b28bd4828fa41fdee0fb163",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\tests\\test_optimization_v3_batch1_r07_runner.py": "7c84620a88729bf52e73eb612b0540cdeace5ff1eebdb27bbf634cdce374ce04"
+    },
+    "test_data_used": false,
+    "validation_labels_passed_to_adapter": false
+  },
+  "signature": "201892c6bd4a9e31b8c8a2e98a23c4ee8b89036de3c5515d35725f45015e78b3"
+}

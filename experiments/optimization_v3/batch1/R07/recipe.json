@@ -1,0 +1,154 @@
+{
+  "card_sha256": "2ee1260510d3b0240ae5bcb0edbc852493e06672ca08be8236346454a65a4a27",
+  "queue_sha256": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+  "recipe": {
+    "card_id": "R07",
+    "convergence_capture": [
+      "n_iter_",
+      "reconstruction_err_",
+      "ConvergenceWarning"
+    ],
+    "feature_allowlist": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code",
+      "signal_stream"
+    ],
+    "fit_rows": {
+      "55": 12020,
+      "67": 29705
+    },
+    "implementation_compatibility": {
+      "coordinate_descent_layout_workaround": "C-contiguous copies of nndsvda-initialized W/H to satisfy the installed sklearn CD extension; initialization values and public estimator parameters are unchanged",
+      "scikit_learn_version": "1.8.0"
+    },
+    "lightgbm_parameters": {
+      "boosting_type": "gbdt",
+      "colsample_bytree": 1.0,
+      "deterministic": true,
+      "force_col_wise": true,
+      "learning_rate": 0.05,
+      "max_depth": -1,
+      "min_child_samples": 40,
+      "min_child_weight": 0.001,
+      "n_estimators": 400,
+      "n_jobs": 2,
+      "num_leaves": 31,
+      "objective": "regression_l1",
+      "random_state": 42,
+      "reg_alpha": 0.0,
+      "reg_lambda": 1.0,
+      "subsample": 1.0,
+      "subsample_freq": 0,
+      "verbosity": -1
+    },
+    "missing_stream_indicator": true,
+    "model": "LightGBM regression_l1; structured native design + fit-only TF-IDF and NMF32 factors + missing-stream indicator",
+    "nmf": {
+      "alpha_H": "same",
+      "alpha_W": 0.0,
+      "beta_loss": "frobenius",
+      "init": "nndsvda",
+      "l1_ratio": 0.0,
+      "max_iter": 200,
+      "n_components": 32,
+      "random_state": 42,
+      "shuffle": false,
+      "solver": "cd",
+      "tol": 0.0001,
+      "verbose": 0
+    },
+    "policy": "clip(0.75*current_three_component_champion + 0.25*rank50(raw R07),0,100)",
+    "predictor_fits": 2,
+    "preprocessing_fit_calls_per_cutoff": {
+      "nmf32": 1,
+      "structured_native_preprocessor": 1,
+      "word_tfidf": 1
+    },
+    "profile": "STANDARD",
+    "rank50": "within each complete score cycle; average ties; percentile=100*rank/n; rank50=0.5*raw+0.5*percentile; clip[0,100]",
+    "score_rows": {
+      "55": 17685,
+      "67": 20903
+    },
+    "semantic_interpretation": "NMF factor dimensions are predictive representations only; no semantic interpretation is assigned.",
+    "structured_preprocessing": "RegressionResearchLGBText base fit-only structured native-category preprocessing; NMF is applied only to nonnegative text TF-IDF",
+    "test_data_used": false,
+    "text_vectorizer": {
+      "analyzer": "word",
+      "binary": false,
+      "decode_error": "strict",
+      "dtype": "float64",
+      "encoding": "utf-8",
+      "input": "content",
+      "lowercase": true,
+      "max_df": 1.0,
+      "max_features": 20000,
+      "min_df": 2,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "norm": "l2",
+      "preprocessor": null,
+      "smooth_idf": true,
+      "stop_words": null,
+      "strip_accents": null,
+      "sublinear_tf": true,
+      "token_pattern": "(?u)\\b\\w\\w+\\b",
+      "tokenizer": null,
+      "use_idf": true,
+      "vocabulary": null
+    },
+    "views": {
+      "H12": [
+        [
+          55,
+          56,
+          67
+        ],
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "W1": [
+        [
+          55,
+          56,
+          59
+        ]
+      ],
+      "W4": [
+        [
+          67,
+          68,
+          71
+        ]
+      ],
+      "primary": [
+        [
+          55,
+          56,
+          59
+        ],
+        [
+          67,
+          68,
+          71
+        ]
+      ]
+    }
+  },
+  "source_commit": "214cc395bd44a65b1d70524094c09561e225a762"
+}
