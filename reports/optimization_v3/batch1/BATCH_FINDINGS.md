@@ -41,7 +41,7 @@ For each row, metrics are copied from that card’s `results.json`; statuses com
 | 31 | **C05** | PILOT_COMPLETE_RETIRE; QA INDEPENDENT_QA_PASS | RETIRE | 9064; -0.001260 | 38588; -0.000284 | 2 / 0 | [results](C05/results.json), [QA](C05/verification.json), [gate](C05/gate.json) |
 | 32 | **R14** | PILOT_COMPLETE_RETIRE; QA INDEPENDENT_QA_PASS | RETIRE | 9064; +0.043122 | 38588; +0.026910 | 2 / 0 | [results](R14/results.json), [QA](R14/verification.json), [gate](R14/gate.json), [amendment](R14/report_amendment_01.json) |
 | 33 | **C11** | PARTIAL: cutoff 55 saved; cutoff 67 resource-interrupted | NO_GATE | - | - | 1 saved / 1 interrupted | [partial status](C11/partial_status.json), [attempts](C11/attempts.jsonl) |
-| 34 | **R08** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
+| 34 | **R08** | IMPLEMENTED; SYNTHETIC_QA_PASS; OFFICIAL_PREFLIGHT_BLOCKED_RESOURCE | NO_GATE | - | - | 0 / 0 | [preparation status](R08/preparation_status.json) |
 | 35 | **C20** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
 | 36 | **R19** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
 | 37 | **C15** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
@@ -79,6 +79,14 @@ For each row, metrics are copied from that card’s `results.json`; statuses com
 - The cutoff-55 fit completed and its ignored bundle is preserved (113.30 seconds). Cutoff 67 was started, then interrupted by MAIN after system free memory fell to 0.49 GiB, below the frozen 2 GiB reserve; process working set was 2.22 GiB. No cutoff-67 bundle exists. The interruption is logged separately in `C11/attempts.jsonl`; no partial candidate metric was computed and no model conclusion is made.
 - C11's two-fit reservation is 2/180 (global total now 58/180); reconciliation is pending until the second fit and report QA are complete. No Test, SampleSubmission, or Kaggle access occurred.
 - Next action: retain cutoff 55; rerun current memory and single-slot preflight and resume cutoff 67 only when the full frozen estimate fits available RAM minus the 2 GiB reserve. The runner's resume path must reuse cutoff 55 and must not refit it.
+
+## R08 — implementation ready; official pilot not started
+
+- R08's adapter and runner are implemented in its own namespace. Seven targeted tests pass, including the synthetic two-cutoff saved-bundle/independent-verification path, fit/target/scalar digests, tied within-cycle ranks, raw character-count behavior, and zero/low-support groups.
+- Official Regression Train SHA matches the frozen card. Fit/score populations are 12,020/17,685 at cutoff 55 and 29,705/20,903 at cutoff 67; primary W1+W4 is 9,064 rows and H12 is 38,588. The train-only scalar profile is recorded in `R08/preparation_status.json`.
+- The shared fit budget is available (58 reserved; 60 if R08 reserves its two fits, out of 180). The live resource check is blocked: 2.30 GiB physical RAM was available, against estimated R08 peaks of 2.04/2.09 GiB plus the required 2 GiB reserve. These are estimates, not observed model peaks.
+- No R08 recipe/freeze or fit reservation was written, and no official candidate fit or candidate metric was computed. No Test, SampleSubmission, or Kaggle access occurred. R08 is not a terminal lane decision and the closure count remains 20/45.
+- Next action: keep this implementation and tests; recheck RAM and training-slot ownership before freezing. Resume C11's saved cutoff 67 first if its frozen resource preflight passes; then rerun the R08 preflight and freeze only when its own resource gate passes.
 
 ## Ledger and scope notes
 
