@@ -1,0 +1,189 @@
+{
+  "card_id": "C08",
+  "expected_rows": {
+    "fit_by_cutoff": {
+      "55": 12020,
+      "67": 29705
+    },
+    "score_by_cutoff": {
+      "55": 17685,
+      "67": 20903
+    },
+    "views": {
+      "H12": 38588,
+      "W1": 4114,
+      "W4": 4950,
+      "primary": 9064
+    }
+  },
+  "feature_allowlist": [
+    "impact_load",
+    "entry_friction",
+    "cycle_code",
+    "scope_pressure",
+    "text_load",
+    "scope_trace",
+    "org_spread",
+    "module_spread",
+    "telemetry_flag",
+    "org_code",
+    "module_code",
+    "pattern_code",
+    "signal_stream"
+  ],
+  "fit_population": "all official Classification Train rows cycle 47..cutoff, including missing streams, as in the frozen sparse expert",
+  "fit_protocol": "one sparse LightGBM predictor per cutoff; no validation labels, early stopping, threshold search, or extra fit",
+  "gate": {
+    "full_H12_harm_max": 0.001,
+    "full_nonnegative_windows_min": 4,
+    "full_primary_gain_min": 0.0005,
+    "individual_pilot_view_harm_max": 0.005,
+    "pilot_H12_harm_max": 0.001,
+    "pilot_primary_gain_min": 0.0005,
+    "positive_and_negative_per_group_min": 30,
+    "positive_class_recall_harm_max": 0.02,
+    "supported_group_F1_harm_max": 0.01,
+    "supported_group_n_min": 200
+  },
+  "lightgbm_parameters": {
+    "deterministic": true,
+    "force_col_wise": true,
+    "learning_rate": 0.05,
+    "min_child_samples": 50,
+    "n_estimators": 400,
+    "n_jobs": 2,
+    "num_leaves": 15,
+    "objective": "binary",
+    "random_state": 42,
+    "reg_alpha": 0.0,
+    "reg_lambda": 3.0,
+    "verbosity": -1
+  },
+  "lightgbm_version": "4.6.0",
+  "model": "original sparse LightGBM classifier with exactly three ordered category target-rate logit columns appended to expanded structured + TF-IDF design",
+  "prediction_policy": {
+    "baseline": "frozen sparse25 route: .75 C2_B + .25 old sparse binary on present; frozen CB on missing",
+    "missing_stream": "frozen CatBoost missing-stream probability, unchanged",
+    "present_stream": ".75 frozen C2_B probability + .25 new C08 sparse expert probability",
+    "threshold": 0.5
+  },
+  "queue_recipe": {
+    "change": "For each org/module/pattern append earlier-cycle-only smoothed binary rate, support>=30/smoothing30, first-cycle prior0.5. Store finite clipped logit(rate). Entire cycle encoded before labels update; outer uses all fit labels.",
+    "condition": "No additional dependency",
+    "evaluation": "STANDARD",
+    "family": "category_target_rates",
+    "id": "C08",
+    "name": "Ordered category outcome rates",
+    "pilot_predictor_fits": 2,
+    "policy": "C_SPARSE_REPLACE",
+    "priority": "P2",
+    "task": "classification"
+  },
+  "resource_policy": {
+    "concurrent_fit_jobs": 1,
+    "free_ram_reserve_bytes": 2147483648,
+    "job_memory_cap_bytes": 6442450944,
+    "minimum_free_ram_bytes": 4294967296,
+    "threads": 2
+  },
+  "row_matched_baseline_metrics": {
+    "H12": {
+      "macro_f1": 0.8029655654017788,
+      "rows": 38588
+    },
+    "W1": {
+      "macro_f1": 0.8031600548696844,
+      "rows": 4114
+    },
+    "W4": {
+      "macro_f1": 0.8414177014153625,
+      "rows": 4950
+    },
+    "primary": {
+      "macro_f1": 0.8239724981677496,
+      "rows": 9064
+    }
+  },
+  "scoring_population": "STANDARD cutoffs 55/67; rows joined by Train position and record_id",
+  "structured": "RegressionTextModel expanded structured fit-only preprocessing; no target or ID inputs",
+  "target_rate": {
+    "cycle_rule": "encode every row of a cycle before updating category counts/sums with any labels from that cycle",
+    "fallback_code_mapping": {
+      "0": "supported",
+      "1": "below_minimum_support",
+      "2": "missing_category",
+      "3": "no_prior_category_history"
+    },
+    "fields": [
+      "org_code",
+      "module_code",
+      "pattern_code"
+    ],
+    "logit": "log(p/(1-p)) after clipping p to [1e-6, 1-1e-6]",
+    "logit_clip_epsilon": 1e-06,
+    "missing_category_normalization": "C07 convention: pd.isna maps to None; otherwise str(value).strip(); blank strings remain categories",
+    "outer_scoring": "all labels through cutoff are eligible for score rows after cutoff; no score-cycle labels are used",
+    "prior": 0.5,
+    "prior_policy": "fixed 0.5; used in the first cycle and for every category with fewer than 30 earlier-cycle rows, missing categories, or unseen categories",
+    "rate_formula_when_supported": "(earlier_category_positive_sum + 30 * 0.5) / (earlier_category_count + 30)",
+    "smoothing": 30.0,
+    "support_minimum": 30
+  },
+  "text": {
+    "missing_stream": "empty document plus explicit binary missing indicator",
+    "parameters": {
+      "dtype": "float64",
+      "lowercase": true,
+      "max_df": 0.995,
+      "max_features": 20000,
+      "min_df": 3,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "strip_accents": "unicode",
+      "sublinear_tf": true
+    },
+    "vectorizer": "sklearn.feature_extraction.text.TfidfVectorizer"
+  },
+  "views": {
+    "H12": [
+      [
+        55,
+        56,
+        67
+      ],
+      [
+        67,
+        68,
+        79
+      ]
+    ],
+    "W1": [
+      [
+        55,
+        56,
+        59
+      ]
+    ],
+    "W4": [
+      [
+        67,
+        68,
+        71
+      ]
+    ],
+    "primary": [
+      [
+        55,
+        56,
+        59
+      ],
+      [
+        67,
+        68,
+        71
+      ]
+    ]
+  }
+}

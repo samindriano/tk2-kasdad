@@ -1,0 +1,1341 @@
+{
+  "created_at_utc": "2026-11-01T01:06:54.777252+00:00",
+  "identity": {
+    "accepted_baseline_evidence": {
+      "decision_path": "experiments\\optimization_v3\\decisions\\v3_cls_sparse25.json",
+      "decision_sha256": "99ff730c2828a7b0fdd8979894002069373be29ce79fe58070bd3dea5cbe781b",
+      "declared_fullsix_control": {
+        "H12_macro_f1": 0.8029655654017788,
+        "primary_macro_f1": 0.8299435476765076
+      },
+      "fullsix_path": "reports\\optimization_v3\\classification_sparse_full\\fullsix.json",
+      "fullsix_sha256": "09097787e3b0c8bb3dbd5661b990ac768c9e9ab46cf3f32db7ae7a4e9e95929a",
+      "fullsix_verification_sha256": "8d93d596351f9fd078d166b5384527bd59d56ccb741571479d3b2e2ca1d50af7",
+      "fullsix_wrapper_sha256": "b43c8a5fa961494017a7a71eb3677a0a8b8a269ecc20d89003442c50ac07225b",
+      "manifest_path": "reports\\optimization_v3\\kaggle\\v3_cls_sparse25.json",
+      "manifest_sha256": "6e7c2cb50fe6d0ee4767a44c40f152b6538b933fab6cf7082659b16d791f7d1e"
+    },
+    "card": {
+      "card_path": "reports/optimization_v3/research_backlog/cards/C08.md",
+      "change": "For each org/module/pattern append earlier-cycle-only smoothed binary rate, support>=30/smoothing30, first-cycle prior0.5. Store finite clipped logit(rate). Entire cycle encoded before labels update; outer uses all fit labels.",
+      "condition": "No additional dependency",
+      "evaluation": "STANDARD",
+      "evidence": [
+        "reports/optimization_v3/classification_diagnostics/audit.json",
+        "reports/optimization_v3/supervised_pilot/verification.json"
+      ],
+      "family": "category_target_rates",
+      "id": "C08",
+      "implementation": "NOT_IMPLEMENTED",
+      "in_priority_prefix": false,
+      "name": "Ordered category outcome rates",
+      "new_results": null,
+      "pilot_predictor_fits": 2,
+      "policy": "C_SPARSE_REPLACE",
+      "preflight_checks": [
+        "Perturb same-cycle labels and prove no own/past feature changes; independent manual reconstruction; log support and unknown fallback"
+      ],
+      "priority": "P2",
+      "queue_order": 25,
+      "rationale": "Statistik entitas terstruktur berbeda dari ringkasan token anonim yang gagal, tetapi tetap berisiko leakage dan drift.",
+      "status": "PLANNED_NOT_RUN",
+      "task": "classification"
+    },
+    "evaluation_views": {
+      "H12": [
+        [
+          55,
+          56,
+          67
+        ],
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "W1": [
+        [
+          55,
+          56,
+          59
+        ]
+      ],
+      "W4": [
+        [
+          67,
+          68,
+          71
+        ]
+      ],
+      "primary": [
+        [
+          55,
+          56,
+          59
+        ],
+        [
+          67,
+          68,
+          71
+        ]
+      ]
+    },
+    "expected_fit_rows": {
+      "55": 12020,
+      "67": 29705
+    },
+    "expected_score_rows": {
+      "55": 17685,
+      "67": 20903
+    },
+    "expected_view_rows": {
+      "H12": 38588,
+      "W1": 4114,
+      "W4": 4950,
+      "primary": 9064
+    },
+    "feature_names": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code",
+      "signal_stream"
+    ],
+    "input_sha256": {
+      "accepted_sparse25_decision": "99ff730c2828a7b0fdd8979894002069373be29ce79fe58070bd3dea5cbe781b",
+      "accepted_sparse25_fullsix_report": "09097787e3b0c8bb3dbd5661b990ac768c9e9ab46cf3f32db7ae7a4e9e95929a",
+      "accepted_sparse25_fullsix_verification": "8d93d596351f9fd078d166b5384527bd59d56ccb741571479d3b2e2ca1d50af7",
+      "accepted_sparse25_fullsix_wrapper": "b43c8a5fa961494017a7a71eb3677a0a8b8a269ecc20d89003442c50ac07225b",
+      "accepted_sparse25_manifest": "6e7c2cb50fe6d0ee4767a44c40f152b6538b933fab6cf7082659b16d791f7d1e",
+      "canonical_card": "a92fd5a3e5e3d7cfe83473b2eeb0e61444dab93b348d2b9b751d8b3844cc2435",
+      "canonical_queue": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+      "catboost_55_npz": "0cda97c481aef51495e3fd4a23c43b0a906f23ffc9080e91194250e7be4d046a",
+      "catboost_55_sidecar": "eeadc3f3db6c29137a1d0028ed4f08aea0d7b5e40b01af3c217ca003ab293ef8",
+      "catboost_67_npz": "4b63070ac665e2ed2a9f567fb5c945f640da1eace5533af8d87d7df1a66ead59",
+      "catboost_67_sidecar": "df1b7a8d434767c723f98a65ae7a8442c418692fecccffdc6ef9b11dbeb6a538",
+      "classification_diagnostics_audit": "c26218e0e90715a30b7b92584ddbf6c6d0eac2b3c71ecb5d4c2473c42fe4dc67",
+      "official_classification_train": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+      "round1_c2b_55": "ce49c6b471f4b9eca8be1c24fa37b487d9a688b28dc543e3faa1a8b6fc7d177c",
+      "round1_c2b_67": "853a8c44ac2b3ea50fc1824fec78f63948aee6b1c47678dc1ddc8ecb505ecdea",
+      "round1_c2b_audit_55": "1a6c84022dbbb806b635e9548020428fd2202a4cff7e7c1e12fe61915aed6074",
+      "round1_c2b_audit_67": "a854215f01672733b64b1adf3c778fd653342dcbd7abc960a0fe9c0ca1330a2a",
+      "sparse_pilot_55_npz": "0efbfd81ac9489c29c9ae1e06922e8769dbc1227a7242a1bb779940cfe682f5b",
+      "sparse_pilot_55_sidecar": "764fbfcd6ee191e90d9519561ea591b042bdef2845f62452ba055d6dcf884551",
+      "sparse_pilot_67_npz": "61232d3fdcadbbd6923154bc53302f56cdbab7c9d3255055441fa10abf077af4",
+      "sparse_pilot_67_sidecar": "6427f9a9bbf9bbcc35f6ef85ac5ab4d5875315cc902d17cb650dadb02cdb3ffc",
+      "sparse_pilot_freeze": "18f49d3e235bc4fe8ff2fcd1e550bef09cc8b681f9420b103aca1080fdda8910",
+      "sparse_pilot_protocol": "2cc006183d89ce6a21ffb740e5e9bf38afc3bfb4f5014fc57e83b9c701f0a635",
+      "supervised_pilot_verification": "66b247ed9c3fc73765d05e92b88ca76e454f72a0baf539c2c21af4ed038e6651"
+    },
+    "ordered_target_rate_preflight": {
+      "55": {
+        "cutoff": 55,
+        "encoder_audit": {
+          "category_dictionary_sha256": {
+            "module_code": "0b53d2230ee67859bd4dc16591ed336f6f9b8d3f076b973cfc9e136c42316f1b",
+            "org_code": "9a4b48e009721331aae3b0ecc73342ace50829d3942121accec0f47d40d33539",
+            "pattern_code": "9b0b2e07c116ff0a1762299011f7cb11673613f196eee3a828b59bc2790868b2"
+          },
+          "category_dictionary_sizes": {
+            "module_code": 4128,
+            "org_code": 2402,
+            "pattern_code": 274
+          },
+          "category_normalization": "C07 convention: pandas missing is None; otherwise str(value).strip(); blank string remains a category",
+          "fields": [
+            "org_code",
+            "module_code",
+            "pattern_code"
+          ],
+          "fit_rows": 12020,
+          "initial_and_fallback_prior": 0.5,
+          "lineage": [
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 47,
+              "labels_seen_before_cycle": 0,
+              "rows": 1342,
+              "supported_rate_rows_by_field": {
+                "module_code": 0,
+                "org_code": 0,
+                "pattern_code": 0
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 48,
+              "labels_seen_before_cycle": 1342,
+              "rows": 977,
+              "supported_rate_rows_by_field": {
+                "module_code": 45,
+                "org_code": 223,
+                "pattern_code": 311
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 49,
+              "labels_seen_before_cycle": 2319,
+              "rows": 1255,
+              "supported_rate_rows_by_field": {
+                "module_code": 166,
+                "org_code": 286,
+                "pattern_code": 593
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 50,
+              "labels_seen_before_cycle": 3574,
+              "rows": 1111,
+              "supported_rate_rows_by_field": {
+                "module_code": 133,
+                "org_code": 351,
+                "pattern_code": 523
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 51,
+              "labels_seen_before_cycle": 4685,
+              "rows": 1535,
+              "supported_rate_rows_by_field": {
+                "module_code": 231,
+                "org_code": 441,
+                "pattern_code": 881
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 52,
+              "labels_seen_before_cycle": 6220,
+              "rows": 1565,
+              "supported_rate_rows_by_field": {
+                "module_code": 97,
+                "org_code": 669,
+                "pattern_code": 982
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 53,
+              "labels_seen_before_cycle": 7785,
+              "rows": 1371,
+              "supported_rate_rows_by_field": {
+                "module_code": 278,
+                "org_code": 626,
+                "pattern_code": 823
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 54,
+              "labels_seen_before_cycle": 9156,
+              "rows": 1256,
+              "supported_rate_rows_by_field": {
+                "module_code": 189,
+                "org_code": 514,
+                "pattern_code": 828
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 55,
+              "labels_seen_before_cycle": 10412,
+              "rows": 1608,
+              "supported_rate_rows_by_field": {
+                "module_code": 338,
+                "org_code": 668,
+                "pattern_code": 1140
+              }
+            }
+          ],
+          "logit_clip_epsilon": 1e-06,
+          "minimum_prior_support": 30,
+          "prior_policy": "fixed 0.5 prior, including the first cycle and all unsupported/missing/unseen categories",
+          "smoothing": 30.0,
+          "target_labels_updated_after_same_cycle_features": true,
+          "training_fallback_codes_sha256": "d473fe76e1cbc4f7d98477f6c463c68bcea3ff77068338c65e18898e41b0090d",
+          "training_rate_logits_sha256": "30ecc9b6238035947230bfdaf5de8dedea97327480f2f7350f0e10aacf31d26b",
+          "training_support_counts_sha256": "5c5847e96bc0c28977a69b1a4221359069aa9943da429c022db0ac3bb7342697"
+        },
+        "feature_support": {
+          "module_code": {
+            "fit_logit_max": 1.927891643552635,
+            "fit_logit_min": -2.41789593950504,
+            "fit_logit_std": 0.4788546035503439,
+            "fit_rows_below_support_or_no_history": 9320,
+            "fit_rows_missing_category": 1223,
+            "fit_rows_with_support_ge_30": 1477,
+            "nonconstant_on_fit_rows": true,
+            "score_rows_below_support_or_no_history": 12848,
+            "score_rows_missing_category": 1790,
+            "score_rows_with_support_ge_30": 3047
+          },
+          "org_code": {
+            "fit_logit_max": 1.2347444629926896,
+            "fit_logit_min": -2.797281334830153,
+            "fit_logit_std": 0.7237277136431074,
+            "fit_rows_below_support_or_no_history": 7373,
+            "fit_rows_missing_category": 869,
+            "fit_rows_with_support_ge_30": 3778,
+            "nonconstant_on_fit_rows": true,
+            "score_rows_below_support_or_no_history": 10023,
+            "score_rows_missing_category": 1290,
+            "score_rows_with_support_ge_30": 6372
+          },
+          "pattern_code": {
+            "fit_logit_max": 0.8602012652231117,
+            "fit_logit_min": -1.9079309009900969,
+            "fit_logit_std": 0.4654546509849142,
+            "fit_rows_below_support_or_no_history": 3303,
+            "fit_rows_missing_category": 2636,
+            "fit_rows_with_support_ge_30": 6081,
+            "nonconstant_on_fit_rows": true,
+            "score_rows_below_support_or_no_history": 1919,
+            "score_rows_missing_category": 3095,
+            "score_rows_with_support_ge_30": 12671
+          }
+        },
+        "manual_score_reconstruction_pass": true,
+        "manual_training_reconstruction_pass": true,
+        "own_and_past_feature_rows_unchanged": 6220,
+        "perturbed_cycle": 51,
+        "perturbed_rows": 1535,
+        "same_cycle_label_perturbation_pass": true,
+        "score_diagnostics": {
+          "below_support_rows_by_field": {
+            "module_code": 3923,
+            "org_code": 4298,
+            "pattern_code": 1608
+          },
+          "fallback_codes_sha256": "acbe0b05463477198207aa2b15e5fbd32261ad99e6e0b559a6605f116cf7d6eb",
+          "missing_category_rows_by_field": {
+            "module_code": 1790,
+            "org_code": 1290,
+            "pattern_code": 3095
+          },
+          "no_prior_category_history_rows_by_field": {
+            "module_code": 8925,
+            "org_code": 5725,
+            "pattern_code": 311
+          },
+          "rate_logits_sha256": "15bd54f44ee639d902258bc6350486881d2e9f6008f3f8255a0d99db4ff5f98e",
+          "rows": 17685,
+          "support_counts_sha256": "28cc96629bbd8402887023cf961e8f32a34d98ce6d9ae94eddee9ac9d9c6b9ea",
+          "supported_rows_by_field": {
+            "module_code": 3047,
+            "org_code": 6372,
+            "pattern_code": 12671
+          }
+        },
+        "score_feature_matrix_sha256": "15bd54f44ee639d902258bc6350486881d2e9f6008f3f8255a0d99db4ff5f98e",
+        "status": "PASS",
+        "training_feature_matrix_sha256": "30ecc9b6238035947230bfdaf5de8dedea97327480f2f7350f0e10aacf31d26b",
+        "variation_required_for_each_feature": true
+      },
+      "67": {
+        "cutoff": 67,
+        "encoder_audit": {
+          "category_dictionary_sha256": {
+            "module_code": "f61567a358200078f9385f64c9db9759388c9d1f64bd6c55b91ab5d737390ab5",
+            "org_code": "289dbe7a51c74bb14454ecbfd1723fe352944da4d2c6854f8f5fff92a4a495fb",
+            "pattern_code": "347d0c801a48210a9fd586b9b3c6bcc4c03bb08a5a39f8091c498691132012ca"
+          },
+          "category_dictionary_sizes": {
+            "module_code": 8578,
+            "org_code": 5091,
+            "pattern_code": 387
+          },
+          "category_normalization": "C07 convention: pandas missing is None; otherwise str(value).strip(); blank string remains a category",
+          "fields": [
+            "org_code",
+            "module_code",
+            "pattern_code"
+          ],
+          "fit_rows": 29705,
+          "initial_and_fallback_prior": 0.5,
+          "lineage": [
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 47,
+              "labels_seen_before_cycle": 0,
+              "rows": 1342,
+              "supported_rate_rows_by_field": {
+                "module_code": 0,
+                "org_code": 0,
+                "pattern_code": 0
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 48,
+              "labels_seen_before_cycle": 1342,
+              "rows": 977,
+              "supported_rate_rows_by_field": {
+                "module_code": 45,
+                "org_code": 223,
+                "pattern_code": 311
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 49,
+              "labels_seen_before_cycle": 2319,
+              "rows": 1255,
+              "supported_rate_rows_by_field": {
+                "module_code": 166,
+                "org_code": 286,
+                "pattern_code": 593
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 50,
+              "labels_seen_before_cycle": 3574,
+              "rows": 1111,
+              "supported_rate_rows_by_field": {
+                "module_code": 133,
+                "org_code": 351,
+                "pattern_code": 523
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 51,
+              "labels_seen_before_cycle": 4685,
+              "rows": 1535,
+              "supported_rate_rows_by_field": {
+                "module_code": 231,
+                "org_code": 441,
+                "pattern_code": 881
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 52,
+              "labels_seen_before_cycle": 6220,
+              "rows": 1565,
+              "supported_rate_rows_by_field": {
+                "module_code": 97,
+                "org_code": 669,
+                "pattern_code": 982
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 53,
+              "labels_seen_before_cycle": 7785,
+              "rows": 1371,
+              "supported_rate_rows_by_field": {
+                "module_code": 278,
+                "org_code": 626,
+                "pattern_code": 823
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 54,
+              "labels_seen_before_cycle": 9156,
+              "rows": 1256,
+              "supported_rate_rows_by_field": {
+                "module_code": 189,
+                "org_code": 514,
+                "pattern_code": 828
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 55,
+              "labels_seen_before_cycle": 10412,
+              "rows": 1608,
+              "supported_rate_rows_by_field": {
+                "module_code": 338,
+                "org_code": 668,
+                "pattern_code": 1140
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 56,
+              "labels_seen_before_cycle": 12020,
+              "rows": 564,
+              "supported_rate_rows_by_field": {
+                "module_code": 143,
+                "org_code": 313,
+                "pattern_code": 326
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 57,
+              "labels_seen_before_cycle": 12584,
+              "rows": 962,
+              "supported_rate_rows_by_field": {
+                "module_code": 184,
+                "org_code": 394,
+                "pattern_code": 731
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 58,
+              "labels_seen_before_cycle": 13546,
+              "rows": 1205,
+              "supported_rate_rows_by_field": {
+                "module_code": 182,
+                "org_code": 438,
+                "pattern_code": 895
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 59,
+              "labels_seen_before_cycle": 14751,
+              "rows": 1383,
+              "supported_rate_rows_by_field": {
+                "module_code": 215,
+                "org_code": 560,
+                "pattern_code": 985
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 60,
+              "labels_seen_before_cycle": 16134,
+              "rows": 1478,
+              "supported_rate_rows_by_field": {
+                "module_code": 269,
+                "org_code": 579,
+                "pattern_code": 1102
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 61,
+              "labels_seen_before_cycle": 17612,
+              "rows": 1632,
+              "supported_rate_rows_by_field": {
+                "module_code": 189,
+                "org_code": 474,
+                "pattern_code": 1222
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 62,
+              "labels_seen_before_cycle": 19244,
+              "rows": 1500,
+              "supported_rate_rows_by_field": {
+                "module_code": 289,
+                "org_code": 625,
+                "pattern_code": 1072
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 63,
+              "labels_seen_before_cycle": 20744,
+              "rows": 1883,
+              "supported_rate_rows_by_field": {
+                "module_code": 320,
+                "org_code": 733,
+                "pattern_code": 1418
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 64,
+              "labels_seen_before_cycle": 22627,
+              "rows": 1807,
+              "supported_rate_rows_by_field": {
+                "module_code": 325,
+                "org_code": 725,
+                "pattern_code": 1412
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 65,
+              "labels_seen_before_cycle": 24434,
+              "rows": 1567,
+              "supported_rate_rows_by_field": {
+                "module_code": 296,
+                "org_code": 777,
+                "pattern_code": 1144
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 66,
+              "labels_seen_before_cycle": 26001,
+              "rows": 1751,
+              "supported_rate_rows_by_field": {
+                "module_code": 375,
+                "org_code": 765,
+                "pattern_code": 1381
+              }
+            },
+            {
+              "all_cycle_rows_encoded_before_label_updates": true,
+              "cycle": 67,
+              "labels_seen_before_cycle": 27752,
+              "rows": 1953,
+              "supported_rate_rows_by_field": {
+                "module_code": 491,
+                "org_code": 891,
+                "pattern_code": 1552
+              }
+            }
+          ],
+          "logit_clip_epsilon": 1e-06,
+          "minimum_prior_support": 30,
+          "prior_policy": "fixed 0.5 prior, including the first cycle and all unsupported/missing/unseen categories",
+          "smoothing": 30.0,
+          "target_labels_updated_after_same_cycle_features": true,
+          "training_fallback_codes_sha256": "947f0b4f5c5ced9a321c00051037d2265ca7c99ebce123a52445b6ff6f7a3b77",
+          "training_rate_logits_sha256": "8ae3d2decfecfc8698d1eb2af33ed71ba250267b3356c1fccd8bd3cef9e3e0d0",
+          "training_support_counts_sha256": "5f46edbe2cd03b93652412dd160d61d99731f5239c5e48b52f1030eed4e5ec78"
+        },
+        "feature_support": {
+          "module_code": {
+            "fit_logit_max": 1.927891643552635,
+            "fit_logit_min": -3.446011397451948,
+            "fit_logit_std": 0.7030864670394491,
+            "fit_rows_below_support_or_no_history": 21937,
+            "fit_rows_missing_category": 3013,
+            "fit_rows_with_support_ge_30": 4755,
+            "nonconstant_on_fit_rows": true,
+            "score_rows_below_support_or_no_history": 16696,
+            "score_rows_missing_category": 1031,
+            "score_rows_with_support_ge_30": 3176
+          },
+          "org_code": {
+            "fit_logit_max": 2.3407368589584223,
+            "fit_logit_min": -3.3967430313127753,
+            "fit_logit_std": 0.9291629208815609,
+            "fit_rows_below_support_or_no_history": 16494,
+            "fit_rows_missing_category": 2159,
+            "fit_rows_with_support_ge_30": 11052,
+            "nonconstant_on_fit_rows": true,
+            "score_rows_below_support_or_no_history": 12448,
+            "score_rows_missing_category": 527,
+            "score_rows_with_support_ge_30": 7928
+          },
+          "pattern_code": {
+            "fit_logit_max": 1.3008097019840608,
+            "fit_logit_min": -2.0483509546098047,
+            "fit_logit_std": 0.5963904481960487,
+            "fit_rows_below_support_or_no_history": 4653,
+            "fit_rows_missing_category": 5731,
+            "fit_rows_with_support_ge_30": 19321,
+            "nonconstant_on_fit_rows": true,
+            "score_rows_below_support_or_no_history": 1236,
+            "score_rows_missing_category": 2452,
+            "score_rows_with_support_ge_30": 17215
+          }
+        },
+        "manual_score_reconstruction_pass": true,
+        "manual_training_reconstruction_pass": true,
+        "own_and_past_feature_rows_unchanged": 13546,
+        "perturbed_cycle": 57,
+        "perturbed_rows": 962,
+        "same_cycle_label_perturbation_pass": true,
+        "score_diagnostics": {
+          "below_support_rows_by_field": {
+            "module_code": 6170,
+            "org_code": 5729,
+            "pattern_code": 1046
+          },
+          "fallback_codes_sha256": "e5c779dea6f5ca4205743c55720499057587c12da302b67134f114f97ee67ddf",
+          "missing_category_rows_by_field": {
+            "module_code": 1031,
+            "org_code": 527,
+            "pattern_code": 2452
+          },
+          "no_prior_category_history_rows_by_field": {
+            "module_code": 10526,
+            "org_code": 6719,
+            "pattern_code": 190
+          },
+          "rate_logits_sha256": "7fb805e6558527f89db1d8bca3eb22865f33cfc99fb748ac45b4814d4e4a2661",
+          "rows": 20903,
+          "support_counts_sha256": "b854a6ae5606e2b1bb00808fff5c1483b21c4651f1db1e7af40ce65bd761f84d",
+          "supported_rows_by_field": {
+            "module_code": 3176,
+            "org_code": 7928,
+            "pattern_code": 17215
+          }
+        },
+        "score_feature_matrix_sha256": "7fb805e6558527f89db1d8bca3eb22865f33cfc99fb748ac45b4814d4e4a2661",
+        "status": "PASS",
+        "training_feature_matrix_sha256": "8ae3d2decfecfc8698d1eb2af33ed71ba250267b3356c1fccd8bd3cef9e3e0d0",
+        "variation_required_for_each_feature": true
+      }
+    },
+    "package_versions": {
+      "lightgbm": "4.6.0",
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "psutil": "7.0.0",
+      "scikit-learn": "1.8.0",
+      "scipy": "1.18.0",
+      "threadpoolctl": "3.6.0"
+    },
+    "recipe": {
+      "card_id": "C08",
+      "expected_rows": {
+        "fit_by_cutoff": {
+          "55": 12020,
+          "67": 29705
+        },
+        "score_by_cutoff": {
+          "55": 17685,
+          "67": 20903
+        },
+        "views": {
+          "H12": 38588,
+          "W1": 4114,
+          "W4": 4950,
+          "primary": 9064
+        }
+      },
+      "feature_allowlist": [
+        "impact_load",
+        "entry_friction",
+        "cycle_code",
+        "scope_pressure",
+        "text_load",
+        "scope_trace",
+        "org_spread",
+        "module_spread",
+        "telemetry_flag",
+        "org_code",
+        "module_code",
+        "pattern_code",
+        "signal_stream"
+      ],
+      "fit_population": "all official Classification Train rows cycle 47..cutoff, including missing streams, as in the frozen sparse expert",
+      "fit_protocol": "one sparse LightGBM predictor per cutoff; no validation labels, early stopping, threshold search, or extra fit",
+      "gate": {
+        "full_H12_harm_max": 0.001,
+        "full_nonnegative_windows_min": 4,
+        "full_primary_gain_min": 0.0005,
+        "individual_pilot_view_harm_max": 0.005,
+        "pilot_H12_harm_max": 0.001,
+        "pilot_primary_gain_min": 0.0005,
+        "positive_and_negative_per_group_min": 30,
+        "positive_class_recall_harm_max": 0.02,
+        "supported_group_F1_harm_max": 0.01,
+        "supported_group_n_min": 200
+      },
+      "lightgbm_parameters": {
+        "deterministic": true,
+        "force_col_wise": true,
+        "learning_rate": 0.05,
+        "min_child_samples": 50,
+        "n_estimators": 400,
+        "n_jobs": 2,
+        "num_leaves": 15,
+        "objective": "binary",
+        "random_state": 42,
+        "reg_alpha": 0.0,
+        "reg_lambda": 3.0,
+        "verbosity": -1
+      },
+      "lightgbm_version": "4.6.0",
+      "model": "original sparse LightGBM classifier with exactly three ordered category target-rate logit columns appended to expanded structured + TF-IDF design",
+      "prediction_policy": {
+        "baseline": "frozen sparse25 route: .75 C2_B + .25 old sparse binary on present; frozen CB on missing",
+        "missing_stream": "frozen CatBoost missing-stream probability, unchanged",
+        "present_stream": ".75 frozen C2_B probability + .25 new C08 sparse expert probability",
+        "threshold": 0.5
+      },
+      "queue_recipe": {
+        "change": "For each org/module/pattern append earlier-cycle-only smoothed binary rate, support>=30/smoothing30, first-cycle prior0.5. Store finite clipped logit(rate). Entire cycle encoded before labels update; outer uses all fit labels.",
+        "condition": "No additional dependency",
+        "evaluation": "STANDARD",
+        "family": "category_target_rates",
+        "id": "C08",
+        "name": "Ordered category outcome rates",
+        "pilot_predictor_fits": 2,
+        "policy": "C_SPARSE_REPLACE",
+        "priority": "P2",
+        "task": "classification"
+      },
+      "resource_policy": {
+        "concurrent_fit_jobs": 1,
+        "free_ram_reserve_bytes": 2147483648,
+        "job_memory_cap_bytes": 6442450944,
+        "minimum_free_ram_bytes": 4294967296,
+        "threads": 2
+      },
+      "row_matched_baseline_metrics": {
+        "H12": {
+          "macro_f1": 0.8029655654017788,
+          "rows": 38588
+        },
+        "W1": {
+          "macro_f1": 0.8031600548696844,
+          "rows": 4114
+        },
+        "W4": {
+          "macro_f1": 0.8414177014153625,
+          "rows": 4950
+        },
+        "primary": {
+          "macro_f1": 0.8239724981677496,
+          "rows": 9064
+        }
+      },
+      "scoring_population": "STANDARD cutoffs 55/67; rows joined by Train position and record_id",
+      "structured": "RegressionTextModel expanded structured fit-only preprocessing; no target or ID inputs",
+      "target_rate": {
+        "cycle_rule": "encode every row of a cycle before updating category counts/sums with any labels from that cycle",
+        "fallback_code_mapping": {
+          "0": "supported",
+          "1": "below_minimum_support",
+          "2": "missing_category",
+          "3": "no_prior_category_history"
+        },
+        "fields": [
+          "org_code",
+          "module_code",
+          "pattern_code"
+        ],
+        "logit": "log(p/(1-p)) after clipping p to [1e-6, 1-1e-6]",
+        "logit_clip_epsilon": 1e-06,
+        "missing_category_normalization": "C07 convention: pd.isna maps to None; otherwise str(value).strip(); blank strings remain categories",
+        "outer_scoring": "all labels through cutoff are eligible for score rows after cutoff; no score-cycle labels are used",
+        "prior": 0.5,
+        "prior_policy": "fixed 0.5; used in the first cycle and for every category with fewer than 30 earlier-cycle rows, missing categories, or unseen categories",
+        "rate_formula_when_supported": "(earlier_category_positive_sum + 30 * 0.5) / (earlier_category_count + 30)",
+        "smoothing": 30.0,
+        "support_minimum": 30
+      },
+      "text": {
+        "missing_stream": "empty document plus explicit binary missing indicator",
+        "parameters": {
+          "dtype": "float64",
+          "lowercase": true,
+          "max_df": 0.995,
+          "max_features": 20000,
+          "min_df": 3,
+          "ngram_range": [
+            1,
+            2
+          ],
+          "strip_accents": "unicode",
+          "sublinear_tf": true
+        },
+        "vectorizer": "sklearn.feature_extraction.text.TfidfVectorizer"
+      },
+      "views": {
+        "H12": [
+          [
+            55,
+            56,
+            67
+          ],
+          [
+            67,
+            68,
+            79
+          ]
+        ],
+        "W1": [
+          [
+            55,
+            56,
+            59
+          ]
+        ],
+        "W4": [
+          [
+            67,
+            68,
+            71
+          ]
+        ],
+        "primary": [
+          [
+            55,
+            56,
+            59
+          ],
+          [
+            67,
+            68,
+            71
+          ]
+        ]
+      }
+    },
+    "recipe_artifact_sha256": "2e17e3c03150e6f71794fa4f0757c4cd6dc63583085ef91a1b2314b7b111cb69",
+    "resource_preflight": {
+      "55": {
+        "allowed_bytes": 4896542720,
+        "available_ram_bytes": 7044026368,
+        "concurrent_training_jobs": 1,
+        "estimate_is_observed_rss": false,
+        "estimated_additional_peak_bytes": 1746534866,
+        "fit_design_nnz": 961685,
+        "fit_rows": 12020,
+        "fit_sparse_design_bytes": 11588304,
+        "job_cap_bytes": 6442450944,
+        "minimum_free_ram_bytes": 4294967296,
+        "model_runtime_allowance_bytes": 1073741824,
+        "ordered_rate_arrays_bytes_upper_bound": 1158495,
+        "reserve_bytes": 2147483648,
+        "score_design_nnz": 1255165,
+        "score_rows": 17685,
+        "score_scratch_bytes_upper_bound": 75663620,
+        "score_sparse_design_bytes": 15132724,
+        "score_tfidf_nnz": 811837,
+        "sparse_fit_design_width": 20180,
+        "status": "PASS",
+        "structured_preprocessing": {
+          "categorical_positions": [
+            33,
+            35,
+            37
+          ],
+          "category_counts": {
+            "module_code": {
+              "fit_rows": 12020,
+              "missing_fit_rows": 1223,
+              "vocabulary_sha256": "54901508ba62de3956f4babb3ed79637413efb43cde4b15d7af0d37182f2ded3",
+              "vocabulary_size": 4129
+            },
+            "org_code": {
+              "fit_rows": 12020,
+              "missing_fit_rows": 869,
+              "vocabulary_sha256": "96bfc899e85079bf1fe2faa20c654c197d647fe690924b4f537539ee733be26a",
+              "vocabulary_size": 2403
+            },
+            "pattern_code": {
+              "fit_rows": 12020,
+              "missing_fit_rows": 2636,
+              "vocabulary_sha256": "a6a8e3f430e1b5b0e7cea7b0a117a215525a0ceb0eb1e685679a29a793a7c829",
+              "vocabulary_size": 275
+            }
+          },
+          "feature_names": [
+            "impact_load",
+            "impact_load__parsefail",
+            "impact_load__missing",
+            "entry_friction",
+            "entry_friction__parsefail",
+            "entry_friction__missing",
+            "cycle_code",
+            "cycle_code__parsefail",
+            "cycle_code__missing",
+            "scope_pressure",
+            "scope_pressure__parsefail",
+            "scope_pressure__missing",
+            "text_load",
+            "text_load__parsefail",
+            "text_load__missing",
+            "scope_trace",
+            "scope_trace__approximate",
+            "scope_trace__suffix_present",
+            "scope_trace__parsefail",
+            "scope_trace__missing",
+            "org_spread",
+            "org_spread__approximate",
+            "org_spread__suffix_present",
+            "org_spread__parsefail",
+            "org_spread__missing",
+            "module_spread",
+            "module_spread__approximate",
+            "module_spread__suffix_present",
+            "module_spread__parsefail",
+            "module_spread__missing",
+            "telemetry_flag",
+            "telemetry_flag__unknown",
+            "telemetry_flag__missing",
+            "org_code__ordinal",
+            "org_code__missing",
+            "module_code__ordinal",
+            "module_code__missing",
+            "pattern_code__ordinal",
+            "pattern_code__missing"
+          ],
+          "numeric_feature_names": [
+            "impact_load",
+            "impact_load__parsefail",
+            "impact_load__missing",
+            "entry_friction",
+            "entry_friction__parsefail",
+            "entry_friction__missing",
+            "cycle_code",
+            "cycle_code__parsefail",
+            "cycle_code__missing",
+            "scope_pressure",
+            "scope_pressure__parsefail",
+            "scope_pressure__missing",
+            "text_load",
+            "text_load__parsefail",
+            "text_load__missing",
+            "scope_trace",
+            "scope_trace__approximate",
+            "scope_trace__suffix_present",
+            "scope_trace__parsefail",
+            "scope_trace__missing",
+            "org_spread",
+            "org_spread__approximate",
+            "org_spread__suffix_present",
+            "org_spread__parsefail",
+            "org_spread__missing",
+            "module_spread",
+            "module_spread__approximate",
+            "module_spread__suffix_present",
+            "module_spread__parsefail",
+            "module_spread__missing",
+            "telemetry_flag",
+            "telemetry_flag__unknown",
+            "telemetry_flag__missing",
+            "org_code__missing",
+            "module_code__missing",
+            "pattern_code__missing"
+          ],
+          "numeric_imputer_medians": {
+            "cycle_code": 51.0,
+            "cycle_code__missing": 0.0,
+            "cycle_code__parsefail": 0.0,
+            "entry_friction": 0.0,
+            "entry_friction__missing": 0.0,
+            "entry_friction__parsefail": 0.0,
+            "impact_load": 108.7033,
+            "impact_load__missing": 0.0,
+            "impact_load__parsefail": 0.0,
+            "module_code__missing": 0.0,
+            "module_spread": 1.0,
+            "module_spread__approximate": 0.0,
+            "module_spread__missing": 0.0,
+            "module_spread__parsefail": 0.0,
+            "module_spread__suffix_present": 0.0,
+            "org_code__missing": 0.0,
+            "org_spread": 1.0,
+            "org_spread__approximate": 0.0,
+            "org_spread__missing": 0.0,
+            "org_spread__parsefail": 0.0,
+            "org_spread__suffix_present": 0.0,
+            "pattern_code__missing": 0.0,
+            "scope_pressure": 109.5623,
+            "scope_pressure__missing": 0.0,
+            "scope_pressure__parsefail": 0.0,
+            "scope_trace": 2.0,
+            "scope_trace__approximate": 0.0,
+            "scope_trace__missing": 0.0,
+            "scope_trace__parsefail": 0.0,
+            "scope_trace__suffix_present": 0.0,
+            "telemetry_flag": 0.0,
+            "telemetry_flag__missing": 0.0,
+            "telemetry_flag__unknown": 0.0,
+            "text_load": 32.046549999999996,
+            "text_load__missing": 0.0,
+            "text_load__parsefail": 0.0
+          },
+          "numeric_positions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            34,
+            36,
+            38
+          ],
+          "numeric_scaler_mean": "023950976a7e6cbf1647ad41fbb28c70ee7f538bd7e10996770cf15d1e4d9f70",
+          "numeric_scaler_scale": "cf5ce5c47251f220ecdf61c97ad295bc588bf65b9744a86aa8eb5c4ed3b4becb",
+          "ohe_output_width": 140
+        },
+        "tfidf_nnz": 660359,
+        "tfidf_vocabulary_width": 20000,
+        "threads": 2,
+        "tokenization_allowance_bytes": 536870912
+      },
+      "67": {
+        "allowed_bytes": 4754280448,
+        "available_ram_bytes": 6901764096,
+        "concurrent_training_jobs": 1,
+        "estimate_is_observed_rss": false,
+        "estimated_additional_peak_bytes": 1845384540,
+        "fit_design_nnz": 2259013,
+        "fit_rows": 29705,
+        "fit_sparse_design_bytes": 27226980,
+        "job_cap_bytes": 6442450944,
+        "minimum_free_ram_bytes": 4294967296,
+        "model_runtime_allowance_bytes": 1073741824,
+        "ordered_rate_arrays_bytes_upper_bound": 1973712,
+        "reserve_bytes": 2147483648,
+        "score_design_nnz": 1571190,
+        "score_rows": 20903,
+        "score_scratch_bytes_upper_bound": 94689480,
+        "score_sparse_design_bytes": 18937896,
+        "score_tfidf_nnz": 1047240,
+        "sparse_fit_design_width": 20288,
+        "status": "PASS",
+        "structured_preprocessing": {
+          "categorical_positions": [
+            33,
+            35,
+            37
+          ],
+          "category_counts": {
+            "module_code": {
+              "fit_rows": 29705,
+              "missing_fit_rows": 3013,
+              "vocabulary_sha256": "f83006fd264c0e41352ef7058c0438c3ebc45967203134a3beafb940b7f1a253",
+              "vocabulary_size": 8579
+            },
+            "org_code": {
+              "fit_rows": 29705,
+              "missing_fit_rows": 2159,
+              "vocabulary_sha256": "8054f3e9cfc8e90e06a2fefdd4d20072c2686dcf15b00ec477e43cec518e332a",
+              "vocabulary_size": 5092
+            },
+            "pattern_code": {
+              "fit_rows": 29705,
+              "missing_fit_rows": 5731,
+              "vocabulary_sha256": "15f73d32a16efd08ba196eed1bf171022c8352f6c04a8145cd7bf1057cf5fc6e",
+              "vocabulary_size": 388
+            }
+          },
+          "feature_names": [
+            "impact_load",
+            "impact_load__parsefail",
+            "impact_load__missing",
+            "entry_friction",
+            "entry_friction__parsefail",
+            "entry_friction__missing",
+            "cycle_code",
+            "cycle_code__parsefail",
+            "cycle_code__missing",
+            "scope_pressure",
+            "scope_pressure__parsefail",
+            "scope_pressure__missing",
+            "text_load",
+            "text_load__parsefail",
+            "text_load__missing",
+            "scope_trace",
+            "scope_trace__approximate",
+            "scope_trace__suffix_present",
+            "scope_trace__parsefail",
+            "scope_trace__missing",
+            "org_spread",
+            "org_spread__approximate",
+            "org_spread__suffix_present",
+            "org_spread__parsefail",
+            "org_spread__missing",
+            "module_spread",
+            "module_spread__approximate",
+            "module_spread__suffix_present",
+            "module_spread__parsefail",
+            "module_spread__missing",
+            "telemetry_flag",
+            "telemetry_flag__unknown",
+            "telemetry_flag__missing",
+            "org_code__ordinal",
+            "org_code__missing",
+            "module_code__ordinal",
+            "module_code__missing",
+            "pattern_code__ordinal",
+            "pattern_code__missing"
+          ],
+          "numeric_feature_names": [
+            "impact_load",
+            "impact_load__parsefail",
+            "impact_load__missing",
+            "entry_friction",
+            "entry_friction__parsefail",
+            "entry_friction__missing",
+            "cycle_code",
+            "cycle_code__parsefail",
+            "cycle_code__missing",
+            "scope_pressure",
+            "scope_pressure__parsefail",
+            "scope_pressure__missing",
+            "text_load",
+            "text_load__parsefail",
+            "text_load__missing",
+            "scope_trace",
+            "scope_trace__approximate",
+            "scope_trace__suffix_present",
+            "scope_trace__parsefail",
+            "scope_trace__missing",
+            "org_spread",
+            "org_spread__approximate",
+            "org_spread__suffix_present",
+            "org_spread__parsefail",
+            "org_spread__missing",
+            "module_spread",
+            "module_spread__approximate",
+            "module_spread__suffix_present",
+            "module_spread__parsefail",
+            "module_spread__missing",
+            "telemetry_flag",
+            "telemetry_flag__unknown",
+            "telemetry_flag__missing",
+            "org_code__missing",
+            "module_code__missing",
+            "pattern_code__missing"
+          ],
+          "numeric_imputer_medians": {
+            "cycle_code": 59.0,
+            "cycle_code__missing": 0.0,
+            "cycle_code__parsefail": 0.0,
+            "entry_friction": 0.0,
+            "entry_friction__missing": 0.0,
+            "entry_friction__parsefail": 0.0,
+            "impact_load": 110.5078,
+            "impact_load__missing": 0.0,
+            "impact_load__parsefail": 0.0,
+            "module_code__missing": 0.0,
+            "module_spread": 1.0,
+            "module_spread__approximate": 0.0,
+            "module_spread__missing": 0.0,
+            "module_spread__parsefail": 0.0,
+            "module_spread__suffix_present": 0.0,
+            "org_code__missing": 0.0,
+            "org_spread": 1.0,
+            "org_spread__approximate": 0.0,
+            "org_spread__missing": 0.0,
+            "org_spread__parsefail": 0.0,
+            "org_spread__suffix_present": 0.0,
+            "pattern_code__missing": 0.0,
+            "scope_pressure": 70.2015,
+            "scope_pressure__missing": 0.0,
+            "scope_pressure__parsefail": 0.0,
+            "scope_trace": 1.0,
+            "scope_trace__approximate": 0.0,
+            "scope_trace__missing": 0.0,
+            "scope_trace__parsefail": 0.0,
+            "scope_trace__suffix_present": 0.0,
+            "telemetry_flag": 0.0,
+            "telemetry_flag__missing": 0.0,
+            "telemetry_flag__unknown": 0.0,
+            "text_load": 31.2684,
+            "text_load__missing": 0.0,
+            "text_load__parsefail": 0.0
+          },
+          "numeric_positions": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            34,
+            36,
+            38
+          ],
+          "numeric_scaler_mean": "672b99a2b7ccceccb56a0147f40ba68b40dbcba8013119b391238c4e850b5426",
+          "numeric_scaler_scale": "10719b7f67f57f0c4922fd348a8458bea9e9fb30a929f9ea169a5a9e7ca5a6a5",
+          "ohe_output_width": 248
+        },
+        "tfidf_nnz": 1514359,
+        "tfidf_vocabulary_width": 20000,
+        "threads": 2,
+        "tokenization_allowance_bytes": 536870912
+      }
+    },
+    "schema_version": 1,
+    "source_commit_context": "41141382266c6debcaaba1fbb99ea123142f9093",
+    "source_sha256": {
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v2_classification.py": "b15dbe65b62954f854dd65a18ffe5ec36e4024997b8a9b1cc8cb2575c524d6d7",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_c08.py": "939d0da8fb36bd72e8220f47f567bfb416484c394447890bac6ead866e922f4a",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_c13.py": "514be5082ea239d20f4ff78839708cfcb0054b1668adf843483b2a1f1da46662",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_sparse_classification.py": "a629b4aeb3e6ea564b61449502d2f8f712daf517d95ed041652d3866a2f27c1b",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_sparse_classification_fullsix.py": "7b7e7425eeb497c9f9d5c1f55e2483c113ae8fe4502b1a43eee6e4573bc74c97",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_verify_sparse_classification.py": "683f073bad4dac04728fcf0045cd3d39b0f1a1e790352f9c0174ecb36a867699",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_verify_sparse_classification_fullsix.py": "acf3be75189f832af5d6ccc310326d1b0797c0e3d54eec6a1f7037ee0833d474",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\research_campaign_classification.py": "1a6f5979c1e1194225356bbd224f34d468114f1c71170e67180f90a70602bcbf",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\research_campaign_classification_stage2.py": "1a78b419e2b02c5187696f82823c2f8f96c7fa5c329846eff44ac52bbead1126",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\data\\audit.py": "79cb10c7a1f0795a9c1263c6bbe81a548268e73e38f670068794dc19b2fb9479",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\classification_metrics.py": "db77dd99210835006f96db1659bf4e87213179962b8f692d181af831b6539563",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\classification_round2_models.py": "239008f056c6f5e004e84d2b9df9f5bfb20695ccfad90eed4deec3463c7d4575",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1.py": "d21ac914d0d1f516a93e431116556dabdbe7313a21fd2b1b04a73371bd56f420",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1_c08.py": "f3b3d9b47cda988765e12d5bd70e51b3fa9f6f40af0dfece95e4a7684dbeb899",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1_c13.py": "22a64854edefabf96a32f6a6a4da3dbfd1eeef517f64432f7df04886471d9f62",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_sparse_classification.py": "fb5b013fa59d0b748a3386dae90cb14789a0b4cbd9a5c7a115d5ddc3c443d5a3",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_round2_models.py": "f56f7ee2c337acdf2cbe7160719faf62b1e3d3470a7f656b044ce0890d677e09",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\round1_evaluation.py": "be26992ee5c75190eb8a412fa6635dabd242eee1609fad0380023bfe3a1e300f",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\utils\\paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\tests\\test_optimization_v3_batch1_c08.py": "12a2baf914738a72377d3b91b6b5999143e7ac574d8f39c5c3b5db1cd1cf361f",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\tests\\test_optimization_v3_batch1_c13.py": "057b58ac5f856e8f7472d7f1b1c98e6427bb82c11b924f25012defb40d717541"
+    },
+    "test_data_used": false,
+    "validation_labels_passed_to_adapter": false
+  },
+  "signature": "a639764cd3695f87be8cec97ef21b3ee5b5846893dd07fcdf4af7c1b8dd382ad"
+}

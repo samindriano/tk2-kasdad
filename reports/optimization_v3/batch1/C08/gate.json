@@ -1,0 +1,50 @@
+{
+  "card_id": "C08",
+  "checks": {
+    "H12_harm_max_0_001": true,
+    "W1_harm_max_0_005": true,
+    "W4_harm_max_0_005": true,
+    "independent_route_and_metric_verification": true,
+    "ordered_target_rate_independent_reconstruction": true,
+    "primary_gain_min_0_0005": false,
+    "supported_subgroup_guards": true
+  },
+  "interpretation": "Advance only if all frozen temporal pilot, subgroup, and independent encoding checks pass.",
+  "metrics": {
+    "H12": {
+      "baseline_macro_f1": 0.8029655654017788,
+      "candidate_macro_f1": 0.8020545049052247,
+      "gain": -0.0009110604965540947,
+      "rows": 38588
+    },
+    "W1": {
+      "baseline_macro_f1": 0.8031600548696844,
+      "candidate_macro_f1": 0.8022137729414083,
+      "gain": -0.0009462819282761714,
+      "rows": 4114
+    },
+    "W4": {
+      "baseline_macro_f1": 0.8414177014153625,
+      "candidate_macro_f1": 0.8424257307290289,
+      "gain": 0.001008029313666392,
+      "rows": 4950
+    },
+    "primary": {
+      "baseline_macro_f1": 0.8239724981677496,
+      "candidate_macro_f1": 0.8241006367212738,
+      "gain": 0.0001281385535241153,
+      "rows": 9064
+    }
+  },
+  "status": "RETIRE",
+  "supported_subgroup_guard_failures": [],
+  "thresholds": {
+    "H12_harm_max": 0.001,
+    "individual_pilot_view_harm_max": 0.005,
+    "per_class_group_min": 30,
+    "positive_class_recall_harm_max": 0.02,
+    "primary_gain_min": 0.0005,
+    "supported_group_macro_f1_harm_max": 0.01,
+    "supported_group_n_min": 200
+  }
+}
