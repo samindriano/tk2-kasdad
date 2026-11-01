@@ -199,3 +199,19 @@ def test_c11_prerequisite_is_a_saved_advance_with_independent_qa():
     assert result["gate_status"] == "ADVANCE"
     assert result["verification_status"] == "INDEPENDENT_QA_PASS"
     assert result["fit_predictor_count"] == 2
+
+
+def test_preflight_pass_is_recorded_as_an_attempt(tmp_path: Path):
+    path = tmp_path / "attempts.jsonl"
+    memory = {"55": {"status": "PASS"}, "67": {"status": "PASS"}}
+    controls = {"primary": {"rows": 9064, "macro_f1": 0.8239724981677496}}
+    runner._append_preflight_pass(
+        {"public": {"memory_estimate": memory, "baseline_control_metrics": controls}},
+        path,
+    )
+    event = json.loads(path.read_text(encoding="utf-8"))
+    assert event["card_id"] == "C12"
+    assert event["event"] == "PREFLIGHT_PASS"
+    assert event["resource_estimates"] == memory
+    assert event["baseline_control_metrics"] == controls
+    assert event["fit_predictor_count_reserved"] == 2

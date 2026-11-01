@@ -63,7 +63,9 @@ EXPERIMENT_DIR = ROOT / "experiments/optimization_v3/batch1/C12"
 RUN_DIR = ROOT / "experiments/runs/optimization_v3_batch1/C12"
 REPORT_DIR = ROOT / "reports/optimization_v3/batch1/C12"
 RECIPE_PATH = EXPERIMENT_DIR / "recipe.json"
-FREEZE_PATH = EXPERIMENT_DIR / "freeze.json"
+# Preserve the already committed, no-fit freeze as an audit checkpoint.  This
+# revision includes the corrected preflight-attempt logging before any score.
+FREEZE_PATH = EXPERIMENT_DIR / "freeze_revision_02.json"
 ENGINE_REPORT_PATH = RUN_DIR / "pilot_engine_report.json"
 RESULTS_PATH = REPORT_DIR / "results.json"
 VERIFICATION_PATH = REPORT_DIR / "verification.json"
@@ -884,6 +886,17 @@ def _publish(context: Mapping[str, Any], report: Mapping[str, Any],
     _write_or_require_same(SUMMARY_PATH, summary)
 
 
+def _append_preflight_pass(context: Mapping[str, Any], path: str | Path = ATTEMPTS_PATH) -> None:
+    append_event(path, {
+        "card_id": CARD_ID,
+        "event": "PREFLIGHT_PASS",
+        "at_utc": pd.Timestamp.now(tz="UTC").isoformat(),
+        "resource_estimates": context["public"]["memory_estimate"],
+        "baseline_control_metrics": context["public"]["baseline_control_metrics"],
+        "fit_predictor_count_reserved": 2,
+    })
+
+
 def run_card(card: Mapping[str, Any], queue: Mapping[str, Any], *,
              preflight_only: bool = False, freeze_only: bool = False,
              run_frozen_pilot: bool = False) -> dict[str, Any]:
@@ -914,14 +927,7 @@ def run_card(card: Mapping[str, Any], queue: Mapping[str, Any], *,
     if file_sha256(context["train_path"]) != TRAIN_SHA256:
         raise BatchIntegrityError("Official Train changed after C12 freeze")
 
-        append_event(ATTEMPTS_PATH, {
-        "card_id": CARD_ID,
-        "event": "PREFLIGHT_PASS",
-        "at_utc": pd.Timestamp.now(tz="UTC").isoformat(),
-        "resource_estimates": context["public"]["memory_estimate"],
-        "baseline_control_metrics": context["public"]["baseline_control_metrics"],
-        "fit_predictor_count_reserved": 2,
-    })
+    _append_preflight_pass(context)
     report = run_pilot(
         card=card,
         artifact_dir=RUN_DIR,
