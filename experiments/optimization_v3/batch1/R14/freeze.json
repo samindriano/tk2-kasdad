@@ -1,0 +1,647 @@
+{
+  "created_at_utc": "2026-11-01T03:58:00.289353+00:00",
+  "identity": {
+    "card": {
+      "card_path": "reports/optimization_v3/research_backlog/cards/R14.md",
+      "change": "Train original sparse L1 model only on parsed entry_friction==1; predict raw target scale and clip0..100. Only EF1 rows use25% raw expert+75%incumbent; other rows exact incumbent. No subgroup re-ranking.",
+      "condition": "No additional dependency",
+      "evaluation": "STANDARD",
+      "evidence": [
+        "reports/optimization_v3/regression_diagnostics/diagnostics.json"
+      ],
+      "family": "specialist_EF",
+      "id": "R14",
+      "implementation": "NOT_IMPLEMENTED",
+      "in_priority_prefix": false,
+      "name": "EF1 sparse specialist",
+      "new_results": null,
+      "pilot_predictor_fits": 2,
+      "policy": "R_EF25_RAW",
+      "preflight_checks": [
+        ">=500 EF1 fit rows and>=100 subgroup validation rows/view; telemetry_flag is not EF"
+      ],
+      "priority": "P2",
+      "queue_order": 32,
+      "rationale": "Kontras residual EF berulang, tetapi subset lebih kecil dan conditional target bukan uniform 0\u00e2\u20ac\u201c100.",
+      "status": "PLANNED_NOT_RUN",
+      "task": "regression"
+    },
+    "control_lineage": {
+      "fullsix_freeze_sha256": "bb38f5fb7df09f0642ad18f064373f2b7051ed64e8b5d260ccb2d31b84ef909c",
+      "fullsix_prediction_cache_sha256": "4b87b0da34069ea3d75490233c574fbd92283f8b6472a43d8c654a20a4b904c9",
+      "fullsix_report_sha256": "a9686473998722b8f86a0f6a4489b4e3a75a6b6ba20c661ac564e6a5e61aea48",
+      "manifest_recipe_id": "v2_reg_sparse_lgb25",
+      "manifest_status": "PREPARED_AND_QA_PASS",
+      "old_sparse_pilot_cache_sha256": "eae6bea2dd6933de59ac0f63f54cc08124b59d4bcba91bbe05a7c5ec3dab9ff6",
+      "old_sparse_pilot_verified": true,
+      "pilot_report_sha256": "2a1bb2d4db3fd531478de2aeedaf4e380472f39f1439a40abef9511042dec653",
+      "pilot_verification_sha256": "4e42ee044d9832c47e4fbf6305a1c4a86fa42e0b089080cf3befd74811bbb740",
+      "ridge25_cache_sha256": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516"
+    },
+    "control_row_id_sha256": {
+      "55": "31a50f35369d3acce51584f3997416149a58143fac90418c3c59052f47029d3b",
+      "67": "e63c72f954b16a018af4f970ae41306425a22a376147d6a8c5ea82b59d7490f5"
+    },
+    "evaluation_views": {
+      "H12": [
+        [
+          55,
+          56,
+          67
+        ],
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "W1": [
+        [
+          55,
+          56,
+          59
+        ]
+      ],
+      "W4": [
+        [
+          67,
+          68,
+          71
+        ]
+      ],
+      "primary": [
+        [
+          55,
+          56,
+          59
+        ],
+        [
+          67,
+          68,
+          71
+        ]
+      ]
+    },
+    "expected_outer_fit_rows": {
+      "55": 12020,
+      "67": 29705
+    },
+    "expected_view_rows": {
+      "H12": 38588,
+      "W1": 4114,
+      "W4": 4950,
+      "primary": 9064
+    },
+    "feature_names": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code",
+      "signal_stream"
+    ],
+    "input_sha256": {
+      "canonical_R14_card": "609888542877ca8c03f7d1dac075b202359115ca7eb52ae09ae3208c102e8f5e",
+      "canonical_queue": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+      "incumbent_accepted_sparse_fullsix_freeze": "bb38f5fb7df09f0642ad18f064373f2b7051ed64e8b5d260ccb2d31b84ef909c",
+      "incumbent_accepted_sparse_fullsix_prediction_cache": "4b87b0da34069ea3d75490233c574fbd92283f8b6472a43d8c654a20a4b904c9",
+      "incumbent_accepted_sparse_fullsix_report": "a9686473998722b8f86a0f6a4489b4e3a75a6b6ba20c661ac564e6a5e61aea48",
+      "incumbent_accepted_sparse_pilot_prediction_cache": "eae6bea2dd6933de59ac0f63f54cc08124b59d4bcba91bbe05a7c5ec3dab9ff6",
+      "incumbent_accepted_sparse_pilot_report": "2a1bb2d4db3fd531478de2aeedaf4e380472f39f1439a40abef9511042dec653",
+      "incumbent_accepted_sparse_pilot_verification": "4e42ee044d9832c47e4fbf6305a1c4a86fa42e0b089080cf3befd74811bbb740",
+      "incumbent_accepted_v2_reg_sparse_lgb25_manifest": "dd166e92089f24978244496a9a0afabc0d06551dbdc326579a7c898a8844e19a",
+      "incumbent_canonical_card": "c16de95d965865a6fd56bcfa249042455e4a73102a7b649cc8abda373a3d4c97",
+      "incumbent_canonical_queue": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+      "incumbent_read_only_feasibility_report": "7d164a372e000f1e078cc6fcd50d68861e30b5870c4b526d49213d5b6b79ee3d",
+      "incumbent_ridge25_and_paired_prediction_cache": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516",
+      "official_regression_train": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082"
+    },
+    "package_versions": {
+      "lightgbm": "4.6.0",
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.8.0",
+      "scipy": "1.18.0",
+      "threadpoolctl": "3.6.0"
+    },
+    "recipe": {
+      "card_id": "R14",
+      "control_metrics": {
+        "H12_mae": 14.04753258299653,
+        "primary_mae": 11.559390078665364
+      },
+      "evaluation": {
+        "cutoffs": [
+          55,
+          67
+        ],
+        "fit_rows": {
+          "55": 12020,
+          "67": 29705
+        },
+        "horizon_cycles": 12,
+        "profile": "STANDARD",
+        "view_rows": {
+          "H12": 38588,
+          "W1": 4114,
+          "W4": 4950,
+          "primary": 9064
+        },
+        "views": {
+          "H12": [
+            [
+              55,
+              56,
+              67
+            ],
+            [
+              67,
+              68,
+              79
+            ]
+          ],
+          "W1": [
+            [
+              55,
+              56,
+              59
+            ]
+          ],
+          "W4": [
+            [
+              67,
+              68,
+              71
+            ]
+          ],
+          "primary": [
+            [
+              55,
+              56,
+              59
+            ],
+            [
+              67,
+              68,
+              71
+            ]
+          ]
+        }
+      },
+      "feature_allowlist": [
+        "impact_load",
+        "entry_friction",
+        "cycle_code",
+        "scope_pressure",
+        "text_load",
+        "scope_trace",
+        "org_spread",
+        "module_spread",
+        "telemetry_flag",
+        "org_code",
+        "module_code",
+        "pattern_code",
+        "signal_stream"
+      ],
+      "feature_roles": {
+        "record_id": "identity_only",
+        "threat_rank": "fit_target_only"
+      },
+      "fit_population": "outer cycle fit rows AND parsed entry_friction == 1",
+      "gate": {
+        "individual_pilot_view_MAE_harm_max": 0.5,
+        "pilot_H12_MAE_harm_max": 0.05,
+        "pilot_primary_MAE_gain_min": 0.03,
+        "supported_group_n_min": 100,
+        "supported_tail_or_missing_MAE_harm_max": 0.25
+      },
+      "kaggle_used": false,
+      "minimum_support": {
+        "EF1_fit_rows_per_cutoff": 500,
+        "EF1_validation_rows_per_view": 100
+      },
+      "model": {
+        "class": "src.models.optimization_v2_regression.SparseHybridRegressor",
+        "design": "CSR sparse matrix; no densification; missing-stream indicator retained",
+        "early_stopping": false,
+        "estimator": "lightgbm.LGBMRegressor",
+        "objective": "regression_l1",
+        "parameters": {
+          "boosting_type": "gbdt",
+          "colsample_bytree": 1.0,
+          "deterministic": true,
+          "force_col_wise": true,
+          "learning_rate": 0.05,
+          "max_depth": -1,
+          "min_child_samples": 40,
+          "min_child_weight": 0.001,
+          "n_estimators": 400,
+          "n_jobs": 2,
+          "num_leaves": 31,
+          "objective": "regression_l1",
+          "random_state": 42,
+          "reg_alpha": 0.0,
+          "reg_lambda": 1.0,
+          "subsample": 1.0,
+          "subsample_freq": 0,
+          "verbosity": -1
+        },
+        "preprocessing": "structured parser/imputer/scaler/OHE and TF-IDF fit only on the EF1 outer-fit rows",
+        "recipe": "lgbm_sparse_l1",
+        "target_transform": "identity threat_rank in [0,100]",
+        "tfidf": {
+          "dtype": "float64",
+          "max_features": 20000,
+          "min_df": 2,
+          "ngram_range": [
+            1,
+            2
+          ],
+          "sublinear_tf": true
+        }
+      },
+      "prediction_policy": {
+        "EF1": "clip(0.75*incumbent + 0.25*clip(raw_EF1_expert,0,100),0,100)",
+        "card_wording_interpretation": "Clip the raw target-scale expert prediction to [0,100] before blending; clip the final blend again as a range guard.",
+        "fit_predictor_fits": 2,
+        "incumbent": "accepted v2_reg_sparse_lgb25, reconstructed row-exactly from frozen caches",
+        "other_rows": "incumbent copied exactly",
+        "subgroup_rank_or_calibration": "none"
+      },
+      "queue_recipe": {
+        "card_path": "reports/optimization_v3/research_backlog/cards/R14.md",
+        "change": "Train original sparse L1 model only on parsed entry_friction==1; predict raw target scale and clip0..100. Only EF1 rows use25% raw expert+75%incumbent; other rows exact incumbent. No subgroup re-ranking.",
+        "condition": "No additional dependency",
+        "evaluation": "STANDARD",
+        "evidence": [
+          "reports/optimization_v3/regression_diagnostics/diagnostics.json"
+        ],
+        "family": "specialist_EF",
+        "id": "R14",
+        "implementation": "NOT_IMPLEMENTED",
+        "in_priority_prefix": false,
+        "name": "EF1 sparse specialist",
+        "new_results": null,
+        "pilot_predictor_fits": 2,
+        "policy": "R_EF25_RAW",
+        "preflight_checks": [
+          ">=500 EF1 fit rows and>=100 subgroup validation rows/view; telemetry_flag is not EF"
+        ],
+        "priority": "P2",
+        "queue_order": 32,
+        "rationale": "Kontras residual EF berulang, tetapi subset lebih kecil dan conditional target bukan uniform 0\u00e2\u20ac\u201c100.",
+        "status": "PLANNED_NOT_RUN",
+        "task": "regression"
+      },
+      "resource_policy": {
+        "concurrent_training_jobs": 1,
+        "free_RAM_reserve_bytes": 2147483648,
+        "job_memory_cap_bytes": 6442450944,
+        "minimum_free_RAM_bytes": 4294967296,
+        "resource_estimate_is_observed": false,
+        "threads": 2
+      },
+      "support_snapshot": {
+        "definition": "EF1 is parsed entry_friction == 1; telemetry_flag is not used",
+        "entry_friction_parse_missing_rows": 0,
+        "fit": {
+          "55": {
+            "EF1_fit_rows": 3362,
+            "minimum_pass": true,
+            "outer_fit_rows": 12020
+          },
+          "67": {
+            "EF1_fit_rows": 9343,
+            "minimum_pass": true,
+            "outer_fit_rows": 29705
+          }
+        },
+        "minimum_fit_rows": 500,
+        "minimum_validation_rows_per_view": 100,
+        "score_cycle_counts": {
+          "55": {
+            "56": {
+              "EF1_rows": 183,
+              "rows": 564
+            },
+            "57": {
+              "EF1_rows": 310,
+              "rows": 962
+            },
+            "58": {
+              "EF1_rows": 434,
+              "rows": 1205
+            },
+            "59": {
+              "EF1_rows": 474,
+              "rows": 1383
+            },
+            "60": {
+              "EF1_rows": 525,
+              "rows": 1478
+            },
+            "61": {
+              "EF1_rows": 529,
+              "rows": 1632
+            },
+            "62": {
+              "EF1_rows": 545,
+              "rows": 1500
+            },
+            "63": {
+              "EF1_rows": 698,
+              "rows": 1883
+            },
+            "64": {
+              "EF1_rows": 615,
+              "rows": 1807
+            },
+            "65": {
+              "EF1_rows": 526,
+              "rows": 1567
+            },
+            "66": {
+              "EF1_rows": 533,
+              "rows": 1751
+            },
+            "67": {
+              "EF1_rows": 609,
+              "rows": 1953
+            }
+          },
+          "67": {
+            "68": {
+              "EF1_rows": 178,
+              "rows": 577
+            },
+            "69": {
+              "EF1_rows": 332,
+              "rows": 1079
+            },
+            "70": {
+              "EF1_rows": 533,
+              "rows": 1605
+            },
+            "71": {
+              "EF1_rows": 489,
+              "rows": 1689
+            },
+            "72": {
+              "EF1_rows": 546,
+              "rows": 1811
+            },
+            "73": {
+              "EF1_rows": 531,
+              "rows": 1880
+            },
+            "74": {
+              "EF1_rows": 527,
+              "rows": 1814
+            },
+            "75": {
+              "EF1_rows": 670,
+              "rows": 1957
+            },
+            "76": {
+              "EF1_rows": 600,
+              "rows": 1822
+            },
+            "77": {
+              "EF1_rows": 733,
+              "rows": 2335
+            },
+            "78": {
+              "EF1_rows": 646,
+              "rows": 2146
+            },
+            "79": {
+              "EF1_rows": 774,
+              "rows": 2188
+            }
+          }
+        },
+        "views": {
+          "H12": {
+            "EF1_rows": 12540,
+            "minimum_pass": true,
+            "rows": 38588
+          },
+          "H12_E": {
+            "EF1_rows": 5981,
+            "minimum_pass": true,
+            "rows": 17685
+          },
+          "H12_L": {
+            "EF1_rows": 6559,
+            "minimum_pass": true,
+            "rows": 20903
+          },
+          "W1": {
+            "EF1_rows": 1401,
+            "minimum_pass": true,
+            "rows": 4114
+          },
+          "W4": {
+            "EF1_rows": 1532,
+            "minimum_pass": true,
+            "rows": 4950
+          },
+          "primary": {
+            "EF1_rows": 2933,
+            "minimum_pass": true,
+            "rows": 9064
+          }
+        }
+      },
+      "test_or_sample_used": false
+    },
+    "recipe_sha256": "ec5d22576f1f6369fe670ecb4637089900def08840d5660475c107d8e3cbca92",
+    "resource_policy": {
+      "concurrent_training_jobs": 1,
+      "free_RAM_reserve_bytes": 2147483648,
+      "job_memory_cap_bytes": 6442450944,
+      "minimum_free_RAM_bytes": 4294967296,
+      "resource_estimate_is_observed": false,
+      "threads": 2
+    },
+    "schema_version": 1,
+    "source_sha256": {
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_r03.py": "683dbdcaaacdf40a4446a25ee2773682f97d1319eb62fafa5adeb253498235d0",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_r14.py": "18122ed85ab67354816dff78913d0a106537fc680cf829af838adb5116fe3518",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_reg_diagnostics.py": "e2af49bb45353fca5bf0c14093be9b0f0b02afe24289a1b5c30dfb584bbd3f55",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v2_regression.py": "b235cfd93c8cc0a207cfcea79892b925f9dfdfe515491a459d6ca1b6142cb590",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1.py": "746e12d408e74608e5b559bc7dcf4c10174df9f367859750987310adb6ae8ffd",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1_r03.py": "eec5407f1e2d86b18c2fb5dfd56e50de6acd858827e21ccb2038912c0def5d12",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1_r14.py": "b93fbb778dd1fb090a3518e2c0b139b8c509df9a9a83c9f382c8e746d4c1896f",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_research_tabular.py": "674d7e52c485583729b8fe999dc133c39aae8dd85abd005a598e2caea9af99f9",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_round2_models.py": "f56f7ee2c337acdf2cbe7160719faf62b1e3d3470a7f656b044ce0890d677e09",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\utils\\paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\tests\\test_optimization_v3_batch1_r03.py": "34dbfdbb01f371d1a6a8def875f02539fec8b2cca1f3cc5836706980e7c4db9b"
+    },
+    "support_snapshot": {
+      "definition": "EF1 is parsed entry_friction == 1; telemetry_flag is not used",
+      "entry_friction_parse_missing_rows": 0,
+      "fit": {
+        "55": {
+          "EF1_fit_rows": 3362,
+          "minimum_pass": true,
+          "outer_fit_rows": 12020
+        },
+        "67": {
+          "EF1_fit_rows": 9343,
+          "minimum_pass": true,
+          "outer_fit_rows": 29705
+        }
+      },
+      "minimum_fit_rows": 500,
+      "minimum_validation_rows_per_view": 100,
+      "score_cycle_counts": {
+        "55": {
+          "56": {
+            "EF1_rows": 183,
+            "rows": 564
+          },
+          "57": {
+            "EF1_rows": 310,
+            "rows": 962
+          },
+          "58": {
+            "EF1_rows": 434,
+            "rows": 1205
+          },
+          "59": {
+            "EF1_rows": 474,
+            "rows": 1383
+          },
+          "60": {
+            "EF1_rows": 525,
+            "rows": 1478
+          },
+          "61": {
+            "EF1_rows": 529,
+            "rows": 1632
+          },
+          "62": {
+            "EF1_rows": 545,
+            "rows": 1500
+          },
+          "63": {
+            "EF1_rows": 698,
+            "rows": 1883
+          },
+          "64": {
+            "EF1_rows": 615,
+            "rows": 1807
+          },
+          "65": {
+            "EF1_rows": 526,
+            "rows": 1567
+          },
+          "66": {
+            "EF1_rows": 533,
+            "rows": 1751
+          },
+          "67": {
+            "EF1_rows": 609,
+            "rows": 1953
+          }
+        },
+        "67": {
+          "68": {
+            "EF1_rows": 178,
+            "rows": 577
+          },
+          "69": {
+            "EF1_rows": 332,
+            "rows": 1079
+          },
+          "70": {
+            "EF1_rows": 533,
+            "rows": 1605
+          },
+          "71": {
+            "EF1_rows": 489,
+            "rows": 1689
+          },
+          "72": {
+            "EF1_rows": 546,
+            "rows": 1811
+          },
+          "73": {
+            "EF1_rows": 531,
+            "rows": 1880
+          },
+          "74": {
+            "EF1_rows": 527,
+            "rows": 1814
+          },
+          "75": {
+            "EF1_rows": 670,
+            "rows": 1957
+          },
+          "76": {
+            "EF1_rows": 600,
+            "rows": 1822
+          },
+          "77": {
+            "EF1_rows": 733,
+            "rows": 2335
+          },
+          "78": {
+            "EF1_rows": 646,
+            "rows": 2146
+          },
+          "79": {
+            "EF1_rows": 774,
+            "rows": 2188
+          }
+        }
+      },
+      "views": {
+        "H12": {
+          "EF1_rows": 12540,
+          "minimum_pass": true,
+          "rows": 38588
+        },
+        "H12_E": {
+          "EF1_rows": 5981,
+          "minimum_pass": true,
+          "rows": 17685
+        },
+        "H12_L": {
+          "EF1_rows": 6559,
+          "minimum_pass": true,
+          "rows": 20903
+        },
+        "W1": {
+          "EF1_rows": 1401,
+          "minimum_pass": true,
+          "rows": 4114
+        },
+        "W4": {
+          "EF1_rows": 1532,
+          "minimum_pass": true,
+          "rows": 4950
+        },
+        "primary": {
+          "EF1_rows": 2933,
+          "minimum_pass": true,
+          "rows": 9064
+        }
+      }
+    },
+    "test_data_used": false,
+    "validation_labels_passed_to_adapter": false
+  },
+  "signature": "aaf89c3f5364098ecf597a47125b5d7e1f5e13f02413340f89b6bc346d0b2622"
+}

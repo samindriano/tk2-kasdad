@@ -229,7 +229,7 @@ def reserve_card_budget(path: str | Path, *, budget_key: str, card_id: str,
                         predictor_fits: int, cap: int = 180) -> dict[str, Any]:
     """Reserve the full declared card budget before its first candidate fit."""
     ledger = Path(path)
-    reservations: dict[str, int] = {}
+    reservations: dict[str, tuple[int, str | None]] = {}
     if ledger.exists():
         for line_number, line in enumerate(ledger.read_text(encoding="utf-8").splitlines(), 1):
             if not line.strip():
@@ -241,20 +241,26 @@ def reserve_card_budget(path: str | Path, *, budget_key: str, card_id: str,
             if event.get("event") == "BUDGET_RESERVED":
                 key = str(event["budget_key"])
                 count = int(event["predictor_fits"])
-                if key in reservations and reservations[key] != count:
-                    raise BatchIntegrityError(f"Conflicting existing budget reservation for {key}")
-                reservations[key] = count
+                card = str(event["card_id"]) if event.get("card_id") is not None else None
+                reservation = (count, card)
+                if key in reservations:
+                    if reservations[key] != reservation:
+                        raise BatchIntegrityError(f"Conflicting existing budget reservation for {key}")
+                    raise BatchIntegrityError(f"Duplicate existing budget reservation for {key}")
+                reservations[key] = reservation
     expected = int(predictor_fits)
     if expected < 0:
         raise BatchIntegrityError("Negative predictor fit reservation")
     if budget_key in reservations:
-        if reservations[budget_key] != expected:
+        existing_count, existing_card = reservations[budget_key]
+        if existing_count != expected or existing_card != str(card_id):
             raise BatchIntegrityError(f"Existing reservation differs for {budget_key}")
-        return {"status": "EXISTING_RESERVATION", "reserved_total": sum(reservations.values()),
+        return {"status": "EXISTING_RESERVATION", "reserved_total": sum(value[0] for value in reservations.values()),
                 "card_reservation": expected, "budget_key": budget_key}
-    total = sum(reservations.values()) + expected
+    reserved_total = sum(value[0] for value in reservations.values())
+    total = reserved_total + expected
     if total > int(cap):
-        raise BatchIntegrityError(f"Fit budget blocked before card: reserved={sum(reservations.values())}, card={expected}, cap={cap}")
+        raise BatchIntegrityError(f"Fit budget blocked before card: reserved={reserved_total}, card={expected}, cap={cap}")
     append_event(ledger, {
         "event": "BUDGET_RESERVED", "at_utc": datetime.now(timezone.utc).isoformat(),
         "budget_key": budget_key, "card_id": card_id, "predictor_fits": expected,

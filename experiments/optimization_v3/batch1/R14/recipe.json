@@ -1,0 +1,331 @@
+{
+  "card_id": "R14",
+  "control_metrics": {
+    "H12_mae": 14.04753258299653,
+    "primary_mae": 11.559390078665364
+  },
+  "evaluation": {
+    "cutoffs": [
+      55,
+      67
+    ],
+    "fit_rows": {
+      "55": 12020,
+      "67": 29705
+    },
+    "horizon_cycles": 12,
+    "profile": "STANDARD",
+    "view_rows": {
+      "H12": 38588,
+      "W1": 4114,
+      "W4": 4950,
+      "primary": 9064
+    },
+    "views": {
+      "H12": [
+        [
+          55,
+          56,
+          67
+        ],
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "W1": [
+        [
+          55,
+          56,
+          59
+        ]
+      ],
+      "W4": [
+        [
+          67,
+          68,
+          71
+        ]
+      ],
+      "primary": [
+        [
+          55,
+          56,
+          59
+        ],
+        [
+          67,
+          68,
+          71
+        ]
+      ]
+    }
+  },
+  "feature_allowlist": [
+    "impact_load",
+    "entry_friction",
+    "cycle_code",
+    "scope_pressure",
+    "text_load",
+    "scope_trace",
+    "org_spread",
+    "module_spread",
+    "telemetry_flag",
+    "org_code",
+    "module_code",
+    "pattern_code",
+    "signal_stream"
+  ],
+  "feature_roles": {
+    "record_id": "identity_only",
+    "threat_rank": "fit_target_only"
+  },
+  "fit_population": "outer cycle fit rows AND parsed entry_friction == 1",
+  "gate": {
+    "individual_pilot_view_MAE_harm_max": 0.5,
+    "pilot_H12_MAE_harm_max": 0.05,
+    "pilot_primary_MAE_gain_min": 0.03,
+    "supported_group_n_min": 100,
+    "supported_tail_or_missing_MAE_harm_max": 0.25
+  },
+  "kaggle_used": false,
+  "minimum_support": {
+    "EF1_fit_rows_per_cutoff": 500,
+    "EF1_validation_rows_per_view": 100
+  },
+  "model": {
+    "class": "src.models.optimization_v2_regression.SparseHybridRegressor",
+    "design": "CSR sparse matrix; no densification; missing-stream indicator retained",
+    "early_stopping": false,
+    "estimator": "lightgbm.LGBMRegressor",
+    "objective": "regression_l1",
+    "parameters": {
+      "boosting_type": "gbdt",
+      "colsample_bytree": 1.0,
+      "deterministic": true,
+      "force_col_wise": true,
+      "learning_rate": 0.05,
+      "max_depth": -1,
+      "min_child_samples": 40,
+      "min_child_weight": 0.001,
+      "n_estimators": 400,
+      "n_jobs": 2,
+      "num_leaves": 31,
+      "objective": "regression_l1",
+      "random_state": 42,
+      "reg_alpha": 0.0,
+      "reg_lambda": 1.0,
+      "subsample": 1.0,
+      "subsample_freq": 0,
+      "verbosity": -1
+    },
+    "preprocessing": "structured parser/imputer/scaler/OHE and TF-IDF fit only on the EF1 outer-fit rows",
+    "recipe": "lgbm_sparse_l1",
+    "target_transform": "identity threat_rank in [0,100]",
+    "tfidf": {
+      "dtype": "float64",
+      "max_features": 20000,
+      "min_df": 2,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "sublinear_tf": true
+    }
+  },
+  "prediction_policy": {
+    "EF1": "clip(0.75*incumbent + 0.25*clip(raw_EF1_expert,0,100),0,100)",
+    "card_wording_interpretation": "Clip the raw target-scale expert prediction to [0,100] before blending; clip the final blend again as a range guard.",
+    "fit_predictor_fits": 2,
+    "incumbent": "accepted v2_reg_sparse_lgb25, reconstructed row-exactly from frozen caches",
+    "other_rows": "incumbent copied exactly",
+    "subgroup_rank_or_calibration": "none"
+  },
+  "queue_recipe": {
+    "card_path": "reports/optimization_v3/research_backlog/cards/R14.md",
+    "change": "Train original sparse L1 model only on parsed entry_friction==1; predict raw target scale and clip0..100. Only EF1 rows use25% raw expert+75%incumbent; other rows exact incumbent. No subgroup re-ranking.",
+    "condition": "No additional dependency",
+    "evaluation": "STANDARD",
+    "evidence": [
+      "reports/optimization_v3/regression_diagnostics/diagnostics.json"
+    ],
+    "family": "specialist_EF",
+    "id": "R14",
+    "implementation": "NOT_IMPLEMENTED",
+    "in_priority_prefix": false,
+    "name": "EF1 sparse specialist",
+    "new_results": null,
+    "pilot_predictor_fits": 2,
+    "policy": "R_EF25_RAW",
+    "preflight_checks": [
+      ">=500 EF1 fit rows and>=100 subgroup validation rows/view; telemetry_flag is not EF"
+    ],
+    "priority": "P2",
+    "queue_order": 32,
+    "rationale": "Kontras residual EF berulang, tetapi subset lebih kecil dan conditional target bukan uniform 0\u00e2\u20ac\u201c100.",
+    "status": "PLANNED_NOT_RUN",
+    "task": "regression"
+  },
+  "resource_policy": {
+    "concurrent_training_jobs": 1,
+    "free_RAM_reserve_bytes": 2147483648,
+    "job_memory_cap_bytes": 6442450944,
+    "minimum_free_RAM_bytes": 4294967296,
+    "resource_estimate_is_observed": false,
+    "threads": 2
+  },
+  "support_snapshot": {
+    "definition": "EF1 is parsed entry_friction == 1; telemetry_flag is not used",
+    "entry_friction_parse_missing_rows": 0,
+    "fit": {
+      "55": {
+        "EF1_fit_rows": 3362,
+        "minimum_pass": true,
+        "outer_fit_rows": 12020
+      },
+      "67": {
+        "EF1_fit_rows": 9343,
+        "minimum_pass": true,
+        "outer_fit_rows": 29705
+      }
+    },
+    "minimum_fit_rows": 500,
+    "minimum_validation_rows_per_view": 100,
+    "score_cycle_counts": {
+      "55": {
+        "56": {
+          "EF1_rows": 183,
+          "rows": 564
+        },
+        "57": {
+          "EF1_rows": 310,
+          "rows": 962
+        },
+        "58": {
+          "EF1_rows": 434,
+          "rows": 1205
+        },
+        "59": {
+          "EF1_rows": 474,
+          "rows": 1383
+        },
+        "60": {
+          "EF1_rows": 525,
+          "rows": 1478
+        },
+        "61": {
+          "EF1_rows": 529,
+          "rows": 1632
+        },
+        "62": {
+          "EF1_rows": 545,
+          "rows": 1500
+        },
+        "63": {
+          "EF1_rows": 698,
+          "rows": 1883
+        },
+        "64": {
+          "EF1_rows": 615,
+          "rows": 1807
+        },
+        "65": {
+          "EF1_rows": 526,
+          "rows": 1567
+        },
+        "66": {
+          "EF1_rows": 533,
+          "rows": 1751
+        },
+        "67": {
+          "EF1_rows": 609,
+          "rows": 1953
+        }
+      },
+      "67": {
+        "68": {
+          "EF1_rows": 178,
+          "rows": 577
+        },
+        "69": {
+          "EF1_rows": 332,
+          "rows": 1079
+        },
+        "70": {
+          "EF1_rows": 533,
+          "rows": 1605
+        },
+        "71": {
+          "EF1_rows": 489,
+          "rows": 1689
+        },
+        "72": {
+          "EF1_rows": 546,
+          "rows": 1811
+        },
+        "73": {
+          "EF1_rows": 531,
+          "rows": 1880
+        },
+        "74": {
+          "EF1_rows": 527,
+          "rows": 1814
+        },
+        "75": {
+          "EF1_rows": 670,
+          "rows": 1957
+        },
+        "76": {
+          "EF1_rows": 600,
+          "rows": 1822
+        },
+        "77": {
+          "EF1_rows": 733,
+          "rows": 2335
+        },
+        "78": {
+          "EF1_rows": 646,
+          "rows": 2146
+        },
+        "79": {
+          "EF1_rows": 774,
+          "rows": 2188
+        }
+      }
+    },
+    "views": {
+      "H12": {
+        "EF1_rows": 12540,
+        "minimum_pass": true,
+        "rows": 38588
+      },
+      "H12_E": {
+        "EF1_rows": 5981,
+        "minimum_pass": true,
+        "rows": 17685
+      },
+      "H12_L": {
+        "EF1_rows": 6559,
+        "minimum_pass": true,
+        "rows": 20903
+      },
+      "W1": {
+        "EF1_rows": 1401,
+        "minimum_pass": true,
+        "rows": 4114
+      },
+      "W4": {
+        "EF1_rows": 1532,
+        "minimum_pass": true,
+        "rows": 4950
+      },
+      "primary": {
+        "EF1_rows": 2933,
+        "minimum_pass": true,
+        "rows": 9064
+      }
+    }
+  },
+  "test_or_sample_used": false
+}

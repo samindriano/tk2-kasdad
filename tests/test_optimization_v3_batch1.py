@@ -120,6 +120,26 @@ def test_exclusive_training_slot_and_atomic_budget_reservation(tmp_path):
                             predictor_fits=2, cap=3)
 
 
+def test_budget_reservation_rejects_matching_key_with_wrong_card_identity(tmp_path):
+    ledger = tmp_path / "ledger.jsonl"
+    ledger.write_text(json.dumps({"event": "BUDGET_RESERVED", "budget_key": "R14:PILOT",
+                                  "card_id": "C99", "predictor_fits": 2}) + "\n",
+                      encoding="utf-8")
+    with pytest.raises(BatchIntegrityError, match="Existing reservation differs"):
+        reserve_card_budget(ledger, budget_key="R14:PILOT", card_id="R14",
+                            predictor_fits=2, cap=180)
+
+
+def test_budget_reservation_rejects_duplicate_identical_reservation_rows(tmp_path):
+    ledger = tmp_path / "ledger.jsonl"
+    event = {"event": "BUDGET_RESERVED", "budget_key": "R14:PILOT",
+             "card_id": "R14", "predictor_fits": 2}
+    ledger.write_text(json.dumps(event) + "\n" + json.dumps(event) + "\n", encoding="utf-8")
+    with pytest.raises(BatchIntegrityError, match="Duplicate existing budget reservation"):
+        reserve_card_budget(ledger, budget_key="R14:PILOT", card_id="R14",
+                            predictor_fits=2, cap=180)
+
+
 def test_synthetic_run_separates_labels_freezes_saves_and_verifies(tmp_path):
     cycles = np.arange(47, 80, dtype=int)
     frame = pd.DataFrame({"record_id": [f"r{i}" for i in cycles],
