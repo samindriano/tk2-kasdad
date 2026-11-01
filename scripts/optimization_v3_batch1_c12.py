@@ -84,7 +84,9 @@ MIN_GROUP_SUPPORT = 200
 THREADS = 2
 JOB_MEMORY_CAP_BYTES = 6 * 1024**3
 FREE_MEMORY_RESERVE_BYTES = 2 * 1024**3
-ADDITIONAL_RESOURCE_HEADROOM_BYTES = 512 * 1024**2
+# The V3 queue defines a 2 GiB reserve plus a 6 GiB job cap; avoid adding an
+# undocumented second reserve that would incorrectly skip an eligible card.
+ADDITIONAL_RESOURCE_HEADROOM_BYTES = 0
 LIGHTGBM_MEMORY_OVERHEAD_BYTES = 512 * 1024**2
 EXPECTED_FIT_ROWS = {55: 12_020, 67: 29_705}
 EXPECTED_VIEW_ROWS = {"W1": 4_114, "W4": 4_950, "primary": 9_064, "H12": 38_588}
