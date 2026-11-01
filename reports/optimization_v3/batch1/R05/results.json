@@ -1,0 +1,429 @@
+{
+  "card_id": "R05",
+  "fit_accounting": {
+    "fit_accounting_matches_card": true,
+    "fit_attempts_started": 2,
+    "fit_failed_events": 0,
+    "fit_saved_events": 2,
+    "saved_fit_seconds": [
+      4.457735100004356,
+      9.020447199989576
+    ],
+    "source": "reports\\optimization_v3\\batch1\\R05\\attempts.jsonl",
+    "successful_predictor_fits": 2,
+    "total_saved_fit_seconds": 13.478182299993932,
+    "vectorizer_fit_calls": 2
+  },
+  "freeze_signature": "6284a675fd79eb57db350939f4c76c836304b3f84a8fac65029fec23289fdb96",
+  "gate": {
+    "card_id": "R05",
+    "checks": {
+      "H12_MAE_harm_at_most_0_05": true,
+      "W1_MAE_harm_at_most_0_5": true,
+      "W4_MAE_harm_at_most_0_5": true,
+      "fit_attempt_accounting_pass": true,
+      "independent_verification_pass": true,
+      "pilot_primary_MAE_gain_at_least_0_03": false,
+      "supported_tail_or_missing_group_harms": true
+    },
+    "decision_basis": "Frozen W1+W4/H12 Train pilot and declared regression gates only; no Test/Kaggle information.",
+    "profile": "STANDARD",
+    "status": "RETIRE",
+    "subgroup_diagnostics": {
+      "maximum_supported_tail_or_missing_MAE_harm": 0.25,
+      "minimum_support": 100,
+      "supported_guard_failures": [],
+      "views": {
+        "H12": {
+          "entry_friction_0": {
+            "evidence_status": "SUPPORTED",
+            "guard_pass": null,
+            "mae_harm_candidate_minus_control": -0.01899272323583645,
+            "n": 26048,
+            "numeric_guard_applies": false,
+            "supported": true
+          },
+          "entry_friction_1": {
+            "evidence_status": "SUPPORTED",
+            "guard_pass": null,
+            "mae_harm_candidate_minus_control": -0.012269528452225842,
+            "n": 12540,
+            "numeric_guard_applies": false,
+            "supported": true
+          },
+          "stream_missing": {
+            "evidence_status": "SUPPORTED",
+            "guard_pass": true,
+            "mae_harm_candidate_minus_control": -0.028183752106667015,
+            "n": 2578,
+            "numeric_guard_applies": true,
+            "supported": true
+          },
+          "stream_present": {
+            "evidence_status": "SUPPORTED",
+            "guard_pass": null,
+            "mae_harm_candidate_minus_control": -0.01599346372415944,
+            "n": 36010,
+            "numeric_guard_applies": false,
+            "supported": true
+          },
+          "target_ge_95": {
+            "evidence_status": "SUPPORTED",
+            "guard_pass": true,
+            "mae_harm_candidate_minus_control": -0.06443220731289578,
+            "n": 1955,
+            "numeric_guard_applies": true,
+            "supported": true
+          },
+          "target_le_5": {
+            "evidence_status": "SUPPORTED",
+            "guard_pass": true,
+            "mae_harm_candidate_minus_control": -0.1378298646302838,
+            "n": 1928,
+            "numeric_guard_applies": true,
+            "supported": true
+          }
+        },
+        "primary": {
+          "entry_friction_0": {
+            "evidence_status": "SUPPORTED",
+            "guard_pass": null,
+            "mae_harm_candidate_minus_control": -0.0236501413096466,
+            "n": 6131,
+            "numeric_guard_applies": false,
+            "supported": true
+          },
+          "entry_friction_1": {
+            "evidence_status": "SUPPORTED",
+            "guard_pass": null,
+            "mae_harm_candidate_minus_control": 0.003662734654056976,
+            "n": 2933,
+            "numeric_guard_applies": false,
+            "supported": true
+          },
+          "stream_missing": {
+            "evidence_status": "SUPPORTED",
+            "guard_pass": true,
+            "mae_harm_candidate_minus_control": -0.030648427459906813,
+            "n": 734,
+            "numeric_guard_applies": true,
+            "supported": true
+          },
+          "stream_present": {
+            "evidence_status": "SUPPORTED",
+            "guard_pass": null,
+            "mae_harm_candidate_minus_control": -0.013416599024434817,
+            "n": 8330,
+            "numeric_guard_applies": false,
+            "supported": true
+          },
+          "target_ge_95": {
+            "evidence_status": "SUPPORTED",
+            "guard_pass": true,
+            "mae_harm_candidate_minus_control": -0.14458056725611534,
+            "n": 462,
+            "numeric_guard_applies": true,
+            "supported": true
+          },
+          "target_le_5": {
+            "evidence_status": "SUPPORTED",
+            "guard_pass": true,
+            "mae_harm_candidate_minus_control": -0.07314288488739074,
+            "n": 449,
+            "numeric_guard_applies": true,
+            "supported": true
+          }
+        }
+      }
+    },
+    "thresholds": {
+      "full_H12_MAE_harm_max": 0.05,
+      "full_nonnegative_windows_min": 4,
+      "full_primary_MAE_gain_min": 0.03,
+      "individual_pilot_view_MAE_harm_max": 0.5,
+      "pilot_H12_MAE_harm_max": 0.05,
+      "pilot_primary_MAE_gain_min": 0.03,
+      "supported_group_n_min": 100,
+      "supported_tail_or_missing_MAE_harm_max": 0.25
+    }
+  },
+  "independent_verification_status": "PASS",
+  "input_sha256": {
+    "accepted_regression_manifest": "dd166e92089f24978244496a9a0afabc0d06551dbdc326579a7c898a8844e19a",
+    "cache_only_diagnostics": "8d634debd1dbc6a3eed5250593b9c213570b4fb139b0b9a623a8d704159916df",
+    "canonical_card": "91f1a91495d3212100f3f5f1a90746bb8deda0245615eb43b71594bf19c458b0",
+    "canonical_queue": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+    "official_regression_train": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+    "paired_lgb_ridge_cache": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516",
+    "regression_fullsix_report": "a9686473998722b8f86a0f6a4489b4e3a75a6b6ba20c661ac564e6a5e61aea48",
+    "regression_subgroup_diagnostics": "6954fbdd9eb1c95794787ff54cf8a9b8c88dc97373ad9a8bf8e0aefdcaf1551e",
+    "sparse_regression_fullsix_cache": "4b87b0da34069ea3d75490233c574fbd92283f8b6472a43d8c654a20a4b904c9",
+    "sparse_regression_pilot_cache": "eae6bea2dd6933de59ac0f63f54cc08124b59d4bcba91bbe05a7c5ec3dab9ff6"
+  },
+  "kaggle_accessed": false,
+  "official_test_read": false,
+  "pilot": {
+    "card_id": "R05",
+    "cutoffs": [
+      55,
+      67
+    ],
+    "expected_fit_count_from_card": 2,
+    "fit_count_matches_card": true,
+    "fit_predictor_count": 2,
+    "freeze_signature": "6284a675fd79eb57db350939f4c76c836304b3f84a8fac65029fec23289fdb96",
+    "outcome_reuse_warning": "Temporal development outcomes are repeatedly reused; no untouched holdout claim.",
+    "schema_version": 1,
+    "status": "PILOT_SAVED_AWAITING_INDEPENDENT_QA",
+    "task": "regression",
+    "test_data_used": false,
+    "views": {
+      "H12": {
+        "baseline": {
+          "mae": 14.04753258299653,
+          "n": 38588
+        },
+        "candidate": {
+          "mae": 14.030724706412151,
+          "n": 38588
+        },
+        "gain_positive_is_better": 0.016807876584378434,
+        "rows": 38588
+      },
+      "W1": {
+        "baseline": {
+          "mae": 15.882111974427762,
+          "n": 4114
+        },
+        "candidate": {
+          "mae": 15.864418149999993,
+          "n": 4114
+        },
+        "gain_positive_is_better": 0.017693824427768234,
+        "rows": 4114
+      },
+      "W4": {
+        "baseline": {
+          "mae": 11.455005081083685,
+          "n": 4950
+        },
+        "candidate": {
+          "mae": 11.442588147359789,
+          "n": 4950
+        },
+        "gain_positive_is_better": 0.012416933723896406,
+        "rows": 4950
+      },
+      "primary": {
+        "baseline": {
+          "mae": 13.464395831218011,
+          "n": 9064
+        },
+        "candidate": {
+          "mae": 13.44958380389794,
+          "n": 9064
+        },
+        "gain_positive_is_better": 0.014812027320070698,
+        "rows": 9064
+      }
+    }
+  },
+  "preflight": {
+    "H12_control_mae": 14.04753258299653,
+    "H12_control_rows": 38588,
+    "cache_sha256": {
+      "data/raw/regression/Train.csv": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+      "experiments/runs/dual_reg_v1/stage1_paired_blends.npz": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516",
+      "experiments/runs/optimization_v2_regression_repr/fullsix_predictions.npz": "4b87b0da34069ea3d75490233c574fbd92283f8b6472a43d8c654a20a4b904c9",
+      "experiments/runs/optimization_v2_regression_repr/pilot_predictions.npz": "eae6bea2dd6933de59ac0f63f54cc08124b59d4bcba91bbe05a7c5ec3dab9ff6",
+      "reports/optimization_v2/regression_repr/fullsix.json": "a9686473998722b8f86a0f6a4489b4e3a75a6b6ba20c661ac564e6a5e61aea48",
+      "reports/optimization_v2/regression_repr/fullsix_subgroup_diagnostics.json": "6954fbdd9eb1c95794787ff54cf8a9b8c88dc97373ad9a8bf8e0aefdcaf1551e"
+    },
+    "fit_rows": {
+      "55": 12020,
+      "67": 29705
+    },
+    "freeze_identity_sha256": "6284a675fd79eb57db350939f4c76c836304b3f84a8fac65029fec23289fdb96",
+    "model_fit_performed": false,
+    "official_test_read": false,
+    "official_train_sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+    "pilot_control_primary_mae": 13.464395831218011,
+    "pilot_control_primary_rows": 9064,
+    "resource": {
+      "allowed_job_ram_gib": 5.104549407958984,
+      "available_ram_gib_observed": 7.104549407958984,
+      "cutoffs": {
+        "55": {
+          "analyzed_ngram_occurrences_upper_bound": 974834,
+          "distinct_ngrams_document_frequency_ge_min_df": 45374,
+          "expected_vocabulary_width_after_cap": 20000,
+          "fit_missing_stream_rows": 826,
+          "fit_rows": 12020,
+          "nonempty_documents_with_word_ngrams": 11194,
+          "sparse_matrix_upper_bytes": 23588352
+        },
+        "67": {
+          "analyzed_ngram_occurrences_upper_bound": 2265362,
+          "distinct_ngrams_document_frequency_ge_min_df": 88356,
+          "expected_vocabulary_width_after_cap": 20000,
+          "fit_missing_stream_rows": 2029,
+          "fit_rows": 29705,
+          "nonempty_documents_with_word_ngrams": 27676,
+          "sparse_matrix_upper_bytes": 54843984
+        }
+      },
+      "dense_full_text_matrix": false,
+      "estimated_csr_upper_gib": 0.05107744038105011,
+      "estimated_peak_job_gib": 1.6532323211431503,
+      "estimator_fits_reserved": 2,
+      "max_features": 20000,
+      "maximum_job_gib": 6.0,
+      "min_df": 2,
+      "minimum_free_ram_gib": 4.0,
+      "raw_analyzed_ngram_occurrences_upper_bound": 2265362,
+      "reserved_free_ram_gib": 2.0,
+      "single_training_job": true,
+      "status": "PASS",
+      "threads": 2
+    },
+    "score_rows": {
+      "55": 17685,
+      "67": 20903
+    },
+    "status": "PREFLIGHT_PASS",
+    "train_rows": 50608,
+    "view_rows": {
+      "H12": 38588,
+      "W1": 4114,
+      "W4": 4950,
+      "primary": 9064
+    }
+  },
+  "source_commit": "c4b7f22ab3a67054a4685f0596ea5d7f471eec10",
+  "source_sha256": {
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1.py": "c93dd71ed2b512f32bf8916f59b0af56bff212934efb8825b0e8a680da72e969",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_r02.py": "30e8d5324f66f30d02176f37d006d6461608839d697259bcd8636dcb67b8ffbe",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_r05.py": "be360f89803f904bd1d46b52365caa13504aa60ae63289408f0e7e884b7fb7c6",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_reg_diagnostics.py": "e2af49bb45353fca5bf0c14093be9b0f0b02afe24289a1b5c30dfb584bbd3f55",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v2_regression.py": "b235cfd93c8cc0a207cfcea79892b925f9dfdfe515491a459d6ca1b6142cb590",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1.py": "d21ac914d0d1f516a93e431116556dabdbe7313a21fd2b1b04a73371bd56f420",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1_r02.py": "9ec87ca8d52f1b645013fec6570c19e871e681b477196fd450c2994d759ccd76",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1_r05.py": "9154f567822a482cddae331b0896bcd0a09c68635f9b52e556dfdcd787ef881f",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_research_tabular.py": "674d7e52c485583729b8fe999dc133c39aae8dd85abd005a598e2caea9af99f9",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_round2_models.py": "f56f7ee2c337acdf2cbe7160719faf62b1e3d3470a7f656b044ce0890d677e09",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\utils\\paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\tests\\test_optimization_v3_batch1_r05.py": "b1b3d0f7b667ff33d9a97317888457361c243f58e415e451ed58b2bb19d51dd1"
+  },
+  "status": "RETIRE",
+  "subgroups": {
+    "maximum_supported_tail_or_missing_MAE_harm": 0.25,
+    "minimum_support": 100,
+    "supported_guard_failures": [],
+    "views": {
+      "H12": {
+        "entry_friction_0": {
+          "evidence_status": "SUPPORTED",
+          "guard_pass": null,
+          "mae_harm_candidate_minus_control": -0.01899272323583645,
+          "n": 26048,
+          "numeric_guard_applies": false,
+          "supported": true
+        },
+        "entry_friction_1": {
+          "evidence_status": "SUPPORTED",
+          "guard_pass": null,
+          "mae_harm_candidate_minus_control": -0.012269528452225842,
+          "n": 12540,
+          "numeric_guard_applies": false,
+          "supported": true
+        },
+        "stream_missing": {
+          "evidence_status": "SUPPORTED",
+          "guard_pass": true,
+          "mae_harm_candidate_minus_control": -0.028183752106667015,
+          "n": 2578,
+          "numeric_guard_applies": true,
+          "supported": true
+        },
+        "stream_present": {
+          "evidence_status": "SUPPORTED",
+          "guard_pass": null,
+          "mae_harm_candidate_minus_control": -0.01599346372415944,
+          "n": 36010,
+          "numeric_guard_applies": false,
+          "supported": true
+        },
+        "target_ge_95": {
+          "evidence_status": "SUPPORTED",
+          "guard_pass": true,
+          "mae_harm_candidate_minus_control": -0.06443220731289578,
+          "n": 1955,
+          "numeric_guard_applies": true,
+          "supported": true
+        },
+        "target_le_5": {
+          "evidence_status": "SUPPORTED",
+          "guard_pass": true,
+          "mae_harm_candidate_minus_control": -0.1378298646302838,
+          "n": 1928,
+          "numeric_guard_applies": true,
+          "supported": true
+        }
+      },
+      "primary": {
+        "entry_friction_0": {
+          "evidence_status": "SUPPORTED",
+          "guard_pass": null,
+          "mae_harm_candidate_minus_control": -0.0236501413096466,
+          "n": 6131,
+          "numeric_guard_applies": false,
+          "supported": true
+        },
+        "entry_friction_1": {
+          "evidence_status": "SUPPORTED",
+          "guard_pass": null,
+          "mae_harm_candidate_minus_control": 0.003662734654056976,
+          "n": 2933,
+          "numeric_guard_applies": false,
+          "supported": true
+        },
+        "stream_missing": {
+          "evidence_status": "SUPPORTED",
+          "guard_pass": true,
+          "mae_harm_candidate_minus_control": -0.030648427459906813,
+          "n": 734,
+          "numeric_guard_applies": true,
+          "supported": true
+        },
+        "stream_present": {
+          "evidence_status": "SUPPORTED",
+          "guard_pass": null,
+          "mae_harm_candidate_minus_control": -0.013416599024434817,
+          "n": 8330,
+          "numeric_guard_applies": false,
+          "supported": true
+        },
+        "target_ge_95": {
+          "evidence_status": "SUPPORTED",
+          "guard_pass": true,
+          "mae_harm_candidate_minus_control": -0.14458056725611534,
+          "n": 462,
+          "numeric_guard_applies": true,
+          "supported": true
+        },
+        "target_le_5": {
+          "evidence_status": "SUPPORTED",
+          "guard_pass": true,
+          "mae_harm_candidate_minus_control": -0.07314288488739074,
+          "n": 449,
+          "numeric_guard_applies": true,
+          "supported": true
+        }
+      }
+    }
+  }
+}

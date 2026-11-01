@@ -1,0 +1,117 @@
+{
+  "card_sha256": "91f1a91495d3212100f3f5f1a90746bb8deda0245615eb43b71594bf19c458b0",
+  "queue_sha256": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+  "recipe": {
+    "card_id": "R05",
+    "fit_rows": {
+      "55": 12020,
+      "67": 29705
+    },
+    "missing_stream_indicator": true,
+    "model": "LightGBM L1 sparse hybrid regression",
+    "policy": "clip(0.75*Ridge25 + 0.25*rank50(new raw R05 sparse prediction),0,100)",
+    "predictor_fits": 2,
+    "preprocessing_fit_calls_per_cutoff": {
+      "count_vectorizer": 1,
+      "structured_processor_scaler_ohe": 1
+    },
+    "rank50": "within each complete score cycle; average ties; 0.5*raw+0.5*100*rank/n; final clipped [0,100]",
+    "score_rows": {
+      "55": 17685,
+      "67": 20903
+    },
+    "sparse_lgb_parameters": {
+      "boosting_type": "gbdt",
+      "colsample_bytree": 1.0,
+      "deterministic": true,
+      "force_col_wise": true,
+      "learning_rate": 0.05,
+      "max_depth": -1,
+      "min_child_samples": 40,
+      "min_child_weight": 0.001,
+      "n_estimators": 400,
+      "n_jobs": 2,
+      "num_leaves": 31,
+      "objective": "regression_l1",
+      "random_state": 42,
+      "reg_alpha": 0.0,
+      "reg_lambda": 1.0,
+      "subsample": 1.0,
+      "subsample_freq": 0,
+      "verbosity": -1
+    },
+    "structured_features": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code",
+      "signal_stream"
+    ],
+    "structured_preprocessing": "RegressionTextModel fit-only numeric imputation/scaling + OneHotEncoder(min_frequency=30,max_categories=254,handle_unknown=infrequent_if_exist)",
+    "test_data_used": false,
+    "text_vectorizer": {
+      "binary": true,
+      "dtype": "int64",
+      "lowercase": true,
+      "max_features": 20000,
+      "min_df": 2,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "row_normalization": null,
+      "strip_accents": null,
+      "token_pattern": "(?u)\\b\\w\\w+\\b",
+      "use_idf": false
+    },
+    "views": {
+      "H12": [
+        [
+          55,
+          56,
+          67
+        ],
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "W1": [
+        [
+          55,
+          56,
+          59
+        ]
+      ],
+      "W4": [
+        [
+          67,
+          68,
+          71
+        ]
+      ],
+      "primary": [
+        [
+          55,
+          56,
+          59
+        ],
+        [
+          67,
+          68,
+          71
+        ]
+      ]
+    }
+  },
+  "source_commit": "c4b7f22ab3a67054a4685f0596ea5d7f471eec10"
+}
