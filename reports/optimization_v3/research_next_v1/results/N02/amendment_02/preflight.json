@@ -1,0 +1,75 @@
+{
+  "candidate_fit_or_metric_computed": false,
+  "card_id": "N02",
+  "fit_rows": {
+    "55": 12020,
+    "67": 29705
+  },
+  "freeze_signature": "a1303fc66fb7408d1ebfbf29fa23bb20640e906a6e59ac2b58b11df1292853a8",
+  "kaggle_access": false,
+  "official_train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+  "queue_sha256": "c22c13ea0ead142e32bfe7abc2655ec19c608d1f537db721e35dfc4c38b8eb45",
+  "resource_estimates": {
+    "55": {
+      "allowed_bytes": 5184114688,
+      "available_physical_bytes": 7331598336,
+      "concurrent_training_jobs": 1,
+      "estimate_formula": "1.5GiB + 3*fit_dense_sketch + 2*score_dense_sketch + 3*fit_sparse + 2*score_sparse",
+      "estimated_peak_bytes": 2430716344,
+      "estimated_peak_is_observed": false,
+      "fit_main_effect_nnz_upper_bound": 2513394,
+      "fit_main_effect_sparse_bytes_upper_bound": 40310472,
+      "fit_rows": 12020,
+      "fit_sketch_dense_bytes": 98467840,
+      "free_memory_reserve_bytes": 2147483648,
+      "job_memory_cap_bytes": 6442450944,
+      "minimum_free_bytes": 4294967296,
+      "score_main_effect_nnz_upper_bound": 3554208,
+      "score_main_effect_sparse_bytes_upper_bound": 57008816,
+      "score_rows": 17685,
+      "score_sketch_dense_bytes": 144875520,
+      "status": "PASS",
+      "threads": 2
+    },
+    "67": {
+      "allowed_bytes": 5188378624,
+      "available_physical_bytes": 7335862272,
+      "concurrent_training_jobs": 1,
+      "estimate_formula": "1.5GiB + 3*fit_dense_sketch + 2*score_dense_sketch + 3*fit_sparse + 2*score_sparse",
+      "estimated_peak_bytes": 3112665424,
+      "estimated_peak_is_observed": false,
+      "fit_main_effect_nnz_upper_bound": 6067602,
+      "fit_main_effect_sparse_bytes_upper_bound": 97319280,
+      "fit_rows": 29705,
+      "fit_sketch_dense_bytes": 243343360,
+      "free_memory_reserve_bytes": 2147483648,
+      "job_memory_cap_bytes": 6442450944,
+      "minimum_free_bytes": 4294967296,
+      "score_main_effect_nnz_upper_bound": 4289236,
+      "score_main_effect_sparse_bytes_upper_bound": 68795008,
+      "score_rows": 20903,
+      "score_sketch_dense_bytes": 171237376,
+      "status": "PASS",
+      "threads": 2
+    }
+  },
+  "sample_submission_used": false,
+  "score_rows": {
+    "55": 17685,
+    "67": 20903
+  },
+  "sketch_api_smoke": {
+    "csr_csc_equal": true,
+    "dtype": "float64",
+    "input_unchanged": true,
+    "repeat_fit_equal": true,
+    "shape": [
+      4,
+      1024
+    ],
+    "status": "PASS"
+  },
+  "source_commit": "968e823008e61a99ab0e698a2c9f17d9fe13c384",
+  "status": "PREFLIGHT_PASS",
+  "test_data_used": false
+}

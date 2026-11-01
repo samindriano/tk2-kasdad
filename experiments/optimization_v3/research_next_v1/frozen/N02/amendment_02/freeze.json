@@ -1,0 +1,237 @@
+{
+  "execution_context": {
+    "free_ram_bytes_at_preflight": 7374671872,
+    "kaggle_calls": 0,
+    "official_estimator_fits": 0,
+    "prepared_at_utc": "2026-11-01T16:02:41.645376+00:00",
+    "resource_estimates_by_cutoff": {
+      "55": {
+        "allowed_bytes": 5242658816,
+        "available_physical_bytes": 7390142464,
+        "concurrent_training_jobs": 1,
+        "estimate_formula": "1.5GiB + 3*fit_dense_sketch + 2*score_dense_sketch + 3*fit_sparse + 2*score_sparse",
+        "estimated_peak_bytes": 2430716344,
+        "estimated_peak_is_observed": false,
+        "fit_main_effect_nnz_upper_bound": 2513394,
+        "fit_main_effect_sparse_bytes_upper_bound": 40310472,
+        "fit_rows": 12020,
+        "fit_sketch_dense_bytes": 98467840,
+        "free_memory_reserve_bytes": 2147483648,
+        "job_memory_cap_bytes": 6442450944,
+        "minimum_free_bytes": 4294967296,
+        "score_main_effect_nnz_upper_bound": 3554208,
+        "score_main_effect_sparse_bytes_upper_bound": 57008816,
+        "score_rows": 17685,
+        "score_sketch_dense_bytes": 144875520,
+        "status": "PASS",
+        "threads": 2
+      },
+      "67": {
+        "allowed_bytes": 5227462656,
+        "available_physical_bytes": 7374946304,
+        "concurrent_training_jobs": 1,
+        "estimate_formula": "1.5GiB + 3*fit_dense_sketch + 2*score_dense_sketch + 3*fit_sparse + 2*score_sparse",
+        "estimated_peak_bytes": 3112665424,
+        "estimated_peak_is_observed": false,
+        "fit_main_effect_nnz_upper_bound": 6067602,
+        "fit_main_effect_sparse_bytes_upper_bound": 97319280,
+        "fit_rows": 29705,
+        "fit_sketch_dense_bytes": 243343360,
+        "free_memory_reserve_bytes": 2147483648,
+        "job_memory_cap_bytes": 6442450944,
+        "minimum_free_bytes": 4294967296,
+        "score_main_effect_nnz_upper_bound": 4289236,
+        "score_main_effect_sparse_bytes_upper_bound": 68795008,
+        "score_rows": 20903,
+        "score_sketch_dense_bytes": 171237376,
+        "status": "PASS",
+        "threads": 2
+      }
+    },
+    "sketch_api_smoke": {
+      "csr_csc_equal": true,
+      "dtype": "float64",
+      "input_unchanged": true,
+      "repeat_fit_equal": true,
+      "shape": [
+        4,
+        1024
+      ],
+      "status": "PASS"
+    },
+    "supersedes_pre_fit_freeze": {
+      "path": "experiments/optimization_v3/research_next_v1/frozen/N02/freeze.json",
+      "reason": "The first N02 pre-fit freeze used a live N01 preparation signature in the N00 field. This amendment records the exact frozen N00 and N01 signatures; no official fit or N02 reservation had started.",
+      "recipe_or_gate_changed": false,
+      "sha256": "484fbca9f7b6c38886567e4f6e649139d0d929f5e05d6facd893757baa7b9563"
+    },
+    "synthetic_estimator_fits": 0,
+    "test_files_opened": 0
+  },
+  "freeze_signature": "a1303fc66fb7408d1ebfbf29fa23bb20640e906a6e59ac2b58b11df1292853a8",
+  "identity": {
+    "batch_id": "optimization_v3_research_next_v1",
+    "card_id": "N02",
+    "dependency_versions": {
+      "lightgbm": "4.6.0",
+      "matplotlib": "3.10.5",
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "psutil": "7.0.0",
+      "python": "3.13.5",
+      "scikit-learn": "1.8.0",
+      "scipy": "1.18.0"
+    },
+    "input_and_source_sha256": {
+      "data/raw/classification/Train.csv": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+      "experiments/optimization_v3/research_next_v1/frozen/N00/amendment_05/freeze.json": "da99d3751f5e09b023d83e319f77ba2f60f5a96ae46fc4a21add1bb8d316d8a3",
+      "experiments/optimization_v3/research_next_v1/frozen/N01/freeze.json": "ae40427eadd6a02d92bd1bc7b4c189e56867455129df50873653d735a4c3e437",
+      "experiments/optimization_v3/research_next_v1/frozen/N02/freeze.json": "484fbca9f7b6c38886567e4f6e649139d0d929f5e05d6facd893757baa7b9563",
+      "experiments/optimization_v3/research_next_v1/queue.json": "c22c13ea0ead142e32bfe7abc2655ec19c608d1f537db721e35dfc4c38b8eb45",
+      "experiments/runs/optimization_v3_batch1/C16/C16_fit55.json": "e569229e0586bb792b141b64109f8753e97bb6cf8902d94d16b8a114d8d67e20",
+      "experiments/runs/optimization_v3_batch1/C16/C16_fit55.npz": "7d900c7f66ebcd6f0fcb9d059534bb15cfa47d8073f1119bf046d4a9d0fd54c9",
+      "experiments/runs/optimization_v3_batch1/C16/C16_fit67.json": "034df0ee0fea7302906638e34fb991fae2a09f1c0f5fba29ed8d469a58c8bf6f",
+      "experiments/runs/optimization_v3_batch1/C16/C16_fit67.npz": "7aa025dc1c49d8a76c63d5e8efe27dcbafb600bf0f64a8ed3cbec8db82d31ab3",
+      "experiments/runs/optimization_v3_batch1/batch_ledger.jsonl": "544c3a255358bc886ec6b6be646775eca495c35ffe0720097394f53ba89d4f44",
+      "reports/optimization_v3/final_continuation/C16/verification.json": "c78f312333854e27024d76750e27f701892ee2bc26f839957dc156aed0c2f3c7",
+      "reports/optimization_v3/research_next_v1/queue_readiness.json": "44966873a5d7938eee3d8642ec583561d22143f836a9cc125a02150c0fc819ce",
+      "reports/optimization_v3/research_next_v1/results/N00/amendment_05/summary.json": "e7ff5a4c145f54b59c0ad16feaad09e2dcd82ef830c81ec0faff3e04f83a5e9b",
+      "reports/optimization_v3/research_next_v1/results/N01/preflight.json": "31879cc9bcea5f8f2850df15e8adf3cb5bfe70d2bbaccd22ec65267707806d95",
+      "scripts/optimization_v3_batch1_c16.py": "82d7737a05c52addd2a15a6f385a406d614e8ff792e826bcacb7a7d8f79b8ee0",
+      "scripts/optimization_v3_research_next_n00.py": "dc81b0089d8acd5f4a8c12a8db67c94ab8d24764b730d99144208e6e09f6d03b",
+      "scripts/optimization_v3_research_next_n01.py": "55b83477db45555b0bee2686ee62831bf33f0e423ce9eabb62cb52bd79fb2461",
+      "scripts/optimization_v3_research_next_n02.py": "c6fe2e2322ba8d59f8ee54a145c752a0997ad4e59ce53fccc6a9ecbf196f3d89",
+      "scripts/optimization_v3_research_next_preflight.py": "5423a0023862d04201bfc37c8973b15fddcafa40e8cb8a235329648a917dba6b",
+      "src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+      "src/models/optimization_v3_batch1_c16.py": "6eeac099900911e2a876273d9a72c9475a329d89dac889eebe25a431190ab8d1",
+      "src/models/optimization_v3_sparse_classification.py": "fb5b013fa59d0b748a3386dae90cb14789a0b4cbd9a5c7a115d5ddc3c443d5a3",
+      "src/models/regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+      "src/models/regression_round2_models.py": "f56f7ee2c337acdf2cbe7160719faf62b1e3d3470a7f656b044ce0890d677e09",
+      "src/models/research_next_budget.py": "b19ca985ff28a2f3c80415bf48374e04ad064b003876f1f6d6c077dab7ed73a8",
+      "src/models/research_next_contract.py": "486a3f144afbfc783a90ce3948f11cee69d702a05dd3ac113e93b3bda53d7185",
+      "src/models/research_next_n01.py": "480e0a958c7ac060ce7c3f921d071020a50d0d0d13c952d7a3860d3ea7c1ae37",
+      "src/models/research_next_n02.py": "638bade6b81b9c07391c5eca8688f906e5cfc000a8b5ee1fb38a2af3400b29fd",
+      "src/models/round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+      "src/utils/paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555",
+      "tests/test_research_next_n01.py": "b9cd6c5090cc240598c1f811a5dd93dd95d2f4c6a88eb69de9b3f26126b91305",
+      "tests/test_research_next_n02.py": "6e5e3131c4127fd3fc0d24291101382ed63e67e95c5c53e39e9fb8fd9b8d5c65"
+    },
+    "kaggle_access": false,
+    "official_train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "queue_readiness_sha256": "44966873a5d7938eee3d8642ec583561d22143f836a9cc125a02150c0fc819ce",
+    "queue_sha256": "c22c13ea0ead142e32bfe7abc2655ec19c608d1f537db721e35dfc4c38b8eb45",
+    "recipe": {
+      "control": "same new C2_B logistic head and preprocessing without sketch; separately fitted at both origins",
+      "control_hashes": {
+        "55": {
+          "npz": "7d900c7f66ebcd6f0fcb9d059534bb15cfa47d8073f1119bf046d4a9d0fd54c9",
+          "sidecar": "e569229e0586bb792b141b64109f8753e97bb6cf8902d94d16b8a114d8d67e20"
+        },
+        "67": {
+          "npz": "7aa025dc1c49d8a76c63d5e8efe27dcbafb600bf0f64a8ed3cbec8db82d31ab3",
+          "sidecar": "034df0ee0fea7302906638e34fb991fae2a09f1c0f5fba29ed8d469a58c8bf6f"
+        }
+      },
+      "design": "CSR hstack original main effects + 1024 dense float64 sketch columns safely converted to CSR",
+      "design_builder": "C2BInteractionClassifier calls C2_B fit-only structured/text transform methods; original main matrix retained unchanged",
+      "fit_count": 4,
+      "fit_row_sha256": {
+        "55": "e1b5d2c20d2490f0cf4325f4acdbba0abcd1d89db396a3a39d13e3f51b8da74b",
+        "67": "21df8b3baa7004c330d6ac403ed42e8cbd9de99081d048a15cd8b4332257108d"
+      },
+      "fit_rows_by_cutoff": {
+        "55": 12020,
+        "67": 29705
+      },
+      "freeze_amendment": 2,
+      "gates": {
+        "guard_fields": [
+          "entry_friction",
+          "stream_availability",
+          "fit_defined_text_load_quartile"
+        ],
+        "h12_harm_max": 0.001,
+        "individual_primary_window_harm_max": 0.005,
+        "matched_control_primary_gain_min": 0.0002,
+        "minimum_each_class_n": 30,
+        "minimum_group_n": 200,
+        "positive_recall_harm_max": 0.02,
+        "primary_gain_min": 0.0005,
+        "subgroup_f1_harm_max": 0.01
+      },
+      "head_parameters": {
+        "C": 1.0,
+        "class_weight": null,
+        "max_iter": 2000,
+        "random_state": 42,
+        "solver": "liblinear",
+        "tol": 0.0001
+      },
+      "model_source": "src/models/classification_models.py::ClassificationModel C2_B exact main-effect design",
+      "n00_freeze_signature": "c72dec04df4c8fdaa935323d17258b3a5fd1066a38ef772b5c92b74aff79419e",
+      "n00_summary_sha256": "e7ff5a4c145f54b59c0ad16feaad09e2dcd82ef830c81ec0faff3e04f83a5e9b",
+      "n01_freeze_signature": "7c2d880d015d76ee22c542e2022645620fa1ca3d0d6b3680a771fd8dc3c07c9a",
+      "policy": ".75 frozen current sparse25 class route + .25 new expert when stream present; exact frozen CB on missing; threshold .50",
+      "resource_rule": {
+        "concurrent_jobs": 1,
+        "job_cap_bytes": 6442450944,
+        "minimum_free_bytes": 4294967296,
+        "reserve_bytes": 2147483648,
+        "sketch_components": 1024,
+        "threads": 2
+      },
+      "score_row_sha256": {
+        "55": "aca4054e5b32b98e2de800a24cc8beb38d4b7d86f66f7f4f7e7ed723408136b6",
+        "67": "9ead64310afbcc9fd5ef149b46a920a7dd2062debc58cfec29cd01c5f5b30781"
+      },
+      "score_rows_by_cutoff": {
+        "55": 17685,
+        "67": 20903
+      },
+      "sketch": {
+        "coef0": 0.0,
+        "degree": 2,
+        "gamma": 1.0,
+        "n_components": 1024,
+        "random_state": 42
+      },
+      "sketch_input": "L2-normalized copy of exact C2_B main-effect matrix; rowwise norm; original block unchanged",
+      "views": {
+        "h12": [
+          [
+            55,
+            56,
+            67
+          ],
+          [
+            67,
+            68,
+            79
+          ]
+        ],
+        "pilot_origins": [
+          55,
+          67
+        ],
+        "primary": [
+          [
+            55,
+            56,
+            59
+          ],
+          [
+            67,
+            68,
+            71
+          ]
+        ]
+      }
+    },
+    "sample_submission_used": false,
+    "source_commit": "968e823008e61a99ab0e698a2c9f17d9fe13c384",
+    "stage": "PILOT",
+    "test_data_used": false
+  },
+  "schema_version": 1
+}
