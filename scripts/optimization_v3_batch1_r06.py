@@ -45,9 +45,9 @@ CARD_PATH = ROOT / "reports/optimization_v3/research_backlog/cards/R06.md"
 EXPERIMENT_DIR = ROOT / "experiments/optimization_v3/batch1/R06"
 RUN_DIR = ROOT / "experiments/runs/optimization_v3_batch1/R06"
 REPORT_DIR = ROOT / "reports/optimization_v3/batch1/R06"
-RECIPE_PATH = EXPERIMENT_DIR / "recipe.json"
-FREEZE_PATH = EXPERIMENT_DIR / "freeze.json"
-PREFLIGHT_PATH = REPORT_DIR / "preflight.json"
+RECIPE_PATH = EXPERIMENT_DIR / "recipe_revision_02.json"
+FREEZE_PATH = EXPERIMENT_DIR / "freeze_revision_02.json"
+PREFLIGHT_PATH = REPORT_DIR / "preflight_revision_02.json"
 ENGINE_REPORT_PATH = RUN_DIR / "pilot.json"
 RESULTS_PATH = REPORT_DIR / "results.json"
 VERIFICATION_PATH = REPORT_DIR / "verification.json"
@@ -301,7 +301,8 @@ def _candidate_recipe() -> dict[str, Any]:
         "sparse_lgb_parameters": dict(SPARSE_LGB_PARAMETERS),
         "policy": "clip(0.75*current_three_component_champion + 0.25*rank50(raw R06),0,100)",
         "rank50": "within each complete score cycle; average ties; percentile=100*rank/n; rank50=0.5*raw+0.5*percentile; clip[0,100]",
-        "views": EXPECTED_VIEWS,
+        "views": {name: [list(segment) for segment in segments]
+                  for name, segments in EXPECTED_VIEWS.items()},
         "profile": "STANDARD",
         "fit_rows": {"55": 12_020, "67": 29_705},
         "score_rows": {"55": 17_685, "67": 20_903},

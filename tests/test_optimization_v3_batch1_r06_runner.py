@@ -24,7 +24,10 @@ def test_r06_recipe_records_full_effective_vectorizer_defaults():
     assert params["lowercase"] is True
     assert "record_id" not in recipe["feature_allowlist"]
     assert "threat_rank" not in recipe["feature_allowlist"]
-    json.dumps(recipe, allow_nan=False)
+    serialized = json.dumps(recipe, allow_nan=False)
+    assert json.loads(serialized) == recipe
+    assert all(isinstance(segment, list) for segments in recipe["views"].values()
+               for segment in segments)
 
 
 def test_independent_rank50_and_reconstruction_use_full_cycle_average_ties():
