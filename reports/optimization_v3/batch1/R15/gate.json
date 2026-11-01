@@ -1,0 +1,47 @@
+{
+  "card_id": "R15",
+  "checks": {
+    "H12_L_harm_max_0_05": true,
+    "W4_harm_max_0_5": true,
+    "W6_harm_max_0_5": true,
+    "independent_route_and_metric_verification": true,
+    "primary_gain_min_0_03": false,
+    "supported_tail_or_missing_harm_max_0_25": true
+  },
+  "evaluation_profile": "LATE; primary=W4+W6; H12_L=cycles68-79; H12_E exact fallback separate",
+  "metrics": {
+    "H12_L": {
+      "baseline_mae": 11.611685946326363,
+      "candidate_mae": 11.607298371208824,
+      "gain_positive_is_better": 0.0043875751175388444,
+      "rows": 20903
+    },
+    "W4": {
+      "baseline_mae": 11.455005081083685,
+      "candidate_mae": 11.448542841443556,
+      "gain_positive_is_better": 0.006462239640129042,
+      "rows": 4950
+    },
+    "W6": {
+      "baseline_mae": 9.90768341377724,
+      "candidate_mae": 9.899420477374631,
+      "gain_positive_is_better": 0.008262936402609,
+      "rows": 8491
+    },
+    "primary": {
+      "baseline_mae": 10.477525111059206,
+      "candidate_mae": 10.469925328363486,
+      "gain_positive_is_better": 0.007599782695720592,
+      "rows": 13441
+    }
+  },
+  "status": "RETIRE",
+  "supported_group_guard_failures": [],
+  "thresholds": {
+    "H12_L_MAE_harm_max": 0.05,
+    "individual_W4_W6_MAE_harm_max": 0.5,
+    "primary_MAE_gain_min": 0.03,
+    "supported_group_min_n": 100,
+    "supported_tail_or_missing_MAE_harm_max": 0.25
+  }
+}

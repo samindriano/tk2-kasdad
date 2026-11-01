@@ -1,0 +1,221 @@
+{
+  "actual_lightgbm_parameters": {
+    "boosting_type": "gbdt",
+    "colsample_bytree": 1.0,
+    "deterministic": true,
+    "force_col_wise": true,
+    "learning_rate": 0.05,
+    "max_depth": -1,
+    "min_child_samples": 40,
+    "min_child_weight": 0.001,
+    "n_estimators": 400,
+    "n_jobs": 2,
+    "num_leaves": 31,
+    "objective": "regression_l1",
+    "random_state": 42,
+    "reg_alpha": 0.0,
+    "reg_lambda": 1.0,
+    "subsample": 1.0,
+    "subsample_freq": 0,
+    "verbosity": -1
+  },
+  "card_id": "R15",
+  "concurrent_fit_jobs": 1,
+  "fit_protocol": "one structured-only LightGBM regression_l1 predictor per cutoff 67/75; no validation labels or early stopping",
+  "lightgbm_version": "4.6.0",
+  "missing_stream_rule": "null, blank, or whitespace-only signal_stream",
+  "model": "RegressionResearchTabular LightGBM L1 base; fit only on missing/blank/whitespace signal_stream rows",
+  "params_id": "base",
+  "prediction_policy": {
+    "missing_rows": "0.90 exact incumbent + 0.10 clip(raw expert, 0, 100); final clip [0,100]",
+    "percentile_or_rank_mapping": false,
+    "present_rows": "exact incumbent, unchanged"
+  },
+  "preprocessing": "RegressionResearchTabular fit-only structured preprocessing on missing-stream fit rows at each origin",
+  "queue_recipe": {
+    "change": "Later origins67/75 only. Structured-only LGBL1 base on missing/blank streams. Only missing rows use10% raw clipped expert+90%incumbent; present unchanged. No subgroup percentile transformation.",
+    "condition": "No additional dependency",
+    "evaluation": "LATE",
+    "family": "specialist_missing",
+    "id": "R15",
+    "name": "Missing-stream structured specialist",
+    "pilot_predictor_fits": 2,
+    "policy": "R_MISSING10_RAW",
+    "priority": "P2",
+    "task": "regression"
+  },
+  "record_id_or_target_used_as_model_feature": false,
+  "resource_preflight": {
+    "67": {
+      "allowed_bytes": 4781899776,
+      "available_ram_bytes": 6929383424,
+      "concurrent_training_jobs": 1,
+      "estimate_is_observed_rss": false,
+      "estimated_additional_peak_bytes": 1722572688,
+      "fit_design_bytes_upper_bound": 13099224,
+      "histogram_bytes_upper_bound": 19832832,
+      "job_cap_bytes": 6442450944,
+      "minimum_free_ram_bytes": 4294967296,
+      "missing_fit_rows": 2029,
+      "missing_score_rows_upper_bound": 1375,
+      "model_runtime_allowance_bytes": 1610612736,
+      "reserve_bytes": 2147483648,
+      "score_design_bytes_upper_bound": 8877000,
+      "status": "PASS",
+      "structured_only_no_text_matrix": true,
+      "structured_width_upper_bound": 807,
+      "threads": 2
+    },
+    "75": {
+      "allowed_bytes": 4781899776,
+      "available_ram_bytes": 6929383424,
+      "concurrent_training_jobs": 1,
+      "estimate_is_observed_rss": false,
+      "estimated_additional_peak_bytes": 1733534976,
+      "fit_design_bytes_upper_bound": 18580368,
+      "histogram_bytes_upper_bound": 19832832,
+      "job_cap_bytes": 6442450944,
+      "minimum_free_ram_bytes": 4294967296,
+      "missing_fit_rows": 2878,
+      "missing_score_rows_upper_bound": 526,
+      "model_runtime_allowance_bytes": 1610612736,
+      "reserve_bytes": 2147483648,
+      "score_design_bytes_upper_bound": 3395856,
+      "status": "PASS",
+      "structured_only_no_text_matrix": true,
+      "structured_width_upper_bound": 807,
+      "threads": 2
+    }
+  },
+  "row_matched_control_metrics": {
+    "H12_E": {
+      "mae": 16.92661102497089,
+      "policy": "exact champion; unchanged; outside the LATE pilot gate",
+      "rows": 17685
+    },
+    "H12_L": {
+      "mae": 11.611685946326363,
+      "rows": 20903
+    },
+    "W4": {
+      "mae": 11.455005081083685,
+      "rows": 4950
+    },
+    "W6": {
+      "mae": 9.90768341377724,
+      "rows": 8491
+    },
+    "primary": {
+      "mae": 10.477525111059206,
+      "rows": 13441
+    }
+  },
+  "signal_stream_used_as_model_feature": false,
+  "structured_feature_allowlist": [
+    "impact_load",
+    "entry_friction",
+    "cycle_code",
+    "scope_pressure",
+    "text_load",
+    "scope_trace",
+    "org_spread",
+    "module_spread",
+    "telemetry_flag",
+    "org_code",
+    "module_code",
+    "pattern_code"
+  ],
+  "support": {
+    "cutoffs": {
+      "67": {
+        "fit_missing_rows": 2029,
+        "fit_missing_support_pass": true,
+        "fit_rows": 29705,
+        "score_missing_rows": 1375,
+        "score_rows": 20903
+      },
+      "75": {
+        "fit_missing_rows": 2878,
+        "fit_missing_support_pass": true,
+        "fit_rows": 42117,
+        "score_missing_rows": 526,
+        "score_rows": 8491
+      }
+    },
+    "minimum_fit_missing_rows": 1000,
+    "minimum_validation_missing_rows_per_view": 100,
+    "status": "PASS",
+    "views": {
+      "H12_L": {
+        "missing_stream_fraction": 0.06578003157441516,
+        "missing_stream_rows": 1375,
+        "rows": 20903,
+        "support_pass": true
+      },
+      "W4": {
+        "missing_stream_fraction": 0.06909090909090909,
+        "missing_stream_rows": 342,
+        "rows": 4950,
+        "support_pass": true
+      },
+      "W6": {
+        "missing_stream_fraction": 0.0619479448828171,
+        "missing_stream_rows": 526,
+        "rows": 8491,
+        "support_pass": true
+      },
+      "primary": {
+        "missing_stream_fraction": 0.06457852838330481,
+        "missing_stream_rows": 868,
+        "rows": 13441,
+        "support_pass": true
+      }
+    }
+  },
+  "threads": 2,
+  "thresholds": {
+    "full_H12_MAE_harm_max": 0.05,
+    "full_nonnegative_windows_min": 4,
+    "full_primary_MAE_gain_min": 0.03,
+    "individual_pilot_view_MAE_harm_max": 0.5,
+    "pilot_H12_MAE_harm_max": 0.05,
+    "pilot_primary_MAE_gain_min": 0.03,
+    "supported_group_n_min": 100,
+    "supported_tail_or_missing_MAE_harm_max": 0.25
+  },
+  "views": {
+    "H12_L": [
+      [
+        67,
+        68,
+        79
+      ]
+    ],
+    "W4": [
+      [
+        67,
+        68,
+        71
+      ]
+    ],
+    "W6": [
+      [
+        75,
+        76,
+        79
+      ]
+    ],
+    "primary": [
+      [
+        67,
+        68,
+        71
+      ],
+      [
+        75,
+        76,
+        79
+      ]
+    ]
+  }
+}
