@@ -1,0 +1,705 @@
+{
+  "card_id": "R11",
+  "fit_accounting": {
+    "attempt_accounting_complete": true,
+    "candidate_head_fit_calls_from_metadata": 18,
+    "candidate_head_fit_calls_from_state": 18,
+    "fit_seconds_by_cutoff": {
+      "55": 9.13845600001514,
+      "67": 14.602131100022234
+    },
+    "head_fit_calls_by_cutoff": {
+      "55": 9,
+      "67": 9
+    },
+    "preflight_events": 1,
+    "resumed_adapter_bundles": 0,
+    "runtime_memory_gate": {
+      "available_ram_gib_at_pilot_start": 8.813758850097656,
+      "current_allowed_estimated_peak_gib": 6.0,
+      "frozen_max_estimated_peak_gib": 1.6428331807255745
+    },
+    "runtime_memory_gate_events": 1,
+    "successful_predictor_fits_from_receipts": 18,
+    "svd_fit_calls": 2,
+    "svd_fit_calls_by_cutoff": {
+      "55": 1,
+      "67": 1
+    },
+    "temporal_adapter_attempts_failed": 0,
+    "temporal_adapter_attempts_saved": 2,
+    "temporal_adapter_attempts_started": 2,
+    "total_fit_seconds": 23.740587100037374,
+    "vectorizer_fit_calls": 2,
+    "vectorizer_fit_calls_by_cutoff": {
+      "55": 1,
+      "67": 1
+    }
+  },
+  "freeze_revision": 3,
+  "freeze_signature": "ea5994e23e512940b6f68b62fb5e961177a41af6c431cc19446ab77bcbd60b45",
+  "gate": {
+    "card_id": "R11",
+    "checks": {
+      "W1_MAE_harm_at_most_threshold": true,
+      "W4_MAE_harm_at_most_threshold": true,
+      "fit_attempt_accounting_pass": true,
+      "independent_verification_pass": true,
+      "pilot_H12_MAE_harm_at_most_threshold": true,
+      "pilot_primary_MAE_gain_at_least_threshold": true,
+      "supported_tail_or_missing_group_harms": true
+    },
+    "decision_basis": "Revision-03 frozen W1+W4/H12 Train pilot, independent reconstruction, and declared regression gates only; no Test/Kaggle evidence.",
+    "freeze_revision": 3,
+    "profile": "STANDARD",
+    "status": "ADVANCE",
+    "subgroup_diagnostics": {
+      "minimum_support": 100,
+      "supported_guard_failures": [],
+      "supported_tail_or_missing_MAE_harm_max": 0.25,
+      "views": {
+        "H12": {
+          "entry_friction_0": {
+            "candidate_mae": 15.640174476858524,
+            "control_mae": 15.646196139861987,
+            "evidence_status": "SUPPORTED",
+            "guard_applies": false,
+            "guard_pass": null,
+            "mae_harm_candidate_minus_control": -0.0060216630034624075,
+            "n": 26048,
+            "supported": true
+          },
+          "entry_friction_1": {
+            "candidate_mae": 10.71217655963192,
+            "control_mae": 10.726799861367233,
+            "evidence_status": "SUPPORTED",
+            "guard_applies": false,
+            "guard_pass": null,
+            "mae_harm_candidate_minus_control": -0.014623301735312566,
+            "n": 12540,
+            "supported": true
+          },
+          "stream_missing": {
+            "candidate_mae": 14.261583310538981,
+            "control_mae": 14.325131948847591,
+            "evidence_status": "SUPPORTED",
+            "guard_applies": true,
+            "guard_pass": true,
+            "mae_harm_candidate_minus_control": -0.06354863830861035,
+            "n": 2578,
+            "supported": true
+          },
+          "stream_present": {
+            "candidate_mae": 14.022760262605543,
+            "control_mae": 14.027658904430465,
+            "evidence_status": "SUPPORTED",
+            "guard_applies": false,
+            "guard_pass": null,
+            "mae_harm_candidate_minus_control": -0.004898641824922834,
+            "n": 36010,
+            "supported": true
+          },
+          "target_ge_95": {
+            "candidate_mae": 10.03123081227097,
+            "control_mae": 10.242197755462715,
+            "evidence_status": "SUPPORTED",
+            "guard_applies": true,
+            "guard_pass": true,
+            "mae_harm_candidate_minus_control": -0.21096694319174603,
+            "n": 1955,
+            "supported": true
+          },
+          "target_le_5": {
+            "candidate_mae": 14.786770322045308,
+            "control_mae": 15.47074152305708,
+            "evidence_status": "SUPPORTED",
+            "guard_applies": true,
+            "guard_pass": true,
+            "mae_harm_candidate_minus_control": -0.6839712010117722,
+            "n": 1928,
+            "supported": true
+          }
+        },
+        "primary": {
+          "entry_friction_0": {
+            "candidate_mae": 14.844860173103308,
+            "control_mae": 14.875832528940338,
+            "evidence_status": "SUPPORTED",
+            "guard_applies": false,
+            "guard_pass": null,
+            "mae_harm_candidate_minus_control": -0.030972355837029397,
+            "n": 6131,
+            "supported": true
+          },
+          "entry_friction_1": {
+            "candidate_mae": 10.481077959292426,
+            "control_mae": 10.513997469903453,
+            "evidence_status": "SUPPORTED",
+            "guard_applies": false,
+            "guard_pass": null,
+            "mae_harm_candidate_minus_control": -0.032919510611026936,
+            "n": 2933,
+            "supported": true
+          },
+          "stream_missing": {
+            "candidate_mae": 13.736540120653068,
+            "control_mae": 13.845691180212624,
+            "evidence_status": "SUPPORTED",
+            "guard_applies": true,
+            "guard_pass": true,
+            "mae_harm_candidate_minus_control": -0.10915105955955617,
+            "n": 734,
+            "supported": true
+          },
+          "stream_present": {
+            "candidate_mae": 13.406028682754107,
+            "control_mae": 13.43079789770516,
+            "evidence_status": "SUPPORTED",
+            "guard_applies": false,
+            "guard_pass": null,
+            "mae_harm_candidate_minus_control": -0.024769214951053442,
+            "n": 8330,
+            "supported": true
+          },
+          "target_ge_95": {
+            "candidate_mae": 8.823559117188392,
+            "control_mae": 9.012789399222996,
+            "evidence_status": "SUPPORTED",
+            "guard_applies": true,
+            "guard_pass": true,
+            "mae_harm_candidate_minus_control": -0.1892302820346039,
+            "n": 462,
+            "supported": true
+          },
+          "target_le_5": {
+            "candidate_mae": 14.466471039935037,
+            "control_mae": 15.115137944294784,
+            "evidence_status": "SUPPORTED",
+            "guard_applies": true,
+            "guard_pass": true,
+            "mae_harm_candidate_minus_control": -0.6486669043597466,
+            "n": 449,
+            "supported": true
+          }
+        }
+      }
+    },
+    "thresholds": {
+      "full_H12_MAE_harm_max": 0.05,
+      "full_nonnegative_windows_min": 4,
+      "full_primary_MAE_gain_min": 0.03,
+      "individual_pilot_view_MAE_harm_max": 0.5,
+      "pilot_H12_MAE_harm_max": 0.05,
+      "pilot_primary_MAE_gain_min": 0.03,
+      "supported_group_n_min": 100,
+      "supported_tail_or_missing_MAE_harm_max": 0.25
+    }
+  },
+  "independent_verification_status": "PASS",
+  "input_sha256": {
+    "accepted_regression_manifest": "dd166e92089f24978244496a9a0afabc0d06551dbdc326579a7c898a8844e19a",
+    "cache_only_diagnostics": "8d634debd1dbc6a3eed5250593b9c213570b4fb139b0b9a623a8d704159916df",
+    "canonical_card": "fc9449ddaee91fcbbfee75651cce72fc8427bb39e976994c7bea24306320e7eb",
+    "canonical_queue": "b21226742923293853598f706ba249b4ea42fcdfe5bccf14b76175b21a2f6e80",
+    "official_regression_train": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+    "paired_lgb_ridge_cache": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516",
+    "regression_fullsix_report": "a9686473998722b8f86a0f6a4489b4e3a75a6b6ba20c661ac564e6a5e61aea48",
+    "regression_subgroup_diagnostics": "6954fbdd9eb1c95794787ff54cf8a9b8c88dc97373ad9a8bf8e0aefdcaf1551e",
+    "sparse_regression_fullsix_cache": "4b87b0da34069ea3d75490233c574fbd92283f8b6472a43d8c654a20a4b904c9",
+    "sparse_regression_pilot_cache": "eae6bea2dd6933de59ac0f63f54cc08124b59d4bcba91bbe05a7c5ec3dab9ff6"
+  },
+  "kaggle_accessed": false,
+  "official_test_read": false,
+  "pilot": {
+    "card_id": "R11",
+    "cutoffs": [
+      55,
+      67
+    ],
+    "expected_fit_count_from_card": 18,
+    "fit_count_matches_card": true,
+    "fit_predictor_count": 18,
+    "freeze_signature": "ea5994e23e512940b6f68b62fb5e961177a41af6c431cc19446ab77bcbd60b45",
+    "outcome_reuse_warning": "Temporal development outcomes are repeatedly reused; no untouched holdout claim.",
+    "schema_version": 1,
+    "status": "PILOT_SAVED_AWAITING_INDEPENDENT_QA",
+    "task": "regression",
+    "test_data_used": false,
+    "views": {
+      "H12": {
+        "baseline": {
+          "mae": 14.04753258299653,
+          "n": 38588
+        },
+        "candidate": {
+          "mae": 14.038715632605866,
+          "n": 38588
+        },
+        "gain_positive_is_better": 0.008816950390663436,
+        "rows": 38588
+      },
+      "W1": {
+        "baseline": {
+          "mae": 15.882111974427762,
+          "n": 4114
+        },
+        "candidate": {
+          "mae": 15.820867380431086,
+          "n": 4114
+        },
+        "gain_positive_is_better": 0.061244593996676144,
+        "rows": 4114
+      },
+      "W4": {
+        "baseline": {
+          "mae": 11.455005081083685,
+          "n": 4950
+        },
+        "candidate": {
+          "mae": 11.448038580365166,
+          "n": 4950
+        },
+        "gain_positive_is_better": 0.006966500718519342,
+        "rows": 4950
+      },
+      "primary": {
+        "baseline": {
+          "mae": 13.464395831218011,
+          "n": 9064
+        },
+        "candidate": {
+          "mae": 13.43279339981256,
+          "n": 9064
+        },
+        "gain_positive_is_better": 0.03160243140545127,
+        "rows": 9064
+      }
+    }
+  },
+  "preflight": {
+    "candidate_head_fits_performed": 0,
+    "card_id": "R11",
+    "card_sha256": "fc9449ddaee91fcbbfee75651cce72fc8427bb39e976994c7bea24306320e7eb",
+    "control_cache_sha256": {
+      "data/raw/regression/Train.csv": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+      "experiments/runs/dual_reg_v1/stage1_paired_blends.npz": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516",
+      "experiments/runs/optimization_v2_regression_repr/fullsix_predictions.npz": "4b87b0da34069ea3d75490233c574fbd92283f8b6472a43d8c654a20a4b904c9",
+      "experiments/runs/optimization_v2_regression_repr/pilot_predictions.npz": "eae6bea2dd6933de59ac0f63f54cc08124b59d4bcba91bbe05a7c5ec3dab9ff6",
+      "reports/optimization_v2/regression_repr/fullsix.json": "a9686473998722b8f86a0f6a4489b4e3a75a6b6ba20c661ac564e6a5e61aea48",
+      "reports/optimization_v2/regression_repr/fullsix_subgroup_diagnostics.json": "6954fbdd9eb1c95794787ff54cf8a9b8c88dc97373ad9a8bf8e0aefdcaf1551e"
+    },
+    "control_metrics": {
+      "H12": {
+        "mae": 14.04753258299653,
+        "rows": 38588
+      },
+      "W1": {
+        "mae": 15.882111974427762,
+        "rows": 4114
+      },
+      "W4": {
+        "mae": 11.455005081083685,
+        "rows": 4950
+      },
+      "primary": {
+        "mae": 13.464395831218011,
+        "rows": 9064
+      }
+    },
+    "fit_budget": {
+      "R11_predictor_fits": 18,
+      "cap": 180,
+      "reserved_after": 90,
+      "reserved_before": 72
+    },
+    "fit_rows": {
+      "55": 12020,
+      "67": 29705
+    },
+    "official_test_read": false,
+    "official_train_sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+    "queue_sha256": "b21226742923293853598f706ba249b4ea42fcdfe5bccf14b76175b21a2f6e80",
+    "resource": {
+      "allowed_estimated_peak_gib": 6.0,
+      "available_ram_gib_observed": 8.873176574707031,
+      "candidate_head_fits_performed": 0,
+      "concurrent_fit_jobs": 1,
+      "cutoffs": {
+        "55": {
+          "candidate_head_fits_performed": 0,
+          "estimate_is_observed_peak": false,
+          "estimated_peak_gib": 1.5831191092729568,
+          "fit_only_svd_fit_calls": 1,
+          "fit_only_tfidf_fit_calls": 1,
+          "fit_rows": 12020,
+          "head_count": 9,
+          "score_rows": 17685,
+          "sparse_bytes_observed": 17770912,
+          "status": "PASS",
+          "svd_projection_bytes_observed": 7604480,
+          "text_fallback": null,
+          "tfidf_features": 20000,
+          "tfidf_fit_nnz": 659532,
+          "tfidf_score_nnz": 811475,
+          "validation_labels_used": false
+        },
+        "67": {
+          "candidate_head_fits_performed": 0,
+          "estimate_is_observed_peak": false,
+          "estimated_peak_gib": 1.6428331807255745,
+          "fit_only_svd_fit_calls": 1,
+          "fit_only_tfidf_fit_calls": 1,
+          "fit_rows": 29705,
+          "head_count": 9,
+          "score_rows": 20903,
+          "sparse_bytes_observed": 30933348,
+          "status": "PASS",
+          "svd_projection_bytes_observed": 12955648,
+          "text_fallback": null,
+          "tfidf_features": 20000,
+          "tfidf_fit_nnz": 1513869,
+          "tfidf_score_nnz": 1047040,
+          "validation_labels_used": false
+        }
+      },
+      "job_cap_gib": 6.0,
+      "minimum_free_ram_gib": 4.0,
+      "preprocessing_probe": {
+        "fit_only_svd_fit_calls": 2,
+        "fit_only_tfidf_fit_calls": 2,
+        "lightgbm_head_fit_calls": 0,
+        "performed": true,
+        "validation_labels_used": false
+      },
+      "reserve_gib": 2.0,
+      "status": "PASS",
+      "threads": 2
+    },
+    "score_rows": {
+      "55": 17685,
+      "67": 20903
+    },
+    "source_commit": "2e88150a2f2ca4ffc230501a934279afa5e4f546",
+    "status": "PREFLIGHT_PASS",
+    "target_boundary_audit": {
+      "S0_equals_1_assumption": true,
+      "S100_equals_0_strict_y_gt_100": true,
+      "exact_zero_count_by_fit_cutoff": {
+        "55": 0,
+        "67": 0
+      },
+      "exact_zero_count_train": 0,
+      "minimum_target": 0.0428
+    },
+    "threshold_support_by_cutoff": {
+      "55": {
+        "10": {
+          "minimum_per_class": 100,
+          "negative": 1211,
+          "positive": 10809,
+          "supported": true
+        },
+        "20": {
+          "minimum_per_class": 100,
+          "negative": 2400,
+          "positive": 9620,
+          "supported": true
+        },
+        "30": {
+          "minimum_per_class": 100,
+          "negative": 3603,
+          "positive": 8417,
+          "supported": true
+        },
+        "40": {
+          "minimum_per_class": 100,
+          "negative": 4805,
+          "positive": 7215,
+          "supported": true
+        },
+        "50": {
+          "minimum_per_class": 100,
+          "negative": 6009,
+          "positive": 6011,
+          "supported": true
+        },
+        "60": {
+          "minimum_per_class": 100,
+          "negative": 7207,
+          "positive": 4813,
+          "supported": true
+        },
+        "70": {
+          "minimum_per_class": 100,
+          "negative": 8406,
+          "positive": 3614,
+          "supported": true
+        },
+        "80": {
+          "minimum_per_class": 100,
+          "negative": 9613,
+          "positive": 2407,
+          "supported": true
+        },
+        "90": {
+          "minimum_per_class": 100,
+          "negative": 10814,
+          "positive": 1206,
+          "supported": true
+        }
+      },
+      "67": {
+        "10": {
+          "minimum_per_class": 100,
+          "negative": 2974,
+          "positive": 26731,
+          "supported": true
+        },
+        "20": {
+          "minimum_per_class": 100,
+          "negative": 5927,
+          "positive": 23778,
+          "supported": true
+        },
+        "30": {
+          "minimum_per_class": 100,
+          "negative": 8904,
+          "positive": 20801,
+          "supported": true
+        },
+        "40": {
+          "minimum_per_class": 100,
+          "negative": 11873,
+          "positive": 17832,
+          "supported": true
+        },
+        "50": {
+          "minimum_per_class": 100,
+          "negative": 14852,
+          "positive": 14853,
+          "supported": true
+        },
+        "60": {
+          "minimum_per_class": 100,
+          "negative": 17808,
+          "positive": 11897,
+          "supported": true
+        },
+        "70": {
+          "minimum_per_class": 100,
+          "negative": 20769,
+          "positive": 8936,
+          "supported": true
+        },
+        "80": {
+          "minimum_per_class": 100,
+          "negative": 23753,
+          "positive": 5952,
+          "supported": true
+        },
+        "90": {
+          "minimum_per_class": 100,
+          "negative": 26730,
+          "positive": 2975,
+          "supported": true
+        }
+      }
+    },
+    "train_rows": 50608,
+    "views": {
+      "H12": [
+        [
+          55,
+          56,
+          67
+        ],
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "W1": [
+        [
+          55,
+          56,
+          59
+        ]
+      ],
+      "W4": [
+        [
+          67,
+          68,
+          71
+        ]
+      ],
+      "primary": [
+        [
+          55,
+          56,
+          59
+        ],
+        [
+          67,
+          68,
+          71
+        ]
+      ]
+    }
+  },
+  "source_commit": "2e88150a2f2ca4ffc230501a934279afa5e4f546",
+  "source_sha256": {
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1.py": "c93dd71ed2b512f32bf8916f59b0af56bff212934efb8825b0e8a680da72e969",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_r02.py": "30e8d5324f66f30d02176f37d006d6461608839d697259bcd8636dcb67b8ffbe",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_r07.py": "21b74060bb3e78704a66e4a213e1b013cc79375222fd36a93484cc6472567ee0",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_r11.py": "e118fb99ba876580d5c06caea1e0b4ca04572343ca925be16dfc6383dc421667",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_reg_diagnostics.py": "e2af49bb45353fca5bf0c14093be9b0f0b02afe24289a1b5c30dfb584bbd3f55",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v2_regression.py": "b235cfd93c8cc0a207cfcea79892b925f9dfdfe515491a459d6ca1b6142cb590",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1.py": "746e12d408e74608e5b559bc7dcf4c10174df9f367859750987310adb6ae8ffd",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1_r02.py": "9ec87ca8d52f1b645013fec6570c19e871e681b477196fd450c2994d759ccd76",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1_r07.py": "b0248b2eb33b9b927294d8eda050d66652e529f90525870fa05760cea19f1607",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1_r11.py": "3a15322653f614532c3891adf484874bea2624d22785bfdc3fe6f8ffa2423e68",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_research_tabular.py": "674d7e52c485583729b8fe999dc133c39aae8dd85abd005a598e2caea9af99f9",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_round2_models.py": "f56f7ee2c337acdf2cbe7160719faf62b1e3d3470a7f656b044ce0890d677e09",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\utils\\paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\tests\\test_optimization_v3_batch1_r07_model.py": "e61cf22b2a7e3c5b74ae6557a3526439e561e9729b28bd4828fa41fdee0fb163",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\tests\\test_optimization_v3_batch1_r07_runner.py": "7c84620a88729bf52e73eb612b0540cdeace5ff1eebdb27bbf634cdce374ce04",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\tests\\test_optimization_v3_batch1_r11.py": "e9d9d90082afe2076a79f1b09e25d00e7a8bc398e896fbf6af3ce4aa36ee0d47"
+  },
+  "status": "PILOT_COMPLETE_ADVANCE",
+  "subgroups": {
+    "minimum_support": 100,
+    "supported_guard_failures": [],
+    "supported_tail_or_missing_MAE_harm_max": 0.25,
+    "views": {
+      "H12": {
+        "entry_friction_0": {
+          "candidate_mae": 15.640174476858524,
+          "control_mae": 15.646196139861987,
+          "evidence_status": "SUPPORTED",
+          "guard_applies": false,
+          "guard_pass": null,
+          "mae_harm_candidate_minus_control": -0.0060216630034624075,
+          "n": 26048,
+          "supported": true
+        },
+        "entry_friction_1": {
+          "candidate_mae": 10.71217655963192,
+          "control_mae": 10.726799861367233,
+          "evidence_status": "SUPPORTED",
+          "guard_applies": false,
+          "guard_pass": null,
+          "mae_harm_candidate_minus_control": -0.014623301735312566,
+          "n": 12540,
+          "supported": true
+        },
+        "stream_missing": {
+          "candidate_mae": 14.261583310538981,
+          "control_mae": 14.325131948847591,
+          "evidence_status": "SUPPORTED",
+          "guard_applies": true,
+          "guard_pass": true,
+          "mae_harm_candidate_minus_control": -0.06354863830861035,
+          "n": 2578,
+          "supported": true
+        },
+        "stream_present": {
+          "candidate_mae": 14.022760262605543,
+          "control_mae": 14.027658904430465,
+          "evidence_status": "SUPPORTED",
+          "guard_applies": false,
+          "guard_pass": null,
+          "mae_harm_candidate_minus_control": -0.004898641824922834,
+          "n": 36010,
+          "supported": true
+        },
+        "target_ge_95": {
+          "candidate_mae": 10.03123081227097,
+          "control_mae": 10.242197755462715,
+          "evidence_status": "SUPPORTED",
+          "guard_applies": true,
+          "guard_pass": true,
+          "mae_harm_candidate_minus_control": -0.21096694319174603,
+          "n": 1955,
+          "supported": true
+        },
+        "target_le_5": {
+          "candidate_mae": 14.786770322045308,
+          "control_mae": 15.47074152305708,
+          "evidence_status": "SUPPORTED",
+          "guard_applies": true,
+          "guard_pass": true,
+          "mae_harm_candidate_minus_control": -0.6839712010117722,
+          "n": 1928,
+          "supported": true
+        }
+      },
+      "primary": {
+        "entry_friction_0": {
+          "candidate_mae": 14.844860173103308,
+          "control_mae": 14.875832528940338,
+          "evidence_status": "SUPPORTED",
+          "guard_applies": false,
+          "guard_pass": null,
+          "mae_harm_candidate_minus_control": -0.030972355837029397,
+          "n": 6131,
+          "supported": true
+        },
+        "entry_friction_1": {
+          "candidate_mae": 10.481077959292426,
+          "control_mae": 10.513997469903453,
+          "evidence_status": "SUPPORTED",
+          "guard_applies": false,
+          "guard_pass": null,
+          "mae_harm_candidate_minus_control": -0.032919510611026936,
+          "n": 2933,
+          "supported": true
+        },
+        "stream_missing": {
+          "candidate_mae": 13.736540120653068,
+          "control_mae": 13.845691180212624,
+          "evidence_status": "SUPPORTED",
+          "guard_applies": true,
+          "guard_pass": true,
+          "mae_harm_candidate_minus_control": -0.10915105955955617,
+          "n": 734,
+          "supported": true
+        },
+        "stream_present": {
+          "candidate_mae": 13.406028682754107,
+          "control_mae": 13.43079789770516,
+          "evidence_status": "SUPPORTED",
+          "guard_applies": false,
+          "guard_pass": null,
+          "mae_harm_candidate_minus_control": -0.024769214951053442,
+          "n": 8330,
+          "supported": true
+        },
+        "target_ge_95": {
+          "candidate_mae": 8.823559117188392,
+          "control_mae": 9.012789399222996,
+          "evidence_status": "SUPPORTED",
+          "guard_applies": true,
+          "guard_pass": true,
+          "mae_harm_candidate_minus_control": -0.1892302820346039,
+          "n": 462,
+          "supported": true
+        },
+        "target_le_5": {
+          "candidate_mae": 14.466471039935037,
+          "control_mae": 15.115137944294784,
+          "evidence_status": "SUPPORTED",
+          "guard_applies": true,
+          "guard_pass": true,
+          "mae_harm_candidate_minus_control": -0.6486669043597466,
+          "n": 449,
+          "supported": true
+        }
+      }
+    }
+  }
+}
