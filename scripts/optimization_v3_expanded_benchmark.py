@@ -678,14 +678,16 @@ def _verify_frozen_preflight() -> tuple[dict[str, Any], dict[str, Any], dict[str
 
 
 def _controls_for(card: str, cutoff: int,
-                  cls_context: Mapping[str, Any], reg_context: Mapping[str, Any]) -> dict[str, np.ndarray]:
+                  cls_context: Mapping[str, Any], reg_context: Mapping[str, Any]) -> dict[str, Any]:
     if card in {"C17", "C11"}:
         raw = cls_context["controls"][cutoff]
-        controls = {k: np.asarray(v) for k, v in raw.items()}
+        controls = {k: dict(v) if isinstance(v, Mapping) else np.asarray(v)
+                    for k, v in raw.items()}
         controls["control_rows"] = np.asarray(controls["control_rows"], dtype=np.int64)
         return controls
     raw = reg_context["primary_controls"][cutoff]
-    controls = {k: np.asarray(v) for k, v in raw.items()}
+    controls = {k: dict(v) if isinstance(v, Mapping) else np.asarray(v)
+                for k, v in raw.items()}
     controls["control_rows"] = np.asarray(controls["rows"], dtype=np.int64)
     controls["cycle_code"] = np.asarray(controls["cycle_codes"], dtype=np.int64)
     if card == "R21":
@@ -745,6 +747,16 @@ def _load_new_bundle(card: str, cutoff: int, frame: pd.DataFrame,
     if not np.allclose(prediction, reconstructed, atol=1e-10, rtol=0):
         raise ExpandedCampaignError(f"{card} cutoff {cutoff} independent recipe reconstruction failed")
     metadata = sidecar.get("metadata", {})
+    expected_mappings = {name: _json_clean(value) for name, value in controls.items()
+                         if isinstance(value, Mapping)}
+    if metadata.get("control_mappings", {}) != expected_mappings:
+        raise ExpandedCampaignError(f"{card} cutoff {cutoff} control mapping audit differs")
+    for name, value in controls.items():
+        if isinstance(value, Mapping):
+            continue
+        field = f"control__{name}"
+        if field not in arrays or not np.array_equal(np.asarray(arrays[field]), np.asarray(value)):
+            raise ExpandedCampaignError(f"{card} cutoff {cutoff} saved control array differs: {name}")
     state = metadata.get("state", {})
     audited_model_state = state.get("model", state) if isinstance(state, Mapping) else {}
     if (metadata.get("fit_predictor_count") != (9 if card == "R11" else 1)
@@ -846,14 +858,19 @@ def _run_one_fit(card: str, cutoff: int, cls_context: Mapping[str, Any],
     }
     for name, value in result.get("audit_arrays", {}).items():
         arrays[f"audit__{name}"] = np.asarray(value)
+    control_mappings: dict[str, Any] = {}
     for name, value in controls.items():
-        arrays[f"control__{name}"] = np.asarray(value)
+        if isinstance(value, Mapping):
+            control_mappings[name] = _json_clean(value)
+        else:
+            arrays[f"control__{name}"] = np.asarray(value)
     metadata = {
         "campaign_id": CAMPAIGN_ID, "card_id": card, "cutoff": int(cutoff),
         "fit_predictor_count": expected_fits, "fit_seconds": float(elapsed),
         "fit_rows": int(len(fit_rows)), "score_rows": int(len(score_rows)),
         "resource_preflight": resource, "fit_metadata": _json_clean(result["fit_metadata"]),
         "state": _json_clean(result["state"]), "freeze_signature": freeze_signature,
+        "control_mappings": control_mappings,
         "validation_labels_passed_to_fit": False, "test_data_used": False,
         "preprocessing_fit_components": list(
             {"C17": ("structured/OHE", "word TF-IDF"),
