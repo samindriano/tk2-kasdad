@@ -54,8 +54,9 @@ ROOT = Path(__file__).resolve().parents[1]
 CARD_PATH = ROOT / "reports/optimization_v3/research_backlog/cards/C15.md"
 QUEUE_PATH = ROOT / "experiments/optimization_v3/research_backlog/queue.json"
 PREFIT_REVISION_01 = ROOT / "experiments/optimization_v3/batch1/C15"
-EXPERIMENT_DIR = PREFIT_REVISION_01 / "revision_02"
-REPORT_DIR = ROOT / "reports/optimization_v3/batch1/C15/revision_02"
+PREFIT_REVISION_02 = PREFIT_REVISION_01 / "revision_02"
+EXPERIMENT_DIR = PREFIT_REVISION_01 / "revision_03"
+REPORT_DIR = ROOT / "reports/optimization_v3/batch1/C15/revision_03"
 RUN_DIR = ROOT / "experiments/runs/optimization_v3_batch1/C15"
 RECIPE_PATH = EXPERIMENT_DIR / "recipe.json"
 FREEZE_PATH = EXPERIMENT_DIR / "freeze.json"
@@ -299,6 +300,8 @@ def _all_input_files(train_path: Path, card: Mapping[str, Any]) -> dict[str, Pat
         "sparse_fullsix_freeze": SPARSE_FULL_CONFIG / "freeze.json",
         "superseded_prefit_recipe_revision_01": PREFIT_REVISION_01 / "recipe.json",
         "superseded_prefit_freeze_revision_01": PREFIT_REVISION_01 / "freeze.json",
+        "superseded_prefit_recipe_revision_02": PREFIT_REVISION_02 / "recipe.json",
+        "superseded_prefit_freeze_revision_02": PREFIT_REVISION_02 / "freeze.json",
     }
     for origin in (55, 59, 63, 67, 71, 75):
         c2b_path, sparse_path, _ = _cache_paths(origin)
@@ -459,7 +462,7 @@ def _prepare(card: Mapping[str, Any], queue: Mapping[str, Any]) -> dict[str, Any
                                    evaluation_views=views, packages=PACKAGES)
     recipe = {
         "card_id": CARD_ID,
-        "revision": "revision_02; supersedes one prefit-only revision_01 after stricter cache/source audits were added; no candidate prediction values were read before this revision.",
+        "revision": "revision_03; supersedes prefit-only revisions 01 and 02 after JSON canonicalization was enforced for tuple-valued views; no candidate prediction values were read before this revision.",
         "queue_recipe": {key: card[key] for key in ("id", "task", "name", "family", "change", "policy",
                         "pilot_predictor_fits", "evaluation", "condition")},
         "meta_model": {
@@ -499,6 +502,7 @@ def _prepare(card: Mapping[str, Any], queue: Mapping[str, Any]) -> dict[str, Any
                             "threads": THREADS},
         "no_test_sample_or_kaggle": True,
     }
+    recipe = json.loads(json.dumps(recipe, sort_keys=True, allow_nan=False))
     identity.update({"recipe": recipe, "row_matched_controls": baseline,
                      "oof_support": {str(k): {x: y for x, y in v.items() if x != "rows"}
                                      for k, v in oof_support.items()},
@@ -514,7 +518,9 @@ def _prepare(card: Mapping[str, Any], queue: Mapping[str, Any]) -> dict[str, Any
     freeze_valid = (not RECIPE_PATH.exists() or _json(RECIPE_PATH) == recipe)
     if FREEZE_PATH.exists():
         frozen = _json(FREEZE_PATH)
-        freeze_valid = freeze_valid and frozen.get("signature") == json_sha256(identity) and frozen.get("identity") == identity
+        frozen_identity = frozen.get("identity", {})
+        freeze_valid = (freeze_valid and frozen.get("signature") == json_sha256(identity)
+                        and json_sha256(frozen_identity) == json_sha256(identity))
     status = "PREFLIGHT_PASS" if resource["status"] == "PASS" and budget["status"] == "PASS" and freeze_valid else "BLOCKED_RESOURCE_OR_BUDGET_OR_FREEZE"
     input_hashes = {name: file_sha256(path) for name, path in sorted(inputs.items())}
     source_hashes = {str(path.relative_to(ROOT).as_posix()): file_sha256(path) for path in source_files}
@@ -862,7 +868,7 @@ def run_card(card: Mapping[str, Any], queue: Mapping[str, Any], *,
 
     if (not RECIPE_PATH.is_file() or not FREEZE_PATH.is_file()
             or _json(RECIPE_PATH) != context["recipe"]
-            or _json(FREEZE_PATH).get("identity") != context["identity"]
+            or json_sha256(_json(FREEZE_PATH).get("identity", {})) != json_sha256(context["identity"])
             or _json(FREEZE_PATH).get("signature") != json_sha256(context["identity"])):
         raise BatchIntegrityError("C15 run requires the exact committed prefit recipe and freeze")
     frame, target, views = context["frame"], context["target"], context["views"]
