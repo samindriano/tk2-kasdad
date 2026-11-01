@@ -11,10 +11,15 @@ from __future__ import annotations
 import argparse
 import json
 import subprocess
+import sys
 from pathlib import Path
 from typing import Any, Mapping
 
 import numpy as np
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from scripts import optimization_v3_expanded_benchmark as base
 from src.models.optimization_v3_batch1 import (
@@ -27,7 +32,6 @@ from src.models.optimization_v3_batch1 import (
 )
 
 
-ROOT = base.ROOT
 PARENT_FREEZE_PATH = base.FREEZE_PATH
 PARENT_PREFLIGHT_PATH = base.PREFLIGHT_PATH
 CAMPAIGN_ID = "optimization_v3_expanded_benchmark_v1_serialization_recovery"
