@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import gc
+import hashlib
 import importlib.metadata
 import json
 import platform
@@ -504,6 +505,28 @@ def _prepare(card: Mapping[str, Any], queue: Mapping[str, Any]) -> dict[str, Any
     }
 
 
+def _expected_fit_population(context: Mapping[str, Any], cutoff: int) -> dict[str, Any]:
+    fit_rows = np.asarray(context["fit_rows_by_cutoff"][int(cutoff)], dtype=np.int64)
+    frame = context["frame"]
+    missing_mask = stream_missing_mask(
+        frame.iloc[fit_rows]["signal_stream"].to_numpy(dtype=object)
+    )
+    missing_positions = fit_rows[missing_mask]
+    cycles = np.asarray(context["cycles"], dtype=np.int64)[missing_positions]
+    if not len(missing_positions):
+        raise BatchIntegrityError(f"R15 cutoff {cutoff} has no missing-stream fit rows")
+    return {
+        "all_fit_rows": int(len(fit_rows)),
+        "missing_fit_rows": int(len(missing_positions)),
+        "fit_cycle_min": int(cycles.min()),
+        "fit_cycle_max": int(cycles.max()),
+        "fit_source_row_positions_sha256": hashlib.sha256(
+            np.asarray(missing_positions, dtype="<i8").tobytes(order="C")
+        ).hexdigest(),
+        "fit_missing_mask_sha256": hashlib.sha256(missing_mask.tobytes(order="C")).hexdigest(),
+    }
+
+
 def _read_saved_predictions(context: Mapping[str, Any], report: Mapping[str, Any]) -> dict[int, dict[str, np.ndarray]]:
     per_cutoff: dict[int, dict[str, np.ndarray]] = {}
     for cutoff in PILOT_CUTOFFS:
@@ -514,6 +537,9 @@ def _read_saved_predictions(context: Mapping[str, Any], report: Mapping[str, Any
         candidate, baseline = reconstruct_r15_arrays(arrays)
         control = context["controls_by_cutoff"][cutoff]
         expected_missing = np.asarray(control["stream_missing"], dtype=bool)
+        expected_fit = _expected_fit_population(context, cutoff)
+        state = sidecar["metadata"].get("state", {})
+        fit_metadata = sidecar["metadata"].get("fit_metadata", {})
         checks = {
             "exact_score_rows": np.array_equal(np.asarray(arrays["score_rows"], dtype=np.int64), rows),
             "exact_record_ids": np.array_equal(
@@ -534,11 +560,20 @@ def _read_saved_predictions(context: Mapping[str, Any], report: Mapping[str, Any
             "all_candidate_values_finite_in_range": bool(
                 np.isfinite(candidate).all() and np.all((candidate >= 0.0) & (candidate <= 100.0))
             ),
-            "fit_cycle_min_47": int(sidecar["metadata"]["state"].get("fit_cycle_min", -1)) == 47,
-            "fit_cycle_max_cutoff": int(sidecar["metadata"]["state"].get("fit_cycle_max", -1)) == cutoff,
-            "structured_only_feature_allowlist": sidecar["metadata"]["state"].get("feature_names") == list(STRUCTURED_FEATURE_NAMES),
-            "signal_stream_excluded_from_model": sidecar["metadata"]["state"].get("signal_stream_used_as_feature") is False,
-            "rank_mapping_not_used": sidecar["metadata"]["state"].get("percentile_or_rank_mapping") is False,
+            "fit_population_exact_missing_only": (
+                int(state.get("fit_rows", -1)) == expected_fit["missing_fit_rows"]
+                and state.get("fit_source_row_positions_sha256") == expected_fit["fit_source_row_positions_sha256"]
+                and state.get("fit_missing_mask_sha256") == expected_fit["fit_missing_mask_sha256"]
+                and int(sidecar["metadata"].get("fit_rows", -1)) == expected_fit["all_fit_rows"]
+                and int(fit_metadata.get("fit_missing_stream_rows", -1)) == expected_fit["missing_fit_rows"]
+            ),
+            "fit_population_cycle_range_exact": (
+                int(state.get("fit_cycle_min", -1)) == expected_fit["fit_cycle_min"]
+                and int(state.get("fit_cycle_max", -1)) == expected_fit["fit_cycle_max"]
+            ),
+            "structured_only_feature_allowlist": state.get("feature_names") == list(STRUCTURED_FEATURE_NAMES),
+            "signal_stream_excluded_from_model": state.get("signal_stream_used_as_feature") is False,
+            "rank_mapping_not_used": state.get("percentile_or_rank_mapping") is False,
         }
         per_cutoff[cutoff] = {
             "rows": rows, "prediction": candidate, "baseline_prediction": baseline,

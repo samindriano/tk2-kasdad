@@ -78,6 +78,20 @@ def test_r15_freeze_card_is_exact_canonical_queue_entry():
     runner._validate_card(queue, card)
 
 
+def test_fit_population_receipt_allows_supported_subset_without_boundary_cycles():
+    frame = _features([47, 55, 60, 67], ["present", None, "  ", "present"])
+    context = {
+        "frame": frame,
+        "cycles": np.array([47, 55, 60, 67]),
+        "fit_rows_by_cutoff": {67: np.array([0, 1, 2, 3])},
+    }
+    receipt = runner._expected_fit_population(context, 67)
+    assert receipt["all_fit_rows"] == 4
+    assert receipt["missing_fit_rows"] == 2
+    assert receipt["fit_cycle_min"] == 55
+    assert receipt["fit_cycle_max"] == 60
+
+
 def test_independent_reconstruction_rejects_misalignment_and_preserves_present():
     arrays = {
         "raw_candidate": np.array([0.0, -5.0, 70.0]),
