@@ -286,7 +286,7 @@ def test_frozen_runner_does_not_call_generic_runner_without_exact_freeze(tmp_pat
     called = []
     monkeypatch.setattr(runner, "run_pilot", lambda **kwargs: called.append(kwargs))
     freeze_path = tmp_path / "freeze.json"
-    identity = {"freeze_revision": 2, "source_commit": "abc123", "input_sha256": {"train": "hash"}}
+    identity = {"freeze_revision": 3, "source_commit": "abc123", "input_sha256": {"train": "hash"}}
     if mismatch == "signature":
         freeze_path.write_text(json.dumps({"signature": "wrong", "identity": identity}), encoding="utf-8")
     elif mismatch == "identity":
@@ -320,7 +320,7 @@ def test_frozen_artifacts_require_exact_recipe_and_preflight_contents(tmp_path):
     recipe = {"recipe": "fixed R11 synthetic"}
     preflight = {"status": "PREFLIGHT_PASS", "freeze_written": True}
     identity = {
-        "freeze_revision": 2,
+        "freeze_revision": 3,
         "recipe_record_sha256": runner.json_sha256(recipe),
         "preflight_record_sha256": runner.json_sha256(preflight),
     }
@@ -349,18 +349,21 @@ def test_frozen_artifacts_require_exact_recipe_and_preflight_contents(tmp_path):
         )
 
 
-def test_revision_01_artifact_paths_remain_historical_and_unconsumed():
+def test_older_freeze_artifact_paths_remain_historical_and_unconsumed():
     assert runner.RECIPE_PATH != runner.RECIPE_REVISION_02_PATH
     assert runner.FREEZE_PATH != runner.FREEZE_REVISION_02_PATH
     assert runner.PREFLIGHT_PATH != runner.PREFLIGHT_REVISION_02_PATH
-    assert runner.FREEZE_REVISION == 2
+    assert runner.RECIPE_REVISION_02_PATH != runner.RECIPE_REVISION_03_PATH
+    assert runner.FREEZE_REVISION_02_PATH != runner.FREEZE_REVISION_03_PATH
+    assert runner.PREFLIGHT_REVISION_02_PATH != runner.PREFLIGHT_REVISION_03_PATH
+    assert runner.FREEZE_REVISION == 3
 
 
-def test_frozen_runner_calls_shared_runner_once_after_revision_02_checks(tmp_path, monkeypatch):
-    recipe = {"recipe": "fixed R11 revision 2"}
-    preflight = {"freeze_revision": 2, "freeze_written": True}
+def test_frozen_runner_calls_shared_runner_once_after_revision_03_checks(tmp_path, monkeypatch):
+    recipe = {"recipe": "fixed R11 revision 3"}
+    preflight = {"freeze_revision": 3, "freeze_written": True}
     identity = {
-        "freeze_revision": 2,
+        "freeze_revision": 3,
         "recipe_record_sha256": runner.json_sha256(recipe),
         "preflight_record_sha256": runner.json_sha256(preflight),
     }
@@ -414,9 +417,11 @@ def test_live_preflight_recheck_ignores_only_volatile_ram_observations():
     current_resource["allowed_estimated_peak_gib"] = 3.5
     context = {"preflight": {**core, "fit_budget": {"R11_predictor_fits": 18}},
                "resource": current_resource}
-    frozen = {**core, "fit_budget": {"R11_predictor_fits": 18}, "resource": stable_resource,
-              "freeze_revision": 2, "input_sha256": {"train": "x"},
-              "source_sha256": {"script": "y"}, "package_versions": {"numpy": "1"}}
+    frozen = json.loads(json.dumps({
+        **core, "fit_budget": {"R11_predictor_fits": 18}, "resource": stable_resource,
+        "freeze_revision": 3, "input_sha256": {"train": "x"},
+        "source_sha256": {"script": "y"}, "package_versions": {"numpy": "1"},
+    }))
     identity = {"input_sha256": frozen["input_sha256"], "source_sha256": frozen["source_sha256"],
                 "package_versions": frozen["package_versions"]}
     runner._assert_live_preflight_compatible(context, frozen, identity)
@@ -458,14 +463,14 @@ def test_runtime_memory_gate_uses_current_available_ram_and_frozen_peak(tmp_path
         runner._check_runtime_memory(preflight_path)
 
 
-def test_revision_02_attempt_accounting_separates_two_temporal_calls_from_eighteen_heads(tmp_path):
+def test_revision_03_attempt_accounting_separates_two_temporal_calls_from_eighteen_heads(tmp_path):
     artifact_dir = tmp_path / "artifacts"
     artifact_dir.mkdir()
     event_path = tmp_path / "attempts.jsonl"
-    signature = "frozen-r11-v2"
+    signature = "frozen-r11-v3"
     events = [
         {"card_id": "R11", "event": "PREFLIGHT_PASS", "freeze_signature": signature,
-         "freeze_revision": 2},
+         "freeze_revision": 3},
         {"card_id": "R11", "event": "RUNTIME_MEMORY_GATE_PASS", "freeze_signature": signature,
          "available_ram_gib_at_pilot_start": 8.0,
          "current_allowed_estimated_peak_gib": 6.0,
@@ -509,7 +514,7 @@ def test_revision_02_attempt_accounting_separates_two_temporal_calls_from_eighte
     assert incomplete["attempt_accounting_complete"] is False
 
 
-def test_revision_02_subgroups_report_supported_and_unsupported_cells(tmp_path):
+def test_revision_03_subgroups_report_supported_and_unsupported_cells(tmp_path):
     artifact_dir = tmp_path / "artifacts"
     artifact_dir.mkdir()
     cycles = np.arange(56, 80, dtype=np.int64)
@@ -545,7 +550,7 @@ def test_revision_02_subgroups_report_supported_and_unsupported_cells(tmp_path):
     assert strict["views"]["primary"]["stream_missing"]["evidence_status"] == "DESCRIPTIVE_UNSUPPORTED"
 
 
-def test_revision_02_gate_retires_only_performance_failures_and_raises_on_qa_failure():
+def test_revision_03_gate_retires_only_performance_failures_and_raises_on_qa_failure():
     queue = {"evaluation": {"regression_gate": {
         "pilot_primary_MAE_gain_min": 0.03,
         "pilot_H12_MAE_harm_max": 0.05,
@@ -572,7 +577,7 @@ def test_revision_02_gate_retires_only_performance_failures_and_raises_on_qa_fai
                            {"attempt_accounting_complete": False}, card)
 
 
-def test_pilot_cli_routes_to_explicit_revision_02_pilot_mode(monkeypatch, capsys):
+def test_pilot_cli_routes_to_explicit_revision_03_pilot_mode(monkeypatch, capsys):
     calls = []
     monkeypatch.setattr(runner, "run_card", lambda *, mode: calls.append(mode) or {"status": "synthetic"})
     assert runner.main(["--pilot"]) == 0
