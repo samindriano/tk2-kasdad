@@ -235,7 +235,7 @@ def _build_identity(frame: pd.DataFrame, train_path: Path,
     n00_frozen = json.loads(N00_FREEZE_PATH.read_text(encoding="utf-8"))
     if n00_frozen.get("freeze_signature") != canonical_sha256(n00_frozen.get("identity")):
         raise RuntimeError("N05 N00 freeze signature is invalid")
-    n00_commit = n00_frozen.get("execution_context", {}).get("source_commit")
+    n00_commit = n00_frozen.get("identity", {}).get("source_commit")
     if not n00_commit or not _is_ancestor(n00_commit):
         raise RuntimeError("N05 N00 source commit is not an ancestor of HEAD")
     inherited = n00_frozen.get("execution_context", {}).get("inherited_old_budget_snapshot", {})
