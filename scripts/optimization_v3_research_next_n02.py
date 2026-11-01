@@ -50,8 +50,9 @@ N00_FREEZE_PATH = ROOT / "experiments/optimization_v3/research_next_v1/frozen/N0
 N00_SUMMARY_PATH = ROOT / "reports/optimization_v3/research_next_v1/results/N00/amendment_05/summary.json"
 N01_FREEZE_PATH = ROOT / "experiments/optimization_v3/research_next_v1/frozen/N01/freeze.json"
 N01_PREFLIGHT_PATH = ROOT / "reports/optimization_v3/research_next_v1/results/N01/preflight.json"
-FREEZE_PATH = ROOT / "experiments/optimization_v3/research_next_v1/frozen/N02/freeze.json"
-REPORT_ROOT = ROOT / "reports/optimization_v3/research_next_v1/results/N02"
+PREVIOUS_FREEZE_PATH = ROOT / "experiments/optimization_v3/research_next_v1/frozen/N02/freeze.json"
+FREEZE_PATH = ROOT / "experiments/optimization_v3/research_next_v1/frozen/N02/amendment_02/freeze.json"
+REPORT_ROOT = ROOT / "reports/optimization_v3/research_next_v1/results/N02/amendment_02"
 BUNDLE_ROOT = ROOT / "experiments/runs/optimization_v3_research_next_v1/N02"
 LEDGER_PATH = ROOT / "experiments/runs/optimization_v3_research_next_v1/budget.jsonl"
 OLD_LEDGER_PATH = ROOT / "experiments/runs/optimization_v3_batch1/batch_ledger.jsonl"
@@ -109,7 +110,7 @@ def _source_paths() -> list[Path]:
 
 def _input_paths(train_path: Path) -> list[Path]:
     paths = [QUEUE_PATH, READINESS_PATH, N00_FREEZE_PATH, N00_SUMMARY_PATH,
-             N01_FREEZE_PATH, N01_PREFLIGHT_PATH, OLD_LEDGER_PATH, train_path,
+             N01_FREEZE_PATH, N01_PREFLIGHT_PATH, PREVIOUS_FREEZE_PATH, OLD_LEDGER_PATH, train_path,
              ROOT / "reports/optimization_v3/final_continuation/C16/verification.json"]
     for cutoff in ORIGINS:
         artifact = n01.cache_path("C16", cutoff)
@@ -187,7 +188,7 @@ def prepare_context() -> dict[str, Any]:
     if ({key: value for key, value in queued_sketch.items() if key != "class"} != SKETCH_PARAMS
             or queued_sketch.get("class") != "sklearn.kernel_approximation.PolynomialCountSketch"):
         raise RuntimeError("N02 fixed sketch parameters differ from the canonical queue")
-    inherited = n01.prepare_context()
+    n01_frozen, inherited = n01._verify_freeze()
     train_path = inherited["train_path"]
     if file_sha256(train_path) != queue["raw_train_sha256"]["classification"]:
         raise RuntimeError("Official Classification Train hash differs from the queue")
@@ -245,9 +246,10 @@ def prepare_context() -> dict[str, Any]:
                           "job_cap_bytes": JOB_CAP_BYTES, "reserve_bytes": FREE_RESERVE_BYTES,
                           "minimum_free_bytes": MINIMUM_FREE_BYTES, "sketch_components": 1024},
         "control_hashes": {str(cutoff): controls[cutoff]["artifact_hashes"] for cutoff in ORIGINS},
-        "n00_freeze_signature": inherited["freeze_signature"],
+        "freeze_amendment": 2,
+        "n00_freeze_signature": json.loads(N00_FREEZE_PATH.read_text(encoding="utf-8"))["freeze_signature"],
         "n00_summary_sha256": file_sha256(N00_SUMMARY_PATH),
-        "n01_freeze_signature": json.loads(N01_FREEZE_PATH.read_text(encoding="utf-8"))["freeze_signature"],
+        "n01_freeze_signature": n01_frozen["freeze_signature"],
     }
     identity = {
         "batch_id": BATCH, "card_id": CARD_ID, "stage": "PILOT",
@@ -272,6 +274,12 @@ def prepare_context() -> dict[str, Any]:
             "free_ram_bytes_at_preflight": int(psutil.virtual_memory().available),
             "resource_estimates_by_cutoff": resources,
             "sketch_api_smoke": _sketch_api_smoke(),
+            "supersedes_pre_fit_freeze": {
+                "path": _relative(PREVIOUS_FREEZE_PATH),
+                "sha256": file_sha256(PREVIOUS_FREEZE_PATH),
+                "reason": "The first N02 pre-fit freeze used a live N01 preparation signature in the N00 field. This amendment records the exact frozen N00 and N01 signatures; no official fit or N02 reservation had started.",
+                "recipe_or_gate_changed": False,
+            },
             "official_estimator_fits": 0, "synthetic_estimator_fits": 0,
             "test_files_opened": 0, "kaggle_calls": 0,
         },
@@ -709,6 +717,8 @@ def freeze() -> dict[str, Any]:
     payload = _freeze_payload(context)
     n01._write_once(FREEZE_PATH, payload)
     n01._write_once(REPORT_ROOT / "preflight.json", report)
+    n01._write_once(REPORT_ROOT / "amendment_note.json",
+                    context["execution_context"]["supersedes_pre_fit_freeze"])
     return {"status": "FROZEN_READY", "path": _relative(FREEZE_PATH),
             "freeze_signature": payload["freeze_signature"],
             "source_commit": context["identity"]["source_commit"], "official_estimator_fits": 0}
