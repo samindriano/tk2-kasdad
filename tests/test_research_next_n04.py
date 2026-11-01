@@ -3,6 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 import pytest
+from types import SimpleNamespace
 from scipy import sparse
 from sklearn.decomposition import TruncatedSVD
 
@@ -101,6 +102,34 @@ def test_last_four_cycle_domain_and_balanced_prior_odds_weights():
     )
     assert diag["all_weights_finite_positive"]
     assert diag["weight_mean"] == pytest.approx(1.0)
+
+
+def test_independent_domain_labels_are_anchored_to_full_fit_prefix():
+    cycles = np.repeat(np.arange(47, 56), 3).astype(np.int64)
+    frame = pd.DataFrame({"record_id": [f"rid-{i}" for i in range(len(cycles))],
+                          "cycle_code": cycles})
+    fit_rows = np.flatnonzero(cycles <= 55)
+    labels = adapter.domain_labels(cycles[fit_rows], 55)
+    held = cycles[fit_rows] % 2 == 0
+    rows = fit_rows[held]
+    held_labels = labels[held]
+    probabilities = np.where(held_labels == 1, .8, .2)
+    auc = runner._independent_auc(held_labels, probabilities)
+    arrays = {
+        "score_rows": rows,
+        "score_record_ids": frame.record_id.to_numpy(dtype=str)[rows],
+        "prediction": probabilities.astype(float),
+        "baseline_prediction": held_labels.astype(float),
+        "domain_label": held_labels.astype(np.int8),
+        "cycle_code": cycles[rows],
+    }
+    bundle = SimpleNamespace(
+        arrays=arrays,
+        receipt={"metadata": {"diagnostics": {"independent_heldout_auc": auc}}},
+    )
+    checked = runner._independent_domain(bundle, frame, cutoff=55, parity=0)
+    np.testing.assert_array_equal(checked["labels"], held_labels)
+    assert checked["auc"] == pytest.approx(1.0)
 
 
 def test_within_cycle_shuffle_preserves_each_exact_weight_multiset():

@@ -50,10 +50,14 @@ N00_FREEZE_PATH = ROOT / "experiments/optimization_v3/research_next_v1/frozen/N0
 N00_SUMMARY_PATH = ROOT / "reports/optimization_v3/research_next_v1/results/N00/amendment_05/summary.json"
 OLD_LEDGER_PATH = ROOT / "experiments/runs/optimization_v3_batch1/batch_ledger.jsonl"
 LEDGER_PATH = ROOT / "experiments/runs/optimization_v3_research_next_v1/budget.jsonl"
-FREEZE_PATH = ROOT / "experiments/optimization_v3/research_next_v1/frozen/N04/amendment_01/freeze.json"
-PREFLIGHT_PATH = ROOT / "experiments/optimization_v3/research_next_v1/frozen/N04/amendment_01/preflight.json"
-REPORT_ROOT = ROOT / "reports/optimization_v3/research_next_v1/results/N04/amendment_01"
-BUNDLE_ROOT = ROOT / "experiments/runs/optimization_v3_research_next_v1/N04/amendment_01"
+PREVIOUS_FREEZE_PATH = ROOT / "experiments/optimization_v3/research_next_v1/frozen/N04/amendment_01/freeze.json"
+PREVIOUS_PREFLIGHT_PATH = ROOT / "experiments/optimization_v3/research_next_v1/frozen/N04/amendment_01/preflight.json"
+PREVIOUS_BUNDLE_ROOT = ROOT / "experiments/runs/optimization_v3_research_next_v1/N04/amendment_01"
+PREVIOUS_RECOVERY_ROOT = PREVIOUS_BUNDLE_ROOT / "recovery"
+FREEZE_PATH = ROOT / "experiments/optimization_v3/research_next_v1/frozen/N04/amendment_02/freeze.json"
+PREFLIGHT_PATH = ROOT / "experiments/optimization_v3/research_next_v1/frozen/N04/amendment_02/preflight.json"
+REPORT_ROOT = ROOT / "reports/optimization_v3/research_next_v1/results/N04/amendment_02"
+BUNDLE_ROOT = ROOT / "experiments/runs/optimization_v3_research_next_v1/N04/amendment_02"
 RECOVERY_ROOT = BUNDLE_ROOT / "recovery"
 PILOT_ORIGINS = (55, 67)
 PILOT_FITS = 8
@@ -123,7 +127,11 @@ def _load_train() -> tuple[Path, pd.DataFrame, np.ndarray]:
 
 def _input_paths(train_path: Path) -> list[Path]:
     paths = [QUEUE_PATH, READINESS_PATH, CARD_PATH, N00_FREEZE_PATH, N00_SUMMARY_PATH,
-             OLD_LEDGER_PATH, train_path]
+             OLD_LEDGER_PATH, train_path, PREVIOUS_FREEZE_PATH, PREVIOUS_PREFLIGHT_PATH]
+    previous_bundle = PREVIOUS_BUNDLE_ROOT / "fit55" / "domain_even"
+    paths.extend((previous_bundle / "arrays.npz", previous_bundle / "receipt.json",
+                  PREVIOUS_RECOVERY_ROOT / "N04_PILOT_55_domain_even.npz",
+                  PREVIOUS_RECOVERY_ROOT / "N04_PILOT_55_domain_even.json"))
     for cutoff in PILOT_ORIGINS:
         for card in ("R22", "R06"):
             artifact = n00.cache_path(card, cutoff)
@@ -230,7 +238,7 @@ def _resource_estimate(frame: pd.DataFrame, cutoff: int, available_bytes: int | 
 
 
 def _build_identity(frame: pd.DataFrame, train_path: Path, cache_audit: Mapping[str, Any],
-                    resources: Mapping[str, Any]) -> dict[str, Any]:
+                    resources: Mapping[str, Any], inherited_fit_audit: Mapping[str, Any]) -> dict[str, Any]:
     queue = json.loads(QUEUE_PATH.read_text(encoding="utf-8"))
     card = next((item for item in queue["cards"] if item.get("id") == CARD_ID), None)
     if (queue.get("batch_id") != BATCH or not card or card.get("profile") != "STANDARD"
@@ -258,6 +266,8 @@ def _build_identity(frame: pd.DataFrame, train_path: Path, cache_audit: Mapping[
                 for c in PILOT_ORIGINS}
     return {
         "batch_id": BATCH, "card_id": CARD_ID, "profile": "STANDARD",
+        "amendment": "amendment_02",
+        "amendment_scope": "correct independent verification of the cutoff-55 even-fold domain labels; frozen features, split, estimator, thresholds and task recipe are unchanged",
         "recipe": {
             "pseudo_domain": "last four distinct FIT cycles are recent=1; older fit rows source=0",
             "domain_features": "R22 structured allowlist excluding cycle_code, plus signal_stream; exclude record_id and task targets",
@@ -289,7 +299,8 @@ def _build_identity(frame: pd.DataFrame, train_path: Path, cache_audit: Mapping[
             "missing_or_target_tail_harm_vs_R22_and_legacy_max": .25,
             "primary_gain_vs_shuffle_min": .01,
         },
-        "lineage": dict(cache_audit), "queue_sha256": file_sha256(QUEUE_PATH),
+        "lineage": dict(cache_audit), "inherited_fit_audit": dict(inherited_fit_audit),
+        "queue_sha256": file_sha256(QUEUE_PATH),
         "official_train_sha256": file_sha256(train_path),
         "input_and_source_sha256": {**input_hashes, **source_hashes},
         "resource_bounds": {str(k): {name: value for name, value in item.items()
@@ -303,8 +314,9 @@ def prepare_context(*, available_bytes: int | None = None,
                     ledger_context_override: Mapping[str, Any] | None = None) -> dict[str, Any]:
     path, frame, target = _load_train()
     sources, cache_audit = _load_verified_sources(frame)
+    inherited_bundle, inherited_fit_audit = _audit_previous_fit(frame)
     resources = {str(c): _resource_estimate(frame, c, available_bytes) for c in PILOT_ORIGINS}
-    identity = _build_identity(frame, path, cache_audit, resources)
+    identity = _build_identity(frame, path, cache_audit, resources, inherited_fit_audit)
     live_ledger = {"new_ledger_sha256": file_sha256(LEDGER_PATH),
                    "ledger": ledger_summary(LEDGER_PATH)}
     if ledger_context_override is not None:
@@ -315,10 +327,13 @@ def prepare_context(*, available_bytes: int | None = None,
         "available_bytes": int(psutil.virtual_memory().available if available_bytes is None else available_bytes),
         **live_ledger, "old_ledger_sha256": file_sha256(OLD_LEDGER_PATH),
         "resources": resources, "test_files_opened": False, "test_labels_read": False, "kaggle_calls": 0,
+        "inherited_fit_audit": inherited_fit_audit,
     }
     return {"identity": identity, "freeze_signature": canonical_sha256(identity),
             "execution_context": execution, "path": path, "frame": frame, "target": target,
-            "sources": sources, "cache_audit": cache_audit, "resources": resources}
+            "sources": sources, "cache_audit": cache_audit, "resources": resources,
+            "inherited_domain_bundle": inherited_bundle,
+            "inherited_fit_audit": inherited_fit_audit}
 
 
 def preflight() -> dict[str, Any]:
@@ -335,6 +350,7 @@ def preflight() -> dict[str, Any]:
         "freeze_signature": first["freeze_signature"],
         "fit_rows_by_cutoff": first["identity"]["fit_rows_by_cutoff"],
         "cache_lineage": first["cache_audit"], "resources": first["resources"],
+        "inherited_fit_audit": first["inherited_fit_audit"],
         "stable_identity_repeat_check": "PASS",
         "dynamic_context_sensitivity": {
             "ram_changed": first["execution_context"]["available_bytes"] != second["execution_context"]["available_bytes"],
@@ -372,6 +388,7 @@ def freeze() -> dict[str, Any]:
         raise RuntimeError("N04 preflight report does not match the current stable identity")
     execution = dict(context["execution_context"])
     execution["preflight_sha256"] = file_sha256(PREFLIGHT_PATH)
+    execution["inherited_fit_audit"] = context["inherited_fit_audit"]
     payload = {"schema_version": 1, "identity": context["identity"],
                "freeze_signature": context["freeze_signature"],
                "execution_context": execution}
@@ -462,10 +479,17 @@ def _independent_domain(bundle: Any, frame: pd.DataFrame, cutoff: int, parity: i
     cycles = frame.cycle_code.to_numpy(dtype=np.int64)[rows]
     labels = arrays["domain_label"].astype(np.int8)
     probabilities = arrays["prediction"].astype(np.float64)
+    fit_rows = np.flatnonzero(frame.cycle_code.to_numpy(dtype=np.int64) <= cutoff)
+    full_prefix_labels = domain_labels(frame.cycle_code.to_numpy(dtype=np.int64)[fit_rows], cutoff)
+    positions = np.searchsorted(fit_rows, rows)
+    if (np.any(positions >= len(fit_rows))
+            or not np.array_equal(fit_rows[positions], rows)):
+        raise RuntimeError("N04 heldout domain rows do not belong to the declared fit prefix")
+    expected_labels = full_prefix_labels[positions]
     if (not np.array_equal(arrays["score_record_ids"].astype(str),
                            frame.record_id.to_numpy(dtype=str)[rows])
             or not np.array_equal(cycles, arrays["cycle_code"].astype(np.int64))
-            or not np.array_equal(domain_labels(cycles, cutoff), labels)
+            or not np.array_equal(expected_labels, labels)
             or np.any(cycles % 2 != parity) or np.any((probabilities < 0) | (probabilities > 1))):
         raise RuntimeError(f"N04 domain bundle row/label audit failed at {cutoff}/{parity}")
     auc = _independent_auc(labels, probabilities)
@@ -474,6 +498,49 @@ def _independent_domain(bundle: Any, frame: pd.DataFrame, cutoff: int, parity: i
         raise RuntimeError("N04 heldout AUC failed independent reconstruction")
     return {"rows": rows, "ids": arrays["score_record_ids"].astype(str),
             "labels": labels, "probability": probabilities, "cycles": cycles, "auc": auc}
+
+
+def _audit_previous_fit(frame: pd.DataFrame) -> tuple[Any, dict[str, Any]]:
+    old_freeze = json.loads(PREVIOUS_FREEZE_PATH.read_text(encoding="utf-8"))
+    if old_freeze.get("freeze_signature") != canonical_sha256(old_freeze.get("identity")):
+        raise RuntimeError("N04 amendment_01 freeze signature is invalid")
+    old_execution = old_freeze.get("execution_context", {})
+    if (not PREVIOUS_PREFLIGHT_PATH.is_file()
+            or old_execution.get("preflight_sha256") != file_sha256(PREVIOUS_PREFLIGHT_PATH)):
+        raise RuntimeError("N04 amendment_01 preflight report does not match its freeze")
+    old_identity = _bundle_identity(old_freeze["freeze_signature"], 55, "domain", 0)
+    old_bundle_path = PREVIOUS_BUNDLE_ROOT / "fit55" / "domain_even"
+    bundle = read_bundle(old_bundle_path, old_identity, task="classification")
+    checked = _independent_domain(bundle, frame, 55, 0)
+    fit_id = _fit_id("domain", 55, 0)
+    recovery_path = PREVIOUS_RECOVERY_ROOT / "N04_PILOT_55_domain_even.npz"
+    recovery_receipt_path = PREVIOUS_RECOVERY_ROOT / "N04_PILOT_55_domain_even.json"
+    if not recovery_path.is_file() or not recovery_receipt_path.is_file():
+        raise RuntimeError("N04 amendment_01 domain recovery files are absent")
+    recovery_receipt = json.loads(recovery_receipt_path.read_text(encoding="utf-8"))
+    if (recovery_receipt.get("identity") != old_identity
+            or recovery_receipt.get("npz_sha256") != file_sha256(recovery_path)):
+        raise RuntimeError("N04 amendment_01 recovery payload identity/hash failed")
+    with np.load(recovery_path, allow_pickle=False) as archive:
+        recovery_arrays = {key: archive[key].copy() for key in archive.files}
+    if set(recovery_arrays) != set(bundle.arrays) or any(
+            not np.array_equal(recovery_arrays[key], bundle.arrays[key]) for key in bundle.arrays):
+        raise RuntimeError("N04 amendment_01 recovery arrays differ from the published domain bundle")
+    audit = {
+        "status": "PASS", "fit_id": fit_id,
+        "previous_freeze_signature": old_freeze["freeze_signature"],
+        "previous_bundle_receipt_sha256": bundle.receipt["receipt_sha256"],
+        "previous_bundle_npz_sha256": file_sha256(old_bundle_path / "arrays.npz"),
+        "previous_bundle_receipt_file_sha256": file_sha256(old_bundle_path / "receipt.json"),
+        "previous_recovery_npz_sha256": file_sha256(recovery_path),
+        "previous_recovery_receipt_sha256": file_sha256(recovery_receipt_path),
+        "row_ids_cycles_parity_and_full_prefix_labels": "PASS",
+        "recovery_equals_published_arrays": True,
+        "independent_heldout_auc": float(checked["auc"]),
+        "recipe_changed": False,
+        "estimator_refit": False,
+    }
+    return bundle, audit
 
 
 def _recovery_paths(fit_id: str) -> tuple[Path, Path]:
@@ -575,6 +642,13 @@ def _domain_fold(context: Mapping[str, Any], frozen: Mapping[str, Any],
     recovered = _publish_recovery(fit_id, identity, path, "classification", verifier)
     if recovered is not None:
         return recovered
+    if cutoff == 55 and parity == 0:
+        inherited = context.get("inherited_domain_bundle")
+        audit = context.get("inherited_fit_audit", {})
+        if inherited is None or audit.get("status") != "PASS":
+            raise RuntimeError("N04 amendment_02 lacks its independently verified inherited fold")
+        _mark_saved(fit_id, inherited.receipt["receipt_sha256"])
+        return inherited
     events = read_events(LEDGER_PATH)
     if any(event.get("event") == "FIT_STARTED" and event.get("fit_id") == fit_id for event in events):
         raise RuntimeError(f"N04 {fit_id} started without recoverable output; no duplicate fit")
