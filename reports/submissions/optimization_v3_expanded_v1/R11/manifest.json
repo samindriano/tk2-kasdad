@@ -1,0 +1,560 @@
+{
+  "campaign_id": "optimization_v3_expanded_submissions_v1",
+  "candidate": "R11",
+  "csv": {
+    "columns": [
+      "record_id",
+      "threat_rank"
+    ],
+    "ordered_ids_sha256": "0e325676d1e91ac8d594390a6fa44bee70270da489cdcb323b6fc8bff66f01ea",
+    "path_gitignored": "submissions/optimization_v3_expanded_v1/r11.csv",
+    "rows": 29421,
+    "sha256": "44526df74728f2d85b607ad84d92eec7ab94de25f83a9127e72f672ffac7eae1"
+  },
+  "execution_freeze_sha256": "b8d1289a4cc479d0b71f86834c320394656f9037035eb121c30ab9d902693b8b",
+  "execution_freeze_signature": "9237741de7d9c8d21ef2b90ef7f2f8d4074391a34eb4071bfb75d3b06493b165",
+  "execution_head": "62eb622d8b9bc491ed72aa553349dddd5635070f",
+  "fit_audit": {
+    "fit_cycle_max": 79,
+    "fit_cycle_min": 47,
+    "fit_rows": 50608,
+    "fit_seconds": 29.309872899902984,
+    "fitted_state_path_gitignored": "experiments/runs/optimization_v3_expanded_submissions_v1/R11/fit_state.json",
+    "fitted_state_sha256": "63c8678876884c122cc6cc801c90df3da641bd6749219488cc3c9b2bbed7a17c",
+    "predictor_fits": 9,
+    "preprocessing_fit_on_official_train_only": true,
+    "resource_preflight_at_fit": {
+      "allowed_bytes": 6230577152,
+      "available_bytes": 8378060800,
+      "estimate_is_observed_peak": false,
+      "estimated_peak_bytes": 2874105600,
+      "free_reserve_bytes": 2147483648,
+      "job_cap_bytes": 6442450944,
+      "method": "conservative dense SVD design copies, histogram allowance, and estimator/head storage",
+      "single_training_job": true,
+      "status": "PASS",
+      "threads": 2
+    },
+    "test_labels_passed_to_fit": false,
+    "threads": 2,
+    "train_input": {
+      "cycles": [
+        47,
+        79
+      ],
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\data\\raw\\regression\\Train.csv",
+      "rows": 50608,
+      "sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+      "target": "threat_rank"
+    },
+    "validation_labels_passed_to_fit": false
+  },
+  "fit_state": {
+    "categorical_feature_positions": [
+      33,
+      35,
+      37
+    ],
+    "design_sha256": "ab660cf2c85ed773d883b384170b500f96f3776433a0309dacc1e1cc8a3589e0",
+    "design_shape": [
+      50608,
+      72
+    ],
+    "discretization_assumption": "Linear interpolation across adjacent decile thresholds approximates a continuous conditional median. S(0)=1 is valid only when the fit fold has no target equal to 0; fit rejects zero targets. S(100)=0 follows strict y>100 being false.",
+    "fit_data_sha256": "256bd00bd626d812c1b0d0ae0dfdfbe3f3e0b30f410964b0aff46db7bf18fe18",
+    "fit_missing_stream_rows": 3404,
+    "fit_rows": 50608,
+    "head_fit_calls": 9,
+    "head_model_sha256": [
+      "8c08955c1896b23ed6526c807bd940d9926bb5f2c08953c20e4fc6ccdc391bdb",
+      "a3fb650bb5aa622841ed596ce00247af30e916597e2cd716700d634bc5b00168",
+      "61d404245ffa0b810abfb1b8f422d6c7aa9507cf93250d669ead5e6dccb4881b",
+      "a226da04bc0066bb48eb2c3c096f520b9dc1fe31d02cd3d746d81d114df60bcd",
+      "746390914e63fead5b63053df9f10dc368d2c01a37291cd8e8a5ab9a6d0977eb",
+      "396617a16060817b642d1ec47b545be24a7d93f6da8b295f48386917f25a0e6c",
+      "d2aca3f9fdff6517fd835841122ffab3452f3fb919c2de49040fc7766b9b8584",
+      "c719a16ea1e4eb25bc550b4b1c63765c2d9fd5f4e578b757505edfb1d1294848",
+      "9ede2e75cc8de92c8d534fd0e58f4a0e1637ebe8b195c06a3bb764e88a755440"
+    ],
+    "head_parameters": {
+      "deterministic": true,
+      "force_col_wise": true,
+      "learning_rate": 0.05,
+      "metric": "binary_logloss",
+      "min_child_samples": 30,
+      "n_estimators": 250,
+      "n_jobs": 2,
+      "num_leaves": 15,
+      "objective": "binary",
+      "random_state": 42,
+      "reg_lambda": 3.0,
+      "verbosity": -1
+    },
+    "head_tree_summaries": [
+      {
+        "fitted_tree_sha256": "df4f7cebc1b18499e389a669828b3205dfadacf7c9562d6b29c7b5df0be8b744",
+        "maximum_depth": 12,
+        "total_leaves": 3750,
+        "total_nodes": 7250,
+        "trees_fitted": 250
+      },
+      {
+        "fitted_tree_sha256": "750e5eaead327db71682f3e60ee1ee9f6eb93363102d7f7986713c6e182e7173",
+        "maximum_depth": 11,
+        "total_leaves": 3750,
+        "total_nodes": 7250,
+        "trees_fitted": 250
+      },
+      {
+        "fitted_tree_sha256": "e70fb4b45d9b850e3c433d47d1ce8655d40158852c73b7f10f2c886789f6747b",
+        "maximum_depth": 12,
+        "total_leaves": 3750,
+        "total_nodes": 7250,
+        "trees_fitted": 250
+      },
+      {
+        "fitted_tree_sha256": "d75d3da38d06dd239339791a0d8f78cd7957b88135ee330edf0519ab09e61362",
+        "maximum_depth": 11,
+        "total_leaves": 3750,
+        "total_nodes": 7250,
+        "trees_fitted": 250
+      },
+      {
+        "fitted_tree_sha256": "6ec4d266590269c68a5a832ff4416e2fe5703360a9cb56092341ec23983da34e",
+        "maximum_depth": 12,
+        "total_leaves": 3750,
+        "total_nodes": 7250,
+        "trees_fitted": 250
+      },
+      {
+        "fitted_tree_sha256": "a9d04dc5c20a8bf4f2a16c867b98d800a852039e089915cda4da9f8b9273266c",
+        "maximum_depth": 11,
+        "total_leaves": 3750,
+        "total_nodes": 7250,
+        "trees_fitted": 250
+      },
+      {
+        "fitted_tree_sha256": "5c29c17552d7466240e35894696e58fd5e09652559e5748c493aabb8325f01bd",
+        "maximum_depth": 11,
+        "total_leaves": 3750,
+        "total_nodes": 7250,
+        "trees_fitted": 250
+      },
+      {
+        "fitted_tree_sha256": "a4edd76c9e9040718f317d608e7f39e0dafc3ce6ed770b2771987982af66dff7",
+        "maximum_depth": 10,
+        "total_leaves": 3750,
+        "total_nodes": 7250,
+        "trees_fitted": 250
+      },
+      {
+        "fitted_tree_sha256": "60dbd8e9d2ec10724ca6c11595d64efbb75d313501075b3dd5e9565b44f4495e",
+        "maximum_depth": 12,
+        "total_leaves": 3750,
+        "total_nodes": 7250,
+        "trees_fitted": 250
+      }
+    ],
+    "id": "V3_BATCH1_R11_CUMULATIVE_ORDINAL_SVD32",
+    "input_feature_names": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code",
+      "signal_stream"
+    ],
+    "lightgbm_version": "4.6.0",
+    "median_rule": "row-wise nonincreasing PAVA; interpolate where survival probability crosses 0.5 on grid 0,10,...,100",
+    "minimum_class_support": 100,
+    "predictor_fit_calls": 9,
+    "scikit_learn_version": "1.8.0",
+    "state_sha256": "ec48fe182c41679bf0d194a1321e3a2999c22d75fbd236729d8bd0ea14cb404b",
+    "structured_state": {
+      "categorical_feature_names": [
+        "org_code__ordinal",
+        "module_code__ordinal",
+        "pattern_code__ordinal"
+      ],
+      "category_counts": {
+        "module_code": {
+          "encoded_categories": 105,
+          "infrequent_categories": 14412,
+          "max_categories": 254,
+          "min_frequency": 30,
+          "observed_unique": 14516,
+          "training_missing_rows": 4044,
+          "training_rows": 50608
+        },
+        "org_code": {
+          "encoded_categories": 166,
+          "infrequent_categories": 8445,
+          "max_categories": 254,
+          "min_frequency": 30,
+          "observed_unique": 8610,
+          "training_missing_rows": 2686,
+          "training_rows": 50608
+        },
+        "pattern_code": {
+          "encoded_categories": 116,
+          "infrequent_categories": 380,
+          "max_categories": 254,
+          "min_frequency": 30,
+          "observed_unique": 495,
+          "training_missing_rows": 8183,
+          "training_rows": 50608
+        }
+      },
+      "numeric_imputer_medians": {
+        "cycle_code": 65.0,
+        "cycle_code__missing": 0.0,
+        "cycle_code__parsefail": 0.0,
+        "entry_friction": 0.0,
+        "entry_friction__missing": 0.0,
+        "entry_friction__parsefail": 0.0,
+        "impact_load": 110.5078,
+        "impact_load__missing": 0.0,
+        "impact_load__parsefail": 0.0,
+        "module_code__missing": 0.0,
+        "module_spread": 1.0,
+        "module_spread__approximate": 0.0,
+        "module_spread__missing": 0.0,
+        "module_spread__parsefail": 0.0,
+        "module_spread__suffix_present": 0.0,
+        "org_code__missing": 0.0,
+        "org_spread": 1.0,
+        "org_spread__approximate": 0.0,
+        "org_spread__missing": 0.0,
+        "org_spread__parsefail": 0.0,
+        "org_spread__suffix_present": 0.0,
+        "pattern_code__missing": 0.0,
+        "scope_pressure": 70.0833,
+        "scope_pressure__missing": 0.0,
+        "scope_pressure__parsefail": 0.0,
+        "scope_trace": 1.0,
+        "scope_trace__approximate": 0.0,
+        "scope_trace__missing": 0.0,
+        "scope_trace__parsefail": 0.0,
+        "scope_trace__suffix_present": 0.0,
+        "telemetry_flag": 0.0,
+        "telemetry_flag__missing": 0.0,
+        "telemetry_flag__unknown": 0.0,
+        "text_load": 31.3103,
+        "text_load__missing": 0.0,
+        "text_load__parsefail": 0.0
+      },
+      "ordinal_encoder": {
+        "dtype": "float64",
+        "encoded_missing_value": -1,
+        "handle_unknown": "use_encoded_value",
+        "max_categories": 254,
+        "min_frequency": 30,
+        "unknown_value": -1
+      },
+      "transformed_feature_names": [
+        "impact_load",
+        "impact_load__parsefail",
+        "impact_load__missing",
+        "entry_friction",
+        "entry_friction__parsefail",
+        "entry_friction__missing",
+        "cycle_code",
+        "cycle_code__parsefail",
+        "cycle_code__missing",
+        "scope_pressure",
+        "scope_pressure__parsefail",
+        "scope_pressure__missing",
+        "text_load",
+        "text_load__parsefail",
+        "text_load__missing",
+        "scope_trace",
+        "scope_trace__approximate",
+        "scope_trace__suffix_present",
+        "scope_trace__parsefail",
+        "scope_trace__missing",
+        "org_spread",
+        "org_spread__approximate",
+        "org_spread__suffix_present",
+        "org_spread__parsefail",
+        "org_spread__missing",
+        "module_spread",
+        "module_spread__approximate",
+        "module_spread__suffix_present",
+        "module_spread__parsefail",
+        "module_spread__missing",
+        "telemetry_flag",
+        "telemetry_flag__unknown",
+        "telemetry_flag__missing",
+        "org_code__ordinal",
+        "org_code__missing",
+        "module_code__ordinal",
+        "module_code__missing",
+        "pattern_code__ordinal",
+        "pattern_code__missing"
+      ]
+    },
+    "svd_components_sha256": "473a3a1799f57b4f4f67b6d9df00e17d71b9df7d7a60cd1cc1772109f364c9df",
+    "svd_explained_variance_ratio": [
+      0.005114931221810622,
+      0.014462457836922635,
+      0.012438419054439199,
+      0.01108370251672618,
+      0.009552456662922695,
+      0.006950567060343978,
+      0.006615583763737273,
+      0.006264916058660534,
+      0.00564939886507862,
+      0.005457150119825183,
+      0.005332040206131351,
+      0.005066454170273319,
+      0.004915332467721106,
+      0.004446669498617647,
+      0.00394647169898464,
+      0.0037700903523936987,
+      0.003603921747545838,
+      0.003316719897728306,
+      0.003230751288417569,
+      0.0030865181152385465,
+      0.0030463695317858885,
+      0.0029383185504872314,
+      0.0028679666051760924,
+      0.0027850427086652126,
+      0.002654193967982476,
+      0.002595775971223731,
+      0.0025287530522437557,
+      0.002437150373622907,
+      0.0024168223419896223,
+      0.0023664110998750597,
+      0.002327514866170092,
+      0.002288959693427286
+    ],
+    "svd_parameters": {
+      "algorithm": "randomized",
+      "n_components": 32,
+      "n_iter": 7,
+      "random_state": 42
+    },
+    "target_range": [
+      0.0428,
+      100.0
+    ],
+    "target_sha256": "fcc525041fddf7475050479699629520bbd70d794960e3a4ecf8cf88c51e536b",
+    "test_data_used": false,
+    "tfidf": {
+      "fallback": null,
+      "idf_sha256": "f5acab796ecff5d0eedbbe4bcd072defdeae6682c6982dd14a0404944c2dcd70",
+      "parameters": {
+        "analyzer": "word",
+        "binary": false,
+        "decode_error": "strict",
+        "dtype": "<class 'numpy.float64'>",
+        "encoding": "utf-8",
+        "input": "content",
+        "lowercase": true,
+        "max_df": 1.0,
+        "max_features": 20000,
+        "min_df": 2,
+        "ngram_range": [
+          1,
+          2
+        ],
+        "norm": "l2",
+        "preprocessor": null,
+        "smooth_idf": true,
+        "stop_words": null,
+        "strip_accents": null,
+        "sublinear_tf": true,
+        "token_pattern": "(?u)\\b\\w\\w+\\b",
+        "tokenizer": null,
+        "use_idf": true,
+        "vocabulary": null
+      },
+      "vocabulary_sha256": "724178ef47d6e589ee1b1dd3310e540deccc67c5ffb13c9e45505d038a8b986f",
+      "vocabulary_size": 20000
+    },
+    "threshold_support": {
+      "10": {
+        "negative": 5058,
+        "positive": 45550
+      },
+      "20": {
+        "negative": 10100,
+        "positive": 40508
+      },
+      "30": {
+        "negative": 15172,
+        "positive": 35436
+      },
+      "40": {
+        "negative": 20222,
+        "positive": 30386
+      },
+      "50": {
+        "negative": 25298,
+        "positive": 25310
+      },
+      "60": {
+        "negative": 30346,
+        "positive": 20262
+      },
+      "70": {
+        "negative": 35400,
+        "positive": 15208
+      },
+      "80": {
+        "negative": 40469,
+        "positive": 10139
+      },
+      "90": {
+        "negative": 45541,
+        "positive": 5067
+      }
+    },
+    "thresholds": [
+      10,
+      20,
+      30,
+      40,
+      50,
+      60,
+      70,
+      80,
+      90
+    ],
+    "validation_data_passed_to_fit": false,
+    "validation_labels_passed_to_fit": false
+  },
+  "official_input_hashes": {
+    "sample": "63a51f4b7dfbb0eec9800099407abd8be14d25ec18a533cd39dc854ffc190a32",
+    "test": "4e6c381d582ed24f92d17f620f4f0ad25e2e0def29eb57a91a5482867f6afe3c",
+    "train": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082"
+  },
+  "prediction_artifact": {
+    "path_gitignored": "experiments/runs/optimization_v3_expanded_submissions_v1/R11/predictions.npz",
+    "sha256": "da290fdc1456744293a8484a6091b84bd455f2673b20ac7d0f6c235f61ff8a26"
+  },
+  "prediction_audit": {
+    "champion_reuse": {
+      "champion_reference": "57835122",
+      "components": [
+        {
+          "fit_rows": 50608,
+          "model": "lgb",
+          "prediction_sha256": "8cc839f49b2ac22d9d6bae1ba6922c9e53b8ea51185437ab4ff6df5c42deff34"
+        },
+        {
+          "fit_rows": 50608,
+          "model": "ridge",
+          "prediction_sha256": "204d5c343b4ef5392c9d8c7e224ef3d9161d63e47fb24615211459e0458e7475"
+        },
+        {
+          "fit_rows": 50608,
+          "model": "lgbm_sparse_l1",
+          "prediction_sha256": "66c3c631c7785c53c5946980b459b06e197e0e59b9baf9f2dfc231296cdd6c60"
+        }
+      ],
+      "csv_sha256": "8fcbe15be832be339b1604efb9c17d02c5dfc7b57853ccf2de4fbe7000c77591",
+      "manifest_sha256": "dd166e92089f24978244496a9a0afabc0d06551dbdc326579a7c898a8844e19a",
+      "prediction_sha256": "57097f6be90301a87cba673482e23a75afb764261d10ec18f8a46f9cf4138cf1",
+      "public_MAE": 11.3597,
+      "source_code_sha256_verified_count": 53,
+      "source_commit": "3e86b173f035afca0bbc636964e367ae21b32c27"
+    },
+    "cycle_rows": {
+      "80": 1060,
+      "81": 1618,
+      "82": 2474,
+      "83": 2823,
+      "84": 2763,
+      "85": 2338,
+      "86": 2616,
+      "87": 2472,
+      "88": 2242,
+      "89": 3051,
+      "90": 3317,
+      "91": 2647
+    },
+    "mapped_component_range": [
+      2.76298489401096,
+      97.4058337955219
+    ],
+    "mapping": "row-wise PAVA; interpolate conditional median; rank50 once per complete Test cycle with average ties",
+    "prediction_range": [
+      0.9541479963919818,
+      99.35145844888048
+    ],
+    "prediction_sha256": "97fe221a344820230dcdca63e97cabd4e7c7e2938c4abcdcba05a390e0e79a98"
+  },
+  "qualification": {
+    "performance_gate_outcome": "UNKNOWN_NOT_EVALUATED",
+    "reason": "Continuation model bundles were not persisted; no R11 continuation scores were opened.",
+    "status": "EXPERIMENTAL_GATE_EXCEPTION"
+  },
+  "recipe": {
+    "blend": "clip(0.75*three-component champion + 0.25*R11 rank50, 0, 100)",
+    "feature_allowlist": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code",
+      "signal_stream"
+    ],
+    "fit_predictors": 9,
+    "head_parameters": {
+      "deterministic": true,
+      "force_col_wise": true,
+      "learning_rate": 0.05,
+      "metric": "binary_logloss",
+      "min_child_samples": 30,
+      "n_estimators": 250,
+      "n_jobs": 2,
+      "num_leaves": 15,
+      "objective": "binary",
+      "random_state": 42,
+      "reg_lambda": 3.0,
+      "verbosity": -1
+    },
+    "model": "CumulativeOrdinalSVD32",
+    "postprocessing": "row-wise PAVA; interpolate conditional median; rank50 once per complete Test cycle with average ties",
+    "preprocessing": "fit structured/OHE, TF-IDF and SVD32 once on all official Train",
+    "task": "regression",
+    "thresholds": [
+      10,
+      20,
+      30,
+      40,
+      50,
+      60,
+      70,
+      80,
+      90
+    ]
+  },
+  "sample_submission_rows": 29421,
+  "source_commit": "c72dd1eaa9c2567d17349895e8c857cdc2e0486e",
+  "status": "PREPARED_VALIDATED_NOT_SUBMITTED",
+  "submission": {
+    "attempted": false,
+    "public_score": null,
+    "reason": "No authenticated Kaggle API/CLI runtime; live rules, quota and ledger not checked.",
+    "submission_ref": null
+  },
+  "task": "regression",
+  "test_rows": 29421,
+  "test_used_only_for_inference": true
+}
