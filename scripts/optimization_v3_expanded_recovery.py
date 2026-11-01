@@ -34,13 +34,15 @@ from src.models.optimization_v3_batch1 import (
 
 PARENT_FREEZE_PATH = base.FREEZE_PATH
 PARENT_PREFLIGHT_PATH = base.PREFLIGHT_PATH
-CAMPAIGN_ID = "optimization_v3_expanded_benchmark_v1_serialization_recovery"
-RECOVERY_EXPERIMENT_DIR = ROOT / "experiments/optimization_v3/expanded_benchmark_v1_recovery"
-RECOVERY_REPORT_DIR = ROOT / "reports/optimization_v3/expanded_benchmark_v1_recovery"
-RECOVERY_RUN_DIR = ROOT / "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery"
+CAMPAIGN_ID = "optimization_v3_expanded_benchmark_v1_serialization_recovery_v2"
+RECOVERY_EXPERIMENT_DIR = ROOT / "experiments/optimization_v3/expanded_benchmark_v1_recovery_v2"
+RECOVERY_REPORT_DIR = ROOT / "reports/optimization_v3/expanded_benchmark_v1_recovery_v2"
+RECOVERY_RUN_DIR = ROOT / "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2"
 FREEZE_PATH = RECOVERY_EXPERIMENT_DIR / "freeze.json"
 PREFLIGHT_PATH = RECOVERY_REPORT_DIR / "preflight.json"
 RUN_REPORT_PATH = RECOVERY_REPORT_DIR / "run_receipt.json"
+PREVIOUS_RECOVERY_FREEZE = ROOT / "experiments/optimization_v3/expanded_benchmark_v1_recovery/freeze.json"
+PREVIOUS_RECOVERY_RUN_REPORT = ROOT / "reports/optimization_v3/expanded_benchmark_v1_recovery/run_receipt.json"
 RESERVATION_KEY = "EXPANDED_BENCHMARK_SERIALIZATION_RECOVERY:R21_R06"
 RESERVATION_CARD = "R21+R06_SERIALIZATION_RECOVERY"
 RECOVERY_CANDIDATES = ("R21", "R06")
@@ -131,7 +133,9 @@ def prepare() -> dict[str, Any]:
                 or prior_identity.get("source_sha256") != sources
                 or prior_identity.get("input_sha256") != inputs
                 or prior_identity.get("recovery_runner_sha256") != file_sha256(Path(__file__))
-                or prior_identity.get("parent_freeze_sha256") != file_sha256(PARENT_FREEZE_PATH)):
+                or prior_identity.get("parent_freeze_sha256") != file_sha256(PARENT_FREEZE_PATH)
+                or prior_identity.get("previous_recovery_freeze_sha256") != file_sha256(PREVIOUS_RECOVERY_FREEZE)
+                or prior_identity.get("previous_recovery_run_report_sha256") != file_sha256(PREVIOUS_RECOVERY_RUN_REPORT)):
             raise RecoveryError("Existing recovery freeze no longer matches source/input state")
         return {"status": prior_preflight.get("status"),
                 "freeze_signature": prior_signature,
@@ -152,9 +156,30 @@ def prepare() -> dict[str, Any]:
                          for card in current_resources.values() for item in card.values())
 
     ledger = base._ledger_budget()
-    if ledger["reserved_predictor_fits"] != 167:
-        raise RecoveryError(f"Expected 167 existing reserved fits, got {ledger['reserved_predictor_fits']}")
-    projected = ledger["reserved_predictor_fits"] + PREVIOUS_OFFLEDGER_FULL_TRAIN_FITS + RETRY_PREDICTOR_FITS
+    expected_reservation = [RETRY_PREDICTOR_FITS, RESERVATION_CARD]
+    existing_reservation = ledger["reservation_keys"].get(RESERVATION_KEY)
+    if ledger["reserved_predictor_fits"] == 167 and existing_reservation is None:
+        reservation_mode = "NEW_RESERVATION_REQUIRED"
+    elif ledger["reserved_predictor_fits"] == 175 and existing_reservation == expected_reservation:
+        reservation_mode = "REUSE_EXISTING_NO_FIT_STARTED"
+    else:
+        raise RecoveryError(f"Retry reservation or ledger is ambiguous: {ledger}")
+    previous_receipt = _read_json(PREVIOUS_RECOVERY_RUN_REPORT)
+    previous_freeze = _read_json(PREVIOUS_RECOVERY_FREEZE)
+    if (previous_receipt.get("status") != "RECOVERY_PARTIAL"
+            or previous_receipt.get("receipts")
+            or len(previous_receipt.get("errors", [])) != RETRY_PREDICTOR_FITS
+            or any(error.get("error_type") != "KeyError"
+                   or error.get("error") != "'resource_preflight'"
+                   for error in previous_receipt.get("errors", []))
+            or previous_freeze.get("signature") != json_sha256(previous_freeze.get("identity", {}))):
+        raise RecoveryError("Previous recovery attempt is not the expected pre-fit path-field failure")
+    prior_events = [json.loads(line) for line in base.LEDGER_PATH.read_text(encoding="utf-8").splitlines()
+                    if line.strip() and json.loads(line).get("campaign_id") == previous_freeze["identity"]["campaign_id"]]
+    if any(event.get("event") == "EXPANDED_CONTINUATION_FIT_STARTED" for event in prior_events):
+        raise RecoveryError("Previous recovery recorded a fit start; retry reservation cannot be reused")
+    projected = (ledger["reserved_predictor_fits"] + PREVIOUS_OFFLEDGER_FULL_TRAIN_FITS
+                 + (RETRY_PREDICTOR_FITS if reservation_mode == "NEW_RESERVATION_REQUIRED" else 0))
     if projected > GLOBAL_CAP:
         raise RecoveryError(f"Retry reservation would exceed cap: projected {projected}/{GLOBAL_CAP}")
 
@@ -166,6 +191,8 @@ def prepare() -> dict[str, Any]:
         "parent_freeze_signature": parent_signature,
         "parent_freeze_sha256": file_sha256(PARENT_FREEZE_PATH),
         "parent_preflight_sha256": file_sha256(PARENT_PREFLIGHT_PATH),
+        "previous_recovery_freeze_sha256": file_sha256(PREVIOUS_RECOVERY_FREEZE),
+        "previous_recovery_run_report_sha256": file_sha256(PREVIOUS_RECOVERY_RUN_REPORT),
         "source_head_before_freeze": _source_commit(),
         "recovery_runner_sha256": file_sha256(Path(__file__)),
         "source_sha256": sources,
@@ -178,6 +205,7 @@ def prepare() -> dict[str, Any]:
             "retry_candidates": list(RECOVERY_CANDIDATES),
             "cutoffs": list(base.NEW_CUTOFFS),
             "predictor_fits": RETRY_PREDICTOR_FITS,
+            "reservation_mode": reservation_mode,
             "r11_status": "BLOCKED_RETRY_BUDGET: 36 predictor fits would exceed remaining retry allowance of 11",
             "reused_valid_classification_bundles": class_bundles,
             "no_new_candidate_or_recipe": True,
@@ -189,7 +217,8 @@ def prepare() -> dict[str, Any]:
         "recovery_budget": {
             "prior_reserved": ledger["reserved_predictor_fits"],
             "prior_completed_offledger_full_train": PREVIOUS_OFFLEDGER_FULL_TRAIN_FITS,
-            "new_retry_reservation": RETRY_PREDICTOR_FITS,
+            "retry_reservation": RETRY_PREDICTOR_FITS,
+            "reservation_mode": reservation_mode,
             "projected_total_with_reservation": projected,
             "global_cap": GLOBAL_CAP,
             "remaining_after_recovery_reservation": GLOBAL_CAP - projected,
@@ -226,7 +255,13 @@ def prepare() -> dict[str, Any]:
         "reservation": {"budget_key": RESERVATION_KEY,
                         "card_id": RESERVATION_CARD,
                         "predictor_fits": RETRY_PREDICTOR_FITS,
-                        "reserved": False},
+                        "reserved": reservation_mode == "REUSE_EXISTING_NO_FIT_STARTED",
+                        "mode": reservation_mode},
+        "resource_preflight": {
+            "by_candidate_cutoff": {
+                card: estimates[card] for card in RECOVERY_CANDIDATES
+            }
+        },
         "class_bundles_verified_and_reused": class_bundles,
         "no_scores_or_test_access": True,
     }
@@ -269,6 +304,9 @@ def _verify_recovery_freeze() -> tuple[dict[str, Any], dict[str, Any], dict[str,
         raise RecoveryError("Committed recovery source revision differs from the frozen code commit")
     if file_sha256(PARENT_FREEZE_PATH) != identity.get("parent_freeze_sha256"):
         raise RecoveryError("Parent v1 freeze changed after recovery freeze")
+    if (file_sha256(PREVIOUS_RECOVERY_FREEZE) != identity.get("previous_recovery_freeze_sha256")
+            or file_sha256(PREVIOUS_RECOVERY_RUN_REPORT) != identity.get("previous_recovery_run_report_sha256")):
+        raise RecoveryError("Previous pre-fit recovery evidence changed after recovery freeze")
     return identity, cls_context, reg_context, preflight
 
 
