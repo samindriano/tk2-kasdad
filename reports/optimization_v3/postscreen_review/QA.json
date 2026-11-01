@@ -1,0 +1,38 @@
+{
+  "source_checkpoint": "49b3fdf4d9ef027f1c1cbbb6bbec03dce6a495cf",
+  "status": "PASS_WITH_DECLARED_COVERAGE_LIMITS",
+  "cards_documented": 45,
+  "standard_cards_recomputed": 35,
+  "artifact_hash_checks": 220,
+  "metric_comparisons": 70,
+  "repeat_run_byte_identical": true,
+  "local_markdown_links_exist": true,
+  "unit_tests": "5 passed; tests/test_optimization_v3_postscreen_review.py",
+  "plots_visually_inspected": [
+    "01_horizon_gains.png",
+    "02_cycle_gains.png",
+    "03_regression_groups.png"
+  ],
+  "original_tracked_files_changed": [],
+  "fits": 0,
+  "test_files_opened": 0,
+  "kaggle_calls": 0,
+  "campaign_status": "PAUSED_FOR_REVIEW",
+  "limitations": [
+    "35 STANDARD cards recomputed; remaining10 use historical reports/skip evidence",
+    "No training replay",
+    "Posthoc diagnostics use development labels; new origins are not untouched row holdout",
+    "R12 route and extra gate proposed only, not frozen/reserved/approved for execution"
+  ],
+  "output_sha256": {
+    "reports\\optimization_v3\\postscreen_review\\01_horizon_gains.png": "76fc1c5f30e6008c957f18c5de137b2ec95f3c5b46391b62048f7d99aa45157e",
+    "reports\\optimization_v3\\postscreen_review\\02_cycle_gains.png": "417fe703744ffade729a7c1bb5f2a11a4b5f36e68e147ee80bdf7d621b7ee171",
+    "reports\\optimization_v3\\postscreen_review\\03_regression_groups.png": "c909b777abd3ef41f6f5fe2f5256cf63f9f83ea36ab8365396eddfeaaa02a8df",
+    "reports\\optimization_v3\\postscreen_review\\diagnostics.json": "1ecc843d44361210607f9d4ea3f60e8c241923965d9dbc8e89cb1856ee6a3331",
+    "reports\\optimization_v3\\postscreen_review\\view_metrics.csv": "f5212f61adf3c8a2a47c2c122015d8da6518b4655cdd792822039ae07fe0791b"
+  },
+  "independent_read_only_reviews": {
+    "classification": "APPROVE_WITH_LIMITS; clarified four-origin disjoint windows and n=29524 before freeze",
+    "regression": "APPROVE_WITH_LIMITS; additional rescue gate is prospective only; no untouched-label claim"
+  }
+}
