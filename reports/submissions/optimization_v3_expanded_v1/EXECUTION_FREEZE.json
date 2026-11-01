@@ -1,0 +1,498 @@
+{
+  "campaign_id": "optimization_v3_expanded_submissions_v1",
+  "created_at_utc": "2026-11-01T14:07:01.184502+00:00",
+  "identity": {
+    "budget": {
+      "active_reserved_predictor_fits": 175,
+      "current_effective_total_including_prior": 177,
+      "global_cap": 180,
+      "ledger_event_rows": 227,
+      "ledger_sha256": "fb238a923b3a25475a1bda4e234b2886224c5a41390055a2f54c28ce2ba72b0f",
+      "new_fulltrain_fit_plan": {
+        "C11": 1,
+        "C17": 1,
+        "R06_ORIGINAL": 1,
+        "R11": 9,
+        "R21": 1
+      },
+      "new_fulltrain_fit_total": 13,
+      "new_fulltrain_fits_included_in_original_65": 13,
+      "original_expanded_reservation": 65,
+      "previous_offledger_c16_r22_fulltrain_fits": 2,
+      "r11_continuation_retry": "PROHIBITED; requires 36 fits, exceeds current 3-fit headroom",
+      "recovery_reservation": 8,
+      "remaining_capacity_after_reserved_and_prior": 3,
+      "test_or_public_score_used_for_selection": false
+    },
+    "continuation_candidates": [
+      "C17",
+      "C11",
+      "R21",
+      "R06"
+    ],
+    "existing_c16_r22_reuse_audit": {
+      "candidates": {
+        "C16": {
+          "csv_sha256": "6cae193f6e1d301cb9ee8556a1eac649b3940e86280180373a0f31235fd3db60",
+          "fit_rows": 50608,
+          "predictor_fits": 1,
+          "reused_full_train_components": {
+            "cache_sha256": "31ef6945ae74a14b1e4ff46220667ac3a08de3401120257e7932745c927d6103",
+            "manifest_sha256": "6e7c2cb50fe6d0ee4767a44c40f152b6538b933fab6cf7082659b16d791f7d1e",
+            "missing_mask_sha256": "b231070591a04ae02d45f42b90bb5a303090c249c33e65fb8c86080410fc38b1",
+            "reused_models": {
+              "C2_B": {
+                "fit_rows": 50608,
+                "prediction_sha256": "49758d1c61d68847a21b0e9dd7f5765513320dedc7359c47f715441725e6fb70"
+              },
+              "CB_MISSING": {
+                "fit_rows": 50608,
+                "prediction_sha256": "0779620b5f5b436fbce03e4270e3ea06045eb9f9cd89c831aea4adddd0a482bf"
+              }
+            },
+            "source_code_sha256_verified_count": 58,
+            "source_commit": "75ff5bd10187679a2468030bd5791b6b7a5961fe"
+          },
+          "rows": 29421,
+          "status": "PREPARED_VALIDATED_NOT_SUBMITTED"
+        },
+        "R22_ORIGINAL": {
+          "csv_sha256": "0bd99ee1524a87a7a38fa6e4178ed2da0197759179297bf05b4ac67bfe4bbeab",
+          "fit_rows": 50608,
+          "predictor_fits": 1,
+          "reused_full_train_components": {},
+          "rows": 29421,
+          "status": "PREPARED_VALIDATED_NOT_SUBMITTED"
+        }
+      },
+      "status": "PREPARED_BLOCKED_AUTH_AND_LIVE_PREFLIGHT",
+      "status_path": "reports/submissions/c16_r22/SUBMISSION_STATUS.json",
+      "status_sha256": "ac2dd3f3a41c896e1e606b48a8987b44504cc1bcf5660a2c4dedfad6b454e8f0",
+      "submission_refs": {
+        "C16": null,
+        "R22_ORIGINAL": null
+      },
+      "upload_attempted": false
+    },
+    "final_continuation_evaluation_sha256": "1aedca15ef6e31f531243eed6fb77949a157dbb5ef23cf3aa814796f2728f073",
+    "kaggle_live_rules_quota_ledger_checked": false,
+    "kaggle_runtime_inventory": {
+      "cli_path": null,
+      "credential_values_read": false,
+      "kaggle_environment_variable_names": [],
+      "live_api_checked": false,
+      "python_module_available": false,
+      "standard_token_file_present": false
+    },
+    "new_continuation_fulltrain_plan": [
+      {
+        "candidate": "C17",
+        "predictor_fits": 1,
+        "recipe": {
+          "feature_allowlist": [
+            "impact_load",
+            "entry_friction",
+            "cycle_code",
+            "scope_pressure",
+            "text_load",
+            "scope_trace",
+            "org_spread",
+            "module_spread",
+            "telemetry_flag",
+            "org_code",
+            "module_code",
+            "pattern_code",
+            "signal_stream"
+          ],
+          "fit_predictors": 1,
+          "lightgbm_parameters": {
+            "deterministic": true,
+            "force_col_wise": true,
+            "learning_rate": 0.05,
+            "min_child_samples": 100,
+            "n_estimators": 600,
+            "n_jobs": 2,
+            "num_leaves": 15,
+            "objective": "binary",
+            "random_state": 42,
+            "reg_alpha": 0.0,
+            "reg_lambda": 5.0,
+            "verbosity": -1
+          },
+          "model": "LongerRegularizedSparseClassifier",
+          "preprocessing_fit_on": "all 50,608 official Train rows",
+          "route": "present: 0.75*C2_B + 0.25*C17; missing: CB_MISSING",
+          "task": "classification",
+          "tfidf_parameters": {
+            "dtype": "float64",
+            "lowercase": true,
+            "max_df": 0.995,
+            "max_features": 20000,
+            "min_df": 3,
+            "ngram_range": [
+              1,
+              2
+            ],
+            "strip_accents": "unicode",
+            "sublinear_tf": true
+          },
+          "threshold": 0.5
+        }
+      },
+      {
+        "candidate": "C11",
+        "predictor_fits": 1,
+        "recipe": {
+          "char_tfidf_parameters": {
+            "analyzer": "char_wb",
+            "dtype": "float64",
+            "lowercase": true,
+            "max_features": 30000,
+            "min_df": 3,
+            "ngram_range": [
+              3,
+              5
+            ],
+            "strip_accents": "unicode",
+            "sublinear_tf": true
+          },
+          "feature_allowlist": [
+            "impact_load",
+            "entry_friction",
+            "cycle_code",
+            "scope_pressure",
+            "text_load",
+            "scope_trace",
+            "org_spread",
+            "module_spread",
+            "telemetry_flag",
+            "org_code",
+            "module_code",
+            "pattern_code",
+            "signal_stream"
+          ],
+          "fit_predictors": 1,
+          "lightgbm_parameters": {
+            "deterministic": true,
+            "force_col_wise": true,
+            "learning_rate": 0.05,
+            "min_child_samples": 50,
+            "n_estimators": 400,
+            "n_jobs": 2,
+            "num_leaves": 15,
+            "objective": "binary",
+            "random_state": 42,
+            "reg_alpha": 0.0,
+            "reg_lambda": 3.0,
+            "verbosity": -1
+          },
+          "model": "WordCharSparseClassifier",
+          "preprocessing_fit_on": "all 50,608 official Train rows",
+          "route": "present: 0.75*C2_B + 0.25*C11; missing: CB_MISSING",
+          "task": "classification",
+          "threshold": 0.5,
+          "word_tfidf_parameters": {
+            "dtype": "float64",
+            "lowercase": true,
+            "max_df": 0.995,
+            "max_features": 20000,
+            "min_df": 3,
+            "ngram_range": [
+              1,
+              2
+            ],
+            "strip_accents": "unicode",
+            "sublinear_tf": true
+          }
+        }
+      },
+      {
+        "candidate": "R21",
+        "predictor_fits": 1,
+        "recipe": {
+          "blend": "clip(0.75*three-component champion + 0.25*R21 rank50, 0, 100)",
+          "feature_allowlist": [
+            "impact_load",
+            "entry_friction",
+            "cycle_code",
+            "scope_pressure",
+            "text_load",
+            "scope_trace",
+            "org_spread",
+            "module_spread",
+            "telemetry_flag",
+            "org_code",
+            "module_code",
+            "pattern_code",
+            "signal_stream"
+          ],
+          "fit_predictors": 1,
+          "mapping": "one rank50 mapping per complete Test cycle using average ties; clip mapped component [0,100]",
+          "model": "XGBoostSVD32Regressor",
+          "preprocessing": "fit structured/OHE, TF-IDF and SVD32 on all official Train",
+          "task": "regression",
+          "xgboost_parameters": {
+            "colsample_bytree": 0.8,
+            "device": "cpu",
+            "learning_rate": 0.05,
+            "max_depth": 4,
+            "min_child_weight": 20,
+            "n_estimators": 600,
+            "n_jobs": 2,
+            "objective": "reg:absoluteerror",
+            "random_state": 42,
+            "reg_lambda": 5.0,
+            "subsample": 1.0,
+            "tree_method": "hist",
+            "verbosity": 0
+          }
+        }
+      },
+      {
+        "candidate": "R11",
+        "predictor_fits": 9,
+        "recipe": {
+          "blend": "clip(0.75*three-component champion + 0.25*R11 rank50, 0, 100)",
+          "feature_allowlist": [
+            "impact_load",
+            "entry_friction",
+            "cycle_code",
+            "scope_pressure",
+            "text_load",
+            "scope_trace",
+            "org_spread",
+            "module_spread",
+            "telemetry_flag",
+            "org_code",
+            "module_code",
+            "pattern_code",
+            "signal_stream"
+          ],
+          "fit_predictors": 9,
+          "head_parameters": {
+            "deterministic": true,
+            "force_col_wise": true,
+            "learning_rate": 0.05,
+            "metric": "binary_logloss",
+            "min_child_samples": 30,
+            "n_estimators": 250,
+            "n_jobs": 2,
+            "num_leaves": 15,
+            "objective": "binary",
+            "random_state": 42,
+            "reg_lambda": 3.0,
+            "verbosity": -1
+          },
+          "model": "CumulativeOrdinalSVD32",
+          "postprocessing": "row-wise PAVA; interpolate conditional median; rank50 once per complete Test cycle with average ties",
+          "preprocessing": "fit structured/OHE, TF-IDF and SVD32 once on all official Train",
+          "task": "regression",
+          "thresholds": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70,
+            80,
+            90
+          ]
+        }
+      },
+      {
+        "candidate": "R06_ORIGINAL",
+        "predictor_fits": 1,
+        "recipe": {
+          "blend": "clip(0.75*three-component champion + 0.25*R06 rank50, 0, 100)",
+          "char_tfidf_parameters": {
+            "analyzer": "char_wb",
+            "dtype": "float64",
+            "max_features": 30000,
+            "min_df": 3,
+            "ngram_range": [
+              3,
+              5
+            ],
+            "sublinear_tf": true
+          },
+          "feature_allowlist": [
+            "impact_load",
+            "entry_friction",
+            "cycle_code",
+            "scope_pressure",
+            "text_load",
+            "scope_trace",
+            "org_spread",
+            "module_spread",
+            "telemetry_flag",
+            "org_code",
+            "module_code",
+            "pattern_code",
+            "signal_stream"
+          ],
+          "fit_predictors": 1,
+          "lightgbm_parameters": {
+            "boosting_type": "gbdt",
+            "colsample_bytree": 1.0,
+            "deterministic": true,
+            "force_col_wise": true,
+            "learning_rate": 0.05,
+            "max_depth": -1,
+            "min_child_samples": 40,
+            "min_child_weight": 0.001,
+            "n_estimators": 400,
+            "n_jobs": 2,
+            "num_leaves": 31,
+            "objective": "regression_l1",
+            "random_state": 42,
+            "reg_alpha": 0.0,
+            "reg_lambda": 1.0,
+            "subsample": 1.0,
+            "subsample_freq": 0,
+            "verbosity": -1
+          },
+          "mapping": "one rank50 mapping per complete Test cycle using average ties",
+          "model": "R06CharacterSparseL1Hybrid",
+          "row_population": "all Train and Test rows; no present-only routing",
+          "task": "regression"
+        }
+      }
+    ],
+    "official_input_hashes_including_test_and_sample_bytes_only": {
+      "classification": {
+        "paths": {
+          "sample": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\data\\raw\\classification\\SampleSubmission.csv",
+          "test": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\data\\raw\\classification\\Test.csv",
+          "train": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\data\\raw\\classification\\Train.csv"
+        },
+        "sha256": {
+          "sample": "889f97d69659a64945421d841dcf96e5813020606f29b2992d4b9560cecdcba7",
+          "test": "4e6c381d582ed24f92d17f620f4f0ad25e2e0def29eb57a91a5482867f6afe3c",
+          "train": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c"
+        },
+        "test_values_opened": false
+      },
+      "regression": {
+        "paths": {
+          "sample": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\data\\raw\\regression\\SampleSubmission.csv",
+          "test": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\data\\raw\\regression\\Test.csv",
+          "train": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\data\\raw\\regression\\Train.csv"
+        },
+        "sha256": {
+          "sample": "63a51f4b7dfbb0eec9800099407abd8be14d25ec18a533cd39dc854ffc190a32",
+          "test": "4e6c381d582ed24f92d17f620f4f0ad25e2e0def29eb57a91a5482867f6afe3c",
+          "train": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082"
+        },
+        "test_values_opened": false
+      }
+    },
+    "official_train": {
+      "classification": {
+        "cycles": [
+          47,
+          79
+        ],
+        "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\data\\raw\\classification\\Train.csv",
+        "rows": 50608,
+        "sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+        "target": "artifact_signal"
+      },
+      "regression": {
+        "cycles": [
+          47,
+          79
+        ],
+        "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\data\\raw\\regression\\Train.csv",
+        "rows": 50608,
+        "sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+        "target": "threat_rank"
+      }
+    },
+    "package_versions": {
+      "catboost": "1.2.8",
+      "lightgbm": "4.6.0",
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "psutil": "7.0.0",
+      "scikit-learn": "1.8.0",
+      "scipy": "1.18.0",
+      "threadpoolctl": "3.6.0",
+      "xgboost": "3.2.0"
+    },
+    "parent_freeze_signature": "c6a751f2ea3b23ac8d2b8d47c8a71f2d87283ff66f749cb6cd819e2c1ac9d78f",
+    "qualification_evidence": {
+      "C11": {
+        "result_sha256": "d1f3c62bd6a735b11f359217f41ca8654aed985fd62de9b79b4e6809b3d7078c",
+        "status": "EXPERIMENTAL_GATE_EXCEPTION"
+      },
+      "C16": {
+        "source": "prior verified C16 continuation",
+        "status": "EXPERIMENTAL_GATE_EXCEPTION"
+      },
+      "C17": {
+        "result_sha256": "a304ebc19152ddb1b832b1864b9fbc773bf4f3b0ec658c41ade816983f223139",
+        "status": "EXPERIMENTAL_GATE_EXCEPTION"
+      },
+      "R06_ORIGINAL": {
+        "result_sha256": "2bd59e85b381c9ee82425a7956b23c2646861f0383d5fe3f9b7f41ab66b3c1ea",
+        "status": "EXPERIMENTAL_GATE_EXCEPTION"
+      },
+      "R11": {
+        "performance_gate_outcome": "UNKNOWN_NOT_EVALUATED",
+        "reason": "Continuation model bundles were not persisted; no R11 continuation scores were opened.",
+        "status": "EXPERIMENTAL_GATE_EXCEPTION"
+      },
+      "R21": {
+        "result_sha256": "ca8f8bdfadd590d9402f136fd77552cc537309ca23c37609e440e02ff0b02133",
+        "status": "EXPERIMENTAL_GATE_EXCEPTION"
+      },
+      "R22_ORIGINAL": {
+        "source": "prior verified R22_ORIGINAL continuation",
+        "status": "QUALIFIED"
+      }
+    },
+    "r11_continuation_blocker": {
+      "candidate": "R11",
+      "reason": "Four continuation bundle writes failed on object-dtype diagnostic controls. The fitted models were not persisted; recovery requires 36 predictor fits, above the remaining retry headroom of 11.",
+      "recipe_or_gate_changed": false,
+      "scores_opened": false,
+      "status": "INTEGRITY_BLOCKED_NOT_EVALUATED"
+    },
+    "recovery_freeze_signature": "6cdecf6e0729b625981f23c7b7be4152a12806011a0a1852dd978eaec30d21ae",
+    "recovery_run_receipt_sha256": "95069467540aa116dd470d60dc5ef9f00a854d1459fddb5a024853329ec57e66",
+    "recovery_status": "RECOVERY_FITS_COMPLETE",
+    "sample_submission_values_opened": false,
+    "source_commit": "c72dd1eaa9c2567d17349895e8c857cdc2e0486e",
+    "source_sha256": {
+      "scripts/optimization_v3_expanded_benchmark.py": "0fa312a0a8c2311ffd7e15efc9ede623e50103b5dac7f0321e49149124a2c6cc",
+      "scripts/optimization_v3_expanded_evaluate_recovery.py": "f6b9c24a537f4d0c8087bd563b0940b8e571819adf8ef68aa9334fbe46c6d5f6",
+      "scripts/optimization_v3_expanded_prepare_submissions.py": "259c9d473c387c0fb37fe6bfdc190e60142e6a8be8f90749fe5dbda0db121735",
+      "scripts/optimization_v3_expanded_recovery.py": "0dcd4ac9546eef52dd323ee44adf54337c88db091773e704c45ef957385637e4",
+      "scripts/prepare_c16_r22_fulltrain_submissions.py": "4e01fbb7a159dde2dfd7475b5865b8e03d3ff931ca5298e37c9151a208630e8b",
+      "scripts/prepare_initial_submissions.py": "199f3c60485320902b9e65db8ea2d6ef16d757d8e62a8c984425f4b504b6135e",
+      "src/data/audit.py": "79cb10c7a1f0795a9c1263c6bbe81a548268e73e38f670068794dc19b2fb9479",
+      "src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+      "src/models/classification_round2_models.py": "239008f056c6f5e004e84d2b9df9f5bfb20695ccfad90eed4deec3463c7d4575",
+      "src/models/optimization_v2_regression.py": "b235cfd93c8cc0a207cfcea79892b925f9dfdfe515491a459d6ca1b6142cb590",
+      "src/models/optimization_v3_batch1.py": "746e12d408e74608e5b559bc7dcf4c10174df9f367859750987310adb6ae8ffd",
+      "src/models/optimization_v3_batch1_c11.py": "bce82542d42ffad66d786723f411f59f6eb5f034f60199a9262aafc55fb13601",
+      "src/models/optimization_v3_batch1_c16.py": "6eeac099900911e2a876273d9a72c9475a329d89dac889eebe25a431190ab8d1",
+      "src/models/optimization_v3_batch1_c17.py": "21efb63cc584b2ee4fa6687bdd87f21709a993a218e1ed6be00fa105c3ba98e5",
+      "src/models/optimization_v3_batch1_r06.py": "37869d6125d48fc4afb2a3c439cbb19d5586f35f1cd3a501b762e42530fcd970",
+      "src/models/optimization_v3_batch1_r11.py": "3a15322653f614532c3891adf484874bea2624d22785bfdc3fe6f8ffa2423e68",
+      "src/models/optimization_v3_batch1_r21.py": "8fdb06079b6f807be5cc30366e13f51b5d6a4b92219642a3404fd93bf2f78d43",
+      "src/models/optimization_v3_batch1_r22.py": "35bc5ede08696d6d82b0e0674aececdda0f5a7789fa35ebdd97cdaaf39171e22",
+      "src/models/optimization_v3_expanded_continuation.py": "fdf9683052ad3f6ab9ba5dff574e0511ffc3f7c642a9c5edeab6a3220207b99b",
+      "src/models/optimization_v3_sparse_classification.py": "fb5b013fa59d0b748a3386dae90cb14789a0b4cbd9a5c7a115d5ddc3c443d5a3",
+      "src/models/regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+      "src/models/round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+      "src/utils/paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555"
+    },
+    "status": "FROZEN_PREPARED_FOR_SERIAL_FULLTRAIN_FITS",
+    "submission_uploads_attempted": false,
+    "test_values_opened": false
+  },
+  "signature": "9237741de7d9c8d21ef2b90ef7f2f8d4074391a34eb4071bfb75d3b06493b165",
+  "status": "FROZEN_BEFORE_FULLTRAIN_FITS"
+}
