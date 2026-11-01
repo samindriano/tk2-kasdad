@@ -1,0 +1,32 @@
+{
+  "card_id": "R08",
+  "checks": {
+    "W1_MAE_harm_max": true,
+    "W4_MAE_harm_max": true,
+    "pilot_H12_MAE_harm_max": false,
+    "pilot_primary_MAE_gain_min": false,
+    "supported_tail_or_missing_harm_max": false
+  },
+  "decision_basis": "Predeclared temporal metrics and support-passing group guards; no Test or Kaggle evidence.",
+  "profile": "STANDARD",
+  "status": "RETIRE",
+  "supported_group_failures": [
+    {
+      "baseline_mae": 9.740550072150272,
+      "candidate_mae": 10.054680936271978,
+      "candidate_minus_baseline_mae": 0.3141308641217062,
+      "field": "target_le_5",
+      "guard_applies": true,
+      "n": 244,
+      "supported": true,
+      "view": "W4"
+    }
+  ],
+  "thresholds": {
+    "individual_pilot_view_MAE_harm_max": 0.5,
+    "pilot_H12_MAE_harm_max": 0.05,
+    "pilot_primary_MAE_gain_min": 0.03,
+    "supported_group_n_min": 100.0,
+    "supported_tail_or_missing_MAE_harm_max": 0.25
+  }
+}

@@ -1,8 +1,8 @@
 # V3 Batch 1 — rolling findings
 
-Snapshot: 2026-11-01, after R14 saved-output verification v2. This is a rolling index built from the canonical queue and per-card reports present in the repository; it does not claim that missing reports were executed or validated.
+Snapshot: 2026-11-01, after C11 pilot resume, R08 and C20 completion, and independent QA. This is a rolling index built from the canonical queue and per-card reports present in the repository; it does not claim that missing reports were executed or validated.
 
-Queue closure: **20/45 cards (44.4%)** now have terminal pilot decisions with saved gates; this counts R14 and excludes cards still awaiting QA or missing a gate. This is pilot-card progress, not the later conditional continuations and finalist stage.
+Queue closure: **23/45 cards (51.1%)** now have terminal pilot decisions with saved gates; this counts R14, C11, R08, and C20 and excludes cards still awaiting QA or missing a gate. This is pilot-card progress, not the later conditional continuations and finalist stage.
 
 For each row, metrics are copied from that card’s `results.json`; statuses come from its saved `verification.json` and `gate.json`. `NO_REPORT` and `PARTIAL` remain unresolved. Gains use each card’s declared pilot view, so raw gains from different populations are not directly ranked.
 
@@ -40,9 +40,9 @@ For each row, metrics are copied from that card’s `results.json`; statuses com
 | 30 | **R04** | RETIRE; QA PASS | RETIRE | 9064; +0.021887 | 38588; +0.014318 | 2 / ? | [results](R04/results.json), [QA](R04/verification.json), [gate](R04/gate.json) |
 | 31 | **C05** | PILOT_COMPLETE_RETIRE; QA INDEPENDENT_QA_PASS | RETIRE | 9064; -0.001260 | 38588; -0.000284 | 2 / 0 | [results](C05/results.json), [QA](C05/verification.json), [gate](C05/gate.json) |
 | 32 | **R14** | PILOT_COMPLETE_RETIRE; QA INDEPENDENT_QA_PASS | RETIRE | 9064; +0.043122 | 38588; +0.026910 | 2 / 0 | [results](R14/results.json), [QA](R14/verification.json), [gate](R14/gate.json), [amendment](R14/report_amendment_01.json) |
-| 33 | **C11** | PARTIAL: cutoff 55 saved; cutoff 67 resource-interrupted | NO_GATE | - | - | 1 saved / 1 interrupted | [partial status](C11/partial_status.json), [attempts](C11/attempts.jsonl) |
-| 34 | **R08** | IMPLEMENTED; SYNTHETIC_QA_PASS; OFFICIAL_PREFLIGHT_BLOCKED_RESOURCE | NO_GATE | - | - | 0 / 0 | [preparation status](R08/preparation_status.json) |
-| 35 | **C20** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
+| 33 | **C11** | PILOT_COMPLETE_ADVANCE; QA INDEPENDENT_QA_PASS | ADVANCE | 9064; +0.000661 | 38588; -0.000310 | 2 / 0 | [results](C11/results.json), [QA](C11/verification.json), [gate](C11/gate.json), [attempts](C11/attempts.jsonl), [partial checkpoint](C11/partial_status.json) |
+| 34 | **R08** | PILOT_COMPLETE_RETIRE; QA PASS | RETIRE | 9064; -0.097574 | 38588; -0.121789 | 2 / 0 | [results](R08/results.json), [QA](R08/verification.json), [gate](R08/gate.json) |
+| 35 | **C20** | CACHE_SIX_COMPLETE; QA INDEPENDENT_QA_PASS | RETIRE | 38588; -0.001573 | 38588; -0.004157 | 0 / 0 | [results](C20/results.json), [QA](C20/verification.json), [gate](C20/gate.json), [summary](C20/summary.md) |
 | 36 | **R19** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
 | 37 | **C15** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
 | 38 | **R22** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
@@ -73,23 +73,27 @@ For each row, metrics are copied from that card’s `results.json`; statuses com
 - Active verifier: `scripts/verify_optimization_v3_batch1_r14_v2.py`; frozen recipe and runner remain unchanged. See `reports/optimization_v3/batch1/R14/report_amendment_01.json` for source hashes and the defect record.
 - Next eligible lane: **C11**, subject to its own support, RAM, dependency, budget, and single-training-job preflight.
 
-## C11 — partial checkpoint; not scored
+## C11 — pilot complete; full-six continuation remains
 
-- C11's frozen word plus `char_wb(3,5)` recipe passed Train/control/support/budget preflight. The analyzer-based estimate was 2.25 GiB at cutoff 55 and 3.49 GiB at cutoff 67; independent profiling estimated 2.43/3.62 GiB. Both are estimates, not peak model measurements.
-- The cutoff-55 fit completed and its ignored bundle is preserved (113.30 seconds). Cutoff 67 was started, then interrupted by MAIN after system free memory fell to 0.49 GiB, below the frozen 2 GiB reserve; process working set was 2.22 GiB. No cutoff-67 bundle exists. The interruption is logged separately in `C11/attempts.jsonl`; no partial candidate metric was computed and no model conclusion is made.
-- C11's two-fit reservation is 2/180 (global total now 58/180); reconciliation is pending until the second fit and report QA are complete. No Test, SampleSubmission, or Kaggle access occurred.
-- Next action: retain cutoff 55; rerun current memory and single-slot preflight and resume cutoff 67 only when the full frozen estimate fits available RAM minus the 2 GiB reserve. The runner's resume path must reuse cutoff 55 and must not refit it.
+- C11's frozen word plus `char_wb(3,5)` sparse recipe passed independent QA after resuming the previously interrupted cutoff 67. The preserved cutoff-55 bundle was hash-verified and reused; it was not refit. Cutoff 67 saved in 197.03 seconds. `attempts.jsonl` retains the original interruption, verified resume, and successful save events.
+- Pilot verdict: **ADVANCE**. On the exact 9,064-row W1+W4 primary, Macro F1 moved from 0.8239725 to 0.8246337 (gain **+0.0006612**, above the +0.0005 gate). H12 moved from 0.8029656 to 0.8026553 (gain **−0.0003103**, within the 0.001 harm limit). W1 and W4 gains were +0.0003693 and +0.0008795; all declared pilot and supported subgroup guards passed.
+- Both pilot predictor fits are saved and reconciled under the existing reservation; global pilot reservations remain 58/180. No Test, SampleSubmission, or Kaggle access occurred. `partial_status.json` is retained as the historical interruption checkpoint; `results.json`, `verification.json`, and `gate.json` contain the completed resumed pilot.
+- C11 remains in the **ADVANCE** pool. Under the campaign handbook, continuation selection happens after the 45-card screening pass; the four new cutoffs (59, 63, 71, 75) are deferred until that selection. Preserve and reuse cutoffs 55 and 67, and keep the frozen model/route unchanged.
 
-## R08 — implementation ready; official pilot not started
+## R08 — completed RETIRE
 
-- R08's adapter and runner are implemented in its own namespace. Seven targeted tests pass, including the synthetic two-cutoff saved-bundle/independent-verification path, fit/target/scalar digests, tied within-cycle ranks, raw character-count behavior, and zero/low-support groups.
-- Official Regression Train SHA matches the frozen card. Fit/score populations are 12,020/17,685 at cutoff 55 and 29,705/20,903 at cutoff 67; primary W1+W4 is 9,064 rows and H12 is 38,588. The train-only scalar profile is recorded in `R08/preparation_status.json`.
-- The shared fit budget is available (58 reserved; 60 if R08 reserves its two fits, out of 180). The live resource check is blocked: 2.30 GiB physical RAM was available, against estimated R08 peaks of 2.04/2.09 GiB plus the required 2 GiB reserve. These are estimates, not observed model peaks.
-- No R08 recipe/freeze or fit reservation was written, and no official candidate fit or candidate metric was computed. No Test, SampleSubmission, or Kaggle access occurred. R08 is not a terminal lane decision and the closure count remains 20/45.
-- Next action: keep this implementation and tests; recheck RAM and training-slot ownership before freezing. Resume C11's saved cutoff 67 first if its frozen resource preflight passes; then rerun the R08 preflight and freeze only when its own resource gate passes.
+- The frozen R08 recipe passed a fresh official preflight at approximately 5.4 GiB available, with estimated peaks 2.04/2.09 GiB, the 2 GiB reserve intact, and the single training slot free. Two fits completed (cutoffs 55 and 67); the shared reservation advanced from 58 to 60/180.
+- On the exact 9,064-row W1+W4 primary, MAE changed from 13.464396 to 13.561970 (gain **−0.097574**). H12 changed from 14.047533 to 14.169321 (gain **−0.121789**). W1/W4 harms passed their individual limits, but primary, H12, and supported tail/missing gates failed. The independent verifier returned PASS; C20 is not continued. No Test, SampleSubmission, or Kaggle access occurred.
+
+## C20 — completed RETIRE, cache-only
+
+- C20 used the inherited all-fit-row q80 rule (`cycle_code <= fit_end`, linear interpolation), including missing-stream rows; `text_load == q80` stays with C2_B. The missing-stream branch is CatBoost, high-volume present rows use sparse25, and other present rows use C2_B. Six-window support totals 38,588 rows. No new models were fit.
+- Full-six Macro F1 moved from 0.829944 to 0.828371 (gain **−0.001573**); H12 moved from 0.802966 to 0.798808 (gain **−0.004157**). All six individual window harms were within −0.005, but 0/6 windows were nonnegative; full-primary, H12, and window-count gates failed. Supported subgroup guards passed. Independent QA passed; decision **RETIRE**.
+- Process note: while resolving the inherited q80 definition, the historical volume-route findings table (including its old metrics) appeared in search output before C20 was frozen. No C20 candidate metric was computed before its freeze, and no Test/Kaggle data were read, but this discovery was not strictly outcome-blind. The frozen, predeclared route was not changed after C20 scoring.
+- Next eligible pilot is **R19** (queue order 36), subject to its fixed LATE chronology/support preflight; do not select C11 continuation yet.
 
 ## Ledger and scope notes
 
-- The active budget ledger used by the runner is `experiments/runs/optimization_v3_batch1/batch_ledger.jsonl`; it records 58 of 180 candidate predictor fits reserved after C11. C05 and R14 are reconciled; C11 reconciliation is pending. Runtime fit bundles remain ignored by Git.
+- The active budget ledger used by the runner is `experiments/runs/optimization_v3_batch1/batch_ledger.jsonl`; it records 60 of 180 candidate predictor fits reserved after R08. C20 added zero fits. Runtime fit bundles remain ignored by Git.
 - The tracked `reports/optimization_v3/batch1/batch_ledger.jsonl` is an older partial reservation snapshot (8 entries); it is not a complete mirror of the runtime ledger and must not be used to infer remaining global budget.
 - V3 remains active. This file is an interim evidence index; it does not close the remaining conditional queue or authorize Test/Kaggle access for pilots.

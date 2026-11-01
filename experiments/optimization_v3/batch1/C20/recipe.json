@@ -1,0 +1,179 @@
+{
+  "cache_rows": {
+    "55": 17685,
+    "59": 6493,
+    "63": 7078,
+    "67": 20903,
+    "71": 7462,
+    "75": 8491
+  },
+  "card_id": "C20",
+  "control_manifest": "reports/optimization_v3/kaggle/v3_cls_sparse25.json",
+  "cutoffs": [
+    55,
+    59,
+    63,
+    67,
+    71,
+    75
+  ],
+  "evaluation_views": {
+    "H12": [
+      [
+        55,
+        56,
+        67
+      ],
+      [
+        67,
+        68,
+        79
+      ]
+    ],
+    "H12_E": [
+      [
+        55,
+        56,
+        67
+      ]
+    ],
+    "H12_L": [
+      [
+        67,
+        68,
+        79
+      ]
+    ],
+    "W1": [
+      [
+        55,
+        56,
+        59
+      ]
+    ],
+    "W2": [
+      [
+        59,
+        60,
+        63
+      ]
+    ],
+    "W3": [
+      [
+        63,
+        64,
+        67
+      ]
+    ],
+    "W4": [
+      [
+        67,
+        68,
+        71
+      ]
+    ],
+    "W5": [
+      [
+        71,
+        72,
+        75
+      ]
+    ],
+    "W6": [
+      [
+        75,
+        76,
+        79
+      ]
+    ],
+    "primary": [
+      [
+        55,
+        56,
+        59
+      ],
+      [
+        59,
+        60,
+        63
+      ],
+      [
+        63,
+        64,
+        67
+      ],
+      [
+        67,
+        68,
+        71
+      ],
+      [
+        71,
+        72,
+        75
+      ],
+      [
+        75,
+        76,
+        79
+      ]
+    ]
+  },
+  "fit_count": 0,
+  "kaggle_access": false,
+  "new_model_fits": 0,
+  "numpy_version": "2.4.2",
+  "q80_by_fit_end": {
+    "55": 38.4774,
+    "59": 38.2751,
+    "63": 37.69518,
+    "67": 37.67302,
+    "71": 38.0916,
+    "75": 38.0916
+  },
+  "route": {
+    "equality_rule": "text_load == q80 remains on C2_B",
+    "missing": "CB_MISSING takes precedence",
+    "present_and_text_load_strictly_above_q80": "sparse25 blend25 cache",
+    "probability_threshold": 0.5,
+    "quantile_method": "NumPy ordinary linear interpolation (method='linear')",
+    "remaining_present": "C2_B probability cache",
+    "threshold": "inherited fit-only q80 over all rows with cycle_code <= fit_end",
+    "threshold_population": "all fit rows, including missing-stream rows",
+    "threshold_source": "experiments/autonomous_eda/classification_volume/protocol.json"
+  },
+  "route_counts_by_cache_cutoff": {
+    "55": {
+      "missing_cb": 1203,
+      "present_high_sparse25": 2864,
+      "present_other_c2b": 13618
+    },
+    "59": {
+      "missing_cb": 369,
+      "present_high_sparse25": 935,
+      "present_other_c2b": 5189
+    },
+    "63": {
+      "missing_cb": 442,
+      "present_high_sparse25": 1368,
+      "present_other_c2b": 5268
+    },
+    "67": {
+      "missing_cb": 1375,
+      "present_high_sparse25": 4711,
+      "present_other_c2b": 14817
+    },
+    "71": {
+      "missing_cb": 507,
+      "present_high_sparse25": 1475,
+      "present_other_c2b": 5480
+    },
+    "75": {
+      "missing_cb": 526,
+      "present_high_sparse25": 1556,
+      "present_other_c2b": 6409
+    }
+  },
+  "task": "classification",
+  "test_or_sample_access": false
+}
