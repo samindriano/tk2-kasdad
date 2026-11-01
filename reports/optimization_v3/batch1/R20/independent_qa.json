@@ -1,0 +1,177 @@
+{
+  "schema_version": 1,
+  "card_id": "R20",
+  "status": "INDEPENDENT_QA_PASS",
+  "decision": "RETIRE",
+  "freeze_signature": "134401d71d213b073fe5a4385698e0dbe2e958d3df0ae6055fbb3ba2ae507edc",
+  "official_regression_train_sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+  "provenance_checks": {
+    "all_frozen_input_hashes_match": true,
+    "all_frozen_source_hashes_match": true,
+    "official_train_only": true,
+    "test_or_sample_read": false,
+    "kaggle_access": false
+  },
+  "fit_receipts": {
+    "reserved_predictor_fits": 2,
+    "fit_started_events": 2,
+    "fit_saved_events": 2,
+    "fit_failed_events": 0,
+    "total_fit_seconds": 8.218019500025548,
+    "cutoffs": {
+      "55": {
+        "fit_rows": 12020,
+        "score_rows": 17685
+      },
+      "67": {
+        "fit_rows": 29705,
+        "score_rows": 20903
+      }
+    },
+    "fit_score_id_alignment": true,
+    "fit_population_and_row_hashes_match": true,
+    "control_candidate_and_final_outputs_reconstructed": true
+  },
+  "selection_audit": {
+    "exact_selected_identity_count": 128,
+    "support_minimum_documents": 30,
+    "fold_local_selection_verified": true,
+    "per_token_target_means_or_scores_inspected_by_reviewer": false,
+    "token_identity_digest_reconstructed_by_post_fit_qa": true
+  },
+  "metrics": {
+    "H12": {
+      "baseline_mae": 14.04753258299653,
+      "candidate_mae": 14.163045876027857,
+      "gain_positive_is_better": -0.11551329303132718,
+      "rows": 38588
+    },
+    "H12_E": {
+      "baseline_mae": 16.92661102497089,
+      "candidate_mae": 16.963548650840067,
+      "gain_positive_is_better": -0.0369376258691787,
+      "rows": 17685
+    },
+    "H12_L": {
+      "baseline_mae": 11.611685946326363,
+      "candidate_mae": 11.793678245900413,
+      "gain_positive_is_better": -0.18199229957405016,
+      "rows": 20903
+    },
+    "W1": {
+      "baseline_mae": 15.882111974427762,
+      "candidate_mae": 15.924071960666646,
+      "gain_positive_is_better": -0.04195998623888464,
+      "rows": 4114
+    },
+    "W4": {
+      "baseline_mae": 11.455005081083685,
+      "candidate_mae": 11.613639377945375,
+      "gain_positive_is_better": -0.15863429686169006,
+      "rows": 4950
+    },
+    "primary": {
+      "baseline_mae": 13.464395831218011,
+      "candidate_mae": 13.570073584180516,
+      "gain_positive_is_better": -0.10567775296250481,
+      "rows": 9064
+    }
+  },
+  "gate_thresholds": {
+    "individual_pilot_view_MAE_harm_max": 0.5,
+    "pilot_H12_MAE_harm_max": 0.05,
+    "pilot_primary_MAE_gain_min": 0.03,
+    "supported_group_n_min": 100.0,
+    "supported_tail_or_missing_MAE_harm_max": 0.25
+  },
+  "gate_checks": {
+    "W1_MAE_harm_max": true,
+    "W4_MAE_harm_max": true,
+    "pilot_H12_MAE_harm_max": false,
+    "pilot_primary_MAE_gain_min": false,
+    "supported_tail_or_missing_harm_max": false
+  },
+  "supported_group_failures": [
+    {
+      "baseline_mae": 21.512208387237514,
+      "candidate_mae": 21.809415153928004,
+      "candidate_minus_baseline_mae": 0.29720676669048984,
+      "field": "target_le_5",
+      "guard_applies": true,
+      "n": 205,
+      "supported": true,
+      "view": "W1"
+    },
+    {
+      "baseline_mae": 10.95190538014284,
+      "candidate_mae": 11.714951413893726,
+      "candidate_minus_baseline_mae": 0.7630460337508858,
+      "field": "target_ge_95",
+      "guard_applies": true,
+      "n": 213,
+      "supported": true,
+      "view": "W1"
+    },
+    {
+      "baseline_mae": 15.115137944294784,
+      "candidate_mae": 15.378761684679663,
+      "candidate_minus_baseline_mae": 0.26362374038487957,
+      "field": "target_le_5",
+      "guard_applies": true,
+      "n": 449,
+      "supported": true,
+      "view": "primary"
+    },
+    {
+      "baseline_mae": 9.012789399222996,
+      "candidate_mae": 9.457388808003437,
+      "candidate_minus_baseline_mae": 0.4445994087804408,
+      "field": "target_ge_95",
+      "guard_applies": true,
+      "n": 462,
+      "supported": true,
+      "view": "primary"
+    },
+    {
+      "baseline_mae": 10.242197755462715,
+      "candidate_mae": 10.52958507258905,
+      "candidate_minus_baseline_mae": 0.2873873171263348,
+      "field": "target_ge_95",
+      "guard_applies": true,
+      "n": 1955,
+      "supported": true,
+      "view": "H12"
+    },
+    {
+      "baseline_mae": 13.636034398681975,
+      "candidate_mae": 13.99574833936651,
+      "candidate_minus_baseline_mae": 0.35971394068453577,
+      "field": "target_ge_95",
+      "guard_applies": true,
+      "n": 898,
+      "supported": true,
+      "view": "H12_E"
+    }
+  ],
+  "decision_basis": "RETIRE because the primary gain, H12 harm, and supported tail/missing guards fail; W1/W4 individual harm limits pass.",
+  "post_fit_normalization_note": "Frozen analyzer ngram_range is a tuple in Python and a list in JSON; QA normalized only that representation. Training recipe, fit artifacts, predictions, and freeze were unchanged.",
+  "post_fit_verifier_sha256": "e882939594b0fc095c771883e45b07cc43930c3c5648ef86975839c025701c58",
+  "review_scope": [
+    "Frozen identity and source/input hashes",
+    "Two saved fit receipts and temporal row/record_id alignment",
+    "Fit-only boundaries and output reconstruction",
+    "MAE aggregation, frozen gates, and supported subgroup failures"
+  ],
+  "evidence_paths": [
+    "experiments/optimization_v3/batch1/R20/freeze.json",
+    "experiments/optimization_v3/batch1/R20/recipe.json",
+    "experiments/runs/optimization_v3_batch1/R20/pilot.json",
+    "experiments/runs/optimization_v3_batch1/R20/R20_fit55.json",
+    "experiments/runs/optimization_v3_batch1/R20/R20_fit55.npz",
+    "experiments/runs/optimization_v3_batch1/R20/R20_fit67.json",
+    "experiments/runs/optimization_v3_batch1/R20/R20_fit67.npz",
+    "reports/optimization_v3/batch1/R20/results.json",
+    "reports/optimization_v3/batch1/R20/verification.json",
+    "reports/optimization_v3/batch1/R20/qa_recheck.json"
+  ]
+}

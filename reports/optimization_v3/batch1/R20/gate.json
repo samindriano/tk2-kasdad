@@ -1,0 +1,82 @@
+{
+  "card_id": "R20",
+  "checks": {
+    "W1_MAE_harm_max": true,
+    "W4_MAE_harm_max": true,
+    "pilot_H12_MAE_harm_max": false,
+    "pilot_primary_MAE_gain_min": false,
+    "supported_tail_or_missing_harm_max": false
+  },
+  "decision_basis": "Predeclared temporal metrics and support-passing group guards; no Test or Kaggle evidence.",
+  "profile": "STANDARD",
+  "status": "RETIRE",
+  "supported_group_failures": [
+    {
+      "baseline_mae": 21.512208387237514,
+      "candidate_mae": 21.809415153928004,
+      "candidate_minus_baseline_mae": 0.29720676669048984,
+      "field": "target_le_5",
+      "guard_applies": true,
+      "n": 205,
+      "supported": true,
+      "view": "W1"
+    },
+    {
+      "baseline_mae": 10.95190538014284,
+      "candidate_mae": 11.714951413893726,
+      "candidate_minus_baseline_mae": 0.7630460337508858,
+      "field": "target_ge_95",
+      "guard_applies": true,
+      "n": 213,
+      "supported": true,
+      "view": "W1"
+    },
+    {
+      "baseline_mae": 15.115137944294784,
+      "candidate_mae": 15.378761684679663,
+      "candidate_minus_baseline_mae": 0.26362374038487957,
+      "field": "target_le_5",
+      "guard_applies": true,
+      "n": 449,
+      "supported": true,
+      "view": "primary"
+    },
+    {
+      "baseline_mae": 9.012789399222996,
+      "candidate_mae": 9.457388808003437,
+      "candidate_minus_baseline_mae": 0.4445994087804408,
+      "field": "target_ge_95",
+      "guard_applies": true,
+      "n": 462,
+      "supported": true,
+      "view": "primary"
+    },
+    {
+      "baseline_mae": 10.242197755462715,
+      "candidate_mae": 10.52958507258905,
+      "candidate_minus_baseline_mae": 0.2873873171263348,
+      "field": "target_ge_95",
+      "guard_applies": true,
+      "n": 1955,
+      "supported": true,
+      "view": "H12"
+    },
+    {
+      "baseline_mae": 13.636034398681975,
+      "candidate_mae": 13.99574833936651,
+      "candidate_minus_baseline_mae": 0.35971394068453577,
+      "field": "target_ge_95",
+      "guard_applies": true,
+      "n": 898,
+      "supported": true,
+      "view": "H12_E"
+    }
+  ],
+  "thresholds": {
+    "individual_pilot_view_MAE_harm_max": 0.5,
+    "pilot_H12_MAE_harm_max": 0.05,
+    "pilot_primary_MAE_gain_min": 0.03,
+    "supported_group_n_min": 100.0,
+    "supported_tail_or_missing_MAE_harm_max": 0.25
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "decision": "RETIRE",
+  "fit_execution_accounting": {
+    "adapter_attempts_started": 2,
+    "attempt_event_pairs_complete": true,
+    "attempts": [
+      {
+        "cutoff": 55,
+        "event": "FIT_STARTED",
+        "fit_rows": 12020,
+        "freeze_signature": "134401d71d213b073fe5a4385698e0dbe2e958d3df0ae6055fbb3ba2ae507edc",
+        "score_rows": 17685
+      },
+      {
+        "cutoff": 55,
+        "event": "FIT_SAVED",
+        "fit_predictor_count": 1,
+        "fit_seconds": 3.1264143000589684
+      },
+      {
+        "cutoff": 67,
+        "event": "FIT_STARTED",
+        "fit_rows": 29705,
+        "freeze_signature": "134401d71d213b073fe5a4385698e0dbe2e958d3df0ae6055fbb3ba2ae507edc",
+        "score_rows": 20903
+      },
+      {
+        "cutoff": 67,
+        "event": "FIT_SAVED",
+        "fit_predictor_count": 1,
+        "fit_seconds": 5.09160519996658
+      }
+    ],
+    "failed_adapter_attempts": 0,
+    "fit_saved_events": 2,
+    "has_preserved_failed_prefit_attempt": false,
+    "reserved_predictor_fits": 2,
+    "successful_predictor_fits": 2,
+    "total_recorded_attempt_seconds": 8.218019500025548
+  },
+  "gate_checks": {
+    "W1_MAE_harm_max": true,
+    "W4_MAE_harm_max": true,
+    "pilot_H12_MAE_harm_max": false,
+    "pilot_primary_MAE_gain_min": false,
+    "supported_tail_or_missing_harm_max": false
+  },
+  "generic_independent_verifier": "PASS",
+  "kaggle_access": false,
+  "new_model_fits": 0,
+  "official_test_read": false,
+  "post_fit_verifier_sha256": "e882939594b0fc095c771883e45b07cc43930c3c5648ef86975839c025701c58",
+  "selected_token_identity_digests_reconstructed": true,
+  "serialization_note": "Frozen analyzer ngram_range is a tuple in Python and a list in JSON; QA normalized only that representation. Training recipe, fit artifacts, predictions, and freeze were unchanged.",
+  "status": "PASS",
+  "views": {
+    "H12": {
+      "baseline_mae": 14.04753258299653,
+      "candidate_mae": 14.163045876027857,
+      "gain_positive_is_better": -0.11551329303132718,
+      "rows": 38588
+    },
+    "H12_E": {
+      "baseline_mae": 16.92661102497089,
+      "candidate_mae": 16.963548650840067,
+      "gain_positive_is_better": -0.0369376258691787,
+      "rows": 17685
+    },
+    "H12_L": {
+      "baseline_mae": 11.611685946326363,
+      "candidate_mae": 11.793678245900413,
+      "gain_positive_is_better": -0.18199229957405016,
+      "rows": 20903
+    },
+    "W1": {
+      "baseline_mae": 15.882111974427762,
+      "candidate_mae": 15.924071960666646,
+      "gain_positive_is_better": -0.04195998623888464,
+      "rows": 4114
+    },
+    "W4": {
+      "baseline_mae": 11.455005081083685,
+      "candidate_mae": 11.613639377945375,
+      "gain_positive_is_better": -0.15863429686169006,
+      "rows": 4950
+    },
+    "primary": {
+      "baseline_mae": 13.464395831218011,
+      "candidate_mae": 13.570073584180516,
+      "gain_positive_is_better": -0.10567775296250481,
+      "rows": 9064
+    }
+  }
+}

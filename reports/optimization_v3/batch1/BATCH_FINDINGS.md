@@ -1,8 +1,8 @@
 # V3 Batch 1 — rolling findings
 
-Snapshot: 2026-11-01, after C11 pilot resume, R08/C20 completion, R19's row-matched revision 2 pilot and independent re-audit, C15's verified pilot, and R22's pilot plus independent audit. This is a rolling index built from the canonical queue and per-card reports present in the repository; it does not claim that missing reports were executed or validated.
+Snapshot: 2026-11-01, after C11 pilot resume, R08/C20 completion, R19's row-matched revision 2 pilot and independent re-audit, C15's verified pilot, R22's pilot plus independent audit, and R20's independently verified retirement. This is a rolling index built from the canonical queue and per-card reports present in the repository; it does not claim that missing reports were executed or validated.
 
-Queue closure: **26/45 cards (57.8%)** now have terminal pilot decisions with saved gates; this includes R19, C15, and R22 and excludes cards still awaiting QA or missing a gate. This is pilot-card progress, not the later conditional continuations and finalist stage.
+Queue closure: **27/45 cards (60.0%)** now have terminal pilot decisions with saved gates; this includes R19, C15, R22, and R20 and excludes cards still awaiting QA or missing a gate. This is pilot-card progress, not the later conditional continuations and finalist stage.
 
 For each row, metrics are copied from that card’s `results.json`; statuses come from its saved `verification.json` and `gate.json`. `NO_REPORT` and `PARTIAL` remain unresolved. Gains use each card’s declared pilot view, so raw gains from different populations are not directly ranked.
 
@@ -46,7 +46,7 @@ For each row, metrics are copied from that card’s `results.json`; statuses com
 | 36 | **R19** | PILOT_COMPLETE_RETIRE; QA INDEPENDENT_QA_PASS; amendment | RETIRE | 13441; +0.012735 | 20903; +0.017895 | 0 / 0 | [results](R19/results.json), [QA](R19/verification.json), [gate](R19/gate.json), [summary](R19/summary.md), [amendment](R19/report_amendment_01.json) |
 | 37 | **C15** | PILOT_COMPLETE_RETIRE; QA INDEPENDENT_QA_PASS | FAIL_VALID_EVIDENCE | 13441; -0.001339 | 20903; +0.003281 | 2 / 0 | [results](C15/revision_05/results.json), [QA](C15/revision_05/verification.json), [gate](C15/revision_05/gate.json), [summary](C15/revision_05/summary.md) |
 | 38 | **R22** | PILOT_COMPLETE_ADVANCE; QA INDEPENDENT_QA_PASS | ADVANCE | 9064; +0.098176 | 38588; +0.124873 | 2 / 0 | [results](R22/results.json), [QA](R22/verification.json), [independent QA](R22/independent_qa.json), [gate](R22/gate.json), [summary](R22/summary.md) |
-| 39 | **R20** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
+| 39 | **R20** | PILOT_COMPLETE_RETIRE; QA INDEPENDENT_QA_PASS | RETIRE | 9064; -0.105678 | 38588; -0.115513 | 2 / 0 | [results](R20/results.json), [QA](R20/verification.json), [independent QA](R20/independent_qa.json), [QA recheck](R20/qa_recheck.json), [gate](R20/gate.json), [summary](R20/summary.md) |
 | 40 | **C12** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
 | 41 | **R06** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
 | 42 | **R07** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
@@ -54,7 +54,7 @@ For each row, metrics are copied from that card’s `results.json`; statuses com
 | 44 | **R13** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
 | 45 | **R11** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
 
-## C05 — latest completed lane
+## C05 — historical lane note
 
 - **Verdict: RETIRE.** The frozen C05 recipe changes only `min_df` from 3 to 2 while retaining `max_features=60,000` and word n-grams `(1,2)`. It preserves the frozen `.75 C2_B + .25 sparse expert` route on present streams, frozen CatBoost fallback on missing streams, and threshold 0.50.
 - Official Classification Train SHA-256: `875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c`. Freeze signature: `d1635493beccf512b3f9d35c60ab994e3b4f9484073de8720840fb8d6843b36a`.
@@ -114,8 +114,15 @@ For each row, metrics are copied from that card’s `results.json`; statuses com
 - Two fits at cutoffs 55/67 used 12,020/29,705 rows and took 7.67/14.70 s. Independent review reproduced the freezes, hashes, row/ID alignment, fit-only boundary, control/candidate outputs, metrics, gates, and supported subgroup results. All pilot gates passed; the largest supported harm was +0.171021 on W4 `threat_rank >= 95` (n=249), within the +0.25 limit. No Test/Sample/Kaggle was accessed.
 - Budget reconciliation records 2/2 saved fits and 0 failures; global pilot reservations are now 64/180. R22 enters the **ADVANCE** pool. Under ONE_CHAT_END_TO_END, defer full-six continuation until all 45 pilots are screened and profile-based continuation selection is made. Next eligible pilot is **R20** (queue order 39).
 
+## R20 — pilot RETIRE, independent QA passed
+
+- R20 selected exactly 128 unigram token identities per fold using binary document support ≥30 and the frozen shrunken mean-deviation score. The sparse LightGBM L1 design was fit only on the temporal outer-fit rows. Support preflight found 1,267 eligible identities at cutoff 55 and 2,194 at cutoff 67; both were above the 128-token requirement.
+- On the exact 9,064-row W1+W4 primary, MAE moved from 13.464396 to 13.570074 (gain **−0.105678**). H12 moved from 14.047533 to 14.163046 (gain **−0.115513**); W1/W4 gains were −0.041960/−0.158634. Six supported tail/missing cells exceeded the +0.25 harm guard; the worst was **+0.763046** on W1 `threat_rank >= 95` (n=213). The primary-gain, H12-harm, and subgroup gates failed; W1/W4 view-harm gates passed. Decision: **RETIRE**.
+- Both frozen fits were saved (12,020/29,705 fit rows; 8.22 seconds total). Resource preflight estimated 2.42/3.02 GiB peaks with a 2 GiB reserve; peak RSS was not observed. Independent QA reproduced the freeze, hashes, row/ID alignment, outputs, metrics, and gate. A post-fit JSON tuple/list normalization fixed only the verifier's serialized analyzer comparison; no refit or recipe change occurred. No Test, SampleSubmission, or Kaggle access occurred.
+- Budget reconciliation records 2/2 saved fits and 0 failed fits; global pilot reservations are **66/180**. R20 does not advance to full-six. Under ONE_CHAT_END_TO_END, the next eligible pilot is **C12** (queue order 40), after its own support, data, RAM, budget, and single-job preflight.
+
 ## Ledger and scope notes
 
-- The active budget ledger used by the runner is `experiments/runs/optimization_v3_batch1/batch_ledger.jsonl`; it records 64 of 180 candidate predictor fits reserved after R22. C20 and R19 added zero fits. Runtime fit bundles remain ignored by Git.
+- The active budget ledger used by the runner is `experiments/runs/optimization_v3_batch1/batch_ledger.jsonl`; it records 66 of 180 candidate predictor fits reserved after R20. R20 is reconciled at 2/2 saved fits and 0 failures. C20 and R19 added zero fits. Runtime fit bundles remain ignored by Git.
 - The tracked `reports/optimization_v3/batch1/batch_ledger.jsonl` is an older partial reservation snapshot (8 entries); it is not a complete mirror of the runtime ledger and must not be used to infer remaining global budget.
 - V3 remains active. This file is an interim evidence index; it does not close the remaining conditional queue or authorize Test/Kaggle access for pilots.
