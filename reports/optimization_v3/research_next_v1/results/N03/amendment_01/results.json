@@ -1,0 +1,357 @@
+{
+  "R06_ORIGINAL_is_secondary_only": true,
+  "all_gates_pass": false,
+  "budget": {
+    "active_reserved": 10,
+    "authorized_cap": 60,
+    "category_reservations": {
+      "continuation": 0,
+      "control_replay": 0,
+      "pilot": 10,
+      "technical_retry": 0
+    },
+    "event_rows": 27,
+    "failed_or_interrupted_started": 0,
+    "released_unused": 0,
+    "remaining_capacity_after_reservations": 50,
+    "reserved_total": 10,
+    "saved": 10,
+    "started_and_consumed": 10
+  },
+  "card_id": "N03",
+  "decision": "RETIRED_PERFORMANCE",
+  "fit_receipts": {
+    "67": {
+      "bundle_receipt_sha256": "f9994c651b58232b79eee034e2bbad61622f5c4bbdfe571f36c15da088754ba7",
+      "fit_id": "N03:PILOT:67:router",
+      "receipt_sha256": "f9994c651b58232b79eee034e2bbad61622f5c4bbdfe571f36c15da088754ba7"
+    },
+    "75": {
+      "bundle_receipt_sha256": "408fd3b4b18ed5b346144bee45728ebfa70b6b5611041eed29a06cf434489d70",
+      "fit_id": "N03:PILOT:75:router",
+      "receipt_sha256": "408fd3b4b18ed5b346144bee45728ebfa70b6b5611041eed29a06cf434489d70"
+    }
+  },
+  "freeze_signature": "1069d03d9ace6a9c9b8434da0e9ece304e416c47b36c78a4ebd1a17ffd81add7",
+  "full_train_refit": false,
+  "gates": {
+    "at_least_one_primary_row_routed_to_B": true,
+    "each_primary_window_harm_le_0_5": true,
+    "late_h12_harm_vs_A_le_0_05": true,
+    "late_primary_gain_vs_A_ge_0_03": false,
+    "late_primary_gain_vs_past_only_constant_ge_0_01": false,
+    "supported_missing_and_target_tail_harm_le_0_25_vs_A_and_legacy": false
+  },
+  "interpretation": "All results use already observed Train temporal validation labels; no Test, Kaggle or full-Train refit.",
+  "kaggle_calls": 0,
+  "lineage": {
+    "R06_verification": {
+      "sha256": "ba65995d8c42ef2cf72a2c2b7c5c1a2a775eb59987c2a3cb4c37cc5bf25a2831",
+      "status": "PASS",
+      "test_data_used": false
+    },
+    "origins": {
+      "55": {
+        "R06_npz_sha256": "ed52cf9c8958b693e49e4c2999015babe35aa8f350fea28eb313e492f19e5dd6",
+        "R06_sidecar_sha256": "68e60624d79957075c755ac1c35bd40733d8b983cd2ec931b8186243de0100b0",
+        "R22_npz_sha256": "7978b1326d251586d226daeafaa6412626028964bdeedc4a9688e61f1db930d7",
+        "R22_sidecar_sha256": "ad60bac203748ea3d50c4b6f6b33b77e94de0a0507e1e293cd0ca4a364e49716",
+        "complete_cycle_rank_match": true,
+        "exact_legacy_match": true,
+        "fit_rows": 12020,
+        "missing_fallback_A_exact": true,
+        "rows": 17685,
+        "score_cycle_max": 67,
+        "score_cycle_min": 56
+      },
+      "59": {
+        "R06_npz_sha256": "6d55cd7fa59662d54816ed4be16470a437af615b5e6544ec0ab15ce10dbcf849",
+        "R06_sidecar_sha256": "840addcfe5fb088d0df0e348b48ec11a86ccdff9392da8e7529c9e6f9e433ab7",
+        "R22_npz_sha256": "3682bdb816f510adf3cb53bef81ba9545111e872ca277ced1f6da9a52826f600",
+        "R22_sidecar_sha256": "2b3b9616121a105adb170dc01b746b435e5e051732bb85d74e48c823f485cc9d",
+        "complete_cycle_rank_match": true,
+        "exact_legacy_match": true,
+        "fit_rows": 16134,
+        "missing_fallback_A_exact": true,
+        "rows": 6493,
+        "score_cycle_max": 63,
+        "score_cycle_min": 60
+      },
+      "63": {
+        "R06_npz_sha256": "f6480ec474dbd9229b401eade141ff51a4bf911f68b10df14336b0a9b997c0c9",
+        "R06_sidecar_sha256": "0eecbe691404e56d38acce03630ac1339f38c50733ad60128624394894b4dea1",
+        "R22_npz_sha256": "fe3374619abcb514fa6d99b5187603897d33a70549bbe2c03e882456c8506b83",
+        "R22_sidecar_sha256": "5907965f2bd45a02fadcd59c6ab7e9a9c5216e41f73bf706fd097b5e4ad7489c",
+        "complete_cycle_rank_match": true,
+        "exact_legacy_match": true,
+        "fit_rows": 22627,
+        "missing_fallback_A_exact": true,
+        "rows": 7078,
+        "score_cycle_max": 67,
+        "score_cycle_min": 64
+      },
+      "67": {
+        "R06_npz_sha256": "4bda0ac6838388ea46ca768e0998f7b0f9a9a1b6defb2b1e5399f6ff83154804",
+        "R06_sidecar_sha256": "faa11f25bfd37fded8db5f84244ce306d6f2027dc153fb143560304fcf91da1e",
+        "R22_npz_sha256": "cf8e02933e4fc9138b378fa1352ee64625484c8795cbdecc34b9d9604bd1d722",
+        "R22_sidecar_sha256": "32ad552d372fe6f8024b65fadfd66354bf188565c64c8e4126923e1ce14537dd",
+        "complete_cycle_rank_match": true,
+        "exact_legacy_match": true,
+        "fit_rows": 29705,
+        "missing_fallback_A_exact": true,
+        "rows": 20903,
+        "score_cycle_max": 79,
+        "score_cycle_min": 68
+      },
+      "71": {
+        "R06_npz_sha256": "47c97efd70dba87b8fd4187e31e85122d325528688553f7c9e8e6a81dcf58894",
+        "R06_sidecar_sha256": "f506ed8f0e97517d6af4d591d89e5cf4cea96640a47bb4d73235573f4c0b0aa8",
+        "R22_npz_sha256": "5b5e6684a5afaaabf70afe6b253eb4f732bcdbcc7bdeb311a9f31561aa87d69b",
+        "R22_sidecar_sha256": "0846e8e6d57f19f14867532ac125b9aab6c89dc8541586d0627f9db603ccb4c1",
+        "complete_cycle_rank_match": true,
+        "exact_legacy_match": true,
+        "fit_rows": 34655,
+        "missing_fallback_A_exact": true,
+        "rows": 7462,
+        "score_cycle_max": 75,
+        "score_cycle_min": 72
+      },
+      "75": {
+        "R06_npz_sha256": "61ef463a5bf5ee06f3c68162b8a7f874664b2736161979342731de98b5e09abb",
+        "R06_sidecar_sha256": "61f3ab25d1cbc954cb74f47bdf823cc72113b1a2e19394c61802da1bdba7ca45",
+        "R22_npz_sha256": "91981eb993becda4d6f2cad33fabdb8348fdbc8891c04af90e13e6b58e492a36",
+        "R22_sidecar_sha256": "3925dd13f6b88f38dcb695b7332e2db67e876b6d745df6bbe913d502e28f7c8f",
+        "complete_cycle_rank_match": true,
+        "exact_legacy_match": true,
+        "fit_rows": 42117,
+        "missing_fallback_A_exact": true,
+        "rows": 8491,
+        "score_cycle_max": 79,
+        "score_cycle_min": 76
+      }
+    }
+  },
+  "pilot_origins": [
+    67,
+    75
+  ],
+  "routed_rows_primary": 5794,
+  "schema_version": 1,
+  "source_hashes": {
+    "data/raw/regression/Train.csv": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+    "experiments/optimization_v3/research_next_v1/frozen/N00/amendment_05/freeze.json": "da99d3751f5e09b023d83e319f77ba2f60f5a96ae46fc4a21add1bb8d316d8a3",
+    "experiments/optimization_v3/research_next_v1/frozen/N01/freeze.json": "ae40427eadd6a02d92bd1bc7b4c189e56867455129df50873653d735a4c3e437",
+    "experiments/optimization_v3/research_next_v1/frozen/N02/amendment_02/freeze.json": "dfa1671539afe4fb2d75718bbdfaa92d05de51759352d65fac741278777e8d87",
+    "experiments/optimization_v3/research_next_v1/queue.json": "c22c13ea0ead142e32bfe7abc2655ec19c608d1f537db721e35dfc4c38b8eb45",
+    "experiments/runs/optimization_v3_batch1/R06/R06_fit55.json": "68e60624d79957075c755ac1c35bd40733d8b983cd2ec931b8186243de0100b0",
+    "experiments/runs/optimization_v3_batch1/R06/R06_fit55.npz": "ed52cf9c8958b693e49e4c2999015babe35aa8f350fea28eb313e492f19e5dd6",
+    "experiments/runs/optimization_v3_batch1/R06/R06_fit67.json": "faa11f25bfd37fded8db5f84244ce306d6f2027dc153fb143560304fcf91da1e",
+    "experiments/runs/optimization_v3_batch1/R06/R06_fit67.npz": "4bda0ac6838388ea46ca768e0998f7b0f9a9a1b6defb2b1e5399f6ff83154804",
+    "experiments/runs/optimization_v3_batch1/R22/R22_fit55.json": "ad60bac203748ea3d50c4b6f6b33b77e94de0a0507e1e293cd0ca4a364e49716",
+    "experiments/runs/optimization_v3_batch1/R22/R22_fit55.npz": "7978b1326d251586d226daeafaa6412626028964bdeedc4a9688e61f1db930d7",
+    "experiments/runs/optimization_v3_batch1/R22/R22_fit67.json": "32ad552d372fe6f8024b65fadfd66354bf188565c64c8e4126923e1ce14537dd",
+    "experiments/runs/optimization_v3_batch1/R22/R22_fit67.npz": "cf8e02933e4fc9138b378fa1352ee64625484c8795cbdecc34b9d9604bd1d722",
+    "experiments/runs/optimization_v3_batch1/batch_ledger.jsonl": "544c3a255358bc886ec6b6be646775eca495c35ffe0720097394f53ba89d4f44",
+    "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit59.json": "840addcfe5fb088d0df0e348b48ec11a86ccdff9392da8e7529c9e6f9e433ab7",
+    "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit59.npz": "6d55cd7fa59662d54816ed4be16470a437af615b5e6544ec0ab15ce10dbcf849",
+    "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit63.json": "0eecbe691404e56d38acce03630ac1339f38c50733ad60128624394894b4dea1",
+    "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit63.npz": "f6480ec474dbd9229b401eade141ff51a4bf911f68b10df14336b0a9b997c0c9",
+    "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit71.json": "f506ed8f0e97517d6af4d591d89e5cf4cea96640a47bb4d73235573f4c0b0aa8",
+    "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit71.npz": "47c97efd70dba87b8fd4187e31e85122d325528688553f7c9e8e6a81dcf58894",
+    "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit75.json": "61f3ab25d1cbc954cb74f47bdf823cc72113b1a2e19394c61802da1bdba7ca45",
+    "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit75.npz": "61ef463a5bf5ee06f3c68162b8a7f874664b2736161979342731de98b5e09abb",
+    "experiments/runs/optimization_v3_final_continuation/R22/R22_fit59.json": "2b3b9616121a105adb170dc01b746b435e5e051732bb85d74e48c823f485cc9d",
+    "experiments/runs/optimization_v3_final_continuation/R22/R22_fit59.npz": "3682bdb816f510adf3cb53bef81ba9545111e872ca277ced1f6da9a52826f600",
+    "experiments/runs/optimization_v3_final_continuation/R22/R22_fit63.json": "5907965f2bd45a02fadcd59c6ab7e9a9c5216e41f73bf706fd097b5e4ad7489c",
+    "experiments/runs/optimization_v3_final_continuation/R22/R22_fit63.npz": "fe3374619abcb514fa6d99b5187603897d33a70549bbe2c03e882456c8506b83",
+    "experiments/runs/optimization_v3_final_continuation/R22/R22_fit71.json": "0846e8e6d57f19f14867532ac125b9aab6c89dc8541586d0627f9db603ccb4c1",
+    "experiments/runs/optimization_v3_final_continuation/R22/R22_fit71.npz": "5b5e6684a5afaaabf70afe6b253eb4f732bcdbcc7bdeb311a9f31561aa87d69b",
+    "experiments/runs/optimization_v3_final_continuation/R22/R22_fit75.json": "3925dd13f6b88f38dcb695b7332e2db67e876b6d745df6bbe913d502e28f7c8f",
+    "experiments/runs/optimization_v3_final_continuation/R22/R22_fit75.npz": "91981eb993becda4d6f2cad33fabdb8348fdbc8891c04af90e13e6b58e492a36",
+    "experiments/runs/optimization_v3_research_next_v1/N00/amendment_05/N03_FIXED_ARMS/arrays.npz": "09a2aff335de7cb522c6fa6dc3e05ba2f5a05b7736abe5d78b4c813a5b4ce49d",
+    "experiments/runs/optimization_v3_research_next_v1/N00/amendment_05/N03_FIXED_ARMS/receipt.json": "712ca813078cc923d9a5f94b5b3c679ee63f8a13a6a741b1770f0d459b50a2b7",
+    "reports/optimization_v3/expanded_benchmark_v1_final_evaluation/R06/verification.json": "ba65995d8c42ef2cf72a2c2b7c5c1a2a775eb59987c2a3cb4c37cc5bf25a2831",
+    "reports/optimization_v3/research_next_v1/cards/N03.md": "605e6647e59d327f7e03daea31d5462bc83002b214e90c0027e4f59b67e92888",
+    "reports/optimization_v3/research_next_v1/queue_readiness.json": "44966873a5d7938eee3d8642ec583561d22143f836a9cc125a02150c0fc819ce",
+    "reports/optimization_v3/research_next_v1/results/N00/amendment_05/summary.json": "e7ff5a4c145f54b59c0ad16feaad09e2dcd82ef830c81ec0faff3e04f83a5e9b",
+    "scripts/optimization_v3_research_next_n00.py": "dc81b0089d8acd5f4a8c12a8db67c94ab8d24764b730d99144208e6e09f6d03b",
+    "scripts/optimization_v3_research_next_n03.py": "6fb195ace1a2196162f01a22891fa0e5e499e357f2cdb90137dc7fd913efff58",
+    "scripts/optimization_v3_research_next_preflight.py": "5423a0023862d04201bfc37c8973b15fddcafa40e8cb8a235329648a917dba6b",
+    "src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+    "src/models/optimization_v3_batch1_r06.py": "37869d6125d48fc4afb2a3c439cbb19d5586f35f1cd3a501b762e42530fcd970",
+    "src/models/optimization_v3_batch1_r22.py": "35bc5ede08696d6d82b0e0674aececdda0f5a7789fa35ebdd97cdaaf39171e22",
+    "src/models/regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+    "src/models/regression_round2_models.py": "f56f7ee2c337acdf2cbe7160719faf62b1e3d3470a7f656b044ce0890d677e09",
+    "src/models/research_next_budget.py": "b19ca985ff28a2f3c80415bf48374e04ad064b003876f1f6d6c077dab7ed73a8",
+    "src/models/research_next_contract.py": "486a3f144afbfc783a90ce3948f11cee69d702a05dd3ac113e93b3bda53d7185",
+    "src/models/research_next_n03.py": "b5f429861e38547b6ee6cdbc6c5f5f3323fcb5a6fb2fdd17ee75b9725a807028",
+    "src/models/round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+    "src/utils/paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555",
+    "tests/test_research_next_n03.py": "db50a76a85635efc834bf96e903e277d31742674ee91281e286825c638fc93f4"
+  },
+  "status": "RETIRED_PERFORMANCE",
+  "test_files_opened": false,
+  "test_labels_read": false,
+  "views": {
+    "W4_67_to_68_71": {
+      "gain_vs_A": 0.020677459934546505,
+      "gain_vs_constant": -0.023510690665787592,
+      "groups": {
+        "stream_missing": {
+          "harm_vs_A": 0.0,
+          "harm_vs_legacy": -0.05055218882856316,
+          "n": 342,
+          "pass": true,
+          "supported": true
+        },
+        "target_ge95_evaluation_only": {
+          "harm_vs_A": 0.158112005176811,
+          "harm_vs_legacy": 0.32913348439245294,
+          "n": 249,
+          "pass": false,
+          "supported": true
+        },
+        "target_le5_evaluation_only": {
+          "harm_vs_A": -0.16353547558907522,
+          "harm_vs_legacy": -0.43441432268121183,
+          "n": 244,
+          "pass": true,
+          "supported": true
+        }
+      },
+      "harm_vs_A": -0.020677459934546505,
+      "metrics": {
+        "A_R22_ORIGINAL": 11.390307110400984,
+        "B_fixed_arm": 11.34611895980065,
+        "R06_ORIGINAL_secondary": 11.396231716836489,
+        "past_only_constant_control": 11.34611895980065,
+        "protected_legacy": 11.455005081083685,
+        "router": 11.369629650466438
+      },
+      "n": 4950,
+      "routed_to_B_n": 2344,
+      "rows_sha256": "415497f94b2541ea35c4d429644177ada7dc024c42abaa10b6b99ab42e53c439",
+      "stream_missing_n": 342
+    },
+    "W6_75_to_76_79": {
+      "gain_vs_A": -0.025291288884023544,
+      "gain_vs_constant": 0.0025109292512457415,
+      "groups": {
+        "stream_missing": {
+          "harm_vs_A": 0.0,
+          "harm_vs_legacy": 0.10819513136575587,
+          "n": 526,
+          "pass": true,
+          "supported": true
+        },
+        "target_ge95_evaluation_only": {
+          "harm_vs_A": -0.052206112686680406,
+          "harm_vs_legacy": -0.020726749741337258,
+          "n": 434,
+          "pass": true,
+          "supported": true
+        },
+        "target_le5_evaluation_only": {
+          "harm_vs_A": 0.18463290668142562,
+          "harm_vs_legacy": 0.19404291728963585,
+          "n": 442,
+          "pass": true,
+          "supported": true
+        }
+      },
+      "harm_vs_A": 0.025291288884023544,
+      "metrics": {
+        "A_R22_ORIGINAL": 9.88045353425426,
+        "B_fixed_arm": 9.908255752389529,
+        "R06_ORIGINAL_secondary": 9.921612722775233,
+        "past_only_constant_control": 9.908255752389529,
+        "protected_legacy": 9.90768341377724,
+        "router": 9.905744823138283
+      },
+      "n": 8491,
+      "routed_to_B_n": 3450,
+      "rows_sha256": "90d2c53157abdf97367b909335151bf728f36a21740ffaffb90a4a5012bcef94",
+      "stream_missing_n": 526
+    },
+    "late_h12": {
+      "gain_vs_A": 0.02797693808994417,
+      "gain_vs_constant": -0.0338664417440846,
+      "groups": {
+        "stream_missing": {
+          "harm_vs_A": 0.0,
+          "harm_vs_legacy": 0.08311807687046446,
+          "n": 1375,
+          "pass": true,
+          "supported": true
+        },
+        "target_ge95_evaluation_only": {
+          "harm_vs_A": 0.06578571619700213,
+          "harm_vs_legacy": 0.2336348269902917,
+          "n": 1057,
+          "pass": true,
+          "supported": true
+        },
+        "target_le5_evaluation_only": {
+          "harm_vs_A": -0.18181052352609228,
+          "harm_vs_legacy": -0.6033774089706672,
+          "n": 1048,
+          "pass": true,
+          "supported": true
+        }
+      },
+      "harm_vs_A": -0.02797693808994417,
+      "metrics": {
+        "A_R22_ORIGINAL": 11.511220126579893,
+        "B_fixed_arm": 11.449376746745864,
+        "R06_ORIGINAL_secondary": 11.529708880459124,
+        "past_only_constant_control": 11.449376746745864,
+        "protected_legacy": 11.611685946326363,
+        "router": 11.483243188489949
+      },
+      "n": 20903,
+      "routed_to_B_n": 9698,
+      "rows_sha256": "9ead64310afbcc9fd5ef149b46a920a7dd2062debc58cfec29cd01c5f5b30781",
+      "stream_missing_n": 1375
+    },
+    "late_primary": {
+      "gain_vs_A": -0.0083620941327478,
+      "gain_vs_constant": -0.007072213267118599,
+      "groups": {
+        "stream_missing": {
+          "harm_vs_A": 0.0,
+          "harm_vs_legacy": 0.045647224100251904,
+          "n": 868,
+          "pass": true,
+          "supported": true
+        },
+        "target_ge95_evaluation_only": {
+          "harm_vs_A": 0.02446916015081424,
+          "harm_vs_legacy": 0.10682112478181693,
+          "n": 683,
+          "pass": true,
+          "supported": true
+        },
+        "target_le5_evaluation_only": {
+          "harm_vs_A": 0.060794589955474265,
+          "harm_vs_legacy": -0.029489978560054197,
+          "n": 686,
+          "pass": true,
+          "supported": true
+        }
+      },
+      "harm_vs_A": 0.0083620941327478,
+      "metrics": {
+        "A_R22_ORIGINAL": 10.436496626429417,
+        "B_fixed_arm": 10.437786507295046,
+        "R06_ORIGINAL_secondary": 10.464679758010947,
+        "past_only_constant_control": 10.437786507295046,
+        "protected_legacy": 10.477525111059206,
+        "router": 10.444858720562165
+      },
+      "n": 13441,
+      "routed_to_B_n": 5794,
+      "rows_sha256": "bf267c0b85ddd9b5f94033041823abc044c22ad42e5f92b061e975bf33581686",
+      "stream_missing_n": 868
+    }
+  }
+}
