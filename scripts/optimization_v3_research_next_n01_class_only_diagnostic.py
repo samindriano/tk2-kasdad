@@ -169,6 +169,24 @@ def _source_and_input_paths(train_path: Path) -> list[Path]:
     return sorted(set(paths), key=lambda path: _relative(path))
 
 
+def _verify_n00_parent_freeze() -> dict[str, Any]:
+    """Verify N00's exact frozen inputs while allowing descendant commits."""
+    frozen = json.loads(n00.FREEZE_PATH.read_text(encoding="utf-8"))
+    expected = dict(frozen.get("identity", {}))
+    if frozen.get("freeze_signature") != canonical_sha256(expected):
+        raise RuntimeError("N00 parent freeze signature is invalid")
+    source_commit = str(expected.get("source_commit", ""))
+    if not source_commit or not _is_ancestor(source_commit):
+        raise RuntimeError("N00 frozen source commit is not an ancestor of current HEAD")
+    actual_doc = n00.build_freeze()
+    actual = dict(actual_doc.get("identity", {}))
+    actual.pop("source_commit", None)
+    expected.pop("source_commit", None)
+    if actual != expected:
+        raise RuntimeError("N00 frozen source/input identity changed outside its source-commit descendant")
+    return frozen
+
+
 def _resource_estimate(fit_features: pd.DataFrame, score_features: pd.DataFrame,
                        *, available_bytes: int | None = None) -> dict[str, Any]:
     def sparse_upper(frame: pd.DataFrame) -> tuple[int, int]:
@@ -196,7 +214,7 @@ def _resource_estimate(fit_features: pd.DataFrame, score_features: pd.DataFrame,
 
 
 def _train_context() -> dict[str, Any]:
-    n00_frozen = n00.verify_freeze()
+    n00_frozen = _verify_n00_parent_freeze()
     n01_frozen, parent = n01._verify_freeze()
     frame = parent["frame"]
     target = parent["target"].astype(np.int8)
