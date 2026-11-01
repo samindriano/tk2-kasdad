@@ -1,0 +1,130 @@
+{
+  "card_sha256": "abc21ce6bdb5c4537a119f7edd394bb649c6e0df88f6eaecacc5e28e69bcf253",
+  "queue_sha256": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+  "recipe": {
+    "card_id": "R06",
+    "feature_allowlist": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code",
+      "signal_stream"
+    ],
+    "fit_rows": {
+      "55": 12020,
+      "67": 29705
+    },
+    "missing_stream_indicator": true,
+    "model": "LightGBM regression_l1; sparse structured/OHE + char_wb TF-IDF + missing indicator",
+    "policy": "clip(0.75*current_three_component_champion + 0.25*rank50(raw R06),0,100)",
+    "predictor_fits": 2,
+    "preprocessing_fit_calls_per_cutoff": {
+      "character_tfidf": 1,
+      "structured_processor_scaler_ohe": 1
+    },
+    "profile": "STANDARD",
+    "rank50": "within each complete score cycle; average ties; percentile=100*rank/n; rank50=0.5*raw+0.5*percentile; clip[0,100]",
+    "score_rows": {
+      "55": 17685,
+      "67": 20903
+    },
+    "semantic_interpretation": "Character n-grams are anonymous text fragments; no semantic interpretation is made.",
+    "sparse_lgb_parameters": {
+      "boosting_type": "gbdt",
+      "colsample_bytree": 1.0,
+      "deterministic": true,
+      "force_col_wise": true,
+      "learning_rate": 0.05,
+      "max_depth": -1,
+      "min_child_samples": 40,
+      "min_child_weight": 0.001,
+      "n_estimators": 400,
+      "n_jobs": 2,
+      "num_leaves": 31,
+      "objective": "regression_l1",
+      "random_state": 42,
+      "reg_alpha": 0.0,
+      "reg_lambda": 1.0,
+      "subsample": 1.0,
+      "subsample_freq": 0,
+      "verbosity": -1
+    },
+    "structured_preprocessing": "RegressionTextModel fit-only numeric imputation/scaling and OneHotEncoder; original R02 structured design",
+    "test_data_used": false,
+    "text_vectorizer": {
+      "analyzer": "char_wb",
+      "binary": false,
+      "decode_error": "strict",
+      "dtype": "float64",
+      "encoding": "utf-8",
+      "input": "content",
+      "lowercase": true,
+      "max_df": 1.0,
+      "max_features": 30000,
+      "min_df": 3,
+      "ngram_range": [
+        3,
+        5
+      ],
+      "norm": "l2",
+      "preprocessor": null,
+      "smooth_idf": true,
+      "stop_words": null,
+      "strip_accents": null,
+      "sublinear_tf": true,
+      "token_pattern": "(?u)\\b\\w\\w+\\b",
+      "tokenizer": null,
+      "use_idf": true,
+      "vocabulary": null
+    },
+    "views": {
+      "H12": [
+        [
+          55,
+          56,
+          67
+        ],
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "W1": [
+        [
+          55,
+          56,
+          59
+        ]
+      ],
+      "W4": [
+        [
+          67,
+          68,
+          71
+        ]
+      ],
+      "primary": [
+        [
+          55,
+          56,
+          59
+        ],
+        [
+          67,
+          68,
+          71
+        ]
+      ]
+    }
+  },
+  "source_commit": "be5e86750ec725e45698054a91fad299ddc24eb4"
+}

@@ -1,0 +1,309 @@
+{
+  "created_at_utc": "2026-11-01T07:12:04.785530+00:00",
+  "identity": {
+    "candidate_recipe": {
+      "card_id": "R06",
+      "feature_allowlist": [
+        "impact_load",
+        "entry_friction",
+        "cycle_code",
+        "scope_pressure",
+        "text_load",
+        "scope_trace",
+        "org_spread",
+        "module_spread",
+        "telemetry_flag",
+        "org_code",
+        "module_code",
+        "pattern_code",
+        "signal_stream"
+      ],
+      "fit_rows": {
+        "55": 12020,
+        "67": 29705
+      },
+      "missing_stream_indicator": true,
+      "model": "LightGBM regression_l1; sparse structured/OHE + char_wb TF-IDF + missing indicator",
+      "policy": "clip(0.75*current_three_component_champion + 0.25*rank50(raw R06),0,100)",
+      "predictor_fits": 2,
+      "preprocessing_fit_calls_per_cutoff": {
+        "character_tfidf": 1,
+        "structured_processor_scaler_ohe": 1
+      },
+      "profile": "STANDARD",
+      "rank50": "within each complete score cycle; average ties; percentile=100*rank/n; rank50=0.5*raw+0.5*percentile; clip[0,100]",
+      "score_rows": {
+        "55": 17685,
+        "67": 20903
+      },
+      "semantic_interpretation": "Character n-grams are anonymous text fragments; no semantic interpretation is made.",
+      "sparse_lgb_parameters": {
+        "boosting_type": "gbdt",
+        "colsample_bytree": 1.0,
+        "deterministic": true,
+        "force_col_wise": true,
+        "learning_rate": 0.05,
+        "max_depth": -1,
+        "min_child_samples": 40,
+        "min_child_weight": 0.001,
+        "n_estimators": 400,
+        "n_jobs": 2,
+        "num_leaves": 31,
+        "objective": "regression_l1",
+        "random_state": 42,
+        "reg_alpha": 0.0,
+        "reg_lambda": 1.0,
+        "subsample": 1.0,
+        "subsample_freq": 0,
+        "verbosity": -1
+      },
+      "structured_preprocessing": "RegressionTextModel fit-only numeric imputation/scaling and OneHotEncoder; original R02 structured design",
+      "test_data_used": false,
+      "text_vectorizer": {
+        "analyzer": "char_wb",
+        "binary": false,
+        "decode_error": "strict",
+        "dtype": "float64",
+        "encoding": "utf-8",
+        "input": "content",
+        "lowercase": true,
+        "max_df": 1.0,
+        "max_features": 30000,
+        "min_df": 3,
+        "ngram_range": [
+          3,
+          5
+        ],
+        "norm": "l2",
+        "preprocessor": null,
+        "smooth_idf": true,
+        "stop_words": null,
+        "strip_accents": null,
+        "sublinear_tf": true,
+        "token_pattern": "(?u)\\b\\w\\w+\\b",
+        "tokenizer": null,
+        "use_idf": true,
+        "vocabulary": null
+      },
+      "views": {
+        "H12": [
+          [
+            55,
+            56,
+            67
+          ],
+          [
+            67,
+            68,
+            79
+          ]
+        ],
+        "W1": [
+          [
+            55,
+            56,
+            59
+          ]
+        ],
+        "W4": [
+          [
+            67,
+            68,
+            71
+          ]
+        ],
+        "primary": [
+          [
+            55,
+            56,
+            59
+          ],
+          [
+            67,
+            68,
+            71
+          ]
+        ]
+      }
+    },
+    "candidate_recipe_sha256": "6c99659533076f577a9adcaa43036966bfc5f3d5d0169d66f29855d701835541",
+    "card": {
+      "card_path": "reports/optimization_v3/research_backlog/cards/R06.md",
+      "change": "char_wb(3,5)/min_df3/cap30000/sublinear TF-IDF plus original structured/OHE; original sparse L1 model. Different learner from failed character Ridge; low-confidence hash fragments.",
+      "condition": "No additional dependency",
+      "evaluation": "STANDARD",
+      "evidence": [
+        "reports/optimization_v3/regression_character_full/fullsix.json"
+      ],
+      "family": "character_boost",
+      "id": "R06",
+      "implementation": "NOT_IMPLEMENTED",
+      "in_priority_prefix": false,
+      "name": "Character sparse L1 boosting",
+      "new_results": null,
+      "pilot_predictor_fits": 2,
+      "policy": "R_AUX25",
+      "preflight_checks": [
+        "RAM/nnz preflight; do not infer semantic characters"
+      ],
+      "priority": "P3",
+      "queue_order": 41,
+      "rationale": "Learner nonlinear berbeda dari character LR/Ridge yang gagal. Token hash-like memberi dasar subword yang lemah, sehingga prioritas rendah.",
+      "status": "PLANNED_NOT_RUN",
+      "task": "regression"
+    },
+    "control_cache_hashes": {
+      "data/raw/regression/Train.csv": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+      "experiments/runs/dual_reg_v1/stage1_paired_blends.npz": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516",
+      "experiments/runs/optimization_v2_regression_repr/fullsix_predictions.npz": "4b87b0da34069ea3d75490233c574fbd92283f8b6472a43d8c654a20a4b904c9",
+      "experiments/runs/optimization_v2_regression_repr/pilot_predictions.npz": "eae6bea2dd6933de59ac0f63f54cc08124b59d4bcba91bbe05a7c5ec3dab9ff6",
+      "reports/optimization_v2/regression_repr/fullsix.json": "a9686473998722b8f86a0f6a4489b4e3a75a6b6ba20c661ac564e6a5e61aea48",
+      "reports/optimization_v2/regression_repr/fullsix_subgroup_diagnostics.json": "6954fbdd9eb1c95794787ff54cf8a9b8c88dc97373ad9a8bf8e0aefdcaf1551e"
+    },
+    "control_preflight_identity_sha256": "8f01b8356c1152a7a5329b5e7cfe915abcdd1ed702a1920c535446ae864f35df",
+    "evaluation_views": {
+      "H12": [
+        [
+          55,
+          56,
+          67
+        ],
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "W1": [
+        [
+          55,
+          56,
+          59
+        ]
+      ],
+      "W4": [
+        [
+          67,
+          68,
+          71
+        ]
+      ],
+      "primary": [
+        [
+          55,
+          56,
+          59
+        ],
+        [
+          67,
+          68,
+          71
+        ]
+      ]
+    },
+    "feature_names": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code",
+      "signal_stream"
+    ],
+    "input_sha256": {
+      "accepted_regression_manifest": "dd166e92089f24978244496a9a0afabc0d06551dbdc326579a7c898a8844e19a",
+      "cache_only_diagnostics": "8d634debd1dbc6a3eed5250593b9c213570b4fb139b0b9a623a8d704159916df",
+      "canonical_card": "abc21ce6bdb5c4537a119f7edd394bb649c6e0df88f6eaecacc5e28e69bcf253",
+      "canonical_queue": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+      "official_regression_train": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+      "paired_lgb_ridge_cache": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516",
+      "regression_fullsix_report": "a9686473998722b8f86a0f6a4489b4e3a75a6b6ba20c661ac564e6a5e61aea48",
+      "regression_subgroup_diagnostics": "6954fbdd9eb1c95794787ff54cf8a9b8c88dc97373ad9a8bf8e0aefdcaf1551e",
+      "sparse_regression_fullsix_cache": "4b87b0da34069ea3d75490233c574fbd92283f8b6472a43d8c654a20a4b904c9",
+      "sparse_regression_pilot_cache": "eae6bea2dd6933de59ac0f63f54cc08124b59d4bcba91bbe05a7c5ec3dab9ff6"
+    },
+    "package_versions": {
+      "lightgbm": "4.6.0",
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "psutil": "7.0.0",
+      "scikit-learn": "1.8.0",
+      "scipy": "1.18.0",
+      "threadpoolctl": "3.6.0"
+    },
+    "python_version": "3.13.5",
+    "recipe_record_sha256": "7175d60d45ecc529f85773e623caf5755b6b7b99b37e721c1c604e8c78fde59a",
+    "resource_preflight": {
+      "concurrent_training_jobs": 1,
+      "cutoffs": {
+        "55": {
+          "analyzed_char_ngram_occurrences_upper_bound": 10326798,
+          "char_matrix_nnz_upper_bound": 7719004,
+          "csr_bytes_upper_bound": 102099816,
+          "eligible_char_ngrams_at_min_df": 82724,
+          "estimated_peak_bytes": 1351090744,
+          "estimated_peak_is_observed": false,
+          "feature_cap": 30000,
+          "fit_missing_stream_rows": 826,
+          "fit_rows": 12020,
+          "histogram_bytes_upper_bound": 507920384,
+          "nonempty_documents_with_char_ngrams": 11194,
+          "status": "PASS",
+          "structured_nnz_upper_bound": 769280
+        },
+        "67": {
+          "analyzed_char_ngram_occurrences_upper_bound": 24015315,
+          "char_matrix_nnz_upper_bound": 18184948,
+          "csr_bytes_upper_bound": 241626924,
+          "eligible_char_ngrams_at_min_df": 133417,
+          "estimated_peak_bytes": 1769672068,
+          "estimated_peak_is_observed": false,
+          "feature_cap": 30000,
+          "fit_missing_stream_rows": 2029,
+          "fit_rows": 29705,
+          "histogram_bytes_upper_bound": 507920384,
+          "nonempty_documents_with_char_ngrams": 27676,
+          "status": "PASS",
+          "structured_nnz_upper_bound": 1901120
+        }
+      },
+      "dense_full_text_matrix": false,
+      "free_memory_reserve_bytes": 2147483648,
+      "job_memory_cap_bytes": 6442450944,
+      "minimum_free_memory_bytes": 4294967296,
+      "sparse_only": true,
+      "status": "PASS",
+      "threads": 2
+    },
+    "schema_version": 1,
+    "source_commit": "be5e86750ec725e45698054a91fad299ddc24eb4",
+    "source_sha256": {
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1.py": "c93dd71ed2b512f32bf8916f59b0af56bff212934efb8825b0e8a680da72e969",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_r02.py": "30e8d5324f66f30d02176f37d006d6461608839d697259bcd8636dcb67b8ffbe",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_r06.py": "3a93862d1253256a48bd982a6b8f6ba8b1e8f0fc67056c014fef2c51f16482b4",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_reg_diagnostics.py": "e2af49bb45353fca5bf0c14093be9b0f0b02afe24289a1b5c30dfb584bbd3f55",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v2_regression.py": "b235cfd93c8cc0a207cfcea79892b925f9dfdfe515491a459d6ca1b6142cb590",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1.py": "746e12d408e74608e5b559bc7dcf4c10174df9f367859750987310adb6ae8ffd",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1_r02.py": "9ec87ca8d52f1b645013fec6570c19e871e681b477196fd450c2994d759ccd76",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1_r06.py": "37869d6125d48fc4afb2a3c439cbb19d5586f35f1cd3a501b762e42530fcd970",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_research_tabular.py": "674d7e52c485583729b8fe999dc133c39aae8dd85abd005a598e2caea9af99f9",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_round2_models.py": "f56f7ee2c337acdf2cbe7160719faf62b1e3d3470a7f656b044ce0890d677e09",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\utils\\paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\tests\\test_optimization_v3_batch1_r06_model.py": "32921d2972671c789a722225db217219844b90e504086ab2c2bcd8eafe61f011",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\tests\\test_optimization_v3_batch1_r06_runner.py": "5fa67584bb1e2902532b38fd008e01f56dd9456218ea55875d8ae4f96f5571e1"
+    },
+    "test_data_used": false,
+    "validation_labels_passed_to_adapter": false
+  },
+  "signature": "02ae1b4e6e6424a8ac7f66fd0f1b955e478f6265c4f071989d9d8c5ef532c0a8"
+}
