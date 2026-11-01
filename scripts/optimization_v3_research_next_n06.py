@@ -95,6 +95,11 @@ def _relative(path: Path) -> str:
     return path.relative_to(ROOT).as_posix()
 
 
+def _normalized_text_bytes(value: bytes) -> bytes:
+    """Compare committed text independent of Windows CRLF checkout conversion."""
+    return value.replace(b"\r\n", b"\n")
+
+
 def _git_head() -> str:
     return subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, check=True,
                           capture_output=True, text=True).stdout.strip()
@@ -282,9 +287,10 @@ def _build_identity(train_path: Path, frame: pd.DataFrame, schema: Mapping[str, 
     sources: dict[str, str] = {}
     for path in source_files:
         relative = _relative(path)
-        committed = subprocess.run(["git", "show", f"HEAD:{relative}"], cwd=ROOT,
-                                  check=True, capture_output=True).stdout
-        working = path.read_bytes()
+        committed = _normalized_text_bytes(subprocess.run(
+            ["git", "show", f"HEAD:{relative}"], cwd=ROOT, check=True, capture_output=True
+        ).stdout)
+        working = _normalized_text_bytes(path.read_bytes())
         if working != committed:
             raise RuntimeError(f"N06 source is not byte-identical to committed HEAD: {relative}")
         sources[relative] = hashlib.sha256(committed).hexdigest()
@@ -297,6 +303,7 @@ def _build_identity(train_path: Path, frame: pd.DataFrame, schema: Mapping[str, 
     return {
         "batch_id": BATCH, "card_id": CARD_ID, "stage": STAGE,
         "source_commit": _task_source_commit(),
+        "source_hash_method": "SHA-256 of committed text after CRLF-to-LF normalization",
         "lane_kind": "information_only_no_continuation_or_point_model_promotion",
         "question": "Does R06 depend on anonymous character surface beyond recurring token identity?",
         "official_train_sha256": file_sha256(train_path), "train_rows": int(len(frame)),

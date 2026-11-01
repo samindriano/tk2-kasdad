@@ -104,14 +104,14 @@ def verify() -> dict[str, Any]:
     )
     for relative, expected_hash in frozen["identity"]["source_sha256"].items():
         path = runner.ROOT / Path(relative)
-        working_hash = file_sha256(path) if path.is_file() else None
+        working_bytes = path.read_bytes().replace(b"\r\n", b"\n") if path.is_file() else None
         committed = subprocess.run(
             ["git", "show", f"HEAD:{relative}"], cwd=runner.ROOT, capture_output=True, check=True
-        ).stdout
+        ).stdout.replace(b"\r\n", b"\n")
         checks[f"source:{relative}"] = (
-            working_hash == expected_hash
+            working_bytes is not None and hashlib.sha256(working_bytes).hexdigest() == expected_hash
             and hashlib.sha256(committed).hexdigest() == expected_hash
-            and path.read_bytes() == committed
+            and working_bytes == committed
         )
     bundles = {}
     for seed in runner.SEEDS:
