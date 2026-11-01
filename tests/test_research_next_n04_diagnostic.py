@@ -44,5 +44,3 @@ def test_write_once_is_idempotent_and_rejects_mutation(tmp_path) -> None:
     assert json.loads(before) == receipt
     with pytest.raises(RuntimeError, match="refuses to overwrite immutable output"):
         n04d._write_once(path, {"status": "CHANGED"})
-
-\n

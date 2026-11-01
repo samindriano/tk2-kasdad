@@ -133,8 +133,12 @@ def _load_verified_domains(context: Mapping[str, Any], frozen_n04: Mapping[str, 
     original_verification_path = n04.REPORT_ROOT / "verification.json"
     original_results = json.loads(original_results_path.read_text(encoding="utf-8"))
     original_verification = json.loads(original_verification_path.read_text(encoding="utf-8"))
+    original_verdict = str(original_verification.get("verdict", ""))
     if (original_results.get("status") != "SKIPPED_SCIENTIFIC_PREFLIGHT"
-            or original_results.get("views") or original_verification.get("verdict") != "SKIPPED_SCIENTIFIC_PREFLIGHT"):
+            or original_results.get("views")
+            or original_verification.get("status") != "PASS"
+            or not original_verdict.startswith("SKIPPED_SCIENTIFIC_PREFLIGHT;")
+            or "no task model was fit" not in original_verdict.casefold()):
         raise RuntimeError("N04 original skipped verdict or no-task-fit checkpoint has changed")
     if original_verification.get("freeze_signature") != frozen_n04["freeze_signature"]:
         raise RuntimeError("N04 original verification does not match its frozen identity")
@@ -242,8 +246,11 @@ def _build_identity(context: Mapping[str, Any], train_path: Path,
     n04_frozen = json.loads(n04.FREEZE_PATH.read_text(encoding="utf-8"))
     n04_results = json.loads((n04.REPORT_ROOT / "results.json").read_text(encoding="utf-8"))
     n04_verification = json.loads((n04.REPORT_ROOT / "verification.json").read_text(encoding="utf-8"))
+    original_verdict = str(n04_verification.get("verdict", ""))
     if (queue.get("batch_id") != BATCH or n04_results.get("status") != "SKIPPED_SCIENTIFIC_PREFLIGHT"
-            or n04_verification.get("verdict") != "SKIPPED_SCIENTIFIC_PREFLIGHT"
+            or n04_verification.get("status") != "PASS"
+            or not original_verdict.startswith("SKIPPED_SCIENTIFIC_PREFLIGHT;")
+            or "no task model was fit" not in original_verdict.casefold()
             or n04_frozen.get("freeze_signature") != canonical_sha256(n04_frozen.get("identity"))):
         raise RuntimeError("N04_DIAGNOSTIC original checkpoint or queue is not intact")
     n04_commit = n04_frozen.get("execution_context", {}).get("source_commit")
