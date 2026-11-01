@@ -1,0 +1,41 @@
+{
+  "card_id": "R22",
+  "status": "INDEPENDENT_QA_PASS",
+  "decision": "ADVANCE",
+  "freeze_signature": "21f218939856ec64d9808b7e0163d3eb890e814a312793b02bd7ff3bbb590ce0",
+  "official_regression_train_sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+  "checks": {
+    "source_and_input_hashes_match_freeze": true,
+    "both_fit_bundles_and_sidecars_match_frozen_identity": true,
+    "exactly_two_started_and_saved_fits_without_failures": true,
+    "fit_rows_cutoffs_and_score_rows_reconstructed_from_train": true,
+    "record_id_and_row_alignment_exact": true,
+    "fit_only_preprocessing_and_validation_boundary": true,
+    "effective_xgboost_parameters_match_recipe": true,
+    "control_and_candidate_predictions_reconstructed": true,
+    "metrics_gates_and_supported_groups_recomputed": true,
+    "test_and_sample_submission_not_read": true,
+    "kaggle_not_accessed": true
+  },
+  "fit_receipts": [
+    {"cutoff": 55, "fit_rows": 12020, "score_rows": 17685, "fit_seconds": 7.665191399981268},
+    {"cutoff": 67, "fit_rows": 29705, "score_rows": 20903, "fit_seconds": 14.700883600045927}
+  ],
+  "metrics": {
+    "primary": {"rows": 9064, "baseline_mae": 13.464395831218011, "candidate_mae": 13.36622014904091, "gain": 0.09817568217710182},
+    "H12": {"rows": 38588, "baseline_mae": 14.04753258299653, "candidate_mae": 13.922659459355653, "gain": 0.12487312364087622},
+    "W1": {"rows": 4114, "gain": 0.138456351087477},
+    "W4": {"rows": 4950, "gain": 0.06469797068270111},
+    "H12_E": {"rows": 17685, "gain": 0.15372163216815693},
+    "H12_L": {"rows": 20903, "gain": 0.10046581974646962}
+  },
+  "worst_supported_group_harm": {
+    "view": "W4",
+    "group": "target_ge_95",
+    "rows": 249,
+    "mae_harm": 0.17102147921564193,
+    "allowed_max": 0.25,
+    "pass": true
+  },
+  "recommendation": "Keep R22 in the ADVANCE pool. Under ONE_CHAT_END_TO_END, defer full-six continuation until the 45-card screening pass and profile-based continuation selection are complete."
+}
