@@ -234,7 +234,7 @@ def _train_context() -> dict[str, Any]:
     queue = parent["queue"]
     card = queue["cards"]
     queue_n01 = next(item for item in card if item["id"] == "N01")
-    if queue_n01["recipe"]["policy"] != ".75 frozen C2_B + .25 weighted sparse expert on present; frozen CB on missing":
+    if queue_n01["recipe"]["policy"] != ".75 frozen C2_B + .25 new sparse expert on present; frozen CB on missing; threshold .50":
         raise RuntimeError("N01 frozen availability route changed")
     _docs, missing = _text_values(frame["signal_stream"])
     controls: dict[int, dict[str, Any]] = {}
