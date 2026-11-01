@@ -1,8 +1,8 @@
 # V3 Batch 1 — rolling findings
 
-Snapshot: 2026-11-01, after C11 pilot resume, R08/C20 completion, and R19's row-matched revision 2 pilot and independent re-audit. This is a rolling index built from the canonical queue and per-card reports present in the repository; it does not claim that missing reports were executed or validated.
+Snapshot: 2026-11-01, after C11 pilot resume, R08/C20 completion, R19's row-matched revision 2 pilot and independent re-audit, and C15's verified pilot. This is a rolling index built from the canonical queue and per-card reports present in the repository; it does not claim that missing reports were executed or validated.
 
-Queue closure: **24/45 cards (53.3%)** now have terminal pilot decisions with saved gates; this includes R19 and excludes cards still awaiting QA or missing a gate. This is pilot-card progress, not the later conditional continuations and finalist stage.
+Queue closure: **25/45 cards (55.6%)** now have terminal pilot decisions with saved gates; this includes R19 and C15 and excludes cards still awaiting QA or missing a gate. This is pilot-card progress, not the later conditional continuations and finalist stage.
 
 For each row, metrics are copied from that card’s `results.json`; statuses come from its saved `verification.json` and `gate.json`. `NO_REPORT` and `PARTIAL` remain unresolved. Gains use each card’s declared pilot view, so raw gains from different populations are not directly ranked.
 
@@ -44,7 +44,7 @@ For each row, metrics are copied from that card’s `results.json`; statuses com
 | 34 | **R08** | PILOT_COMPLETE_RETIRE; QA PASS | RETIRE | 9064; -0.097574 | 38588; -0.121789 | 2 / 0 | [results](R08/results.json), [QA](R08/verification.json), [gate](R08/gate.json) |
 | 35 | **C20** | CACHE_SIX_COMPLETE; QA INDEPENDENT_QA_PASS | RETIRE | 38588; -0.001573 | 38588; -0.004157 | 0 / 0 | [results](C20/results.json), [QA](C20/verification.json), [gate](C20/gate.json), [summary](C20/summary.md) |
 | 36 | **R19** | PILOT_COMPLETE_RETIRE; QA INDEPENDENT_QA_PASS; amendment | RETIRE | 13441; +0.012735 | 20903; +0.017895 | 0 / 0 | [results](R19/results.json), [QA](R19/verification.json), [gate](R19/gate.json), [summary](R19/summary.md), [amendment](R19/report_amendment_01.json) |
-| 37 | **C15** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
+| 37 | **C15** | PILOT_COMPLETE_RETIRE; QA INDEPENDENT_QA_PASS | FAIL_VALID_EVIDENCE | 13441; -0.001339 | 20903; +0.003281 | 2 / 0 | [results](C15/revision_05/results.json), [QA](C15/revision_05/verification.json), [gate](C15/revision_05/gate.json), [summary](C15/revision_05/summary.md) |
 | 38 | **R22** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
 | 39 | **R20** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
 | 40 | **C12** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
@@ -90,7 +90,7 @@ For each row, metrics are copied from that card’s `results.json`; statuses com
 - C20 used the inherited all-fit-row q80 rule (`cycle_code <= fit_end`, linear interpolation), including missing-stream rows; `text_load == q80` stays with C2_B. The missing-stream branch is CatBoost, high-volume present rows use sparse25, and other present rows use C2_B. Six-window support totals 38,588 rows. No new models were fit.
 - Full-six Macro F1 moved from 0.829944 to 0.828371 (gain **−0.001573**); H12 moved from 0.802966 to 0.798808 (gain **−0.004157**). All six individual window harms were within −0.005, but 0/6 windows were nonnegative; full-primary, H12, and window-count gates failed. Supported subgroup guards passed. Independent QA passed; decision **RETIRE**.
 - Process note: while resolving the inherited q80 definition, the historical volume-route findings table (including its old metrics) appeared in search output before C20 was frozen. No C20 candidate metric was computed before its freeze, and no Test/Kaggle data were read, but this discovery was not strictly outcome-blind. The frozen, predeclared route was not changed after C20 scoring.
-- R19 (queue order 36) is now complete; next eligible pilot is **C15** (queue order 37), subject to its own chronology/support/resources preflight. Do not select C11 continuation yet.
+- R19 (queue order 36) and C15 (queue order 37) are complete; next eligible pilot is **R22** (queue order 38), subject to its own chronology/support/resources preflight. Do not select C11 continuation yet.
 
 ## R19 — completed RETIRE, cache-only
 
@@ -98,10 +98,17 @@ For each row, metrics are copied from that card’s `results.json`; statuses com
 - EF offsets were positive and modest (+0.3217 to +0.4951 by group/cutoff). Primary MAE gain was **+0.012735**, below the +0.03 requirement; H12_L gain was +0.017895; W4 and W6 gains were +0.017305 and +0.010071.
 - Supported low-tail harms failed the group guard: +0.413007 on primary (n=686) and +0.421027 on H12_L (n=1,048). Missing-stream harms were +0.050456/+0.056686; high-tail error improved. Canonical H12 harm limit 0.05 also passed. Decision **RETIRE**.
 - Zero new predictor fits; no Test/Sample/Kaggle access. Independent re-audit reproduced both baselines and all five candidate views. Report amendment documents the initial control mismatch, result-persistence omission, frozen-verifier indexing defect, canonical H12 threshold discrepancy, and the preparatory worker's transient cache-array load; do not claim strict outcome blindness.
-- Next eligible pilot is **C15** (queue order 37), after fresh resource, lock, budget, chronology, and support preflight. C11 continuation remains deferred until screening and profile selection.
+- Next eligible pilot is **R22** (queue order 38), after fresh dependency, memory, lock, budget, chronology, and support preflight. C11 continuation remains deferred until screening and profile selection.
+
+## C15 — completed RETIRE, row-matched pilot
+
+- C15 used two genuinely past score sources to fit a logistic meta-head at cutoffs 67 and 75. Cutoff 55 stayed on the exact current-route fallback; missing-stream routing and threshold 0.50 were unchanged. The exact `v3_cls_sparse25` late-window control was reconstructed from accepted, hash-verified full-six outputs.
+- On W4+W6 (13,441 rows), Macro F1 moved from 0.828147 to 0.826808 (gain **−0.001339**), below the +0.0005 gate. H12_L improved by +0.003281 on 20,903 rows; W4 and W6 changes were −0.001282 and −0.001474. The supported `text_load_q4_high_tail` positive-recall harm failed on W4 (−0.024653; n=1,662) and primary (−0.021440; n=3,621), beyond the 0.02 limit. Decision **RETIRE**.
+- Two predictor fits were saved; one earlier dispatch failed before fitting and is preserved in the runtime event ledger. Independent row/control/metric verification and the shared verifier passed. No Test, SampleSubmission, or Kaggle access occurred. Full details are in [C15 summary](C15/revision_05/summary.md).
+- Next eligible pilot is **R22** (queue order 38), after fresh dependency, chronology, support, memory, lock, and budget preflight. C11 continuation remains deferred until screening and profile selection.
 
 ## Ledger and scope notes
 
-- The active budget ledger used by the runner is `experiments/runs/optimization_v3_batch1/batch_ledger.jsonl`; it records 60 of 180 candidate predictor fits reserved after R08. C20 added zero fits. Runtime fit bundles remain ignored by Git.
+- The active budget ledger used by the runner is `experiments/runs/optimization_v3_batch1/batch_ledger.jsonl`; it records 62 of 180 candidate predictor fits reserved after C15. C20 and R19 added zero fits. Runtime fit bundles remain ignored by Git.
 - The tracked `reports/optimization_v3/batch1/batch_ledger.jsonl` is an older partial reservation snapshot (8 entries); it is not a complete mirror of the runtime ledger and must not be used to infer remaining global budget.
 - V3 remains active. This file is an interim evidence index; it does not close the remaining conditional queue or authorize Test/Kaggle access for pilots.

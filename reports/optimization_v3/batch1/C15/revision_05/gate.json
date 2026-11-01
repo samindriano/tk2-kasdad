@@ -1,0 +1,37 @@
+{
+  "card_id": "C15",
+  "checks": {
+    "H12_L_harm_at_most_0_001": true,
+    "OOF_support_and_chronology": true,
+    "W4_harm_at_most_0_005": true,
+    "W6_harm_at_most_0_005": true,
+    "primary_gain_at_least_0_0005": false,
+    "supported_subgroup_guards": false
+  },
+  "decision": "RETIRE",
+  "decision_basis": "Frozen LATE W4+W6/H12_L gates with exact v3_cls_sparse25 row-matched controls; early H12_E remains exact fallback.",
+  "status": "FAIL_VALID_EVIDENCE",
+  "subgroup_failures": [
+    {
+      "delta": -0.024653312788906034,
+      "group": "text_load_q4_high_tail",
+      "guard": "positive_recall_harm",
+      "view": "W4"
+    },
+    {
+      "delta": -0.0214395099540583,
+      "group": "text_load_q4_high_tail",
+      "guard": "positive_recall_harm",
+      "view": "primary"
+    }
+  ],
+  "thresholds": {
+    "individual_pilot_view_harm_max": 0.005,
+    "pilot_H12_harm_max": 0.001,
+    "pilot_primary_gain_min": 0.0005,
+    "positive_and_negative_per_group_min": 30,
+    "positive_class_recall_harm_max": 0.02,
+    "supported_group_F1_harm_max": 0.01,
+    "supported_group_n_min": 200
+  }
+}
