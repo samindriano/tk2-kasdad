@@ -1,0 +1,203 @@
+{
+  "accepted_control": {
+    "manifest": "reports\\optimization_v2\\kaggle\\v2_reg_sparse_lgb25.json",
+    "manifest_sha256": "dd166e92089f24978244496a9a0afabc0d06551dbdc326579a7c898a8844e19a",
+    "pilot_control_is_exact_three_component_incumbent": true,
+    "route": "Current three-component champion: .5625 rank50 LightGBM SVD32 + .1875 rank75 Hybrid Ridge + .25 rank50 sparse LightGBM"
+  },
+  "canonical_queue_sha256": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+  "card_id": "R23",
+  "card_sha256": "5ca6354483f34bbbb9edb3b54a934e223b299f04467d28512166175cb4ac0fbc",
+  "estimator": {
+    "class": "sklearn.ensemble.ExtraTreesRegressor",
+    "criterion_interpretation": "absolute_error selects split quality by L1 reduction; leaf outputs are medians, which does not make this a quantile-regression forest",
+    "early_stopping": false,
+    "evaluation_set": null,
+    "parameters_effective_including_library_defaults": {
+      "bootstrap": false,
+      "ccp_alpha": 0.0,
+      "criterion": "absolute_error",
+      "max_depth": null,
+      "max_features": 1.0,
+      "max_leaf_nodes": null,
+      "max_samples": null,
+      "min_impurity_decrease": 0.0,
+      "min_samples_leaf": 30,
+      "min_samples_split": 2,
+      "min_weight_fraction_leaf": 0.0,
+      "monotonic_cst": null,
+      "n_estimators": 200,
+      "n_jobs": 2,
+      "oob_score": false,
+      "random_state": 42,
+      "verbose": 0,
+      "warm_start": false
+    },
+    "parameters_explicit": {
+      "criterion": "absolute_error",
+      "max_features": 1.0,
+      "min_samples_leaf": 30,
+      "n_estimators": 200,
+      "n_jobs": 2,
+      "random_state": 42
+    },
+    "scikit_learn_version": "1.8.0"
+  },
+  "evaluation_views": {
+    "H12": [
+      [
+        55,
+        56,
+        67
+      ],
+      [
+        67,
+        68,
+        79
+      ]
+    ],
+    "H12_E": [
+      [
+        55,
+        56,
+        67
+      ]
+    ],
+    "H12_L": [
+      [
+        67,
+        68,
+        79
+      ]
+    ],
+    "W1": [
+      [
+        55,
+        56,
+        59
+      ]
+    ],
+    "W4": [
+      [
+        67,
+        68,
+        71
+      ]
+    ],
+    "primary": [
+      [
+        55,
+        56,
+        59
+      ],
+      [
+        67,
+        68,
+        71
+      ]
+    ]
+  },
+  "expected_denominators": {
+    "H12": 38588,
+    "H12_E": 17685,
+    "H12_L": 20903,
+    "W1": 4114,
+    "W4": 4950,
+    "primary": 9064
+  },
+  "feature_allowlist": [
+    "impact_load",
+    "entry_friction",
+    "cycle_code",
+    "scope_pressure",
+    "text_load",
+    "scope_trace",
+    "org_spread",
+    "module_spread",
+    "telemetry_flag",
+    "org_code",
+    "module_code",
+    "pattern_code",
+    "signal_stream"
+  ],
+  "feature_roles": {
+    "record_id": "identity_only",
+    "threat_rank": "target_only"
+  },
+  "freeze_amendment": {
+    "only_fitted_state_feature_name_metadata_corrected": true,
+    "reason": "Pre-fit synthetic report verification found the inherited transformed_feature_names audit omitted expanded one-hot output names.",
+    "supersedes": "experiments/optimization_v3/batch1/R23/freeze.json",
+    "training_recipe_or_predictions_changed": false
+  },
+  "gates": {
+    "individual_pilot_view_MAE_harm_max": 0.5,
+    "pilot_H12_MAE_harm_max": 0.05,
+    "pilot_primary_MAE_gain_min": 0.03,
+    "supported_group_n_min": 100.0,
+    "supported_tail_or_missing_MAE_harm_max": 0.25
+  },
+  "implementation_revision": 2,
+  "metric": "MAE; positive gain = baseline MAE - candidate MAE",
+  "official_test_read": false,
+  "pilot_fit_rows": {
+    "55": 12020,
+    "67": 29705
+  },
+  "pilot_predictor_fit_count": 2,
+  "prediction_policy": ".75 exact current three-component champion + .25 rank50(new raw target-scale prediction), clip[0,100]; rank50 uses 50% raw and 50% average-rank percentile computed separately within each complete 12-cycle scoring cycle",
+  "preprocessing": {
+    "categorical_features": [
+      "org_code",
+      "module_code",
+      "pattern_code"
+    ],
+    "dense_matrix_dtype": "float64 at ExtraTreesRegressor input",
+    "missing_signal_indicator": true,
+    "score_rows_or_labels_used_to_fit_transform": false,
+    "structured_numeric": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code"
+    ],
+    "structured_recipe": "RegressionTextModel._structured_fit/_structured_transform; numeric median imputation, StandardScaler, OHE min_frequency=30/max_categories=254/handle_unknown=infrequent_if_exist",
+    "svd_fit_scope": "all rows with cycle<=cutoff only",
+    "svd_parameters": {
+      "algorithm": "randomized",
+      "component_count_may_not_shrink": true,
+      "n_components_requested": 32,
+      "n_iter": 7,
+      "random_state": 42,
+      "required_fit_tfidf_columns": 33
+    },
+    "text_fit_scope": "all rows with cycle<=cutoff only",
+    "text_tfidf_parameters": {
+      "dtype": "<class 'numpy.float64'>",
+      "max_features": 20000,
+      "min_df": 2,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "sublinear_tf": true
+    },
+    "text_tfidf_sparse_matrix_densified": false
+  },
+  "status": "FROZEN_RECIPE_BEFORE_PILOT",
+  "superseded_v1_identity": {
+    "candidate_fit_started": false,
+    "freeze_sha256": "a55394f6038b7e0835c632dee271fd060a0b81df3cf87b28cb984f8b524b9fa6",
+    "freeze_signature": "27208c7f7d917f5149cf9f2f00e778bccc72a162a3ede7f25b85d218d2f777a4",
+    "recipe_sha256": "bbf3c63ead1bce190576e3b59ced727dab25f2160cbd1dc01265ff1ab74d059e"
+  },
+  "supported_group_minimum": 100
+}

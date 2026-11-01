@@ -1,0 +1,273 @@
+{
+  "created_at_utc": "2026-11-01T01:43:35.775999+00:00",
+  "identity": {
+    "candidate_fit_budget_policy": {
+      "global_successful_fit_cap": 180,
+      "pilot_predictor_fits": 2,
+      "reservation_before_first_fit": true
+    },
+    "card": {
+      "card_path": "reports/optimization_v3/research_backlog/cards/R23.md",
+      "change": "Structured scaled numeric/OHE+SVD32; ExtraTreesRegressor200trees/criterion absolute_error/min_samples_leaf30/max_features1.0/random_state42/n_jobs2. OHE categories, no arbitrary ordinal distances. This averages leaf medians, not a quantile-regression forest claim.",
+      "condition": "No additional dependency",
+      "evaluation": "STANDARD",
+      "evidence": [
+        "reports/optimization_v3/regression_diagnostics/diagnostics.json"
+      ],
+      "family": "random_forest",
+      "id": "R23",
+      "implementation": "NOT_IMPLEMENTED",
+      "in_priority_prefix": false,
+      "name": "ExtraTrees median-leaf ensemble",
+      "new_results": null,
+      "pilot_predictor_fits": 2,
+      "policy": "R_AUX25",
+      "preflight_checks": [
+        "Absolute-error trees can be slow; first-fit time budget and matrix RAM guard"
+      ],
+      "priority": "P2",
+      "queue_order": 28,
+      "rationale": "Pohon acak memberi smoothing berbeda dari boosting; criterion median tidak otomatis menjadikannya quantile forest.",
+      "status": "PLANNED_NOT_RUN",
+      "task": "regression"
+    },
+    "control_cache_hashes": {
+      "independent_champion_diagnostic": "283a6e91ebc904de6152103f2a1f20362d52bf82fd21172e2f8b37d48721e4a5",
+      "paired_lgb_ridge": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516",
+      "sparse_pilot": "eae6bea2dd6933de59ac0f63f54cc08124b59d4bcba91bbe05a7c5ec3dab9ff6"
+    },
+    "evaluation_views": {
+      "H12": [
+        [
+          55,
+          56,
+          67
+        ],
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "H12_E": [
+        [
+          55,
+          56,
+          67
+        ]
+      ],
+      "H12_L": [
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "W1": [
+        [
+          55,
+          56,
+          59
+        ]
+      ],
+      "W4": [
+        [
+          67,
+          68,
+          71
+        ]
+      ],
+      "primary": [
+        [
+          55,
+          56,
+          59
+        ],
+        [
+          67,
+          68,
+          71
+        ]
+      ]
+    },
+    "exact_champion_reconstruction": {
+      "formula": "clip(.75*(.75*rank50(SVD32_LGB)+.25*rank75(Hybrid_Ridge))+.25*rank50(sparse_LGB),0,100)",
+      "metrics": {
+        "H12": {
+          "mae": 14.04753258299653,
+          "rows": 38588
+        },
+        "W1": {
+          "mae": 15.882111974427762,
+          "rows": 4114
+        },
+        "W4": {
+          "mae": 11.455005081083685,
+          "rows": 4950
+        },
+        "primary": {
+          "mae": 13.464395831218011,
+          "rows": 9064
+        }
+      },
+      "rows_reconstructed": {
+        "55": 17685,
+        "67": 20903
+      }
+    },
+    "feature_names": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code",
+      "signal_stream"
+    ],
+    "fit_only_svd32_vocabulary_support": {
+      "55": {
+        "exact_svd32_supported": true,
+        "fallback": null,
+        "fit_only_support_check": true,
+        "fit_rows": 12020,
+        "fit_tfidf_csr_bytes": 7962468,
+        "fit_tfidf_nonzero_count": 659532,
+        "required_minimum_tfidf_columns": 33,
+        "score_rows": 17685,
+        "score_tfidf_csr_bytes": 9808444,
+        "score_tfidf_nonzero_count": 811475,
+        "tfidf_vocabulary_width": 20000,
+        "vectorizer_fitted_for_support_check": true
+      },
+      "67": {
+        "exact_svd32_supported": true,
+        "fallback": null,
+        "fit_only_support_check": true,
+        "fit_rows": 29705,
+        "fit_tfidf_csr_bytes": 18285252,
+        "fit_tfidf_nonzero_count": 1513869,
+        "required_minimum_tfidf_columns": 33,
+        "score_rows": 20903,
+        "score_tfidf_csr_bytes": 12648096,
+        "score_tfidf_nonzero_count": 1047040,
+        "tfidf_vocabulary_width": 20000,
+        "vectorizer_fitted_for_support_check": true
+      }
+    },
+    "input_sha256": {
+      "accepted_regression_manifest": "dd166e92089f24978244496a9a0afabc0d06551dbdc326579a7c898a8844e19a",
+      "canonical_card": "5ca6354483f34bbbb9edb3b54a934e223b299f04467d28512166175cb4ac0fbc",
+      "canonical_queue": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+      "official_regression_train": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+      "r23_v1_freeze": "a55394f6038b7e0835c632dee271fd060a0b81df3cf87b28cb984f8b524b9fa6",
+      "r23_v1_recipe": "bbf3c63ead1bce190576e3b59ced727dab25f2160cbd1dc01265ff1ab74d059e",
+      "v2_paired_lgb_ridge_cache": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516",
+      "v2_regression_findings": "482bc33b4cec0abaf0b1a06fe65fb75218c2007725976a7c311866bcff921392",
+      "v2_regression_fullsix_report": "a9686473998722b8f86a0f6a4489b4e3a75a6b6ba20c661ac564e6a5e61aea48",
+      "v2_sparse_pilot_cache": "eae6bea2dd6933de59ac0f63f54cc08124b59d4bcba91bbe05a7c5ec3dab9ff6",
+      "v3_champion_diagnostic_cache": "283a6e91ebc904de6152103f2a1f20362d52bf82fd21172e2f8b37d48721e4a5",
+      "v3_read_only_feasibility": "7d164a372e000f1e078cc6fcd50d68861e30b5870c4b526d49213d5b6b79ee3d",
+      "v3_regression_diagnostics": "8d634debd1dbc6a3eed5250593b9c213570b4fb139b0b9a623a8d704159916df"
+    },
+    "official_test_read": false,
+    "package_versions": {
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "psutil": "7.0.0",
+      "scikit-learn": "1.8.0",
+      "scipy": "1.18.0",
+      "threadpoolctl": "3.6.0"
+    },
+    "pre_freeze_support_denominators": {
+      "H12": {
+        "signal_stream_missing": 2578,
+        "target_ge_95": 1955,
+        "target_le_5": 1928
+      },
+      "H12_E": {
+        "signal_stream_missing": 1203,
+        "target_ge_95": 898,
+        "target_le_5": 880
+      },
+      "H12_L": {
+        "signal_stream_missing": 1375,
+        "target_ge_95": 1057,
+        "target_le_5": 1048
+      },
+      "W1": {
+        "signal_stream_missing": 392,
+        "target_ge_95": 213,
+        "target_le_5": 205
+      },
+      "W4": {
+        "signal_stream_missing": 342,
+        "target_ge_95": 249,
+        "target_le_5": 244
+      },
+      "primary": {
+        "signal_stream_missing": 734,
+        "target_ge_95": 462,
+        "target_le_5": 449
+      }
+    },
+    "python_version": "3.13.5",
+    "resource_preflight_policy": {
+      "55": {
+        "concurrent_training_jobs": 1,
+        "estimated_peak_bytes": 2800764000,
+        "estimated_peak_is_observed": false,
+        "extra_trees_node_allowance_bytes": 40908800,
+        "feature_width_upper_bound": 840,
+        "fit_rows": 12020,
+        "fit_score_tfidf_sparse_bytes_observed": 17770912,
+        "fixed_overhead_bytes": 2147483648,
+        "free_memory_reserve_bytes": 2147483648,
+        "job_cap_bytes": 6442450944,
+        "matrix_rows_upper_bound": 17685,
+        "median_split_workspace_allowance_bytes": 384640,
+        "threads": 2
+      },
+      "67": {
+        "concurrent_training_jobs": 1,
+        "estimated_peak_bytes": 3278780356,
+        "estimated_peak_is_observed": false,
+        "extra_trees_node_allowance_bytes": 101324800,
+        "feature_width_upper_bound": 840,
+        "fit_rows": 29705,
+        "fit_score_tfidf_sparse_bytes_observed": 30933348,
+        "fixed_overhead_bytes": 2147483648,
+        "free_memory_reserve_bytes": 2147483648,
+        "job_cap_bytes": 6442450944,
+        "matrix_rows_upper_bound": 29705,
+        "median_split_workspace_allowance_bytes": 950560,
+        "threads": 2
+      }
+    },
+    "schema_version": 1,
+    "source_sha256": {
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1.py": "c93dd71ed2b512f32bf8916f59b0af56bff212934efb8825b0e8a680da72e969",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_r01.py": "e8511478d2b8e2489e70d2ab2c03f30724f3e516af99f3893d3a9f8750531341",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_r23_v2.py": "e63f1977f3ee5e9d176ab8e284f9b8c3af395583e63813791d99c4a743c237bc",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_reg_diagnostics.py": "e2af49bb45353fca5bf0c14093be9b0f0b02afe24289a1b5c30dfb584bbd3f55",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1.py": "d21ac914d0d1f516a93e431116556dabdbe7313a21fd2b1b04a73371bd56f420",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1_r01.py": "3f810d5080f5783ebbf117f635f4c06e4e1f81dec13ab23b1191eba78c071245",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1_r23_v2.py": "6ae2ec2e131e98e9e90648da076b18d07059713a6b5c82e51e877edaf5bfff37",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_research_lgb_text.py": "0fbcd282a6873616c866fc1c12ff4f86a5091e91d266e6900885a95ea8054777",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_round2_models.py": "f56f7ee2c337acdf2cbe7160719faf62b1e3d3470a7f656b044ce0890d677e09",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\utils\\paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\tests\\test_optimization_v3_batch1_r23_v2.py": "7ab9a8be289184c38bb4fa822df86f563099c36a6d1996df80e91b6c11bf7e50"
+    },
+    "test_data_used": false,
+    "validation_labels_passed_to_adapter": false
+  },
+  "signature": "30251fd06b02169af6e3de776a33d0dc3e30506b6f32c1dcf7e06f22688b3167"
+}
