@@ -26,3 +26,4 @@ class N01ClassOnlyDiagnosticClassifier(ClassByVolumeSparseClassifier):
         self.weight_kind = "class_only"
         self._fitted = False
 
+\n
