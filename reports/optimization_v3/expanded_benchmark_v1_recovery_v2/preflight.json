@@ -1,0 +1,714 @@
+{
+  "class_bundles_verified_and_reused": {
+    "C11": {
+      "59": {
+        "bundle_sha256": "218eff792a9109cc0d68c9b86cae65fb74d473874a87268db11a8a7105626ef3",
+        "sidecar_sha256": "dcff8b8d335ac75b73e124494bb899de40d681f82114ccb56a2ed11cddf8779f"
+      },
+      "63": {
+        "bundle_sha256": "ffc394db754d1935f295dfae7351a101af6808175e1d6f2a624554b19f378095",
+        "sidecar_sha256": "e39044f0c1bb97d6c5cfe710d3491476ee35b0579bb9ecff6c847f4819999bb5"
+      },
+      "71": {
+        "bundle_sha256": "277fb8b93c9d4ad4244f1d5f874d416e472c022791ec193ca01246b4e367e04a",
+        "sidecar_sha256": "f5b46a6eb5e5e8ee4392ba8847d66f042f13c74a722b71fc8e7b606b81be961e"
+      },
+      "75": {
+        "bundle_sha256": "6acabdf6b08fb1c0ad85ea2887712a2329b40c1e3ca2a62bd8d0b65f16a9cd5c",
+        "sidecar_sha256": "900ebbbd4c51fd65fecf71792cb23aa9d95fe53a83c73e71e564b0219433accc"
+      }
+    },
+    "C17": {
+      "59": {
+        "bundle_sha256": "8353559d6bf29ef8e5b65dc595aed57230ec38c7a96cdf845951381eb979f2a9",
+        "sidecar_sha256": "5fc8e671ade0051786917ec9d5b0ca696745a57cceaf05dda937bbf7b90955f5"
+      },
+      "63": {
+        "bundle_sha256": "a573d4d4a7b0216330f2175942571b364eca22c9d2e2e3a1b4e4c479ad61e5ff",
+        "sidecar_sha256": "b8e8475a2d7d652cf3d295ac5e36292d3f692cd7188f7cbc82e06b38274e46f6"
+      },
+      "71": {
+        "bundle_sha256": "11e48226d7a010c4e5b2e78fad4c5cdaa62a0cd21b2b351f6c311ed0f2501d3e",
+        "sidecar_sha256": "c16fee72be55027dee01956f84420b578beb780356c6e75f0db1f21fea302fb2"
+      },
+      "75": {
+        "bundle_sha256": "43dbe5974c2589ce2d4e04efa52a5894c0f155f98a9af4d78b665e116846f359",
+        "sidecar_sha256": "c79817dc434172ca71acf5a58c89adfda23ff724f49fe97907796b9a206abbb8"
+      }
+    }
+  },
+  "created_at_utc": "2026-11-01T13:32:21.562485+00:00",
+  "fit_budget_snapshot": {
+    "event_rows": 209,
+    "failed_attempts_and_interruptions": [
+      {
+        "at_utc": "2026-10-31T22:38:17.911407+00:00",
+        "card_id": "R21",
+        "cutoff": 55,
+        "error": "R21 control baseline_sparse_raw is outside [0,100]",
+        "error_type": "ValueError",
+        "event": "FIT_FAILED",
+        "fit_seconds": 0.07849039998836815
+      },
+      {
+        "at_utc": "2026-11-01T03:16:18.313183+00:00",
+        "card_id": "R04",
+        "cutoff": 55,
+        "error": "R04 control bridge missing ['control_rows']",
+        "error_type": "ValueError",
+        "event": "FIT_FAILED",
+        "fit_seconds": 1.8171078000450507
+      },
+      {
+        "attempted_predictor_fits": 0,
+        "card_id": "C15",
+        "detail": "C15 passed task= to shared runner; runner derives task from the canonical card. No FIT_STARTED event or model fit occurred.",
+        "error_type": "TypeError",
+        "event": "PILOT_DISPATCH_FAILED_BEFORE_FIT",
+        "freeze_signature": "3d4edad762f9ef2f54591f6649c66ede61e19e72ab6d5e7a0b1eff4f0334b684"
+      },
+      {
+        "at_utc": "2026-11-01T13:00:24.871992+00:00",
+        "campaign_id": "optimization_v3_expanded_benchmark_v1",
+        "card_id": "R21",
+        "cutoff": 59,
+        "error": "Object dtype prohibited in NPZ field control__diagnostic_reconstruction_checks",
+        "error_type": "TypeError",
+        "event": "EXPANDED_CONTINUATION_FIT_FAILED",
+        "freeze_signature": "c6a751f2ea3b23ac8d2b8d47c8a71f2d87283ff66f749cb6cd819e2c1ac9d78f",
+        "status": "FIT_OR_INTEGRITY_BLOCKED"
+      },
+      {
+        "at_utc": "2026-11-01T13:00:39.155371+00:00",
+        "campaign_id": "optimization_v3_expanded_benchmark_v1",
+        "card_id": "R21",
+        "cutoff": 63,
+        "error": "Object dtype prohibited in NPZ field control__diagnostic_reconstruction_checks",
+        "error_type": "TypeError",
+        "event": "EXPANDED_CONTINUATION_FIT_FAILED",
+        "freeze_signature": "c6a751f2ea3b23ac8d2b8d47c8a71f2d87283ff66f749cb6cd819e2c1ac9d78f",
+        "status": "FIT_OR_INTEGRITY_BLOCKED"
+      },
+      {
+        "at_utc": "2026-11-01T13:00:39.188680+00:00",
+        "campaign_id": "optimization_v3_expanded_benchmark_v1",
+        "card_id": "R21",
+        "cutoff": 71,
+        "error": "Resource preflight blocks R21/71: {'status': 'BLOCKED_RESOURCE', 'card_id': 'R21', 'cutoff': 71, 'available_bytes': 5343784960, 'allowed_bytes': 3196301312, 'estimated_peak_bytes': 3332535488, 'job_cap_bytes': 6442450944, 'free_reserve_bytes': 2147483648, 'threads': 2, 'single_training_job': True, 'estimate_is_observed_peak': False}",
+        "error_type": "ExpandedCampaignError",
+        "event": "EXPANDED_CONTINUATION_FIT_FAILED",
+        "freeze_signature": "c6a751f2ea3b23ac8d2b8d47c8a71f2d87283ff66f749cb6cd819e2c1ac9d78f",
+        "status": "FIT_OR_INTEGRITY_BLOCKED"
+      },
+      {
+        "at_utc": "2026-11-01T13:00:39.225370+00:00",
+        "campaign_id": "optimization_v3_expanded_benchmark_v1",
+        "card_id": "R21",
+        "cutoff": 75,
+        "error": "Resource preflight blocks R21/75: {'status': 'BLOCKED_RESOURCE', 'card_id': 'R21', 'cutoff': 75, 'available_bytes': 5341827072, 'allowed_bytes': 3194343424, 'estimated_peak_bytes': 3583258688, 'job_cap_bytes': 6442450944, 'free_reserve_bytes': 2147483648, 'threads': 2, 'single_training_job': True, 'estimate_is_observed_peak': False}",
+        "error_type": "ExpandedCampaignError",
+        "event": "EXPANDED_CONTINUATION_FIT_FAILED",
+        "freeze_signature": "c6a751f2ea3b23ac8d2b8d47c8a71f2d87283ff66f749cb6cd819e2c1ac9d78f",
+        "status": "FIT_OR_INTEGRITY_BLOCKED"
+      },
+      {
+        "at_utc": "2026-11-01T13:00:55.298593+00:00",
+        "campaign_id": "optimization_v3_expanded_benchmark_v1",
+        "card_id": "R11",
+        "cutoff": 59,
+        "error": "Object dtype prohibited in NPZ field control__diagnostic_reconstruction_checks",
+        "error_type": "TypeError",
+        "event": "EXPANDED_CONTINUATION_FIT_FAILED",
+        "freeze_signature": "c6a751f2ea3b23ac8d2b8d47c8a71f2d87283ff66f749cb6cd819e2c1ac9d78f",
+        "status": "FIT_OR_INTEGRITY_BLOCKED"
+      },
+      {
+        "at_utc": "2026-11-01T13:01:13.633760+00:00",
+        "campaign_id": "optimization_v3_expanded_benchmark_v1",
+        "card_id": "R11",
+        "cutoff": 63,
+        "error": "Object dtype prohibited in NPZ field control__diagnostic_reconstruction_checks",
+        "error_type": "TypeError",
+        "event": "EXPANDED_CONTINUATION_FIT_FAILED",
+        "freeze_signature": "c6a751f2ea3b23ac8d2b8d47c8a71f2d87283ff66f749cb6cd819e2c1ac9d78f",
+        "status": "FIT_OR_INTEGRITY_BLOCKED"
+      },
+      {
+        "at_utc": "2026-11-01T13:01:36.252860+00:00",
+        "campaign_id": "optimization_v3_expanded_benchmark_v1",
+        "card_id": "R11",
+        "cutoff": 71,
+        "error": "Object dtype prohibited in NPZ field control__diagnostic_reconstruction_checks",
+        "error_type": "TypeError",
+        "event": "EXPANDED_CONTINUATION_FIT_FAILED",
+        "freeze_signature": "c6a751f2ea3b23ac8d2b8d47c8a71f2d87283ff66f749cb6cd819e2c1ac9d78f",
+        "status": "FIT_OR_INTEGRITY_BLOCKED"
+      },
+      {
+        "at_utc": "2026-11-01T13:02:01.865840+00:00",
+        "campaign_id": "optimization_v3_expanded_benchmark_v1",
+        "card_id": "R11",
+        "cutoff": 75,
+        "error": "Object dtype prohibited in NPZ field control__diagnostic_reconstruction_checks",
+        "error_type": "TypeError",
+        "event": "EXPANDED_CONTINUATION_FIT_FAILED",
+        "freeze_signature": "c6a751f2ea3b23ac8d2b8d47c8a71f2d87283ff66f749cb6cd819e2c1ac9d78f",
+        "status": "FIT_OR_INTEGRITY_BLOCKED"
+      },
+      {
+        "at_utc": "2026-11-01T13:05:27.529935+00:00",
+        "campaign_id": "optimization_v3_expanded_benchmark_v1",
+        "card_id": "R06",
+        "cutoff": 59,
+        "error": "Object dtype prohibited in NPZ field control__diagnostic_reconstruction_checks",
+        "error_type": "TypeError",
+        "event": "EXPANDED_CONTINUATION_FIT_FAILED",
+        "freeze_signature": "c6a751f2ea3b23ac8d2b8d47c8a71f2d87283ff66f749cb6cd819e2c1ac9d78f",
+        "status": "FIT_OR_INTEGRITY_BLOCKED"
+      },
+      {
+        "at_utc": "2026-11-01T13:09:41.693285+00:00",
+        "campaign_id": "optimization_v3_expanded_benchmark_v1",
+        "card_id": "R06",
+        "cutoff": 63,
+        "error": "Object dtype prohibited in NPZ field control__diagnostic_reconstruction_checks",
+        "error_type": "TypeError",
+        "event": "EXPANDED_CONTINUATION_FIT_FAILED",
+        "freeze_signature": "c6a751f2ea3b23ac8d2b8d47c8a71f2d87283ff66f749cb6cd819e2c1ac9d78f",
+        "status": "FIT_OR_INTEGRITY_BLOCKED"
+      },
+      {
+        "at_utc": "2026-11-01T13:15:25.235553+00:00",
+        "campaign_id": "optimization_v3_expanded_benchmark_v1",
+        "card_id": "R06",
+        "cutoff": 71,
+        "error": "Object dtype prohibited in NPZ field control__diagnostic_reconstruction_checks",
+        "error_type": "TypeError",
+        "event": "EXPANDED_CONTINUATION_FIT_FAILED",
+        "freeze_signature": "c6a751f2ea3b23ac8d2b8d47c8a71f2d87283ff66f749cb6cd819e2c1ac9d78f",
+        "status": "FIT_OR_INTEGRITY_BLOCKED"
+      },
+      {
+        "at_utc": "2026-11-01T13:22:00.172273+00:00",
+        "campaign_id": "optimization_v3_expanded_benchmark_v1",
+        "card_id": "R06",
+        "cutoff": 75,
+        "error": "Object dtype prohibited in NPZ field control__diagnostic_reconstruction_checks",
+        "error_type": "TypeError",
+        "event": "EXPANDED_CONTINUATION_FIT_FAILED",
+        "freeze_signature": "c6a751f2ea3b23ac8d2b8d47c8a71f2d87283ff66f749cb6cd819e2c1ac9d78f",
+        "status": "FIT_OR_INTEGRITY_BLOCKED"
+      },
+      {
+        "at_utc": "2026-11-01T13:29:19.753752+00:00",
+        "campaign_id": "optimization_v3_expanded_benchmark_v1_serialization_recovery",
+        "card_id": "R21",
+        "cutoff": 59,
+        "error": "'resource_preflight'",
+        "error_type": "KeyError",
+        "event": "EXPANDED_CONTINUATION_FIT_FAILED",
+        "freeze_signature": "9325a92708c80d4f84977b83c0d3311f506a18b6f5c1fdbd3affecb94155f6ad",
+        "status": "FIT_OR_INTEGRITY_BLOCKED"
+      },
+      {
+        "at_utc": "2026-11-01T13:29:19.774756+00:00",
+        "campaign_id": "optimization_v3_expanded_benchmark_v1_serialization_recovery",
+        "card_id": "R21",
+        "cutoff": 63,
+        "error": "'resource_preflight'",
+        "error_type": "KeyError",
+        "event": "EXPANDED_CONTINUATION_FIT_FAILED",
+        "freeze_signature": "9325a92708c80d4f84977b83c0d3311f506a18b6f5c1fdbd3affecb94155f6ad",
+        "status": "FIT_OR_INTEGRITY_BLOCKED"
+      },
+      {
+        "at_utc": "2026-11-01T13:29:19.796158+00:00",
+        "campaign_id": "optimization_v3_expanded_benchmark_v1_serialization_recovery",
+        "card_id": "R21",
+        "cutoff": 71,
+        "error": "'resource_preflight'",
+        "error_type": "KeyError",
+        "event": "EXPANDED_CONTINUATION_FIT_FAILED",
+        "freeze_signature": "9325a92708c80d4f84977b83c0d3311f506a18b6f5c1fdbd3affecb94155f6ad",
+        "status": "FIT_OR_INTEGRITY_BLOCKED"
+      },
+      {
+        "at_utc": "2026-11-01T13:29:19.821414+00:00",
+        "campaign_id": "optimization_v3_expanded_benchmark_v1_serialization_recovery",
+        "card_id": "R21",
+        "cutoff": 75,
+        "error": "'resource_preflight'",
+        "error_type": "KeyError",
+        "event": "EXPANDED_CONTINUATION_FIT_FAILED",
+        "freeze_signature": "9325a92708c80d4f84977b83c0d3311f506a18b6f5c1fdbd3affecb94155f6ad",
+        "status": "FIT_OR_INTEGRITY_BLOCKED"
+      },
+      {
+        "at_utc": "2026-11-01T13:29:19.842423+00:00",
+        "campaign_id": "optimization_v3_expanded_benchmark_v1_serialization_recovery",
+        "card_id": "R06",
+        "cutoff": 59,
+        "error": "'resource_preflight'",
+        "error_type": "KeyError",
+        "event": "EXPANDED_CONTINUATION_FIT_FAILED",
+        "freeze_signature": "9325a92708c80d4f84977b83c0d3311f506a18b6f5c1fdbd3affecb94155f6ad",
+        "status": "FIT_OR_INTEGRITY_BLOCKED"
+      },
+      {
+        "at_utc": "2026-11-01T13:29:19.861584+00:00",
+        "campaign_id": "optimization_v3_expanded_benchmark_v1_serialization_recovery",
+        "card_id": "R06",
+        "cutoff": 63,
+        "error": "'resource_preflight'",
+        "error_type": "KeyError",
+        "event": "EXPANDED_CONTINUATION_FIT_FAILED",
+        "freeze_signature": "9325a92708c80d4f84977b83c0d3311f506a18b6f5c1fdbd3affecb94155f6ad",
+        "status": "FIT_OR_INTEGRITY_BLOCKED"
+      },
+      {
+        "at_utc": "2026-11-01T13:29:19.886003+00:00",
+        "campaign_id": "optimization_v3_expanded_benchmark_v1_serialization_recovery",
+        "card_id": "R06",
+        "cutoff": 71,
+        "error": "'resource_preflight'",
+        "error_type": "KeyError",
+        "event": "EXPANDED_CONTINUATION_FIT_FAILED",
+        "freeze_signature": "9325a92708c80d4f84977b83c0d3311f506a18b6f5c1fdbd3affecb94155f6ad",
+        "status": "FIT_OR_INTEGRITY_BLOCKED"
+      },
+      {
+        "at_utc": "2026-11-01T13:29:19.910804+00:00",
+        "campaign_id": "optimization_v3_expanded_benchmark_v1_serialization_recovery",
+        "card_id": "R06",
+        "cutoff": 75,
+        "error": "'resource_preflight'",
+        "error_type": "KeyError",
+        "event": "EXPANDED_CONTINUATION_FIT_FAILED",
+        "freeze_signature": "9325a92708c80d4f84977b83c0d3311f506a18b6f5c1fdbd3affecb94155f6ad",
+        "status": "FIT_OR_INTEGRITY_BLOCKED"
+      }
+    ],
+    "observed_failure_events": 23,
+    "path": "experiments/runs/optimization_v3_batch1/batch_ledger.jsonl",
+    "remaining_reserved_capacity": 5,
+    "reservation_count": 43,
+    "reservation_keys": {
+      "C01:PILOT": [
+        0,
+        "C01"
+      ],
+      "C02:PILOT": [
+        2,
+        "C02"
+      ],
+      "C03:PILOT": [
+        2,
+        "C03"
+      ],
+      "C04:PILOT": [
+        2,
+        "C04"
+      ],
+      "C05:PILOT": [
+        2,
+        "C05"
+      ],
+      "C06:PILOT": [
+        2,
+        "C06"
+      ],
+      "C07:PILOT": [
+        2,
+        "C07"
+      ],
+      "C08:PILOT": [
+        2,
+        "C08"
+      ],
+      "C09:PILOT": [
+        2,
+        "C09"
+      ],
+      "C10:PILOT": [
+        2,
+        "C10"
+      ],
+      "C11:PILOT": [
+        2,
+        "C11"
+      ],
+      "C12:PILOT": [
+        2,
+        "C12"
+      ],
+      "C13:PILOT": [
+        2,
+        "C13"
+      ],
+      "C14:PILOT": [
+        2,
+        "C14"
+      ],
+      "C15:PILOT": [
+        2,
+        "C15"
+      ],
+      "C16:PILOT": [
+        2,
+        "C16"
+      ],
+      "C17:PILOT": [
+        2,
+        "C17"
+      ],
+      "C18:PILOT": [
+        2,
+        "C18"
+      ],
+      "C19:PILOT": [
+        2,
+        "C19"
+      ],
+      "EXPANDED_BENCHMARK:C17_C11_R21_R11_R06": [
+        65,
+        "C17+C11+R21+R11+R06"
+      ],
+      "EXPANDED_BENCHMARK_SERIALIZATION_RECOVERY:R21_R06": [
+        8,
+        "R21+R06_SERIALIZATION_RECOVERY"
+      ],
+      "FINAL_CONTINUATION:C16_R22": [
+        8,
+        "C16+R22"
+      ],
+      "R01:PILOT": [
+        2,
+        "R01"
+      ],
+      "R02:PILOT": [
+        2,
+        "R02"
+      ],
+      "R03:PILOT": [
+        2,
+        "R03"
+      ],
+      "R04:PILOT": [
+        2,
+        "R04"
+      ],
+      "R05:PILOT": [
+        2,
+        "R05"
+      ],
+      "R06:PILOT": [
+        2,
+        "R06"
+      ],
+      "R07:PILOT": [
+        2,
+        "R07"
+      ],
+      "R08:PILOT": [
+        2,
+        "R08"
+      ],
+      "R09:PILOT": [
+        2,
+        "R09"
+      ],
+      "R11:PILOT": [
+        18,
+        "R11"
+      ],
+      "R12:PILOT": [
+        2,
+        "R12"
+      ],
+      "R14:PILOT": [
+        2,
+        "R14"
+      ],
+      "R15:PILOT": [
+        2,
+        "R15"
+      ],
+      "R16:PILOT": [
+        2,
+        "R16"
+      ],
+      "R17:PILOT": [
+        2,
+        "R17"
+      ],
+      "R20:PILOT": [
+        2,
+        "R20"
+      ],
+      "R21:PILOT": [
+        2,
+        "R21"
+      ],
+      "R22:PILOT": [
+        2,
+        "R22"
+      ],
+      "R23:PILOT": [
+        2,
+        "R23"
+      ],
+      "R24:PILOT": [
+        2,
+        "R24"
+      ],
+      "R25:PILOT": [
+        2,
+        "R25"
+      ]
+    },
+    "reserved_predictor_fits": 175,
+    "sha256": "f0facbb72b5dde064c5615f749e6ce9d1195f1ea83511443bc812afef30ab1a9"
+  },
+  "freeze_signature": "6cdecf6e0729b625981f23c7b7be4152a12806011a0a1852dd978eaec30d21ae",
+  "no_scores_or_test_access": true,
+  "parent_freeze_signature": "c6a751f2ea3b23ac8d2b8d47c8a71f2d87283ff66f749cb6cd819e2c1ac9d78f",
+  "reservation": {
+    "budget_key": "EXPANDED_BENCHMARK_SERIALIZATION_RECOVERY:R21_R06",
+    "card_id": "R21+R06_SERIALIZATION_RECOVERY",
+    "mode": "REUSE_EXISTING_NO_FIT_STARTED",
+    "predictor_fits": 8,
+    "reserved": true
+  },
+  "resource_preflight": {
+    "by_candidate_cutoff": {
+      "R06": {
+        "59": {
+          "allowed_bytes": 5240885248,
+          "available_bytes": 7388368896,
+          "estimate_is_observed_peak": false,
+          "estimated_peak_bytes": 1444448688,
+          "fit_rows": 16134,
+          "free_memory_reserve_bytes": 2147483648,
+          "job_memory_cap_bytes": 6442450944,
+          "status": "PASS",
+          "threads": 2
+        },
+        "63": {
+          "allowed_bytes": 5240885248,
+          "available_bytes": 7388368896,
+          "estimate_is_observed_peak": false,
+          "estimated_peak_bytes": 1594733664,
+          "fit_rows": 22627,
+          "free_memory_reserve_bytes": 2147483648,
+          "job_memory_cap_bytes": 6442450944,
+          "status": "PASS",
+          "threads": 2
+        },
+        "71": {
+          "allowed_bytes": 5240885248,
+          "available_bytes": 7388368896,
+          "estimate_is_observed_peak": false,
+          "estimated_peak_bytes": 1899243612,
+          "fit_rows": 34655,
+          "free_memory_reserve_bytes": 2147483648,
+          "job_memory_cap_bytes": 6442450944,
+          "status": "PASS",
+          "threads": 2
+        },
+        "75": {
+          "allowed_bytes": 5240885248,
+          "available_bytes": 7388368896,
+          "estimate_is_observed_peak": false,
+          "estimated_peak_bytes": 2080946004,
+          "fit_rows": 42117,
+          "free_memory_reserve_bytes": 2147483648,
+          "job_memory_cap_bytes": 6442450944,
+          "status": "PASS",
+          "threads": 2
+        }
+      },
+      "R21": {
+        "59": {
+          "allowed_bytes": 5240885248,
+          "available_physical_bytes": 7388368896,
+          "concurrent_training_jobs": 1,
+          "dense_design": true,
+          "design_bytes_upper_bound": 108420480,
+          "estimated_peak_bytes": 2710229888,
+          "estimated_peak_is_observed": false,
+          "feature_width_upper_bound": 840,
+          "fit_rows": 16134,
+          "free_memory_reserve_bytes": 2147483648,
+          "histogram_buffer_allowance_bytes": 20643840,
+          "job_cap_bytes": 6442450944,
+          "status": "PASS",
+          "threads": 2,
+          "xgboost_and_transform_fixed_overhead_bytes": 2147483648
+        },
+        "63": {
+          "allowed_bytes": 5240885248,
+          "available_physical_bytes": 7388368896,
+          "concurrent_training_jobs": 1,
+          "dense_design": true,
+          "design_bytes_upper_bound": 152053440,
+          "estimated_peak_bytes": 2928394688,
+          "estimated_peak_is_observed": false,
+          "feature_width_upper_bound": 840,
+          "fit_rows": 22627,
+          "free_memory_reserve_bytes": 2147483648,
+          "histogram_buffer_allowance_bytes": 20643840,
+          "job_cap_bytes": 6442450944,
+          "status": "PASS",
+          "threads": 2,
+          "xgboost_and_transform_fixed_overhead_bytes": 2147483648
+        },
+        "71": {
+          "allowed_bytes": 5240885248,
+          "available_physical_bytes": 7388368896,
+          "concurrent_training_jobs": 1,
+          "dense_design": true,
+          "design_bytes_upper_bound": 232881600,
+          "estimated_peak_bytes": 3332535488,
+          "estimated_peak_is_observed": false,
+          "feature_width_upper_bound": 840,
+          "fit_rows": 34655,
+          "free_memory_reserve_bytes": 2147483648,
+          "histogram_buffer_allowance_bytes": 20643840,
+          "job_cap_bytes": 6442450944,
+          "status": "PASS",
+          "threads": 2,
+          "xgboost_and_transform_fixed_overhead_bytes": 2147483648
+        },
+        "75": {
+          "allowed_bytes": 5240885248,
+          "available_physical_bytes": 7388368896,
+          "concurrent_training_jobs": 1,
+          "dense_design": true,
+          "design_bytes_upper_bound": 283026240,
+          "estimated_peak_bytes": 3583258688,
+          "estimated_peak_is_observed": false,
+          "feature_width_upper_bound": 840,
+          "fit_rows": 42117,
+          "free_memory_reserve_bytes": 2147483648,
+          "histogram_buffer_allowance_bytes": 20643840,
+          "job_cap_bytes": 6442450944,
+          "status": "PASS",
+          "threads": 2,
+          "xgboost_and_transform_fixed_overhead_bytes": 2147483648
+        }
+      }
+    }
+  },
+  "resources": {
+    "R06": {
+      "59": {
+        "allowed_bytes": 6069100544,
+        "available_bytes": 8216584192,
+        "card_id": "R06",
+        "cutoff": 59,
+        "estimate_is_observed_peak": false,
+        "estimated_peak_bytes": 1444448688,
+        "free_reserve_bytes": 2147483648,
+        "job_cap_bytes": 6442450944,
+        "single_training_job": true,
+        "status": "PASS",
+        "threads": 2
+      },
+      "63": {
+        "allowed_bytes": 6069100544,
+        "available_bytes": 8216584192,
+        "card_id": "R06",
+        "cutoff": 63,
+        "estimate_is_observed_peak": false,
+        "estimated_peak_bytes": 1594733664,
+        "free_reserve_bytes": 2147483648,
+        "job_cap_bytes": 6442450944,
+        "single_training_job": true,
+        "status": "PASS",
+        "threads": 2
+      },
+      "71": {
+        "allowed_bytes": 6069100544,
+        "available_bytes": 8216584192,
+        "card_id": "R06",
+        "cutoff": 71,
+        "estimate_is_observed_peak": false,
+        "estimated_peak_bytes": 1899243612,
+        "free_reserve_bytes": 2147483648,
+        "job_cap_bytes": 6442450944,
+        "single_training_job": true,
+        "status": "PASS",
+        "threads": 2
+      },
+      "75": {
+        "allowed_bytes": 6069100544,
+        "available_bytes": 8216584192,
+        "card_id": "R06",
+        "cutoff": 75,
+        "estimate_is_observed_peak": false,
+        "estimated_peak_bytes": 2080946004,
+        "free_reserve_bytes": 2147483648,
+        "job_cap_bytes": 6442450944,
+        "single_training_job": true,
+        "status": "PASS",
+        "threads": 2
+      }
+    },
+    "R21": {
+      "59": {
+        "allowed_bytes": 6069100544,
+        "available_bytes": 8216584192,
+        "card_id": "R21",
+        "cutoff": 59,
+        "estimate_is_observed_peak": false,
+        "estimated_peak_bytes": 2710229888,
+        "free_reserve_bytes": 2147483648,
+        "job_cap_bytes": 6442450944,
+        "single_training_job": true,
+        "status": "PASS",
+        "threads": 2
+      },
+      "63": {
+        "allowed_bytes": 6069100544,
+        "available_bytes": 8216584192,
+        "card_id": "R21",
+        "cutoff": 63,
+        "estimate_is_observed_peak": false,
+        "estimated_peak_bytes": 2928394688,
+        "free_reserve_bytes": 2147483648,
+        "job_cap_bytes": 6442450944,
+        "single_training_job": true,
+        "status": "PASS",
+        "threads": 2
+      },
+      "71": {
+        "allowed_bytes": 6069100544,
+        "available_bytes": 8216584192,
+        "card_id": "R21",
+        "cutoff": 71,
+        "estimate_is_observed_peak": false,
+        "estimated_peak_bytes": 3332535488,
+        "free_reserve_bytes": 2147483648,
+        "job_cap_bytes": 6442450944,
+        "single_training_job": true,
+        "status": "PASS",
+        "threads": 2
+      },
+      "75": {
+        "allowed_bytes": 6069100544,
+        "available_bytes": 8216584192,
+        "card_id": "R21",
+        "cutoff": 75,
+        "estimate_is_observed_peak": false,
+        "estimated_peak_bytes": 3583258688,
+        "free_reserve_bytes": 2147483648,
+        "job_cap_bytes": 6442450944,
+        "single_training_job": true,
+        "status": "PASS",
+        "threads": 2
+      }
+    }
+  },
+  "schema_version": 1,
+  "status": "READY_TO_RUN"
+}
