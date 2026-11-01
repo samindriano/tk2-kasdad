@@ -1,0 +1,59 @@
+{
+  "card_id": "C14",
+  "checks": {
+    "H12_harm_at_most_0_001": false,
+    "W1_harm_at_most_0_005": false,
+    "W4_harm_at_most_0_005": false,
+    "primary_gain_at_least_0_0005": false,
+    "supported_subgroup_guards": false
+  },
+  "decision": "RETIRE",
+  "decision_basis": "Frozen STANDARD temporal pilot gates, exact row-matched v3_cls_sparse25 controls, and independent route/metric reconstruction; no Test/Kaggle evidence.",
+  "status": "FAIL_VALID_EVIDENCE",
+  "supported_subgroup_failures": [
+    {
+      "baseline_macro_f1": 0.8583072789850213,
+      "baseline_positive_recall": 0.7965425531914894,
+      "candidate_macro_f1": 0.8446435254559678,
+      "candidate_minus_baseline_macro_f1": -0.01366375352905358,
+      "candidate_minus_baseline_positive_recall": -0.01196808510638303,
+      "candidate_positive_recall": 0.7845744680851063,
+      "class_0_n": 1145,
+      "class_1_n": 752,
+      "field": "text_load_q",
+      "group": "Q2",
+      "guard_applies": true,
+      "guard_pass": false,
+      "n": 1897,
+      "supported": true
+    },
+    {
+      "baseline_macro_f1": 0.8064409404186157,
+      "baseline_positive_recall": 0.6741826381059752,
+      "candidate_macro_f1": 0.7926045059171994,
+      "candidate_minus_baseline_macro_f1": -0.01383643450141625,
+      "candidate_minus_baseline_positive_recall": -0.036076662908680945,
+      "candidate_positive_recall": 0.6381059751972943,
+      "class_0_n": 1781,
+      "class_1_n": 887,
+      "field": "text_load_q",
+      "group": "Q4",
+      "guard_applies": true,
+      "guard_pass": false,
+      "n": 2668,
+      "supported": true
+    }
+  ],
+  "thresholds": {
+    "full_H12_harm_max": 0.001,
+    "full_nonnegative_windows_min": 4,
+    "full_primary_gain_min": 0.0005,
+    "individual_pilot_view_harm_max": 0.005,
+    "pilot_H12_harm_max": 0.001,
+    "pilot_primary_gain_min": 0.0005,
+    "positive_and_negative_per_group_min": 30,
+    "positive_class_recall_harm_max": 0.02,
+    "supported_group_F1_harm_max": 0.01,
+    "supported_group_n_min": 200
+  }
+}
