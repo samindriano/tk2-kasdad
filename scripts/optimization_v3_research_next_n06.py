@@ -62,7 +62,6 @@ OLD_LEDGER_PATH = ROOT / "experiments/runs/optimization_v3_batch1/batch_ledger.j
 R06_RESULT_PATH = ROOT / "reports/optimization_v3/expanded_benchmark_v1_final_evaluation/R06/results.json"
 R06_VERIFY_PATH = ROOT / "reports/optimization_v3/expanded_benchmark_v1_final_evaluation/R06/verification.json"
 R22_VERIFY_PATH = ROOT / "reports/optimization_v3/final_continuation/R22/verification.json"
-R22_RESULT_PATH = ROOT / "reports/optimization_v3/final_continuation/R22/results.json"
 FREEZE_ROOT = ROOT / "experiments/optimization_v3/research_next_v1/frozen/N06/amendment_01"
 PREFLIGHT_PATH = FREEZE_ROOT / "preflight.json"
 FREEZE_PATH = FREEZE_ROOT / "freeze.json"
@@ -246,7 +245,7 @@ def _resource_estimate(frame: pd.DataFrame, cutoff: int, seed: int,
 def _source_paths() -> list[Path]:
     paths = [ROOT / value for value in SOURCE_PATHS]
     paths += [QUEUE_PATH, READINESS_PATH, CARD_PATH, N00_FREEZE_PATH, N00_REPORT_PATH,
-              R06_RESULT_PATH, R06_VERIFY_PATH, R22_RESULT_PATH, R22_VERIFY_PATH]
+              R06_RESULT_PATH, R06_VERIFY_PATH, R22_VERIFY_PATH]
     return paths
 
 
