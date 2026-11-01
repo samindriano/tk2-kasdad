@@ -1,0 +1,66 @@
+{
+  "card_id": "C19",
+  "checks": {
+    "H12_harm_max_0_001": true,
+    "W1_harm_max_0_005": true,
+    "W4_harm_max_0_005": true,
+    "independent_verification_pass": true,
+    "primary_gain_min_0_0005": false,
+    "supported_subgroup_macro_f1_and_positive_recall_guards": false
+  },
+  "interpretation": "ADVANCE only if every pilot aggregate, window, and supported-group gate passes; public score is not used.",
+  "metrics": {
+    "H12": {
+      "baseline_macro_f1": 0.8029655654017788,
+      "candidate_macro_f1": 0.8071172425551717,
+      "gain": 0.00415167715339293,
+      "rows": 38588
+    },
+    "W1": {
+      "baseline_macro_f1": 0.8031600548696844,
+      "candidate_macro_f1": 0.8026472942717586,
+      "gain": -0.000512760597925821,
+      "rows": 4114
+    },
+    "W4": {
+      "baseline_macro_f1": 0.8414177014153625,
+      "candidate_macro_f1": 0.8425228396185023,
+      "gain": 0.0011051382031397328,
+      "rows": 4950
+    },
+    "primary": {
+      "baseline_macro_f1": 0.8239724981677496,
+      "candidate_macro_f1": 0.8243471632479106,
+      "gain": 0.0003746650801609297,
+      "rows": 9064
+    }
+  },
+  "status": "RETIRE",
+  "supported_subgroup_guard_failures": [
+    {
+      "baseline_macro_f1": 0.8064409404186157,
+      "baseline_positive_recall": 0.6741826381059752,
+      "candidate_macro_f1": 0.8046025612986318,
+      "candidate_minus_baseline_macro_f1": -0.0018383791199838573,
+      "candidate_minus_baseline_positive_recall": -0.021420518602029315,
+      "candidate_positive_recall": 0.6527621195039459,
+      "class_0_n": 1781,
+      "class_1_n": 887,
+      "field": "text_load_q",
+      "group": "Q4",
+      "guard_applies": true,
+      "guard_pass": false,
+      "n": 2668,
+      "supported": true
+    }
+  ],
+  "thresholds": {
+    "H12_harm_max": 0.001,
+    "individual_pilot_view_harm_max": 0.005,
+    "per_class_group_min": 30,
+    "positive_class_recall_harm_max": 0.02,
+    "primary_gain_min": 0.0005,
+    "supported_group_macro_f1_harm_max": 0.01,
+    "supported_group_n_min": 200
+  }
+}

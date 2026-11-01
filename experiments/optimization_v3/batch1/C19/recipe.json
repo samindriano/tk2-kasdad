@@ -1,0 +1,170 @@
+{
+  "card_id": "C19",
+  "expected_rows": {
+    "fit_by_cutoff": {
+      "55": 12020,
+      "67": 29705
+    },
+    "views": {
+      "H12": 38588,
+      "W1": 4114,
+      "W4": 4950,
+      "primary": 9064
+    }
+  },
+  "feature_allowlist": [
+    "impact_load",
+    "entry_friction",
+    "cycle_code",
+    "scope_pressure",
+    "text_load",
+    "scope_trace",
+    "org_spread",
+    "module_spread",
+    "telemetry_flag",
+    "org_code",
+    "module_code",
+    "pattern_code",
+    "signal_stream"
+  ],
+  "fit_population": "all official Classification Train rows with cycle_code 47..cutoff, including rows with missing streams; no sample weights/downsampling",
+  "fit_protocol": "one XGBClassifier predictor per origin; no early stopping, threshold search, or validation labels passed to fit",
+  "gate": {
+    "full_H12_harm_max": 0.001,
+    "full_nonnegative_windows_min": 4,
+    "full_primary_gain_min": 0.0005,
+    "individual_pilot_view_harm_max": 0.005,
+    "pilot_H12_harm_max": 0.001,
+    "pilot_primary_gain_min": 0.0005,
+    "positive_and_negative_per_group_min": 30,
+    "positive_class_recall_harm_max": 0.02,
+    "supported_group_F1_harm_max": 0.01,
+    "supported_group_n_min": 200
+  },
+  "model": "XGBClassifier(binary:logistic) on scaled structured + categorical OHE + exact 32-component TF-IDF/SVD design",
+  "prediction_policy": {
+    "baseline": "current frozen sparse25 route, including same CatBoost missing-stream path",
+    "candidate_present": "0.75 * current sparse25 probability + 0.25 * C19 XGBoost probability",
+    "current_present": "0.75 * C2_B probability + 0.25 * frozen sparse binary expert probability",
+    "missing_stream": "frozen CatBoost missing-stream probability, unchanged",
+    "threshold": 0.5
+  },
+  "queue_recipe": {
+    "change": "Structured numeric scaled + categorical OHE + SVD32 text, finite dense matrix only if RAM bound passes. XGBClassifier binary:logistic/hist/CPU,600trees,depth4,lr0.05,min_child_weight20,lambda5,colsample_bytree0.8,subsample1,seed42,n_jobs2.",
+    "condition": "No additional dependency",
+    "evaluation": "STANDARD",
+    "family": "xgb_dense",
+    "id": "C19",
+    "name": "XGBoost dense text-tabular classifier",
+    "pilot_predictor_fits": 2,
+    "policy": "C_AUX25",
+    "priority": "P2",
+    "task": "classification"
+  },
+  "resource_policy": {
+    "concurrent_fit_jobs": 1,
+    "free_ram_reserve_bytes": 2147483648,
+    "job_memory_cap_bytes": 6442450944,
+    "minimum_free_ram_bytes": 4294967296,
+    "threads": 2
+  },
+  "row_matched_baseline_metrics": {
+    "H12": {
+      "macro_f1": 0.8029655654017788,
+      "rows": 38588
+    },
+    "W1": {
+      "macro_f1": 0.8031600548696844,
+      "rows": 4114
+    },
+    "W4": {
+      "macro_f1": 0.8414177014153625,
+      "rows": 4950
+    },
+    "primary": {
+      "macro_f1": 0.8239724981677496,
+      "rows": 9064
+    }
+  },
+  "scoring_population": "STANDARD cutoff 55/67 pilot views with row positions and record_id alignment",
+  "structured": "RegressionTextModel expanded structured recipe: fold-fit imputation, scaled numeric values, categorical one-hot with min_frequency=30 and max_categories=254",
+  "text": {
+    "missing_stream": "empty document for fit-only text transform plus explicit missing indicator",
+    "parameters": {
+      "dtype": "float64",
+      "lowercase": true,
+      "max_df": 0.995,
+      "max_features": 20000,
+      "min_df": 3,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "strip_accents": "unicode",
+      "sublinear_tf": true
+    },
+    "svd": {
+      "algorithm": "randomized",
+      "n_components": 32,
+      "n_iter": 7,
+      "random_state": 42
+    },
+    "vectorizer": "sklearn.feature_extraction.text.TfidfVectorizer"
+  },
+  "views": {
+    "H12": [
+      [
+        55,
+        56,
+        67
+      ],
+      [
+        67,
+        68,
+        79
+      ]
+    ],
+    "W1": [
+      [
+        55,
+        56,
+        59
+      ]
+    ],
+    "W4": [
+      [
+        67,
+        68,
+        71
+      ]
+    ],
+    "primary": [
+      [
+        55,
+        56,
+        59
+      ],
+      [
+        67,
+        68,
+        71
+      ]
+    ]
+  },
+  "xgboost_parameters": {
+    "colsample_bytree": 0.8,
+    "device": "cpu",
+    "learning_rate": 0.05,
+    "max_depth": 4,
+    "min_child_weight": 20,
+    "n_estimators": 600,
+    "n_jobs": 2,
+    "objective": "binary:logistic",
+    "random_state": 42,
+    "reg_lambda": 5.0,
+    "subsample": 1.0,
+    "tree_method": "hist",
+    "verbosity": 0
+  },
+  "xgboost_version": "3.2.0"
+}
