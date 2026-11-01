@@ -205,7 +205,8 @@ def _memory_estimate(fit_features: pd.DataFrame, score_features: pd.DataFrame,
     docs, _missing = _text_values(fit_features["signal_stream"])
     vectorizer = TfidfVectorizer(**dict(TFIDF_PARAMETERS))
     text_matrix = vectorizer.fit_transform(docs).tocsr()
-    vocabulary_width, nnz = map(int, text_matrix.shape[::-1])
+    vocabulary_width = int(text_matrix.shape[1])
+    nnz = int(text_matrix.nnz)
     if vocabulary_width <= SVD_COMPONENTS:
         raise ValueError(f"SKIPPED_SUPPORT: exact SVD32 needs >32 TF-IDF columns, got {vocabulary_width}")
     (structured, _processor, _scaler, _encoder, _numeric_positions,

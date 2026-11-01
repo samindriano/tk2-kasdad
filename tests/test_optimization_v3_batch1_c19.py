@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from scripts.optimization_v3_batch1_c19 import _recipe_payload, reconstruct_c19
+from scripts.optimization_v3_batch1_c19 import _memory_estimate, _recipe_payload, reconstruct_c19
 from scripts.optimization_v3_batch1_verify import verify_report
 from src.models import optimization_v3_batch1_c19 as c19
 from src.models.optimization_v3_batch1 import make_freeze_identity, run_pilot
@@ -119,6 +119,18 @@ def test_c19_recipe_is_json_safe_and_keeps_fixed_tfidf_parameters():
     assert recipe["text"]["parameters"]["dtype"] == "float64"
     assert recipe["text"]["parameters"]["max_features"] == 20_000
     assert recipe["text"]["svd"]["n_components"] == 32
+
+
+def test_c19_resource_preflight_reports_actual_sparse_nnz():
+    fit = _features(96, np.repeat(np.arange(47, 59), 8))
+    score = _features(24, np.repeat([59, 60, 61], 8))
+    estimate = _memory_estimate(fit, score, available_bytes=12 * 1024**3)
+    docs, _missing = c19._text_values(fit["signal_stream"])
+    vectorizer = c19.TfidfVectorizer(**dict(c19.TFIDF_PARAMETERS))
+    expected_nnz = int(vectorizer.fit_transform(docs).nnz)
+    assert estimate["fit_tfidf_vocabulary_width"] > 32
+    assert estimate["fit_tfidf_nnz"] == expected_nnz
+    assert estimate["status"] == "PASS"
 
 
 def test_c19_run_pilot_and_independent_route_verification(monkeypatch, tmp_path):
