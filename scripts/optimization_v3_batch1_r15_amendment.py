@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 import json
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -17,6 +18,7 @@ from scripts import optimization_v3_batch1_r15 as runner
 from scripts.optimization_v3_batch1_verify import verify_report
 from src.models.optimization_v3_batch1 import (
     BatchIntegrityError,
+    append_event,
     file_sha256,
     json_sha256,
     load_queue,
@@ -125,6 +127,80 @@ def _load_and_check_saved_cutoff(context: Mapping[str, Any], report: Mapping[str
     }
 
 
+def _fallback_coverage(context: Mapping[str, Any], views: Mapping[str, Any]) -> dict[str, Any]:
+    output: dict[str, Any] = {}
+    for name, item in views.items():
+        rows = np.asarray(item["rows"], dtype=np.int64)
+        missing = stream_missing_mask(
+            context["frame"].iloc[rows]["signal_stream"].to_numpy(dtype=object)
+        )
+        output[name] = {
+            "rows": int(len(rows)),
+            "missing_rows_expert_route": int(missing.sum()),
+            "present_rows_exact_champion": int((~missing).sum()),
+            "present_prediction_changed": False,
+        }
+    return output
+
+
+def _reconcile_fit_budget(results: Mapping[str, Any], verification: Mapping[str, Any],
+                          gate: Mapping[str, Any]) -> None:
+    accounting = results["fit_accounting"]
+    if (accounting["successful_saved_predictor_fits"] != 2
+            or sorted(accounting["fit_origins_saved"]) != [67, 75]
+            or not accounting["attempt_accounting_complete"]
+            or verification.get("status") != "PASS"):
+        raise BatchIntegrityError("R15 fit/verification accounting is incomplete")
+    reconciliation = {
+        "event": "FIT_BUDGET_RECONCILED",
+        "card_id": CARD_ID,
+        "budget_key": "R15:PILOT",
+        "attempt_accounting_complete": True,
+        "fit_started_events": accounting["fit_started_events"],
+        "fit_saved_events": accounting["fit_saved_events"],
+        "fit_failed_events": accounting["fit_failed_events"],
+        "resumed_verified_events": accounting["resumed_verified_events"],
+        "technical_retries": accounting["technical_retries"],
+        "reserved_predictor_fits": 2,
+        "successful_predictor_fits": accounting["successful_saved_predictor_fits"],
+        "decision": gate["status"],
+        "independent_verification_status": "PASS",
+        "freeze_signature": results["freeze_signature"],
+        "attempts_sha256": file_sha256(runner.EVENT_PATH),
+        "results_sha256": file_sha256(runner.RESULTS_PATH),
+        "verification_sha256": file_sha256(runner.VERIFICATION_PATH),
+        "subgroups_sha256": file_sha256(runner.SUBGROUP_PATH),
+        "gate_sha256": file_sha256(runner.GATE_PATH),
+    }
+    existing = [
+        json.loads(line)
+        for line in runner.LEDGER_PATH.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ] if runner.LEDGER_PATH.is_file() else []
+    matches = [
+        event for event in existing
+        if event.get("event") == "FIT_BUDGET_RECONCILED" and event.get("card_id") == CARD_ID
+    ]
+    if matches:
+        if len(matches) != 1 or any(
+            matches[0].get(key) != value for key, value in reconciliation.items() if key != "event"
+        ):
+            raise BatchIntegrityError("Existing R15 fit-budget reconciliation differs")
+        return
+    append_event(runner.LEDGER_PATH, {
+        **reconciliation,
+        "at_utc": datetime.now(timezone.utc).isoformat(),
+    })
+
+
+def _require_verified(per_cutoff: Mapping[int, Mapping[str, Any]],
+                      verification: Mapping[str, Any]) -> None:
+    if verification.get("status") != "PASS":
+        raise BatchIntegrityError("R15 independent metric verification failed; preserve outputs and do not refit")
+    if set(per_cutoff) != {67, 75} or any(item.get("status") != "PASS" for item in per_cutoff.values()):
+        raise BatchIntegrityError("R15 candidate fit verification failed; preserve outputs and do not refit")
+
+
 def _ensure_unchanged_freeze(context: Mapping[str, Any], frozen: Mapping[str, Any],
                              report: Mapping[str, Any]) -> None:
     identity = frozen.get("identity", {})
@@ -175,7 +251,7 @@ def verify_saved_pilot() -> dict[str, Any]:
         for cutoff, item in per_cutoff.items()
     }
     verification["verification_amendment"] = "scripts/optimization_v3_batch1_r15_amendment.py"
-    verification["status"] = "PASS" if verification.get("status") == "PASS" else "FAIL"
+    _require_verified(per_cutoff, verification)
 
     views = runner._view_arrays(context, per_cutoff)
     groups = runner._group_metrics(context, views)
@@ -228,15 +304,7 @@ def verify_saved_pilot() -> dict[str, Any]:
         "H12_E_exact_champion_fallback": early_fallback,
         "group_diagnostics": groups,
         "support_preflight": preflight["support_preflight"],
-        "fallback_coverage": {
-            name: {
-                "rows": len(item["rows"]),
-                "missing_rows_expert_route": int(np.asarray(item["missing"], dtype=bool).sum()),
-                "present_rows_exact_champion": int((~np.asarray(item["missing"], dtype=bool)).sum()),
-                "present_prediction_changed": False,
-            }
-            for name, item in views.items()
-        },
+        "fallback_coverage": _fallback_coverage(context, views),
         "test_or_sample_access": False,
         "kaggle_access": False,
         "candidate_test_prediction_made": False,
@@ -291,7 +359,7 @@ def verify_saved_pilot() -> dict[str, Any]:
         "verification_amendment": "saved pilot reused; no fit rerun",
     }
     runner._write_or_match(runner.RUNTIME_NOTES_PATH, runtime_notes)
-    runner._reconcile_budget(results, verification, gate)
+    _reconcile_fit_budget(results, verification, gate)
     summary = {
         "card_id": CARD_ID,
         "status": gate["status"],

@@ -2,7 +2,14 @@ from __future__ import annotations
 
 import numpy as np
 
-from scripts.optimization_v3_batch1_r15_amendment import _expected_fit_population
+import pytest
+
+from scripts.optimization_v3_batch1_r15_amendment import (
+    _expected_fit_population,
+    _fallback_coverage,
+    _require_verified,
+)
+from src.models.optimization_v3_batch1 import BatchIntegrityError
 from src.models.optimization_v3_batch1_r15 import FEATURE_NAMES
 
 
@@ -38,3 +45,25 @@ def test_amendment_recomputes_missing_fit_row_and_data_fingerprints():
     assert len(receipt["fit_source_row_positions_sha256"]) == 64
     assert len(receipt["fit_missing_mask_sha256"]) == 64
     assert len(receipt["fit_data_sha256"]) == 64
+
+
+def test_amendment_fallback_coverage_is_derived_from_aligned_train_mask():
+    import pandas as pd
+
+    context = {
+        "frame": pd.DataFrame({"signal_stream": [None, "text", "  ", "stream"]}),
+    }
+    coverage = _fallback_coverage(context, {"W4": {"rows": np.array([0, 1, 2, 3])}})
+    assert coverage["W4"] == {
+        "rows": 4,
+        "missing_rows_expert_route": 2,
+        "present_rows_exact_champion": 2,
+        "present_prediction_changed": False,
+    }
+
+
+def test_amendment_fails_closed_on_failed_independent_verification():
+    with pytest.raises(BatchIntegrityError, match="independent metric verification failed"):
+        _require_verified({67: {"status": "PASS"}, 75: {"status": "PASS"}}, {"status": "FAIL"})
+    with pytest.raises(BatchIntegrityError, match="candidate fit verification failed"):
+        _require_verified({67: {"status": "PASS"}, 75: {"status": "FAIL"}}, {"status": "PASS"})
