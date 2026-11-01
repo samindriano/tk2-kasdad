@@ -1,0 +1,318 @@
+{
+  "R02_completion_condition": {
+    "R02_primary_gain": 0.022196095313315567,
+    "card_id": "R02",
+    "condition_met": true,
+    "cutoffs": [
+      55,
+      67
+    ],
+    "freeze_signature": "6a485f4c4ec1b0d157e759a31faebab9b7765e63ac7c49cf125334767a743d87",
+    "gate_sha256": "1823401f8b491a8b67dc4a0542d609032f605699fd53135fec0dbc400d838d41",
+    "reserved_predictor_fits": 2,
+    "results_sha256": "6aa5d0cbc5cee9e7c513fb16513016d159a6428f7c65eeeefdfa9498602155ec",
+    "status": "RETIRE",
+    "successful_predictor_fits": 2,
+    "verification_sha256": "e165736d86b05e5b44db88ca8c184a3d3330c04aeb102b11a1f1c621135acdda",
+    "verification_status": "PASS"
+  },
+  "accepted_fullsix_control_metrics": {
+    "H12_mae": 14.04753258299653,
+    "primary_mae": 11.559390078665364
+  },
+  "card_id": "R04",
+  "estimator": {
+    "class": "lightgbm.LGBMRegressor",
+    "inherited_unchanged_from": "optimization_v2_regression.SPARSE_LGB_PARAMETERS",
+    "input_format": "CSR sparse; no full dense word matrix",
+    "objective": "regression_l1",
+    "parameters": {
+      "boosting_type": "gbdt",
+      "colsample_bytree": 1.0,
+      "deterministic": true,
+      "force_col_wise": true,
+      "learning_rate": 0.05,
+      "max_depth": -1,
+      "min_child_samples": 40,
+      "min_child_weight": 0.001,
+      "n_estimators": 400,
+      "n_jobs": 2,
+      "num_leaves": 31,
+      "objective": "regression_l1",
+      "random_state": 42,
+      "reg_alpha": 0.0,
+      "reg_lambda": 1.0,
+      "subsample": 1.0,
+      "subsample_freq": 0,
+      "verbosity": -1
+    }
+  },
+  "evaluation_views": {
+    "H12": [
+      [
+        55,
+        56,
+        67
+      ],
+      [
+        67,
+        68,
+        79
+      ]
+    ],
+    "W1": [
+      [
+        55,
+        56,
+        59
+      ]
+    ],
+    "W4": [
+      [
+        67,
+        68,
+        71
+      ]
+    ],
+    "primary": [
+      [
+        55,
+        56,
+        59
+      ],
+      [
+        67,
+        68,
+        71
+      ]
+    ]
+  },
+  "feature_allowlist": [
+    "impact_load",
+    "entry_friction",
+    "cycle_code",
+    "scope_pressure",
+    "text_load",
+    "scope_trace",
+    "org_spread",
+    "module_spread",
+    "telemetry_flag",
+    "org_code",
+    "module_code",
+    "pattern_code",
+    "signal_stream"
+  ],
+  "fit_population": "all official Regression Train rows with 47 <= cycle_code <= cutoff; no weighting/downsampling",
+  "hashing_vectorizer": {
+    "class": "sklearn.feature_extraction.text.HashingVectorizer",
+    "diagnostics_definition": "unique analyzed ngram identities minus occupied hash buckets; CSR nnz counts nonzero document-bucket entries",
+    "input": "signal_stream; fit and scoring transforms are stateless",
+    "learned_idf": false,
+    "learned_vocabulary": false,
+    "parameters": {
+      "alternate_sign": false,
+      "analyzer": "word",
+      "binary": false,
+      "dtype": "float64",
+      "lowercase": true,
+      "n_features": 262144,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "norm": null,
+      "strip_accents": "unicode",
+      "token_pattern": "(?u)\\b\\w\\w+\\b"
+    },
+    "preflight_by_cutoff": {
+      "55": {
+        "combined_sparse_design_bytes_upper_bound": 17661320,
+        "combined_sparse_design_nnz_upper_bound": 1097822,
+        "concurrent_training_jobs": 1,
+        "cutoff": 55,
+        "dense_full_word_matrix": false,
+        "estimated_peak_gib": 1.5493451580405235,
+        "estimated_peak_is_observed": false,
+        "fit_hashing_diagnostics": {
+          "bucket_self_check_rows": 128,
+          "collision_bucket_count": 36656,
+          "collision_definition": "distinct word/bigram identities beyond occupied buckets across this text batch; repeated identical terms are not collisions",
+          "collision_excess": 45341,
+          "document_count": 12020,
+          "hash_function": "sklearn murmurhash3_32(seed=0), bucket=abs(signed_hash)%n_features",
+          "matrix_csr_bytes": 10192908,
+          "matrix_nnz": 845402,
+          "matrix_shape": [
+            12020,
+            262144
+          ],
+          "ngram_occurrence_count": 974834,
+          "occupied_hash_buckets": 125661,
+          "unique_ngram_identities": 171002
+        },
+        "fit_rows": 12020,
+        "free_ram_reserve_gib": 2.0,
+        "hashing_learns_vocabulary_or_idf": false,
+        "hashing_parameters": {
+          "alternate_sign": false,
+          "analyzer": "word",
+          "binary": false,
+          "dtype": "float64",
+          "lowercase": true,
+          "n_features": 262144,
+          "ngram_range": [
+            1,
+            2
+          ],
+          "norm": null,
+          "strip_accents": "unicode",
+          "token_pattern": "(?u)\\b\\w\\w+\\b"
+        },
+        "maximum_job_gib": 6.0,
+        "minimum_free_ram_gib": 4.0,
+        "score_hashing_diagnostics": {
+          "bucket_self_check_rows": 128,
+          "collision_bucket_count": 52235,
+          "collision_definition": "distinct word/bigram identities beyond occupied buckets across this text batch; repeated identical terms are not collisions",
+          "collision_excess": 68525,
+          "document_count": 17685,
+          "hash_function": "sklearn murmurhash3_32(seed=0), bucket=abs(signed_hash)%n_features",
+          "matrix_csr_bytes": 13658116,
+          "matrix_nnz": 1132281,
+          "matrix_shape": [
+            17685,
+            262144
+          ],
+          "ngram_occurrence_count": 1290528,
+          "occupied_hash_buckets": 147121,
+          "unique_ngram_identities": 215646
+        },
+        "score_rows": 17685,
+        "structured_nnz_upper_bound": 252420,
+        "threads": 2
+      },
+      "67": {
+        "combined_sparse_design_bytes_upper_bound": 41861456,
+        "combined_sparse_design_nnz_upper_bound": 2601488,
+        "concurrent_training_jobs": 1,
+        "cutoff": 67,
+        "dense_full_word_matrix": false,
+        "estimated_peak_gib": 1.6169595569372177,
+        "estimated_peak_is_observed": false,
+        "fit_hashing_diagnostics": {
+          "bucket_self_check_rows": 128,
+          "collision_bucket_count": 97615,
+          "collision_definition": "distinct word/bigram identities beyond occupied buckets across this text batch; repeated identical terms are not collisions",
+          "collision_excess": 149226,
+          "document_count": 29705,
+          "hash_function": "sklearn murmurhash3_32(seed=0), bucket=abs(signed_hash)%n_features",
+          "matrix_csr_bytes": 23851020,
+          "matrix_nnz": 1977683,
+          "matrix_shape": [
+            29705,
+            262144
+          ],
+          "ngram_occurrence_count": 2265362,
+          "occupied_hash_buckets": 190384,
+          "unique_ngram_identities": 339610
+        },
+        "fit_rows": 29705,
+        "free_ram_reserve_gib": 2.0,
+        "hashing_learns_vocabulary_or_idf": false,
+        "hashing_parameters": {
+          "alternate_sign": false,
+          "analyzer": "word",
+          "binary": false,
+          "dtype": "float64",
+          "lowercase": true,
+          "n_features": 262144,
+          "ngram_range": [
+            1,
+            2
+          ],
+          "norm": null,
+          "strip_accents": "unicode",
+          "token_pattern": "(?u)\\b\\w\\w+\\b"
+        },
+        "maximum_job_gib": 6.0,
+        "minimum_free_ram_gib": 4.0,
+        "score_hashing_diagnostics": {
+          "bucket_self_check_rows": 128,
+          "collision_bucket_count": 66977,
+          "collision_definition": "distinct word/bigram identities beyond occupied buckets across this text batch; repeated identical terms are not collisions",
+          "collision_excess": 92538,
+          "document_count": 20903,
+          "hash_function": "sklearn murmurhash3_32(seed=0), bucket=abs(signed_hash)%n_features",
+          "matrix_csr_bytes": 17072484,
+          "matrix_nnz": 1415739,
+          "matrix_shape": [
+            20903,
+            262144
+          ],
+          "ngram_occurrence_count": 1613652,
+          "occupied_hash_buckets": 163485,
+          "unique_ngram_identities": 256023
+        },
+        "score_rows": 20903,
+        "structured_nnz_upper_bound": 623805,
+        "threads": 2
+      }
+    }
+  },
+  "kaggle_access": false,
+  "pilot_gate": {
+    "full_H12_MAE_harm_max": 0.05,
+    "full_nonnegative_windows_min": 4,
+    "full_primary_MAE_gain_min": 0.03,
+    "individual_pilot_view_MAE_harm_max": 0.5,
+    "pilot_H12_MAE_harm_max": 0.05,
+    "pilot_primary_MAE_gain_min": 0.03,
+    "supported_group_n_min": 100,
+    "supported_tail_or_missing_MAE_harm_max": 0.25
+  },
+  "prediction_policy": {
+    "baseline": "frozen Ridge25 plus 25% rank50(original sparse L1 raw prediction)",
+    "candidate": "clip(0.75 * frozen Ridge25 + 0.25 * rank50(new R04 raw sparse prediction), 0, 100)",
+    "rank50": "per complete scoring cycle; average-rank ties; mapped=0.5*raw+0.5*100*average_rank/n; clip[0,100]"
+  },
+  "queue_recipe": {
+    "change": "HashingVectorizer word(1,2),n_features262144,alternate_sign=False,norm=None; no learned vocabulary/IDF. Original sparse L1 model. Count collisions/nnz without labels; do not claim unseen-token weights are learned.",
+    "condition": "R02 completes and RAM/nnz preflight passes",
+    "evaluation": "STANDARD",
+    "family": "hashing",
+    "id": "R04",
+    "name": "Hashing long-tail token identities",
+    "pilot_predictor_fits": 2,
+    "policy": "R_SPARSE_REPLACE",
+    "priority": "P2",
+    "task": "regression"
+  },
+  "resource_policy": {
+    "concurrent_training_jobs": 1,
+    "free_memory_reserve_gib": 2.0,
+    "job_memory_cap_gib": 6.0,
+    "threads": 2
+  },
+  "row_matched_baseline_metrics": {
+    "H12": {
+      "mae": 14.04753258299653,
+      "rows": 38588
+    },
+    "W1": {
+      "mae": 15.882111974427762,
+      "rows": 4114
+    },
+    "W4": {
+      "mae": 11.455005081083685,
+      "rows": 4950
+    },
+    "primary": {
+      "mae": 13.464395831218011,
+      "rows": 9064
+    }
+  },
+  "scoring_population": "STANDARD cutoff-55/67 complete 12-cycle horizons, row-aligned by Train row positions and record_id",
+  "structured_preprocessing": "R02 RegressionTextModel._structured_fit/_structured_transform; fit-only imputation/scaling/category OHE at each cutoff",
+  "subgroup_support_rule": "n>=100 for stream-missing/tail harm guards; smaller groups are descriptive",
+  "test_data_used": false
+}

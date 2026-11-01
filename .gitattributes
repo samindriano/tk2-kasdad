@@ -6,3 +6,11 @@
 /experiments/regression_research/*.json -text whitespace=cr-at-eol
 /reports/regression_research/*.json -text whitespace=cr-at-eol
 /reports/regression_research/submissions/*.json -text whitespace=cr-at-eol
+
+# Frozen source/input hashes use working-tree bytes; keep checkout bytes stable.
+/.gitattributes text eol=lf
+*.py text eol=lf
+/reports/optimization_v3/research_backlog/cards/R04.md text eol=lf
+/experiments/optimization_v3/research_backlog/queue.json -text
+/experiments/optimization_v3/batch1/R02/*.json -text
+/reports/optimization_v3/batch1/R02/*.json -text
