@@ -1,0 +1,191 @@
+{
+  "budget": {
+    "active_reserved": 14,
+    "authorized_cap": 60,
+    "category_reservations": {
+      "continuation": 0,
+      "control_replay": 0,
+      "pilot": 18,
+      "technical_retry": 0
+    },
+    "event_rows": 37,
+    "failed_or_interrupted_started": 0,
+    "released_unused": 4,
+    "remaining_capacity_after_reservations": 42,
+    "reserved_total": 18,
+    "saved": 14,
+    "started_and_consumed": 14
+  },
+  "card_id": "N04",
+  "domain_oof": {
+    "55": {
+      "fit_rows": 12020,
+      "heldout_fold_aucs": [
+        0.549576180833133,
+        0.5420694945288201
+      ],
+      "overall_oof_auc_descriptive": 0.5391471061093248,
+      "recent_rows": 5800,
+      "source_rows": 6220,
+      "weight_diagnostics": {
+        "all_weights_finite_positive": true,
+        "effective_sample_size": 9961.403045743187,
+        "effective_sample_size_fraction": 0.8287356943213966,
+        "fit_rows": 12020,
+        "probability_clip": [
+          1e-06,
+          0.999999
+        ],
+        "probability_max": 0.9580759446489708,
+        "probability_min": 0.0791258968479668,
+        "recent_rows": 5800,
+        "recent_weight_before_normalization": 1.0,
+        "source_fraction_at_or_beyond_clip_bounds": 0.06173633440514469,
+        "source_odds_clip": [
+          0.25,
+          4.0
+        ],
+        "source_odds_raw_max": 20.769226387333344,
+        "source_odds_raw_min": 0.08592477145043938,
+        "source_rows": 6220,
+        "weight_max": 3.9127687030223037,
+        "weight_mean": 0.9999999999999999,
+        "weight_min": 0.24454804393889398,
+        "weight_sha256": "3756dfb8eacdd90aaef945cd5d04007aae9ac498fda4051bffc68eb8398e1ac6"
+      }
+    },
+    "67": {
+      "fit_rows": 29705,
+      "heldout_fold_aucs": [
+        0.5923717419419137,
+        0.6048074025273161
+      ],
+      "overall_oof_auc_descriptive": 0.5915640359093084,
+      "recent_rows": 7078,
+      "source_rows": 22627,
+      "weight_diagnostics": {
+        "all_weights_finite_positive": true,
+        "effective_sample_size": 24237.741880076428,
+        "effective_sample_size_fraction": 0.8159482201675283,
+        "fit_rows": 29705,
+        "probability_clip": [
+          1e-06,
+          0.999999
+        ],
+        "probability_max": 0.9692352653069608,
+        "probability_min": 0.0019937828584238215,
+        "recent_rows": 7078,
+        "recent_weight_before_normalization": 1.0,
+        "source_fraction_at_or_beyond_clip_bounds": 0.03615150041985239,
+        "source_odds_clip": [
+          0.25,
+          4.0
+        ],
+        "source_odds_raw_max": 14.660489379831526,
+        "source_odds_raw_min": 0.00199776596996989,
+        "source_rows": 22627,
+        "weight_max": 4.302280644139667,
+        "weight_mean": 0.9999999999999999,
+        "weight_min": 0.26889254025872916,
+        "weight_sha256": "1245778670730f210a0d11f01b449d06318b9c0c74e9a936031ecdf8b3c0ac01"
+      }
+    }
+  },
+  "freeze_signature": "eb05a6540a5d756726732318e28daa7b10a4abacc169c10ba82c34e5f450c2f3",
+  "kaggle_calls": 0,
+  "official_test_used": false,
+  "pre_task_gates": {
+    "all_cutoffs_pass": false,
+    "by_cutoff": {
+      "55": {
+        "auc_gate": false,
+        "auc_range": [
+          0.55,
+          0.95
+        ],
+        "ess_gate": true,
+        "heldout_fold_aucs": [
+          0.549576180833133,
+          0.5420694945288201
+        ],
+        "overall_oof_auc_descriptive": 0.5391471061093248,
+        "pass": false,
+        "positive_finite_mean_one_weights_gate": true,
+        "source_clip_fraction_gate": true,
+        "weight_diagnostics": {
+          "all_weights_finite_positive": true,
+          "effective_sample_size": 9961.403045743187,
+          "effective_sample_size_fraction": 0.8287356943213966,
+          "fit_rows": 12020,
+          "probability_clip": [
+            1e-06,
+            0.999999
+          ],
+          "probability_max": 0.9580759446489708,
+          "probability_min": 0.0791258968479668,
+          "recent_rows": 5800,
+          "recent_weight_before_normalization": 1.0,
+          "source_fraction_at_or_beyond_clip_bounds": 0.06173633440514469,
+          "source_odds_clip": [
+            0.25,
+            4.0
+          ],
+          "source_odds_raw_max": 20.769226387333344,
+          "source_odds_raw_min": 0.08592477145043938,
+          "source_rows": 6220,
+          "weight_max": 3.9127687030223037,
+          "weight_mean": 0.9999999999999999,
+          "weight_min": 0.24454804393889398,
+          "weight_sha256": "3756dfb8eacdd90aaef945cd5d04007aae9ac498fda4051bffc68eb8398e1ac6"
+        }
+      },
+      "67": {
+        "auc_gate": true,
+        "auc_range": [
+          0.55,
+          0.95
+        ],
+        "ess_gate": true,
+        "heldout_fold_aucs": [
+          0.5923717419419137,
+          0.6048074025273161
+        ],
+        "overall_oof_auc_descriptive": 0.5915640359093084,
+        "pass": true,
+        "positive_finite_mean_one_weights_gate": true,
+        "source_clip_fraction_gate": true,
+        "weight_diagnostics": {
+          "all_weights_finite_positive": true,
+          "effective_sample_size": 24237.741880076428,
+          "effective_sample_size_fraction": 0.8159482201675283,
+          "fit_rows": 29705,
+          "probability_clip": [
+            1e-06,
+            0.999999
+          ],
+          "probability_max": 0.9692352653069608,
+          "probability_min": 0.0019937828584238215,
+          "recent_rows": 7078,
+          "recent_weight_before_normalization": 1.0,
+          "source_fraction_at_or_beyond_clip_bounds": 0.03615150041985239,
+          "source_odds_clip": [
+            0.25,
+            4.0
+          ],
+          "source_odds_raw_max": 14.660489379831526,
+          "source_odds_raw_min": 0.00199776596996989,
+          "source_rows": 22627,
+          "weight_max": 4.302280644139667,
+          "weight_mean": 0.9999999999999999,
+          "weight_min": 0.26889254025872916,
+          "weight_sha256": "1245778670730f210a0d11f01b449d06318b9c0c74e9a936031ecdf8b3c0ac01"
+        }
+      }
+    },
+    "status": "SKIPPED_SCIENTIFIC_PREFLIGHT"
+  },
+  "reason": "At least one cutoff failed the frozen domain-overlap or weight-stability gates; task estimators were not fit.",
+  "schema_version": 1,
+  "status": "SKIPPED_SCIENTIFIC_PREFLIGHT",
+  "test_labels_read": false
+}

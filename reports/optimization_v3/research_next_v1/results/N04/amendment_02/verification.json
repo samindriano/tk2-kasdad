@@ -1,0 +1,109 @@
+{
+  "cutoffs": {
+    "55": {
+      "effective_sample_size_fraction": 0.8287356943213966,
+      "fit_rows": 12020,
+      "fold_aucs": [
+        0.549576180833133,
+        0.5420694945288201
+      ],
+      "folds": [
+        {
+          "auc_pairwise": 0.549576180833133,
+          "bundle_npz_sha256": "7c75b3730ad89a4210218403f88d56d7db54204725425e24d940032634179eeb",
+          "bundle_receipt_sha256": "d3567137a9c5453fad9073a561015d61db195e5be3e3fe24b11408ed21de4609",
+          "fit_rows": 7111,
+          "inherited_output_reused_without_refit": true,
+          "parity": "even",
+          "recovery_matches_bundle": true,
+          "score_rows": 4909
+        },
+        {
+          "auc_pairwise": 0.5420694945288201,
+          "bundle_npz_sha256": "933c51ec454890a906a049571f088001045fb36a0069f2ecdc8e4b2d1a70dc9f",
+          "bundle_receipt_sha256": "2dd2f6f9418561a6c983120e31831f65ac5fcc69494b48b50cd97daaca8be61d",
+          "fit_rows": 4909,
+          "inherited_output_reused_without_refit": false,
+          "parity": "odd",
+          "recovery_matches_bundle": true,
+          "score_rows": 7111
+        }
+      ],
+      "overall_oof_auc_pairwise": 0.5391471061093248,
+      "pre_task_gates_pass": false,
+      "recent_rows": 5800,
+      "source_clip_fraction": 0.06173633440514469,
+      "source_rows": 6220,
+      "weight_mean": 0.9999999999999999
+    },
+    "67": {
+      "effective_sample_size_fraction": 0.8159482201675283,
+      "fit_rows": 29705,
+      "fold_aucs": [
+        0.5923717419419137,
+        0.6048074025273161
+      ],
+      "folds": [
+        {
+          "auc_pairwise": 0.5923717419419137,
+          "bundle_npz_sha256": "e78d7e9fe57b05104e838d136b1cca40339a9caba3be33b04314239ee402a1a1",
+          "bundle_receipt_sha256": "487e387f8ba9e344a78bd398c4dfb38b7f9b4e615c8baf154f81557e6576c778",
+          "fit_rows": 16491,
+          "inherited_output_reused_without_refit": false,
+          "parity": "even",
+          "recovery_matches_bundle": true,
+          "score_rows": 13214
+        },
+        {
+          "auc_pairwise": 0.6048074025273161,
+          "bundle_npz_sha256": "d174a641172335f72acebcdd20aab4765ee019ac21af1b7bec47155b04e40e01",
+          "bundle_receipt_sha256": "b39c001a5af14cb892db9136237eca79b9c7f775e310eebf79526201a7a7b0aa",
+          "fit_rows": 13214,
+          "inherited_output_reused_without_refit": false,
+          "parity": "odd",
+          "recovery_matches_bundle": true,
+          "score_rows": 16491
+        }
+      ],
+      "overall_oof_auc_pairwise": 0.5915640359093084,
+      "pre_task_gates_pass": true,
+      "recent_rows": 7078,
+      "source_clip_fraction": 0.03615150041985239,
+      "source_rows": 22627,
+      "weight_mean": 0.9999999999999999
+    }
+  },
+  "freeze_signature": "eb05a6540a5d756726732318e28daa7b10a4abacc169c10ba82c34e5f450c2f3",
+  "inherited_fit_audit": {
+    "estimator_refit": false,
+    "fit_id": "N04:PILOT:55:domain:even",
+    "independent_heldout_auc": 0.549576180833133,
+    "previous_bundle_npz_sha256": "7c75b3730ad89a4210218403f88d56d7db54204725425e24d940032634179eeb",
+    "previous_bundle_receipt_file_sha256": "044e17b00f4e7c1de16c9e5099c972302eb42f9d1e2b60e14041f9c808a63822",
+    "previous_bundle_receipt_sha256": "d3567137a9c5453fad9073a561015d61db195e5be3e3fe24b11408ed21de4609",
+    "previous_freeze_signature": "7bc9b90802551e8ed28a73733291526c2ca6b8a044c0a9aacb69a3d8ec4bb030",
+    "previous_recovery_npz_sha256": "7c75b3730ad89a4210218403f88d56d7db54204725425e24d940032634179eeb",
+    "previous_recovery_receipt_sha256": "5b12aad60cadd5562676b2992a39a057e9d7d13f9fb310b67fe1eb34269ebcdc",
+    "recipe_changed": false,
+    "recovery_equals_published_arrays": true,
+    "row_ids_cycles_parity_and_full_prefix_labels": "PASS",
+    "status": "PASS"
+  },
+  "input_source_hashes_verified": 32,
+  "ledger": {
+    "N04_failed": 0,
+    "N04_released_unused": 4,
+    "N04_reserved": 8,
+    "N04_saved": 4,
+    "N04_started": 4,
+    "N04_task_fits_started": 0
+  },
+  "official_train_rows": 50608,
+  "official_train_sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+  "schema_version": 1,
+  "source_commit": "7b864b80ce39604c5276f44b1d60ebf211ba2b86",
+  "status": "PASS",
+  "test_or_kaggle_used": false,
+  "verdict": "SKIPPED_SCIENTIFIC_PREFLIGHT; the cutoff-55 heldout domain AUC gate failed. No task model was fit.",
+  "verification_method": "separate read-only script; pairwise AUC and direct full-prefix label/weight reconstruction"
+}
