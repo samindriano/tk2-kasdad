@@ -286,7 +286,9 @@ def _recipe_payload(card: Mapping[str, Any], views: Mapping[str, Any],
         "xgboost_version": importlib.metadata.version("xgboost"),
         "text": {
             "vectorizer": "sklearn.feature_extraction.text.TfidfVectorizer",
-            "parameters": {key: list(value) if isinstance(value, tuple) else value.item() if isinstance(value, np.generic) else value
+            "parameters": {key: list(value) if isinstance(value, tuple)
+                           else value.__name__ if isinstance(value, type)
+                           else value.item() if isinstance(value, np.generic) else value
                            for key, value in TFIDF_PARAMETERS.items()},
             "missing_stream": "empty document for fit-only text transform plus explicit missing indicator",
             "svd": {"n_components": SVD_COMPONENTS, **dict(SVD_PARAMETERS)},

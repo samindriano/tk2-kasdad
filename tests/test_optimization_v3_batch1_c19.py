@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from scripts.optimization_v3_batch1_c19 import reconstruct_c19
+from scripts.optimization_v3_batch1_c19 import _recipe_payload, reconstruct_c19
 from scripts.optimization_v3_batch1_verify import verify_report
 from src.models import optimization_v3_batch1_c19 as c19
 from src.models.optimization_v3_batch1 import make_freeze_identity, run_pilot
@@ -102,6 +102,23 @@ def test_c19_control_alignment_and_baseline_must_be_reconstructed_exactly():
     controls["baseline_prediction"][0] = 0.99
     with pytest.raises(ValueError, match="fixed row-matched sparse25"):
         c19._validated_controls(controls, len(rows))
+
+
+def test_c19_recipe_is_json_safe_and_keeps_fixed_tfidf_parameters():
+    recipe = _recipe_payload(
+        {key: value for key, value in {
+            "id": "C19", "task": "classification", "name": "C19",
+            "family": "xgb_dense", "priority": "P2", "change": "fixed",
+            "policy": "C_AUX25", "pilot_predictor_fits": 2,
+            "evaluation": "STANDARD", "condition": "No additional dependency",
+        }.items()},
+        {"primary": [(55, 56, 59), (67, 68, 71)]},
+        {"primary": {"rows": 10, "macro_f1": 0.5}},
+        {"evaluation": {"classification_gate": {}}},
+    )
+    assert recipe["text"]["parameters"]["dtype"] == "float64"
+    assert recipe["text"]["parameters"]["max_features"] == 20_000
+    assert recipe["text"]["svd"]["n_components"] == 32
 
 
 def test_c19_run_pilot_and_independent_route_verification(monkeypatch, tmp_path):
