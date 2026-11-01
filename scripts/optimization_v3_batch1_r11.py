@@ -26,9 +26,11 @@ from src.models.optimization_v3_batch1 import (
     load_queue,
     make_freeze_identity,
     package_versions,
+    read_bundle,
     run_pilot,
     write_json_exclusive,
 )
+from scripts.optimization_v3_batch1_verify import verify_report
 from src.models.optimization_v3_batch1_r11 import (
     CARD_ID,
     FEATURE_NAMES,
@@ -63,8 +65,21 @@ FREEZE_PATH = EXPERIMENT_DIR / "freeze.json"
 PREFLIGHT_PATH = REPORT_DIR / "preflight.json"
 ARTIFACT_DIR = ROOT / "experiments/runs/optimization_v3_batch1/R11"
 ATTEMPT_PATH = REPORT_DIR / "attempts.jsonl"
-PILOT_REPORT_PATH = ARTIFACT_DIR / "pilot.json"
 LEDGER_PATH = ARTIFACT_DIR.parent / "batch_ledger.jsonl"
+FREEZE_REVISION = 2
+EXPERIMENT_REVISION_02_DIR = EXPERIMENT_DIR / "revision_02"
+REPORT_REVISION_02_DIR = REPORT_DIR / "revision_02"
+ARTIFACT_REVISION_02_DIR = ARTIFACT_DIR / "revision_02"
+RECIPE_REVISION_02_PATH = EXPERIMENT_REVISION_02_DIR / "recipe.json"
+FREEZE_REVISION_02_PATH = EXPERIMENT_REVISION_02_DIR / "freeze.json"
+PREFLIGHT_REVISION_02_PATH = REPORT_REVISION_02_DIR / "preflight.json"
+ATTEMPT_REVISION_02_PATH = REPORT_REVISION_02_DIR / "attempts.jsonl"
+PILOT_REPORT_PATH = ARTIFACT_REVISION_02_DIR / "pilot.json"
+RESULTS_PATH = REPORT_REVISION_02_DIR / "results.json"
+VERIFICATION_PATH = REPORT_REVISION_02_DIR / "verification.json"
+SUBGROUP_PATH = REPORT_REVISION_02_DIR / "subgroups.json"
+GATE_PATH = REPORT_REVISION_02_DIR / "gate.json"
+SUMMARY_PATH = REPORT_REVISION_02_DIR / "summary.md"
 PACKAGES = ["numpy", "pandas", "scipy", "scikit-learn", "lightgbm", "threadpoolctl", "psutil"]
 EXPECTED_VIEWS = {
     "W1": [(55, 56, 59)],
@@ -524,11 +539,11 @@ def candidate_recipe() -> dict[str, Any]:
     }
 
 
-def prepare_freeze() -> dict[str, Any]:
-    """Read official Train, verify row-exact controls, then write immutable pre-fit artifacts."""
-    _require_committed_sources()
-    context = _prepare_context()
+def _freeze_payloads(
+    context: Mapping[str, Any], *, preflight_base: Mapping[str, Any] | None = None,
+) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any], str]:
     recipe_record: dict[str, Any] = {
+        "freeze_revision": FREEZE_REVISION,
         "recipe": context["recipe"],
         "queue_sha256": context["queue_hash"],
         "card_sha256": context["card_hash"],
@@ -550,15 +565,24 @@ def prepare_freeze() -> dict[str, Any]:
         "source_sha256": identity["source_sha256"],
         "package_versions": identity["package_versions"],
     })
-    preflight_record = {
+    preflight_record = dict(preflight_base) if preflight_base is not None else {
         **context["preflight"],
         "input_sha256": identity["input_sha256"],
         "source_sha256": identity["source_sha256"],
         "package_versions": identity["package_versions"],
         "candidate_head_fits_performed": 0,
         "freeze_written": True,
+        "freeze_revision": FREEZE_REVISION,
     }
+    for name, current in (
+        ("input_sha256", identity["input_sha256"]),
+        ("source_sha256", identity["source_sha256"]),
+        ("package_versions", identity["package_versions"]),
+    ):
+        if preflight_record.get(name) != current:
+            raise BatchIntegrityError(f"R11 frozen preflight {name} differs from current inputs")
     identity.update({
+        "freeze_revision": FREEZE_REVISION,
         "candidate_recipe": context["recipe"],
         "candidate_recipe_sha256": json_sha256(context["recipe"]),
         "recipe_record_sha256": json_sha256(recipe_record),
@@ -573,22 +597,31 @@ def prepare_freeze() -> dict[str, Any]:
     })
     signature = json_sha256(identity)
     preflight_record["freeze_identity_sha256"] = signature
+    return recipe_record, identity, preflight_record, signature
+
+
+def prepare_freeze() -> dict[str, Any]:
+    """Read official Train, verify row-exact controls, then write revision-02 artifacts."""
+    _require_committed_sources()
+    context = _prepare_context()
+    recipe_record, identity, preflight_record, signature = _freeze_payloads(context)
     # Catch stale outputs before any write can leave a partial artifact set.
-    _assert_json_match_or_absent(RECIPE_PATH, recipe_record)
-    _assert_json_match_or_absent(PREFLIGHT_PATH, preflight_record)
-    _assert_freeze_match_or_absent(FREEZE_PATH, identity)
-    _write_json_or_match(RECIPE_PATH, recipe_record)
-    written_signature = ensure_frozen(FREEZE_PATH, identity)
+    _assert_json_match_or_absent(RECIPE_REVISION_02_PATH, recipe_record)
+    _assert_json_match_or_absent(PREFLIGHT_REVISION_02_PATH, preflight_record)
+    _assert_freeze_match_or_absent(FREEZE_REVISION_02_PATH, identity)
+    _write_json_or_match(RECIPE_REVISION_02_PATH, recipe_record)
+    written_signature = ensure_frozen(FREEZE_REVISION_02_PATH, identity)
     if written_signature != signature:
         raise BatchIntegrityError("R11 written freeze signature differs from prepared identity")
-    _write_json_or_match(PREFLIGHT_PATH, preflight_record)
+    _write_json_or_match(PREFLIGHT_REVISION_02_PATH, preflight_record)
     return {
         "card_id": CARD_ID,
+        "freeze_revision": FREEZE_REVISION,
         "status": "FROZEN_NO_HEAD_FITS",
         "freeze_signature": signature,
-        "recipe_path": str(RECIPE_PATH),
-        "preflight_path": str(PREFLIGHT_PATH),
-        "freeze_path": str(FREEZE_PATH),
+        "recipe_path": str(RECIPE_REVISION_02_PATH),
+        "preflight_path": str(PREFLIGHT_REVISION_02_PATH),
+        "freeze_path": str(FREEZE_REVISION_02_PATH),
         "candidate_head_fits_performed": 0,
         "budget_reserved": False,
         "official_test_read": False,
@@ -625,8 +658,8 @@ def run_frozen_pilot(*, card: Mapping[str, Any], frame: pd.DataFrame, target: np
                      controls: Mapping[int, Mapping[str, np.ndarray]], freeze_identity: Mapping[str, Any],
                      freeze_path: Path, artifact_dir: Path, budget_ledger_path: Path,
                      event_path: Path, report_path: Path, evaluation_views: Mapping[str, Any],
-                     max_successful_fits: int, recipe_path: Path = RECIPE_PATH,
-                     preflight_path: Path = PREFLIGHT_PATH) -> dict[str, Any]:
+                     max_successful_fits: int, recipe_path: Path = RECIPE_REVISION_02_PATH,
+                     preflight_path: Path = PREFLIGHT_REVISION_02_PATH) -> dict[str, Any]:
     """Use the shared runner only after exact recipe/preflight/freeze identity checks."""
     _require_frozen_artifacts(
         freeze_path=freeze_path,
@@ -641,6 +674,7 @@ def run_frozen_pilot(*, card: Mapping[str, Any], frame: pd.DataFrame, target: np
     append_event(event_path, {
         "card_id": CARD_ID,
         "event": "RUNTIME_MEMORY_GATE_PASS",
+        "freeze_signature": json_sha256(freeze_identity),
         **memory_gate,
         "candidate_head_fits_performed": 0,
     })
@@ -665,6 +699,8 @@ def run_frozen_pilot(*, card: Mapping[str, Any], frame: pd.DataFrame, target: np
 
 def _require_frozen_artifacts(*, freeze_path: Path, freeze_identity: Mapping[str, Any],
                               recipe_path: Path, preflight_path: Path) -> str:
+    if int(freeze_identity.get("freeze_revision", -1)) != FREEZE_REVISION:
+        raise BatchIntegrityError("R11 pilot requires freeze revision 2; revision 1 is historical")
     signature = json_sha256(freeze_identity)
     if not freeze_path.is_file():
         raise BatchIntegrityError(f"R11 frozen pilot requires an existing freeze file: {freeze_path}")
@@ -688,6 +724,556 @@ def _require_frozen_artifacts(*, freeze_path: Path, freeze_identity: Mapping[str
     return signature
 
 
+def _append_event_once(path: Path, event: Mapping[str, Any]) -> None:
+    if path.is_file():
+        for line_no, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            if not line.strip():
+                continue
+            try:
+                current = json.loads(line)
+            except json.JSONDecodeError as exc:
+                raise BatchIntegrityError(f"Invalid R11 attempt event at line {line_no}") from exc
+            if (current.get("card_id") == event.get("card_id")
+                    and current.get("event") == event.get("event")
+                    and current.get("freeze_signature") == event.get("freeze_signature")):
+                if current != dict(event):
+                    raise BatchIntegrityError(f"Conflicting existing R11 event: {event['event']}")
+                return
+    append_event(path, event)
+
+
+def _assert_no_prior_pilot_attempt(event_path: Path, artifact_dir: Path) -> None:
+    fit_events = {
+        "FIT_STARTED", "FIT_SAVED", "FIT_FAILED", "RESUMED_VERIFIED",
+        "RUNTIME_MEMORY_GATE_PASS",
+    }
+    if event_path.is_file():
+        for line_no, line in enumerate(event_path.read_text(encoding="utf-8").splitlines(), 1):
+            if not line.strip():
+                continue
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError as exc:
+                raise BatchIntegrityError(f"Invalid R11 attempt event at line {line_no}") from exc
+            if event.get("card_id") == CARD_ID and event.get("event") in fit_events:
+                raise BatchIntegrityError(
+                    "R11 revision-02 has prior adapter attempt evidence; preserve and review partial outputs before any retry"
+                )
+    if any((artifact_dir / f"{CARD_ID}_fit{cutoff}.{suffix}").exists()
+           for cutoff in CUTOFFS for suffix in ("npz", "json")):
+        raise BatchIntegrityError(
+            "R11 revision-02 contains prior fit bundles; preserve and review them before any retry"
+        )
+    if (artifact_dir / "pilot.json").exists():
+        raise BatchIntegrityError("R11 revision-02 pilot report already exists; refusing a second shared run")
+
+
+def _attempt_accounting(*, event_path: Path, artifact_dir: Path,
+                        freeze_signature: str) -> dict[str, Any]:
+    if not event_path.is_file():
+        raise BatchIntegrityError("R11 attempt event log is missing")
+    events: list[dict[str, Any]] = []
+    for line_no, line in enumerate(event_path.read_text(encoding="utf-8").splitlines(), 1):
+        if not line.strip():
+            continue
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError as exc:
+            raise BatchIntegrityError(f"Invalid R11 attempt event at line {line_no}") from exc
+        if event.get("card_id") == CARD_ID:
+            events.append(event)
+    preflight_events = [event for event in events if event.get("event") == "PREFLIGHT_PASS"]
+    memory_events = [event for event in events if event.get("event") == "RUNTIME_MEMORY_GATE_PASS"]
+    started = [event for event in events if event.get("event") == "FIT_STARTED"]
+    saved = [event for event in events if event.get("event") == "FIT_SAVED"]
+    failed = [event for event in events if event.get("event") == "FIT_FAILED"]
+    resumed = [event for event in events if event.get("event") == "RESUMED_VERIFIED"]
+    memory_gate = dict(memory_events[0]) if len(memory_events) == 1 else {}
+    for key in ("card_id", "event", "freeze_signature", "candidate_head_fits_performed"):
+        memory_gate.pop(key, None)
+    memory_values = [
+        memory_gate.get("available_ram_gib_at_pilot_start"),
+        memory_gate.get("current_allowed_estimated_peak_gib"),
+        memory_gate.get("frozen_max_estimated_peak_gib"),
+    ]
+    memory_gate_valid = (
+        len(memory_events) == 1
+        and memory_events[0].get("freeze_signature") == freeze_signature
+        and all(isinstance(value, (int, float)) and np.isfinite(value) for value in memory_values)
+        and int(memory_events[0].get("candidate_head_fits_performed", -1)) == 0
+    )
+    preflight_valid = (
+        len(preflight_events) == 1
+        and preflight_events[0].get("freeze_signature") == freeze_signature
+        and int(preflight_events[0].get("freeze_revision", -1)) == FREEZE_REVISION
+    )
+
+    head_calls = 0
+    state_head_calls = 0
+    vectorizer_calls = 0
+    svd_calls = 0
+    head_calls_by_cutoff: dict[str, int] = {}
+    vectorizer_calls_by_cutoff: dict[str, int] = {}
+    svd_calls_by_cutoff: dict[str, int] = {}
+    fit_seconds_by_cutoff: dict[str, float] = {}
+    for event in saved:
+        cutoff = int(event.get("cutoff", -1))
+        fit_seconds = float(event.get("fit_seconds", float("nan")))
+        if cutoff not in CUTOFFS or not np.isfinite(fit_seconds) or fit_seconds <= 0.0:
+            raise BatchIntegrityError("R11 saved adapter event has an invalid cutoff or runtime")
+        fit_seconds_by_cutoff[str(cutoff)] = fit_seconds
+    for cutoff in CUTOFFS:
+        bundle_path = artifact_dir / f"{CARD_ID}_fit{cutoff}.npz"
+        sidecar_path = bundle_path.with_suffix(".json")
+        if not bundle_path.is_file() or not sidecar_path.is_file():
+            raise BatchIntegrityError(f"R11 cutoff {cutoff} lacks its complete verified bundle")
+        sidecar = json.loads(sidecar_path.read_text(encoding="utf-8"))
+        identity = sidecar.get("identity", {})
+        if (identity.get("card_id") != CARD_ID or int(identity.get("cutoff", -1)) != cutoff
+                or identity.get("freeze_signature") != freeze_signature):
+            raise BatchIntegrityError(f"R11 cutoff {cutoff} sidecar identity is invalid")
+        _, verified_sidecar = read_bundle(bundle_path, identity)
+        metadata = verified_sidecar.get("metadata", {})
+        fit_metadata = metadata.get("fit_metadata", {})
+        state = metadata.get("state", {})
+        current_head_calls = int(fit_metadata.get("predictor_fit_calls", -1))
+        current_state_calls = int(state.get("head_fit_calls", -1))
+        if current_head_calls < 0 or current_state_calls < 0:
+            raise BatchIntegrityError(f"R11 cutoff {cutoff} is missing head-fit accounting")
+        head_calls += current_head_calls
+        state_head_calls += current_state_calls
+        vectorizer_calls += int(fit_metadata.get("vectorizer_fit_calls", 0))
+        svd_calls += int(fit_metadata.get("svd_fit_calls", 0))
+        head_calls_by_cutoff[str(cutoff)] = current_head_calls
+        vectorizer_calls_by_cutoff[str(cutoff)] = int(fit_metadata.get("vectorizer_fit_calls", 0))
+        svd_calls_by_cutoff[str(cutoff)] = int(fit_metadata.get("svd_fit_calls", 0))
+
+    saved_predictor_fits = sum(int(event.get("fit_predictor_count", 0)) for event in saved)
+    expected_cutoffs = {int(cutoff) for cutoff in CUTOFFS}
+    started_cutoffs = [int(event.get("cutoff", -1)) for event in started]
+    saved_cutoffs = [int(event.get("cutoff", -1)) for event in saved]
+    saved_counts_by_cutoff = {
+        int(event.get("cutoff", -1)): int(event.get("fit_predictor_count", 0))
+        for event in saved
+    }
+    complete = (
+        preflight_valid
+        and memory_gate_valid
+        and len(started) == len(CUTOFFS)
+        and len(saved) == len(CUTOFFS)
+        and set(started_cutoffs) == expected_cutoffs
+        and len(set(started_cutoffs)) == len(CUTOFFS)
+        and all(event.get("freeze_signature") == freeze_signature for event in started)
+        and set(saved_cutoffs) == expected_cutoffs
+        and len(set(saved_cutoffs)) == len(CUTOFFS)
+        and not failed and not resumed
+        and saved_predictor_fits == 18
+        and saved_counts_by_cutoff == {int(cutoff): 9 for cutoff in CUTOFFS}
+        and head_calls == 18 and state_head_calls == 18
+        and vectorizer_calls == len(CUTOFFS)
+        and svd_calls == len(CUTOFFS)
+        and set(head_calls_by_cutoff) == {str(cutoff) for cutoff in CUTOFFS}
+        and all(count == 9 for count in head_calls_by_cutoff.values())
+        and all(count == 1 for count in vectorizer_calls_by_cutoff.values())
+        and all(count == 1 for count in svd_calls_by_cutoff.values())
+    )
+    return {
+        "temporal_adapter_attempts_started": len(started),
+        "temporal_adapter_attempts_saved": len(saved),
+        "temporal_adapter_attempts_failed": len(failed),
+        "resumed_adapter_bundles": len(resumed),
+        "successful_predictor_fits_from_receipts": saved_predictor_fits,
+        "candidate_head_fit_calls_from_metadata": head_calls,
+        "candidate_head_fit_calls_from_state": state_head_calls,
+        "head_fit_calls_by_cutoff": head_calls_by_cutoff,
+        "vectorizer_fit_calls": vectorizer_calls,
+        "vectorizer_fit_calls_by_cutoff": vectorizer_calls_by_cutoff,
+        "svd_fit_calls": svd_calls,
+        "svd_fit_calls_by_cutoff": svd_calls_by_cutoff,
+        "fit_seconds_by_cutoff": fit_seconds_by_cutoff,
+        "total_fit_seconds": float(sum(fit_seconds_by_cutoff.values())),
+        "preflight_events": len(preflight_events),
+        "runtime_memory_gate_events": len(memory_events),
+        "runtime_memory_gate": memory_gate,
+        "attempt_accounting_complete": bool(complete),
+    }
+
+
+def _subgroup_diagnostics(report: Mapping[str, Any], frame: pd.DataFrame, target: np.ndarray,
+                          views: Mapping[str, Any], artifact_dir: Path,
+                          minimum_support: int, harm_limit: float) -> dict[str, Any]:
+    cycles = _validated_train_cycles(frame["cycle_code"])
+    y_all = np.asarray(target, dtype=np.float64)
+    if (y_all.shape != (len(frame),) or not np.isfinite(y_all).all()
+            or np.any((y_all < 0.0) | (y_all > 100.0)) or int(minimum_support) < 1
+            or not np.isfinite(float(harm_limit))):
+        raise BatchIntegrityError("R11 subgroup inputs or support gate are invalid")
+    blocks: dict[int, dict[str, np.ndarray]] = {}
+    for cutoff in CUTOFFS:
+        bundle_path = artifact_dir / f"{CARD_ID}_fit{cutoff}.npz"
+        sidecar_path = bundle_path.with_suffix(".json")
+        if not sidecar_path.is_file():
+            raise BatchIntegrityError(f"R11 subgroup diagnostics missing sidecar at cutoff {cutoff}")
+        sidecar = json.loads(sidecar_path.read_text(encoding="utf-8"))
+        identity = sidecar.get("identity", {})
+        if (identity.get("card_id") != CARD_ID
+                or int(identity.get("cutoff", -1)) != cutoff
+                or identity.get("freeze_signature") != report.get("freeze_signature")):
+            raise BatchIntegrityError(f"R11 subgroup bundle identity differs at cutoff {cutoff}")
+        arrays, _ = read_bundle(bundle_path, identity)
+        rows = np.asarray(arrays["score_rows"], dtype=np.int64)
+        prediction = np.asarray(arrays["prediction"], dtype=np.float64)
+        baseline = np.asarray(arrays["baseline_prediction"], dtype=np.float64)
+        if (rows.ndim != 1 or prediction.shape != rows.shape or baseline.shape != rows.shape
+                or np.any((rows < 0) | (rows >= len(frame)))
+                or not np.isfinite(prediction).all() or not np.isfinite(baseline).all()):
+            raise BatchIntegrityError(f"R11 subgroup arrays are invalid at cutoff {cutoff}")
+        expected_cycles = sorted({
+            cycle for segments in views.values()
+            for origin, low, high in segments if int(origin) == cutoff
+            for cycle in range(int(low), int(high) + 1)
+        })
+        expected_rows = np.flatnonzero(np.isin(cycles, np.asarray(expected_cycles, dtype=np.int64)))
+        if not np.array_equal(rows, expected_rows):
+            raise BatchIntegrityError(f"R11 subgroup rows differ from the declared views at cutoff {cutoff}")
+        blocks[cutoff] = {"rows": rows, "candidate": prediction, "baseline": baseline}
+
+    output: dict[str, Any] = {}
+    guard_failures: list[dict[str, Any]] = []
+    for view_name in ("primary", "H12"):
+        row_parts: list[np.ndarray] = []
+        pred_parts: list[np.ndarray] = []
+        base_parts: list[np.ndarray] = []
+        for cutoff, low, high in views[view_name]:
+            block = blocks[int(cutoff)]
+            mask = (cycles[block["rows"]] >= int(low)) & (cycles[block["rows"]] <= int(high))
+            row_parts.append(block["rows"][mask])
+            pred_parts.append(block["candidate"][mask])
+            base_parts.append(block["baseline"][mask])
+        rows = np.concatenate(row_parts)
+        prediction = np.concatenate(pred_parts)
+        baseline = np.concatenate(base_parts)
+        if len(np.unique(rows)) != len(rows):
+            raise BatchIntegrityError(f"R11 subgroup view {view_name} includes duplicate Train rows")
+        y = y_all[rows]
+        local = frame.iloc[rows]
+        stream = local["signal_stream"]
+        missing = stream.isna().to_numpy(dtype=bool) | stream.fillna("").astype(str).str.strip().eq("").to_numpy(dtype=bool)
+        friction = pd.to_numeric(local["entry_friction"], errors="coerce").to_numpy(dtype=np.float64)
+        groups = {
+            "entry_friction_0": friction == 0.0,
+            "entry_friction_1": friction == 1.0,
+            "stream_present": ~missing,
+            "stream_missing": missing,
+            "target_le_5": y <= 5.0,
+            "target_ge_95": y >= 95.0,
+        }
+        view_result: dict[str, Any] = {}
+        for group_name, mask in groups.items():
+            n = int(mask.sum())
+            supported = n >= int(minimum_support)
+            candidate_mae = float(np.mean(np.abs(prediction[mask] - y[mask]))) if n else None
+            control_mae = float(np.mean(np.abs(baseline[mask] - y[mask]))) if n else None
+            harm = None if n == 0 else float(candidate_mae - control_mae)
+            guard_applies = group_name in {"stream_missing", "target_le_5", "target_ge_95"} and supported
+            guard_pass = None if not guard_applies else bool(harm <= harm_limit)
+            record = {
+                "n": n,
+                "supported": bool(supported),
+                "evidence_status": "SUPPORTED" if supported else "DESCRIPTIVE_UNSUPPORTED",
+                "candidate_mae": candidate_mae,
+                "control_mae": control_mae,
+                "mae_harm_candidate_minus_control": harm,
+                "guard_applies": bool(guard_applies),
+                "guard_pass": guard_pass,
+            }
+            view_result[group_name] = record
+            if guard_applies and not guard_pass:
+                guard_failures.append({"view": view_name, "group": group_name, **record})
+        output[view_name] = view_result
+    return {
+        "minimum_support": int(minimum_support),
+        "supported_tail_or_missing_MAE_harm_max": float(harm_limit),
+        "views": output,
+        "supported_guard_failures": guard_failures,
+    }
+
+
+def _build_gate(queue: Mapping[str, Any], pilot: Mapping[str, Any], verification: Mapping[str, Any],
+                subgroups: Mapping[str, Any], accounting: Mapping[str, Any],
+                card: Mapping[str, Any]) -> dict[str, Any]:
+    if verification.get("status") != "PASS":
+        raise BatchIntegrityError("R11 independent verification did not pass; gate is not computed")
+    if not accounting.get("attempt_accounting_complete"):
+        raise BatchIntegrityError("R11 attempt accounting is incomplete; gate is not computed")
+    gate_config = queue["evaluation"]["regression_gate"]
+    gains = pilot["views"]
+    checks = {
+        "pilot_primary_MAE_gain_at_least_threshold": gains["primary"]["gain_positive_is_better"] >= float(gate_config["pilot_primary_MAE_gain_min"]),
+        "pilot_H12_MAE_harm_at_most_threshold": gains["H12"]["gain_positive_is_better"] >= -float(gate_config["pilot_H12_MAE_harm_max"]),
+        "W1_MAE_harm_at_most_threshold": gains["W1"]["gain_positive_is_better"] >= -float(gate_config["individual_pilot_view_MAE_harm_max"]),
+        "W4_MAE_harm_at_most_threshold": gains["W4"]["gain_positive_is_better"] >= -float(gate_config["individual_pilot_view_MAE_harm_max"]),
+        "supported_tail_or_missing_group_harms": len(subgroups["supported_guard_failures"]) == 0,
+        "independent_verification_pass": True,
+        "fit_attempt_accounting_pass": True,
+    }
+    return {
+        "card_id": CARD_ID,
+        "freeze_revision": FREEZE_REVISION,
+        "profile": card["evaluation"],
+        "status": "ADVANCE" if all(checks.values()) else "RETIRE",
+        "checks": {name: bool(value) for name, value in checks.items()},
+        "thresholds": gate_config,
+        "subgroup_diagnostics": subgroups,
+        "decision_basis": "Revision-02 frozen W1+W4/H12 Train pilot, independent reconstruction, and declared regression gates only; no Test/Kaggle evidence.",
+    }
+
+
+def _render_summary(results: Mapping[str, Any], gate: Mapping[str, Any]) -> str:
+    pilot = results["pilot"]
+    lines = [
+        "# R11 — Cumulative ordinal median pilot",
+        "",
+        f"**Verdict: {gate['status']}** — revision-02 W1+W4/H12 Train pilot; no Test/Kaggle access.",
+        "",
+        "Recipe: nine binary LightGBM heads estimate strict survival thresholds y>10,...,90; row-wise PAVA enforces nonincreasing probabilities; the median is linearly interpolated at the 0.5 crossing and rank50-mapped within cycle before the frozen 0.75/0.25 blend.",
+        "",
+        "| View | n | Control MAE | R11 MAE | Gain (control − R11) |",
+        "|---|---:|---:|---:|---:|",
+    ]
+    for name in ("W1", "W4", "primary", "H12"):
+        row = pilot["views"][name]
+        lines.append(
+            f"| {name} | {row['rows']:,} | {row['baseline']['mae']:.6f} | "
+            f"{row['candidate']['mae']:.6f} | {row['gain_positive_is_better']:+.6f} |"
+        )
+    accounting = results["fit_accounting"]
+    lines.extend([
+        "",
+        f"Fit accounting: {accounting['temporal_adapter_attempts_started']} temporal adapter attempts; {accounting['successful_predictor_fits_from_receipts']} successful LightGBM head fits; {accounting['total_fit_seconds']:.2f} fit seconds.",
+        "SVD components receive no semantic interpretation. Validation windows are development data and are not an untouched holdout.",
+        "",
+        "See `results.json`, `verification.json`, `subgroups.json`, `gate.json`, `attempts.jsonl`, and `experiments/optimization_v3/batch1/R11/revision_02/freeze.json` for provenance.",
+        "",
+    ])
+    return "\n".join(lines)
+
+
+def _write_text_or_match(path: Path, value: str) -> None:
+    if path.is_file():
+        if path.read_text(encoding="utf-8") != value:
+            raise BatchIntegrityError(f"Existing R11 summary differs; refusing overwrite: {path}")
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("x", encoding="utf-8", newline="\n") as stream:
+        stream.write(value)
+
+
+def _append_reconciliation(results: Mapping[str, Any], gate: Mapping[str, Any]) -> dict[str, Any]:
+    if not LEDGER_PATH.is_file():
+        raise BatchIntegrityError("Shared fit ledger is missing; cannot reconcile R11 budget")
+    ledger: list[dict[str, Any]] = []
+    for line_no, line in enumerate(LEDGER_PATH.read_text(encoding="utf-8").splitlines(), 1):
+        if not line.strip():
+            continue
+        try:
+            ledger.append(json.loads(line))
+        except json.JSONDecodeError as exc:
+            raise BatchIntegrityError(f"Invalid shared fit ledger at line {line_no}") from exc
+    reservations = [item for item in ledger if item.get("event") == "BUDGET_RESERVED"
+                    and item.get("budget_key") == "R11:PILOT"]
+    accounting = results["fit_accounting"]
+    if (len(reservations) != 1 or reservations[0].get("card_id") != CARD_ID
+            or int(reservations[0].get("predictor_fits", 0)) != 18
+            or int(accounting["successful_predictor_fits_from_receipts"]) != 18
+            or int(accounting["temporal_adapter_attempts_started"]) != 2
+            or int(accounting["temporal_adapter_attempts_saved"]) != 2
+            or int(accounting["temporal_adapter_attempts_failed"]) != 0
+            or not accounting["attempt_accounting_complete"]):
+        raise BatchIntegrityError("R11 fit budget reconciliation requires exactly 18 reserved and successful head fits")
+    totals = [int(item["reserved_total_after"]) for item in ledger
+              if item.get("event") == "BUDGET_RESERVED" and "reserved_total_after" in item]
+    event = {
+        "event": "FIT_BUDGET_RECONCILED",
+        "card_id": CARD_ID,
+        "budget_key": "R11:PILOT",
+        "freeze_revision": FREEZE_REVISION,
+        "reserved_predictor_fits": 18,
+        "successful_predictor_fits": 18,
+        "temporal_adapter_attempts": 2,
+        "fit_saved_events": 2,
+        "fit_failed_events": 0,
+        "attempt_accounting_complete": True,
+        "decision": gate["status"],
+        "freeze_signature": results["freeze_signature"],
+        "reserved_global_total_after": max(totals) if totals else None,
+        "results_sha256": file_sha256(RESULTS_PATH),
+        "gate_sha256": file_sha256(GATE_PATH),
+        "verification_sha256": file_sha256(VERIFICATION_PATH),
+    }
+    _append_event_once(LEDGER_PATH, event)
+    return event
+
+
+def _require_source_commit_ancestor(source_commit: str) -> None:
+    if not source_commit or not isinstance(source_commit, str):
+        raise BatchIntegrityError("R11 revision-02 recipe lacks its source commit")
+    result = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", source_commit, "HEAD"],
+        cwd=ROOT, capture_output=True, text=True,
+    )
+    if result.returncode != 0:
+        raise BatchIntegrityError("R11 frozen source commit is not an ancestor of the current checkout")
+
+
+def _assert_live_preflight_compatible(context: Mapping[str, Any],
+                                      frozen_preflight: Mapping[str, Any],
+                                      identity: Mapping[str, Any]) -> None:
+    current = context["preflight"]
+    fields = (
+        "card_id", "status", "source_commit", "queue_sha256", "card_sha256",
+        "official_train_sha256", "train_rows", "fit_rows", "score_rows", "views",
+        "threshold_support_by_cutoff", "target_boundary_audit", "control_metrics",
+        "control_cache_sha256", "official_test_read", "candidate_head_fits_performed",
+    )
+    for field in fields:
+        if current.get(field) != frozen_preflight.get(field):
+            raise BatchIntegrityError(f"R11 live preflight field {field} differs from revision-02 snapshot")
+    if (frozen_preflight.get("freeze_revision") != FREEZE_REVISION
+            or frozen_preflight.get("input_sha256") != identity.get("input_sha256")
+            or frozen_preflight.get("source_sha256") != identity.get("source_sha256")
+            or frozen_preflight.get("package_versions") != identity.get("package_versions")):
+        raise BatchIntegrityError("R11 revision-02 preflight hashes or revision differ from live identity")
+    frozen_resource = frozen_preflight.get("resource")
+    if not isinstance(frozen_resource, Mapping) or _stable_resource_identity(frozen_resource) != _stable_resource_identity(context["resource"]):
+        raise BatchIntegrityError("R11 stable resource estimates differ from revision-02 preflight")
+    frozen_budget = frozen_preflight.get("fit_budget", {})
+    live_budget = current.get("fit_budget", {})
+    if (int(frozen_budget.get("R11_predictor_fits", -1)) != 18
+            or int(live_budget.get("R11_predictor_fits", -1)) != 18):
+        raise BatchIntegrityError("R11 revision-02 pilot budget must remain exactly 18 head fits")
+
+
+def run_card(*, mode: str) -> dict[str, Any]:
+    """Run a single explicit R11 mode; the pilot mode is deliberately one-shot."""
+    if mode == "preflight":
+        return preflight()
+    if mode == "freeze":
+        return prepare_freeze()
+    if mode != "pilot":
+        raise BatchIntegrityError("R11 mode must be preflight, freeze, or pilot")
+
+    _require_committed_sources()
+    _require_committed_artifacts((FREEZE_REVISION_02_PATH, RECIPE_REVISION_02_PATH,
+                                  PREFLIGHT_REVISION_02_PATH))
+    frozen_recipe = json.loads(RECIPE_REVISION_02_PATH.read_text(encoding="utf-8"))
+    frozen_preflight = json.loads(PREFLIGHT_REVISION_02_PATH.read_text(encoding="utf-8"))
+    source_commit = frozen_recipe.get("source_commit")
+    _require_source_commit_ancestor(source_commit)
+    context = _prepare_context()
+    # The freeze commit advances HEAD after it records the source-code commit.
+    # Reuse that committed source commit while recomputing all live file hashes.
+    context["source_commit"] = source_commit
+    context["preflight"]["source_commit"] = source_commit
+    preflight_base = dict(frozen_preflight)
+    preflight_base.pop("freeze_identity_sha256", None)
+    recipe_record, identity, expected_preflight, signature = _freeze_payloads(
+        context, preflight_base=preflight_base
+    )
+    _assert_live_preflight_compatible(context, frozen_preflight, identity)
+    _require_frozen_artifacts(
+        freeze_path=FREEZE_REVISION_02_PATH,
+        freeze_identity=identity,
+        recipe_path=RECIPE_REVISION_02_PATH,
+        preflight_path=PREFLIGHT_REVISION_02_PATH,
+    )
+    _verify_live_freeze_hashes(identity)
+    if json.loads(RECIPE_REVISION_02_PATH.read_text(encoding="utf-8")) != recipe_record:
+        raise BatchIntegrityError("R11 revision-02 recipe differs from the live frozen recipe")
+    if json.loads(PREFLIGHT_REVISION_02_PATH.read_text(encoding="utf-8")) != expected_preflight:
+        raise BatchIntegrityError("R11 revision-02 preflight differs from the live preflight")
+    _assert_no_prior_pilot_attempt(ATTEMPT_REVISION_02_PATH, ARTIFACT_REVISION_02_DIR)
+    _append_event_once(ATTEMPT_REVISION_02_PATH, {
+        "card_id": CARD_ID,
+        "event": "PREFLIGHT_PASS",
+        "freeze_signature": signature,
+        "freeze_revision": FREEZE_REVISION,
+        "resource": _stable_resource_identity(context["resource"]),
+        "control_metrics": context["control_metrics"],
+        "fit_predictor_count_reserved": 18,
+        "candidate_head_fits_performed": 0,
+    })
+    pilot = run_frozen_pilot(
+        card=context["card"],
+        frame=context["frame"],
+        target=context["target"],
+        controls=context["controls"],
+        freeze_identity=identity,
+        freeze_path=FREEZE_REVISION_02_PATH,
+        artifact_dir=ARTIFACT_REVISION_02_DIR,
+        budget_ledger_path=LEDGER_PATH,
+        event_path=ATTEMPT_REVISION_02_PATH,
+        report_path=PILOT_REPORT_PATH,
+        evaluation_views=context["views"],
+        max_successful_fits=int(context["queue"]["execution_preset"]["max_successful_new_predictor_fits"]),
+        recipe_path=RECIPE_REVISION_02_PATH,
+        preflight_path=PREFLIGHT_REVISION_02_PATH,
+    )
+    verification = verify_report(
+        report=pilot,
+        frame=context["frame"],
+        target=context["target"],
+        artifact_dir=ARTIFACT_REVISION_02_DIR,
+        freeze_signature=signature,
+        evaluation_views=context["views"],
+        prediction_reconstructors={CARD_ID: reconstruct_r11},
+    )
+    if verification.get("status") != "PASS":
+        raise BatchIntegrityError("R11 independent verification failed; preserving pilot output without a gate")
+    subgroup = _subgroup_diagnostics(
+        pilot, context["frame"], context["target"], context["views"],
+        ARTIFACT_REVISION_02_DIR,
+        int(context["queue"]["evaluation"]["regression_gate"]["supported_group_n_min"]),
+        float(context["queue"]["evaluation"]["regression_gate"]["supported_tail_or_missing_MAE_harm_max"]),
+    )
+    accounting = _attempt_accounting(event_path=ATTEMPT_REVISION_02_PATH,
+                                     artifact_dir=ARTIFACT_REVISION_02_DIR,
+                                     freeze_signature=signature)
+    if not accounting["attempt_accounting_complete"]:
+        raise BatchIntegrityError(f"R11 18-head fit accounting is incomplete; preserving outputs: {accounting}")
+    gate = _build_gate(context["queue"], pilot, verification, subgroup, accounting, context["card"])
+    results = {
+        "card_id": CARD_ID,
+        "freeze_revision": FREEZE_REVISION,
+        "status": f"PILOT_COMPLETE_{gate['status']}",
+        "source_commit": context["source_commit"],
+        "freeze_signature": signature,
+        "input_sha256": identity["input_sha256"],
+        "source_sha256": identity["source_sha256"],
+        "preflight": context["preflight"],
+        "pilot": pilot,
+        "fit_accounting": accounting,
+        "independent_verification_status": verification["status"],
+        "subgroups": subgroup,
+        "gate": gate,
+        "official_test_read": False,
+        "kaggle_accessed": False,
+    }
+    result_files = ((VERIFICATION_PATH, verification), (SUBGROUP_PATH, subgroup),
+                    (GATE_PATH, gate), (RESULTS_PATH, results))
+    summary = _render_summary(results, gate)
+    for path, payload in result_files:
+        _assert_json_match_or_absent(path, payload)
+    if SUMMARY_PATH.is_file() and SUMMARY_PATH.read_text(encoding="utf-8") != summary:
+        raise BatchIntegrityError(f"Existing R11 summary differs; refusing overwrite: {SUMMARY_PATH}")
+    for path, payload in result_files:
+        _write_json_or_match(path, payload)
+    _write_text_or_match(SUMMARY_PATH, summary)
+    reconciliation = _append_reconciliation(results, gate)
+    return {"results": results, "verification": verification, "gate": gate,
+            "budget_reconciliation": reconciliation}
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     modes = parser.add_mutually_exclusive_group(required=True)
@@ -695,8 +1281,11 @@ def main(argv: list[str] | None = None) -> int:
                        help="read official Train, controls, and memory; write no freeze and fit no heads")
     modes.add_argument("--freeze-only", action="store_true",
                        help="after code commit, run preflight and write exclusive recipe/preflight/freeze artifacts; fit no heads")
+    modes.add_argument("--pilot", action="store_true",
+                       help="run the one-shot revision-02 frozen pilot, verification, gate, and append-only reconciliation")
     args = parser.parse_args(argv)
-    report = preflight() if args.preflight_only else prepare_freeze()
+    mode = "preflight" if args.preflight_only else "freeze" if args.freeze_only else "pilot"
+    report = run_card(mode=mode)
     print(json.dumps(report, indent=2, ensure_ascii=False, allow_nan=False))
     return 0
 
@@ -707,5 +1296,6 @@ if __name__ == "__main__":
 
 __all__ = [
     "candidate_recipe", "preflight", "prepare_freeze", "reconstruct_r11",
-    "run_frozen_pilot", "_require_frozen_artifacts",
+    "run_card", "run_frozen_pilot", "_attempt_accounting", "_build_gate",
+    "_require_frozen_artifacts", "_subgroup_diagnostics",
 ]
