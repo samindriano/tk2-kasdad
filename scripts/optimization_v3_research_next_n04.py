@@ -51,6 +51,7 @@ N00_SUMMARY_PATH = ROOT / "reports/optimization_v3/research_next_v1/results/N00/
 OLD_LEDGER_PATH = ROOT / "experiments/runs/optimization_v3_batch1/batch_ledger.jsonl"
 LEDGER_PATH = ROOT / "experiments/runs/optimization_v3_research_next_v1/budget.jsonl"
 FREEZE_PATH = ROOT / "experiments/optimization_v3/research_next_v1/frozen/N04/amendment_01/freeze.json"
+PREFLIGHT_PATH = ROOT / "experiments/optimization_v3/research_next_v1/frozen/N04/amendment_01/preflight.json"
 REPORT_ROOT = ROOT / "reports/optimization_v3/research_next_v1/results/N04/amendment_01"
 BUNDLE_ROOT = ROOT / "experiments/runs/optimization_v3_research_next_v1/N04/amendment_01"
 RECOVERY_ROOT = BUNDLE_ROOT / "recovery"
@@ -229,7 +230,7 @@ def _resource_estimate(frame: pd.DataFrame, cutoff: int, available_bytes: int | 
 
 
 def _build_identity(frame: pd.DataFrame, train_path: Path, cache_audit: Mapping[str, Any],
-                    resources: Mapping[str, Any], source_commit: str | None = None) -> dict[str, Any]:
+                    resources: Mapping[str, Any]) -> dict[str, Any]:
     queue = json.loads(QUEUE_PATH.read_text(encoding="utf-8"))
     card = next((item for item in queue["cards"] if item.get("id") == CARD_ID), None)
     if (queue.get("batch_id") != BATCH or not card or card.get("profile") != "STANDARD"
@@ -257,7 +258,6 @@ def _build_identity(frame: pd.DataFrame, train_path: Path, cache_audit: Mapping[
                 for c in PILOT_ORIGINS}
     return {
         "batch_id": BATCH, "card_id": CARD_ID, "profile": "STANDARD",
-        "source_commit": source_commit or _git_head(),
         "recipe": {
             "pseudo_domain": "last four distinct FIT cycles are recent=1; older fit rows source=0",
             "domain_features": "R22 structured allowlist excluding cycle_code, plus signal_stream; exclude record_id and task targets",
@@ -311,6 +311,7 @@ def prepare_context(*, available_bytes: int | None = None,
         live_ledger = dict(ledger_context_override)
     execution = {
         "prepared_at_utc": datetime.now(timezone.utc).isoformat(),
+        "source_commit": _git_head(),
         "available_bytes": int(psutil.virtual_memory().available if available_bytes is None else available_bytes),
         **live_ledger, "old_ledger_sha256": file_sha256(OLD_LEDGER_PATH),
         "resources": resources, "test_files_opened": False, "test_labels_read": False, "kaggle_calls": 0,
@@ -329,7 +330,7 @@ def preflight() -> dict[str, Any]:
     if first["freeze_signature"] != second["freeze_signature"]:
         raise RuntimeError("N04 stable identity changed with dynamic RAM/ledger context")
     resources_pass = all(item["status"] == "PASS" for item in first["resources"].values())
-    return {
+    result = {
         "status": "READY_TO_FREEZE" if resources_pass else "DEFERRED_RESOURCE",
         "freeze_signature": first["freeze_signature"],
         "fit_rows_by_cutoff": first["identity"]["fit_rows_by_cutoff"],
@@ -342,6 +343,8 @@ def preflight() -> dict[str, Any]:
         },
         "official_fits_started": 0, "test_files_opened": False, "kaggle_calls": 0,
     }
+    _write_once(PREFLIGHT_PATH, result)
+    return result
 
 
 def _write_once(path: Path, value: Mapping[str, Any]) -> None:
@@ -362,12 +365,19 @@ def freeze() -> dict[str, Any]:
     context = prepare_context()
     if any(item["status"] != "PASS" for item in context["resources"].values()):
         raise RuntimeError("N04 frozen pre-fit resource estimate does not pass")
+    if not PREFLIGHT_PATH.is_file():
+        raise RuntimeError("N04 persisted preflight report is required before freeze")
+    preflight_report = json.loads(PREFLIGHT_PATH.read_text(encoding="utf-8"))
+    if preflight_report.get("freeze_signature") != context["freeze_signature"]:
+        raise RuntimeError("N04 preflight report does not match the current stable identity")
+    execution = dict(context["execution_context"])
+    execution["preflight_sha256"] = file_sha256(PREFLIGHT_PATH)
     payload = {"schema_version": 1, "identity": context["identity"],
                "freeze_signature": context["freeze_signature"],
-               "execution_context": context["execution_context"]}
+               "execution_context": execution}
     _write_once(FREEZE_PATH, payload)
     return {"status": "FROZEN", "freeze_signature": context["freeze_signature"],
-            "path": _relative(FREEZE_PATH), "source_commit": context["identity"]["source_commit"]}
+            "path": _relative(FREEZE_PATH), "source_commit": execution["source_commit"]}
 
 
 def _verify_freeze() -> tuple[dict[str, Any], dict[str, Any]]:
@@ -379,9 +389,13 @@ def _verify_freeze() -> tuple[dict[str, Any], dict[str, Any]]:
     current = prepare_context()
     if current["identity"] != frozen.get("identity"):
         raise RuntimeError("N04 frozen source, recipe or input identity changed")
-    source_commit = frozen["identity"].get("source_commit")
+    execution = frozen.get("execution_context", {})
+    source_commit = execution.get("source_commit")
     if not source_commit or not _is_ancestor(source_commit):
         raise RuntimeError("N04 source commit for freeze is not an ancestor of HEAD")
+    if (not PREFLIGHT_PATH.is_file()
+            or execution.get("preflight_sha256") != file_sha256(PREFLIGHT_PATH)):
+        raise RuntimeError("N04 persisted preflight report hash differs from freeze")
     if any(item["status"] != "PASS" for item in current["resources"].values()):
         raise ResourceDeferred("N04 live resource check no longer passes")
     return frozen, current
