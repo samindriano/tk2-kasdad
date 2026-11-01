@@ -40,7 +40,7 @@ For each row, metrics are copied from that card’s `results.json`; statuses com
 | 30 | **R04** | RETIRE; QA PASS | RETIRE | 9064; +0.021887 | 38588; +0.014318 | 2 / ? | [results](R04/results.json), [QA](R04/verification.json), [gate](R04/gate.json) |
 | 31 | **C05** | PILOT_COMPLETE_RETIRE; QA INDEPENDENT_QA_PASS | RETIRE | 9064; -0.001260 | 38588; -0.000284 | 2 / 0 | [results](C05/results.json), [QA](C05/verification.json), [gate](C05/gate.json) |
 | 32 | **R14** | PILOT_COMPLETE_RETIRE; QA INDEPENDENT_QA_PASS | RETIRE | 9064; +0.043122 | 38588; +0.026910 | 2 / 0 | [results](R14/results.json), [QA](R14/verification.json), [gate](R14/gate.json), [amendment](R14/report_amendment_01.json) |
-| 33 | **C11** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
+| 33 | **C11** | PARTIAL: cutoff 55 saved; cutoff 67 resource-interrupted | NO_GATE | - | - | 1 saved / 1 interrupted | [partial status](C11/partial_status.json), [attempts](C11/attempts.jsonl) |
 | 34 | **R08** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
 | 35 | **C20** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
 | 36 | **R19** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
@@ -73,8 +73,15 @@ For each row, metrics are copied from that card’s `results.json`; statuses com
 - Active verifier: `scripts/verify_optimization_v3_batch1_r14_v2.py`; frozen recipe and runner remain unchanged. See `reports/optimization_v3/batch1/R14/report_amendment_01.json` for source hashes and the defect record.
 - Next eligible lane: **C11**, subject to its own support, RAM, dependency, budget, and single-training-job preflight.
 
+## C11 — partial checkpoint; not scored
+
+- C11's frozen word plus `char_wb(3,5)` recipe passed Train/control/support/budget preflight. The analyzer-based estimate was 2.25 GiB at cutoff 55 and 3.49 GiB at cutoff 67; independent profiling estimated 2.43/3.62 GiB. Both are estimates, not peak model measurements.
+- The cutoff-55 fit completed and its ignored bundle is preserved (113.30 seconds). Cutoff 67 was started, then interrupted by MAIN after system free memory fell to 0.49 GiB, below the frozen 2 GiB reserve; process working set was 2.22 GiB. No cutoff-67 bundle exists. The interruption is logged separately in `C11/attempts.jsonl`; no partial candidate metric was computed and no model conclusion is made.
+- C11's two-fit reservation is 2/180 (global total now 58/180); reconciliation is pending until the second fit and report QA are complete. No Test, SampleSubmission, or Kaggle access occurred.
+- Next action: retain cutoff 55; rerun current memory and single-slot preflight and resume cutoff 67 only when the full frozen estimate fits available RAM minus the 2 GiB reserve. The runner's resume path must reuse cutoff 55 and must not refit it.
+
 ## Ledger and scope notes
 
-- The active budget ledger used by the runner is `experiments/runs/optimization_v3_batch1/batch_ledger.jsonl`; it records 56 of 180 candidate predictor fits reserved after R14 and contains reconciled fit evidence for C05 and R14. Runtime fit bundles remain ignored by Git.
+- The active budget ledger used by the runner is `experiments/runs/optimization_v3_batch1/batch_ledger.jsonl`; it records 58 of 180 candidate predictor fits reserved after C11. C05 and R14 are reconciled; C11 reconciliation is pending. Runtime fit bundles remain ignored by Git.
 - The tracked `reports/optimization_v3/batch1/batch_ledger.jsonl` is an older partial reservation snapshot (8 entries); it is not a complete mirror of the runtime ledger and must not be used to infer remaining global budget.
 - V3 remains active. This file is an interim evidence index; it does not close the remaining conditional queue or authorize Test/Kaggle access for pilots.

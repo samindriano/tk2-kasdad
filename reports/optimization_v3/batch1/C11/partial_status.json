@@ -1,0 +1,41 @@
+{
+  "card_id": "C11",
+  "cutoff_55": {
+    "bundle_sha256": "521de3d4bcce3206722a8af16228901d1df3f3c90cae92b6abcf379987f1d764",
+    "fit_rows": 12020,
+    "fit_seconds": 113.29548790003173,
+    "score_rows": 17685,
+    "sidecar_sha256": "2caeb0d31ba029bdb46911769c5fa88cfe65b14ee89d30fdb87a2419b883f1c3",
+    "status": "FIT_SAVED"
+  },
+  "cutoff_67": {
+    "bundle_saved": false,
+    "fit_rows": 29705,
+    "fit_start_to_interruption_seconds": 268.144,
+    "frozen_free_memory_reserve_gib": 2.0,
+    "model_process_working_set_gib": 2.22,
+    "observed_free_physical_gib_before_interrupt": 0.49,
+    "reason": "System free physical memory measured at 0.49 GiB, below the frozen 2 GiB reserve; model process working set was 2.22 GiB.",
+    "score_rows": 20903,
+    "status": "FIT_INTERRUPTED_RESOURCE_PRESSURE"
+  },
+  "fit_budget": {
+    "global_cap": 180,
+    "global_reserved_after_card": 58,
+    "reconciliation": "pending; do not reserve again",
+    "reserved_for_card": 2
+  },
+  "freeze_signature": "947b72d03e7b29c1897180e6ac094a7e48cf05956f6ac0b086ddef135875b7f5",
+  "official_classification_train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+  "pilot_metrics_computed": false,
+  "recorded_at_utc": "2026-11-01T04:21:19.892710+00:00",
+  "resume_instructions": [
+    "Preserve and reuse C11_fit55.npz; do not refit cutoff 55.",
+    "Recheck official Train/control/source hashes, available RAM, the 2 GiB reserve, job cap, budget ledger, and global single-training lock.",
+    "Resume cutoff 67 only when the complete frozen memory estimate fits available RAM minus the reserve.",
+    "Compute no pilot metric or gate until both frozen cutoffs have complete aligned bundles."
+  ],
+  "source_commit": "816849c",
+  "status": "PARTIAL_RESOURCE_INTERRUPTED",
+  "test_sample_or_kaggle_used": false
+}
