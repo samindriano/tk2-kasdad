@@ -60,4 +60,3 @@ def test_mapping_seeds_are_fixed_and_payload_bounds_are_checked() -> None:
         n06.map_payload("q", 1 << 28, 42)
     with pytest.raises(ValueError, match="outside its 24-bit domain"):
         n06.map_payload("z", 1 << 24, 137)
-
