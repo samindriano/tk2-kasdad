@@ -187,4 +187,3 @@ def test_n02_synthetic_bundle_resume_route_metrics_views_and_report(tmp_path, mo
     n01_writer._write_once(report_path, result)
     assert report_path.is_file()
     assert np.isfinite(sketch_arrays["prediction"]).all()
-
