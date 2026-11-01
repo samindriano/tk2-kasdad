@@ -1,0 +1,289 @@
+{
+  "created_at_utc": "2026-11-01T00:41:16.590263+00:00",
+  "identity": {
+    "candidate_recipe": {
+      "card_id": "R25",
+      "fit_rows": {
+        "55": 12020,
+        "67": 29705
+      },
+      "missing_stream_indicator": true,
+      "model": "LightGBM L1 sparse hybrid regression",
+      "policy": "clip(0.75*Ridge25 + 0.25*rank50(new raw R25 sparse prediction),0,100)",
+      "predictor_fits": 2,
+      "preprocessing_fit_calls_per_cutoff": {
+        "count_vectorizer": 1,
+        "structured_processor_scaler_ohe": 1
+      },
+      "rank50": "within each complete score cycle; average ties; 0.5*raw+0.5*100*rank/n; final clipped [0,100]",
+      "score_rows": {
+        "55": 17685,
+        "67": 20903
+      },
+      "sparse_lgb_parameters": {
+        "boosting_type": "gbdt",
+        "colsample_bytree": 1.0,
+        "deterministic": true,
+        "force_col_wise": true,
+        "learning_rate": 0.05,
+        "max_depth": -1,
+        "min_child_samples": 40,
+        "min_child_weight": 0.001,
+        "n_estimators": 400,
+        "n_jobs": 2,
+        "num_leaves": 31,
+        "objective": "regression_l1",
+        "random_state": 42,
+        "reg_alpha": 0.0,
+        "reg_lambda": 1.0,
+        "subsample": 1.0,
+        "subsample_freq": 0,
+        "verbosity": -1
+      },
+      "structured_features": [
+        "impact_load",
+        "entry_friction",
+        "cycle_code",
+        "scope_pressure",
+        "text_load",
+        "scope_trace",
+        "org_spread",
+        "module_spread",
+        "telemetry_flag",
+        "org_code",
+        "module_code",
+        "pattern_code",
+        "signal_stream"
+      ],
+      "structured_preprocessing": "R05 inherited fit-only numeric imputation/scaling + OneHotEncoder(min_frequency=30,max_categories=254,handle_unknown=infrequent_if_exist)",
+      "test_data_used": false,
+      "text_vectorizer": {
+        "analyzer": "word",
+        "binary": false,
+        "dtype": "int64",
+        "lowercase": true,
+        "max_features": 20000,
+        "min_df": 2,
+        "ngram_range": [
+          1,
+          2
+        ],
+        "row_normalization": null,
+        "strip_accents": null,
+        "token_pattern": "(?u)\\b\\w\\w+\\b",
+        "use_idf": false
+      },
+      "views": {
+        "H12": [
+          [
+            55,
+            56,
+            67
+          ],
+          [
+            67,
+            68,
+            79
+          ]
+        ],
+        "W1": [
+          [
+            55,
+            56,
+            59
+          ]
+        ],
+        "W4": [
+          [
+            67,
+            68,
+            71
+          ]
+        ],
+        "primary": [
+          [
+            55,
+            56,
+            59
+          ],
+          [
+            67,
+            68,
+            71
+          ]
+        ]
+      }
+    },
+    "candidate_recipe_sha256": "8362d1c48116e3ab2dd16a66c4c0ac86c4daa6b3f3725df3af7c19946f8dca70",
+    "card": {
+      "card_path": "reports/optimization_v3/research_backlog/cards/R25.md",
+      "change": "Original word1\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u20ac\u01532/min_df2/cap20000 CountVectorizer(binary=False), no IDF or row norm; original structured sparse L1 model. Second count_presence recipe alongside R05.",
+      "condition": "No additional dependency",
+      "evaluation": "STANDARD",
+      "evidence": [
+        "reports/optimization_v2/regression_repr/fullsix.json"
+      ],
+      "family": "count_presence",
+      "id": "R25",
+      "implementation": "NOT_IMPLEMENTED",
+      "in_priority_prefix": true,
+      "name": "Unnormalized word counts",
+      "new_results": null,
+      "pilot_predictor_fits": 2,
+      "policy": "R_SPARSE_REPLACE",
+      "preflight_checks": [],
+      "priority": "P2",
+      "queue_order": 24,
+      "rationale": "Presence/count mengubah frekuensi dan normalisasi pada learner nonlinear; bukan sekadar rescaling kolom.",
+      "status": "PLANNED_NOT_RUN",
+      "task": "regression"
+    },
+    "control_cache_hashes": {
+      "data/raw/regression/Train.csv": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+      "experiments/runs/dual_reg_v1/stage1_paired_blends.npz": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516",
+      "experiments/runs/optimization_v2_regression_repr/fullsix_predictions.npz": "4b87b0da34069ea3d75490233c574fbd92283f8b6472a43d8c654a20a4b904c9",
+      "experiments/runs/optimization_v2_regression_repr/pilot_predictions.npz": "eae6bea2dd6933de59ac0f63f54cc08124b59d4bcba91bbe05a7c5ec3dab9ff6",
+      "reports/optimization_v2/regression_repr/fullsix.json": "a9686473998722b8f86a0f6a4489b4e3a75a6b6ba20c661ac564e6a5e61aea48",
+      "reports/optimization_v2/regression_repr/fullsix_subgroup_diagnostics.json": "6954fbdd9eb1c95794787ff54cf8a9b8c88dc97373ad9a8bf8e0aefdcaf1551e"
+    },
+    "control_preflight_identity_sha256": "0720755e4f185ff48615fc049a8b27212e58c0703ab6adeb72da197e690ff667",
+    "evaluation_views": {
+      "H12": [
+        [
+          55,
+          56,
+          67
+        ],
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "W1": [
+        [
+          55,
+          56,
+          59
+        ]
+      ],
+      "W4": [
+        [
+          67,
+          68,
+          71
+        ]
+      ],
+      "primary": [
+        [
+          55,
+          56,
+          59
+        ],
+        [
+          67,
+          68,
+          71
+        ]
+      ]
+    },
+    "feature_names": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code",
+      "signal_stream"
+    ],
+    "input_sha256": {
+      "accepted_regression_manifest": "dd166e92089f24978244496a9a0afabc0d06551dbdc326579a7c898a8844e19a",
+      "cache_only_diagnostics": "8d634debd1dbc6a3eed5250593b9c213570b4fb139b0b9a623a8d704159916df",
+      "canonical_card": "cee89a792a0a16ab26d2545d5f77d8212e8ef0bf966f751a0ca7e0a82361f321",
+      "canonical_queue": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+      "official_regression_train": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+      "paired_lgb_ridge_cache": "1227404ffa7d9f5c636c109238bfc6ee99dcbfbc128c3a07f16a2eec7ddd0516",
+      "regression_fullsix_report": "a9686473998722b8f86a0f6a4489b4e3a75a6b6ba20c661ac564e6a5e61aea48",
+      "regression_subgroup_diagnostics": "6954fbdd9eb1c95794787ff54cf8a9b8c88dc97373ad9a8bf8e0aefdcaf1551e",
+      "sparse_regression_fullsix_cache": "4b87b0da34069ea3d75490233c574fbd92283f8b6472a43d8c654a20a4b904c9",
+      "sparse_regression_pilot_cache": "eae6bea2dd6933de59ac0f63f54cc08124b59d4bcba91bbe05a7c5ec3dab9ff6"
+    },
+    "package_versions": {
+      "lightgbm": "4.6.0",
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "psutil": "7.0.0",
+      "scikit-learn": "1.8.0",
+      "scipy": "1.18.0",
+      "threadpoolctl": "3.6.0"
+    },
+    "recipe_record_sha256": "bd43a9f638d6183b2bb52d7af2f09f2306c7a790fa3892c83795441dec6411c1",
+    "resource_preflight": {
+      "cutoffs": {
+        "55": {
+          "analyzed_ngram_occurrences_upper_bound": 974834,
+          "distinct_ngrams_document_frequency_ge_min_df": 45374,
+          "expected_vocabulary_width_after_cap": 20000,
+          "fit_missing_stream_rows": 826,
+          "fit_rows": 12020,
+          "nonempty_documents_with_word_ngrams": 11194,
+          "sparse_matrix_upper_bytes": 23588352
+        },
+        "67": {
+          "analyzed_ngram_occurrences_upper_bound": 2265362,
+          "distinct_ngrams_document_frequency_ge_min_df": 88356,
+          "expected_vocabulary_width_after_cap": 20000,
+          "fit_missing_stream_rows": 2029,
+          "fit_rows": 29705,
+          "nonempty_documents_with_word_ngrams": 27676,
+          "sparse_matrix_upper_bytes": 54843984
+        }
+      },
+      "dense_full_text_matrix": false,
+      "estimated_csr_upper_gib": 0.05107744038105011,
+      "estimated_peak_job_gib": 1.6532323211431503,
+      "estimator_fits_reserved": 2,
+      "max_features": 20000,
+      "maximum_job_gib": 6.0,
+      "min_df": 2,
+      "minimum_free_ram_gib": 4.0,
+      "raw_analyzed_ngram_occurrences_upper_bound": 2265362,
+      "reserved_free_ram_gib": 2.0,
+      "single_training_job": true,
+      "status": "PASS",
+      "threads": 2
+    },
+    "schema_version": 1,
+    "source_commit": "f6e9f7d76ba0e8b1b61c7eaba98e61cddbbeece2",
+    "source_sha256": {
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1.py": "c93dd71ed2b512f32bf8916f59b0af56bff212934efb8825b0e8a680da72e969",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_r02.py": "30e8d5324f66f30d02176f37d006d6461608839d697259bcd8636dcb67b8ffbe",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_r05.py": "be360f89803f904bd1d46b52365caa13504aa60ae63289408f0e7e884b7fb7c6",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_r25.py": "d68a16695a0db8a8e6679a6f8035ad54fab0f35590cfee851ee6efd259730031",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_reg_diagnostics.py": "e2af49bb45353fca5bf0c14093be9b0f0b02afe24289a1b5c30dfb584bbd3f55",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v2_regression.py": "b235cfd93c8cc0a207cfcea79892b925f9dfdfe515491a459d6ca1b6142cb590",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1.py": "d21ac914d0d1f516a93e431116556dabdbe7313a21fd2b1b04a73371bd56f420",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1_r02.py": "9ec87ca8d52f1b645013fec6570c19e871e681b477196fd450c2994d759ccd76",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1_r05.py": "9154f567822a482cddae331b0896bcd0a09c68635f9b52e556dfdcd787ef881f",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1_r25.py": "8d4a5921ee8e7d8024eb8f9dc7d5ab6f31e20bf288bff487986e930624217753",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_research_tabular.py": "674d7e52c485583729b8fe999dc133c39aae8dd85abd005a598e2caea9af99f9",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_round2_models.py": "f56f7ee2c337acdf2cbe7160719faf62b1e3d3470a7f656b044ce0890d677e09",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\utils\\paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\tests\\test_optimization_v3_batch1_r05.py": "b1b3d0f7b667ff33d9a97317888457361c243f58e415e451ed58b2bb19d51dd1",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\tests\\test_optimization_v3_batch1_r25.py": "0f5484e922e9417b06db3f1940ee588fe7219b74b67dbf8f63a66bc4df9ab050"
+    },
+    "test_data_used": false,
+    "validation_labels_passed_to_adapter": false
+  },
+  "signature": "71270d89aadfe0cf49c89d91cf1b1fb01912095db50a437a1e1f8b201216242c"
+}
