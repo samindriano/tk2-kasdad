@@ -1,0 +1,582 @@
+{
+  "candidate_metrics_computed": false,
+  "card_id": "C10",
+  "control_lineage": {
+    "55": {
+      "C2_B_cache_identity": {
+        "audit_sha256": "1a6c84022dbbb806b635e9548020428fd2202a4cff7e7c1e12fe61915aed6074",
+        "cache_sha256": "ce49c6b471f4b9eca8be1c24fa37b487d9a688b28dc543e3faa1a8b6fc7d177c",
+        "fit_rows": 12020,
+        "probability_sha256": "45b5a44456316b2f03d7df6043f880a4b14be7c4d96c455bc7bb46c6f60cec82"
+      },
+      "CatBoost_cache_sha256": "0cda97c481aef51495e3fd4a23c43b0a906f23ffc9080e91194250e7be4d046a",
+      "CatBoost_sidecar_sha256": "eeadc3f3db6c29137a1d0028ed4f08aea0d7b5e40b01af3c217ca003ab293ef8",
+      "baseline_reconstructed_exactly": true,
+      "fit_cycles": [
+        47,
+        55
+      ],
+      "fit_rows": 12020,
+      "missing_rows": 1203,
+      "present_rows": 16482,
+      "record_ids_sha256": "31a50f35369d3acce51584f3997416149a58143fac90418c3c59052f47029d3b",
+      "row_positions_sha256": "52762151cf46de77084a01da8e83ce94785134ab5c7622e3ed3800917fcea173",
+      "score_cycles": [
+        56,
+        67
+      ],
+      "score_rows": 17685,
+      "sparse25_cache_sha256": "0efbfd81ac9489c29c9ae1e06922e8769dbc1227a7242a1bb779940cfe682f5b",
+      "sparse25_freeze_signature": "59104d95490adc147c07cfa18559074dae71599530fc1d0a7a5d948ae26a2d33",
+      "sparse25_sidecar_sha256": "764fbfcd6ee191e90d9519561ea591b042bdef2845f62452ba055d6dcf884551",
+      "target_accessed": false
+    },
+    "67": {
+      "C2_B_cache_identity": {
+        "audit_sha256": "a854215f01672733b64b1adf3c778fd653342dcbd7abc960a0fe9c0ca1330a2a",
+        "cache_sha256": "853a8c44ac2b3ea50fc1824fec78f63948aee6b1c47678dc1ddc8ecb505ecdea",
+        "fit_rows": 29705,
+        "probability_sha256": "3f46b2f168aeb6901416959bb7c24a0114443ff876ab871978d0042727609745"
+      },
+      "CatBoost_cache_sha256": "4b63070ac665e2ed2a9f567fb5c945f640da1eace5533af8d87d7df1a66ead59",
+      "CatBoost_sidecar_sha256": "df1b7a8d434767c723f98a65ae7a8442c418692fecccffdc6ef9b11dbeb6a538",
+      "baseline_reconstructed_exactly": true,
+      "fit_cycles": [
+        47,
+        67
+      ],
+      "fit_rows": 29705,
+      "missing_rows": 1375,
+      "present_rows": 19528,
+      "record_ids_sha256": "e63c72f954b16a018af4f970ae41306425a22a376147d6a8c5ea82b59d7490f5",
+      "row_positions_sha256": "c80f8ebb34ab2a056b4dae0a0b6754a448f45c0bcb918986b76b3efb94229f42",
+      "score_cycles": [
+        68,
+        79
+      ],
+      "score_rows": 20903,
+      "sparse25_cache_sha256": "61232d3fdcadbbd6923154bc53302f56cdbab7c9d3255055441fa10abf077af4",
+      "sparse25_freeze_signature": "59104d95490adc147c07cfa18559074dae71599530fc1d0a7a5d948ae26a2d33",
+      "sparse25_sidecar_sha256": "6427f9a9bbf9bbcc35f6ef85ac5ab4d5875315cc902d17cb650dadb02cdb3ffc",
+      "target_accessed": false
+    }
+  },
+  "freeze_identity_sha256": "415f00250a3d73abd6de9b6816784294f9a126816e15cb61ea3519fe00068045",
+  "identity": {
+    "baseline_manifest_sha256": "6e7c2cb50fe6d0ee4767a44c40f152b6538b933fab6cf7082659b16d791f7d1e",
+    "canonical_card_sha256": "4404ab78fc47ff805b6c9d88e2c8a335e9972af8d89c515fe957494930ca37f2",
+    "canonical_queue_sha256": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+    "card": {
+      "card_path": "reports/optimization_v3/research_backlog/cards/C10.md",
+      "change": "Retain current word1\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u20ac\u01532 cap20000; append word3-only TF-IDF cap10000/min_df3/max_df0.995/sublinear. Original sparse classifier.",
+      "condition": "No additional dependency",
+      "evaluation": "STANDARD",
+      "evidence": [
+        "reports/optimization_v3/research_backlog/feasibility.json",
+        "reports/optimization_v3/classification_sparse_full/fullsix.json"
+      ],
+      "family": "trigram",
+      "id": "C10",
+      "implementation": "NOT_IMPLEMENTED",
+      "in_priority_prefix": true,
+      "name": "Separate trigram context",
+      "new_results": null,
+      "pilot_predictor_fits": 2,
+      "policy": "C_SPARSE_REPLACE",
+      "preflight_checks": [
+        "Retire before fit if no supported trigrams; report occupied features/nnz"
+      ],
+      "priority": "P2",
+      "queue_order": 21,
+      "rationale": "Order tiga belum ada pada model unigram/bigram, tetapi dukungan sekuens dapat sangat jarang.",
+      "status": "PLANNED_NOT_RUN",
+      "task": "classification"
+    },
+    "control_lineage": {
+      "55": {
+        "C2_B_cache_identity": {
+          "audit_sha256": "1a6c84022dbbb806b635e9548020428fd2202a4cff7e7c1e12fe61915aed6074",
+          "cache_sha256": "ce49c6b471f4b9eca8be1c24fa37b487d9a688b28dc543e3faa1a8b6fc7d177c",
+          "fit_rows": 12020,
+          "probability_sha256": "45b5a44456316b2f03d7df6043f880a4b14be7c4d96c455bc7bb46c6f60cec82"
+        },
+        "CatBoost_cache_sha256": "0cda97c481aef51495e3fd4a23c43b0a906f23ffc9080e91194250e7be4d046a",
+        "CatBoost_sidecar_sha256": "eeadc3f3db6c29137a1d0028ed4f08aea0d7b5e40b01af3c217ca003ab293ef8",
+        "baseline_reconstructed_exactly": true,
+        "fit_cycles": [
+          47,
+          55
+        ],
+        "fit_rows": 12020,
+        "missing_rows": 1203,
+        "present_rows": 16482,
+        "record_ids_sha256": "31a50f35369d3acce51584f3997416149a58143fac90418c3c59052f47029d3b",
+        "row_positions_sha256": "52762151cf46de77084a01da8e83ce94785134ab5c7622e3ed3800917fcea173",
+        "score_cycles": [
+          56,
+          67
+        ],
+        "score_rows": 17685,
+        "sparse25_cache_sha256": "0efbfd81ac9489c29c9ae1e06922e8769dbc1227a7242a1bb779940cfe682f5b",
+        "sparse25_freeze_signature": "59104d95490adc147c07cfa18559074dae71599530fc1d0a7a5d948ae26a2d33",
+        "sparse25_sidecar_sha256": "764fbfcd6ee191e90d9519561ea591b042bdef2845f62452ba055d6dcf884551",
+        "target_accessed": false
+      },
+      "67": {
+        "C2_B_cache_identity": {
+          "audit_sha256": "a854215f01672733b64b1adf3c778fd653342dcbd7abc960a0fe9c0ca1330a2a",
+          "cache_sha256": "853a8c44ac2b3ea50fc1824fec78f63948aee6b1c47678dc1ddc8ecb505ecdea",
+          "fit_rows": 29705,
+          "probability_sha256": "3f46b2f168aeb6901416959bb7c24a0114443ff876ab871978d0042727609745"
+        },
+        "CatBoost_cache_sha256": "4b63070ac665e2ed2a9f567fb5c945f640da1eace5533af8d87d7df1a66ead59",
+        "CatBoost_sidecar_sha256": "df1b7a8d434767c723f98a65ae7a8442c418692fecccffdc6ef9b11dbeb6a538",
+        "baseline_reconstructed_exactly": true,
+        "fit_cycles": [
+          47,
+          67
+        ],
+        "fit_rows": 29705,
+        "missing_rows": 1375,
+        "present_rows": 19528,
+        "record_ids_sha256": "e63c72f954b16a018af4f970ae41306425a22a376147d6a8c5ea82b59d7490f5",
+        "row_positions_sha256": "c80f8ebb34ab2a056b4dae0a0b6754a448f45c0bcb918986b76b3efb94229f42",
+        "score_cycles": [
+          68,
+          79
+        ],
+        "score_rows": 20903,
+        "sparse25_cache_sha256": "61232d3fdcadbbd6923154bc53302f56cdbab7c9d3255055441fa10abf077af4",
+        "sparse25_freeze_signature": "59104d95490adc147c07cfa18559074dae71599530fc1d0a7a5d948ae26a2d33",
+        "sparse25_sidecar_sha256": "6427f9a9bbf9bbcc35f6ef85ac5ab4d5875315cc902d17cb650dadb02cdb3ffc",
+        "target_accessed": false
+      }
+    },
+    "control_population_by_cutoff": {
+      "55": {
+        "fit_rows": 12020,
+        "missing_rows": 1203,
+        "present_rows": 16482,
+        "score_rows": 17685
+      },
+      "67": {
+        "fit_rows": 29705,
+        "missing_rows": 1375,
+        "present_rows": 19528,
+        "score_rows": 20903
+      }
+    },
+    "evaluation_views": {
+      "H12": [
+        [
+          55,
+          56,
+          67
+        ],
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "H12_E": [
+        [
+          55,
+          56,
+          67
+        ]
+      ],
+      "H12_L": [
+        [
+          67,
+          68,
+          79
+        ]
+      ],
+      "W1": [
+        [
+          55,
+          56,
+          59
+        ]
+      ],
+      "W4": [
+        [
+          67,
+          68,
+          71
+        ]
+      ],
+      "primary": [
+        [
+          55,
+          56,
+          59
+        ],
+        [
+          67,
+          68,
+          71
+        ]
+      ]
+    },
+    "feature_names": [
+      "impact_load",
+      "entry_friction",
+      "cycle_code",
+      "scope_pressure",
+      "text_load",
+      "scope_trace",
+      "org_spread",
+      "module_spread",
+      "telemetry_flag",
+      "org_code",
+      "module_code",
+      "pattern_code",
+      "signal_stream"
+    ],
+    "input_sha256": {
+      "C2_B_fit55_audit": "1a6c84022dbbb806b635e9548020428fd2202a4cff7e7c1e12fe61915aed6074",
+      "C2_B_fit55_cache": "ce49c6b471f4b9eca8be1c24fa37b487d9a688b28dc543e3faa1a8b6fc7d177c",
+      "C2_B_fit67_audit": "a854215f01672733b64b1adf3c778fd653342dcbd7abc960a0fe9c0ca1330a2a",
+      "C2_B_fit67_cache": "853a8c44ac2b3ea50fc1824fec78f63948aee6b1c47678dc1ddc8ecb505ecdea",
+      "CatBoost_fit55_cache": "0cda97c481aef51495e3fd4a23c43b0a906f23ffc9080e91194250e7be4d046a",
+      "CatBoost_fit55_sidecar": "eeadc3f3db6c29137a1d0028ed4f08aea0d7b5e40b01af3c217ca003ab293ef8",
+      "CatBoost_fit67_cache": "4b63070ac665e2ed2a9f567fb5c945f640da1eace5533af8d87d7df1a66ead59",
+      "CatBoost_fit67_sidecar": "df1b7a8d434767c723f98a65ae7a8442c418692fecccffdc6ef9b11dbeb6a538",
+      "accepted_sparse25_manifest": "6e7c2cb50fe6d0ee4767a44c40f152b6538b933fab6cf7082659b16d791f7d1e",
+      "card": "4404ab78fc47ff805b6c9d88e2c8a335e9972af8d89c515fe957494930ca37f2",
+      "official_classification_train": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+      "queue": "822dcd20fa28fd0e9ddc841a8c3709b372dacaca305b94b39b11a9203418fec7",
+      "sparse25_fit55_cache": "0efbfd81ac9489c29c9ae1e06922e8769dbc1227a7242a1bb779940cfe682f5b",
+      "sparse25_fit55_sidecar": "764fbfcd6ee191e90d9519561ea591b042bdef2845f62452ba055d6dcf884551",
+      "sparse25_fit67_cache": "61232d3fdcadbbd6923154bc53302f56cdbab7c9d3255055441fa10abf077af4",
+      "sparse25_fit67_sidecar": "6427f9a9bbf9bbcc35f6ef85ac5ab4d5875315cc902d17cb650dadb02cdb3ffc",
+      "sparse_pilot_freeze": "18f49d3e235bc4fe8ff2fcd1e550bef09cc8b681f9420b103aca1080fdda8910",
+      "sparse_pilot_protocol": "2cc006183d89ce6a21ffb740e5e9bf38afc3bfb4f5014fc57e83b9c701f0a635",
+      "sparse_pilot_report": "893256cc76aded8606d00a922dc7a275914468184fad9ae3e7c33d2678040392",
+      "sparse_pilot_verification": "63c8c259c4dfcc6720b5d776e4cb495428c60924c6d63085c08019c112d30b20"
+    },
+    "kaggle_access": false,
+    "package_versions": {
+      "lightgbm": "4.6.0",
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.8.0",
+      "scipy": "1.18.0",
+      "threadpoolctl": "3.6.0"
+    },
+    "python_version": "3.13.5",
+    "sample_submission_used": false,
+    "schema_version": 1,
+    "source_sha256": {
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v2_classification.py": "b15dbe65b62954f854dd65a18ffe5ec36e4024997b8a9b1cc8cb2575c524d6d7",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1.py": "c93dd71ed2b512f32bf8916f59b0af56bff212934efb8825b0e8a680da72e969",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_c10.py": "689d903ed2e7be403a1d3b657d3f2de390a6bb6bd4d0a5dbbf67f4c099987054",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_batch1_verify.py": "d5fbe2682dfb1c1418d43999c2a6fdb6c1694925b49c7b019c3c3c0ad488264e",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_sparse_classification.py": "a629b4aeb3e6ea564b61449502d2f8f712daf517d95ed041652d3866a2f27c1b",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_sparse_classification_fullsix.py": "7b7e7425eeb497c9f9d5c1f55e2483c113ae8fe4502b1a43eee6e4573bc74c97",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_verify_sparse_classification.py": "683f073bad4dac04728fcf0045cd3d39b0f1a1e790352f9c0174ecb36a867699",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\optimization_v3_verify_sparse_classification_fullsix.py": "acf3be75189f832af5d6ccc310326d1b0797c0e3d54eec6a1f7037ee0833d474",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\scripts\\research_campaign_classification_stage2.py": "1a78b419e2b02c5187696f82823c2f8f96c7fa5c329846eff44ac52bbead1126",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\classification_metrics.py": "db77dd99210835006f96db1659bf4e87213179962b8f692d181af831b6539563",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\classification_round2_models.py": "239008f056c6f5e004e84d2b9df9f5bfb20695ccfad90eed4deec3463c7d4575",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1.py": "d21ac914d0d1f516a93e431116556dabdbe7313a21fd2b1b04a73371bd56f420",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_batch1_c10.py": "471fe8940ade6ec58c781020202430255647aaa2f0119b453ade80322e7f134f",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\optimization_v3_sparse_classification.py": "fb5b013fa59d0b748a3386dae90cb14789a0b4cbd9a5c7a115d5ddc3c443d5a3",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\regression_round2_models.py": "f56f7ee2c337acdf2cbe7160719faf62b1e3d3470a7f656b044ce0890d677e09",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\round1_evaluation.py": "be26992ee5c75190eb8a412fa6635dabd242eee1609fad0380023bfe3a1e300f",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\models\\round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\src\\utils\\paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555",
+      "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\tests\\test_optimization_v3_batch1_c10.py": "ea20490576c75d5deb896f54a982c4dc29053cb54b776cb4509699fb558b9e75"
+    },
+    "sparse_memory_estimate": {
+      "estimated_additional_process_bytes": 1273921216,
+      "estimated_missing_indicator_nnz_upper": 29705,
+      "estimated_sparse_design_bytes_upper": 50044848,
+      "estimated_structured_nnz_upper": 1158495,
+      "estimated_word_plus_trigram_nnz": 1924750
+    },
+    "support_preflight": {
+      "55": {
+        "fit_cycles": [
+          47,
+          55
+        ],
+        "fit_labels_read": false,
+        "fit_rows": 12020,
+        "stream_missing_rows": 826,
+        "stream_present_rows": 11194,
+        "trigram": {
+          "csr_bytes": 2258640,
+          "idf_sha256": "5a1582899769e3a8e2a2b30abc43ba47777347e2226af24e8039f4d42c81e576",
+          "nnz": 184213,
+          "occupied_features": 10000,
+          "parameters": {
+            "dtype": "numpy.float64",
+            "lowercase": true,
+            "max_df": 0.995,
+            "max_features": 10000,
+            "min_df": 3,
+            "ngram_range": [
+              3,
+              3
+            ],
+            "strip_accents": "unicode",
+            "sublinear_tf": true
+          },
+          "rows_with_features": 11014,
+          "rows_without_selected_trigram": 1006,
+          "vocabulary_sha256": "879ddea9660178f44d6960bfec025e10003955919199f48abae1e25496d82053"
+        },
+        "word12": {
+          "csr_bytes": 7972392,
+          "nnz": 660359,
+          "occupied_features": 20000,
+          "parameters": {
+            "dtype": "numpy.float64",
+            "lowercase": true,
+            "max_df": 0.995,
+            "max_features": 20000,
+            "min_df": 3,
+            "ngram_range": [
+              1,
+              2
+            ],
+            "strip_accents": "unicode",
+            "sublinear_tf": true
+          },
+          "rows_with_features": 11194
+        },
+        "word_idf_sha256": "540538127590a947f31c1779d1f5a1d9b652b5928d63bfc7c9eacf2cb766e648",
+        "word_vocabulary_sha256": "9455428738dace12e5ec4af9b7e54f4ecbf2e1332bb232fe3f76f0c1ec6f2c75"
+      },
+      "67": {
+        "fit_cycles": [
+          47,
+          67
+        ],
+        "fit_labels_read": false,
+        "fit_rows": 29705,
+        "stream_missing_rows": 2029,
+        "stream_present_rows": 27676,
+        "trigram": {
+          "csr_bytes": 5043516,
+          "idf_sha256": "c7e264c7b08581931176b0771d3e2d4e90e34925789e824062a2bbf9709a77cf",
+          "nnz": 410391,
+          "occupied_features": 10000,
+          "parameters": {
+            "dtype": "numpy.float64",
+            "lowercase": true,
+            "max_df": 0.995,
+            "max_features": 10000,
+            "min_df": 3,
+            "ngram_range": [
+              3,
+              3
+            ],
+            "strip_accents": "unicode",
+            "sublinear_tf": true
+          },
+          "rows_with_features": 27237,
+          "rows_without_selected_trigram": 2468,
+          "vocabulary_sha256": "f36f6d51fa93a1c966cbe977f48d17706ac903bebb45c3b60bf8842638d0c118"
+        },
+        "word12": {
+          "csr_bytes": 18291132,
+          "nnz": 1514359,
+          "occupied_features": 20000,
+          "parameters": {
+            "dtype": "numpy.float64",
+            "lowercase": true,
+            "max_df": 0.995,
+            "max_features": 20000,
+            "min_df": 3,
+            "ngram_range": [
+              1,
+              2
+            ],
+            "strip_accents": "unicode",
+            "sublinear_tf": true
+          },
+          "rows_with_features": 27676
+        },
+        "word_idf_sha256": "76c658982e37a33b6ef2080745487689948d57c5ff7a71c04167755f050ec8d6",
+        "word_vocabulary_sha256": "109dbecffbacc91513f78723319cd6f03a7ae46db0a80cefab23989c8f5c1d5d"
+      }
+    },
+    "test_data_used": false,
+    "validation_labels_passed_to_adapter": false
+  },
+  "kaggle_access": false,
+  "owned_outputs": {
+    "cache": false,
+    "freeze": false,
+    "recipe": false,
+    "results": false,
+    "verification": false
+  },
+  "predictor_fits_performed": 0,
+  "preflight_vectorizer_fits": 4,
+  "reason": null,
+  "resource_forecast": {
+    "available_ram_bytes": 7852916736,
+    "estimated_additional_process_bytes": 1273921216,
+    "estimated_missing_indicator_nnz_upper": 29705,
+    "estimated_sparse_design_bytes_upper": 50044848,
+    "estimated_structured_nnz_upper": 1158495,
+    "estimated_word_plus_trigram_nnz": 1924750,
+    "largest_fit_rows": 29705,
+    "measurement_source": "Windows GlobalMemoryStatusEx/GetProcessMemoryInfo",
+    "policy": {
+      "fixed_extra_allowance_bytes": 1073741824,
+      "maximum_process_rss_bytes": 6442450944,
+      "minimum_free_ram_bytes": 4294967296,
+      "reserved_system_ram_bytes": 2147483648,
+      "sparse_design_multiplier": 4,
+      "structured_category_columns": 3,
+      "structured_numeric_width": 36
+    },
+    "predicted_process_peak_rss_bytes": 1527549632,
+    "predictor_fits_performed": 0,
+    "process_peak_rss_bytes": 422346752,
+    "process_rss_bytes": 253628416,
+    "status": "PASS",
+    "support_preflight_vectorizer_fits": 4,
+    "total_ram_bytes": 33599959040
+  },
+  "sample_read": false,
+  "status": "PREFLIGHT_PASS_READ_ONLY_NO_TARGET_NO_SCORE_NO_PREDICTOR_FIT",
+  "support_preflight": {
+    "55": {
+      "fit_cycles": [
+        47,
+        55
+      ],
+      "fit_labels_read": false,
+      "fit_rows": 12020,
+      "stream_missing_rows": 826,
+      "stream_present_rows": 11194,
+      "trigram": {
+        "csr_bytes": 2258640,
+        "idf_sha256": "5a1582899769e3a8e2a2b30abc43ba47777347e2226af24e8039f4d42c81e576",
+        "nnz": 184213,
+        "occupied_features": 10000,
+        "parameters": {
+          "dtype": "numpy.float64",
+          "lowercase": true,
+          "max_df": 0.995,
+          "max_features": 10000,
+          "min_df": 3,
+          "ngram_range": [
+            3,
+            3
+          ],
+          "strip_accents": "unicode",
+          "sublinear_tf": true
+        },
+        "rows_with_features": 11014,
+        "rows_without_selected_trigram": 1006,
+        "vocabulary_sha256": "879ddea9660178f44d6960bfec025e10003955919199f48abae1e25496d82053"
+      },
+      "word12": {
+        "csr_bytes": 7972392,
+        "nnz": 660359,
+        "occupied_features": 20000,
+        "parameters": {
+          "dtype": "numpy.float64",
+          "lowercase": true,
+          "max_df": 0.995,
+          "max_features": 20000,
+          "min_df": 3,
+          "ngram_range": [
+            1,
+            2
+          ],
+          "strip_accents": "unicode",
+          "sublinear_tf": true
+        },
+        "rows_with_features": 11194
+      },
+      "word_idf_sha256": "540538127590a947f31c1779d1f5a1d9b652b5928d63bfc7c9eacf2cb766e648",
+      "word_vocabulary_sha256": "9455428738dace12e5ec4af9b7e54f4ecbf2e1332bb232fe3f76f0c1ec6f2c75"
+    },
+    "67": {
+      "fit_cycles": [
+        47,
+        67
+      ],
+      "fit_labels_read": false,
+      "fit_rows": 29705,
+      "stream_missing_rows": 2029,
+      "stream_present_rows": 27676,
+      "trigram": {
+        "csr_bytes": 5043516,
+        "idf_sha256": "c7e264c7b08581931176b0771d3e2d4e90e34925789e824062a2bbf9709a77cf",
+        "nnz": 410391,
+        "occupied_features": 10000,
+        "parameters": {
+          "dtype": "numpy.float64",
+          "lowercase": true,
+          "max_df": 0.995,
+          "max_features": 10000,
+          "min_df": 3,
+          "ngram_range": [
+            3,
+            3
+          ],
+          "strip_accents": "unicode",
+          "sublinear_tf": true
+        },
+        "rows_with_features": 27237,
+        "rows_without_selected_trigram": 2468,
+        "vocabulary_sha256": "f36f6d51fa93a1c966cbe977f48d17706ac903bebb45c3b60bf8842638d0c118"
+      },
+      "word12": {
+        "csr_bytes": 18291132,
+        "nnz": 1514359,
+        "occupied_features": 20000,
+        "parameters": {
+          "dtype": "numpy.float64",
+          "lowercase": true,
+          "max_df": 0.995,
+          "max_features": 20000,
+          "min_df": 3,
+          "ngram_range": [
+            1,
+            2
+          ],
+          "strip_accents": "unicode",
+          "sublinear_tf": true
+        },
+        "rows_with_features": 27676
+      },
+      "word_idf_sha256": "76c658982e37a33b6ef2080745487689948d57c5ff7a71c04167755f050ec8d6",
+      "word_vocabulary_sha256": "109dbecffbacc91513f78723319cd6f03a7ae46db0a80cefab23989c8f5c1d5d"
+    }
+  },
+  "supported_trigram_cutoffs": [
+    55,
+    67
+  ],
+  "target_read": false,
+  "task": "classification",
+  "test_read": false,
+  "train_cycle_range": [
+    47,
+    79
+  ],
+  "train_rows": 50608,
+  "train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+  "unsupported_trigram_cutoffs": [],
+  "view_rows": {
+    "H12": 38588,
+    "H12_E": 17685,
+    "H12_L": 20903,
+    "W1": 4114,
+    "W4": 4950,
+    "primary": 9064
+  }
+}
