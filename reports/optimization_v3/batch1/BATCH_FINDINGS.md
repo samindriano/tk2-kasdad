@@ -1,8 +1,8 @@
 # V3 Batch 1 — rolling findings
 
-Snapshot: 2026-11-01, after C11 pilot resume, R08/C20 completion, R19's row-matched revision 2 pilot and independent re-audit, C15's verified pilot, R22's pilot plus independent audit, R20's independently verified retirement, and C12's independently audited retirement. This is a rolling index built from the canonical queue and per-card reports present in the repository; it does not claim that missing reports were executed or validated.
+Snapshot: 2026-11-01, after C11 pilot resume, R08/C20 completion, R19's row-matched revision 2 pilot and independent re-audit, C15's verified pilot, R22's pilot plus independent audit, R20's independently verified retirement, C12's independently audited retirement, and R06's independently audited advance. This is a rolling index built from the canonical queue and per-card reports present in the repository; it does not claim that missing reports were executed or validated.
 
-Queue closure: **28/45 cards (62.2%)** now have terminal pilot decisions with saved gates; this includes R19, C15, R22, R20, and C12 and excludes cards still awaiting QA or missing a gate. This is pilot-card progress, not the later conditional continuations and finalist stage.
+Queue closure: **29/45 cards (64.4%)** now have terminal pilot decisions with saved gates; this includes R19, C15, R22, R20, C12, and R06 and excludes cards still awaiting QA or missing a gate. This is pilot-card progress, not the later conditional continuations and finalist stage.
 
 For each row, metrics are copied from that card’s `results.json`; statuses come from its saved `verification.json` and `gate.json`. `NO_REPORT` and `PARTIAL` remain unresolved. Gains use each card’s declared pilot view, so raw gains from different populations are not directly ranked.
 
@@ -48,7 +48,7 @@ For each row, metrics are copied from that card’s `results.json`; statuses com
 | 38 | **R22** | PILOT_COMPLETE_ADVANCE; QA INDEPENDENT_QA_PASS | ADVANCE | 9064; +0.098176 | 38588; +0.124873 | 2 / 0 | [results](R22/results.json), [QA](R22/verification.json), [independent QA](R22/independent_qa.json), [gate](R22/gate.json), [summary](R22/summary.md) |
 | 39 | **R20** | PILOT_COMPLETE_RETIRE; QA INDEPENDENT_QA_PASS | RETIRE | 9064; -0.105678 | 38588; -0.115513 | 2 / 0 | [results](R20/results.json), [QA](R20/verification.json), [independent QA](R20/independent_qa.json), [QA recheck](R20/qa_recheck.json), [gate](R20/gate.json), [summary](R20/summary.md) |
 | 40 | **C12** | PILOT_COMPLETE_RETIRE; INDEPENDENT_QA_PASS; budget reconciled | RETIRE | 9064; +0.001177 | 38588; -0.001155 | 2 / 0 | [results](C12/results.json), [QA](C12/verification.json), [independent QA](C12/independent_qa.json), [gate](C12/gate.json), [attempts](C12/attempts.jsonl), [budget](C12/budget_reconciliation.json), [summary](C12/summary.json), [freeze revision 2](../../../experiments/optimization_v3/batch1/C12/freeze_revision_02.json) |
-| 41 | **R06** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
+| 41 | **R06** | PILOT_COMPLETE_ADVANCE; INDEPENDENT_QA_PASS; budget reconciled | ADVANCE | 9064; +0.061726 | 38588; +0.103260 | 2 / 0 | [results](R06/results.json), [QA](R06/verification.json), [independent QA](R06/independent_qa.json), [gate](R06/gate.json), [attempts](R06/attempts.jsonl), [budget](R06/budget_reconciliation.json), [summary](R06/summary.md), [freeze revision 2](../../../experiments/optimization_v3/batch1/R06/freeze_revision_02.json) |
 | 42 | **R07** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
 | 43 | **R10** | NO_REPORT | NO_GATE | - | - | ? / ? | — |
 | 44 | **R13** | NO_REPORT | NO_GATE | - | - | ? / ? | — |

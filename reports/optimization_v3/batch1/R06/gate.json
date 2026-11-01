@@ -1,0 +1,132 @@
+{
+  "card_id": "R06",
+  "checks": {
+    "W1_MAE_harm_at_most_0_5": true,
+    "W4_MAE_harm_at_most_0_5": true,
+    "fit_attempt_accounting_pass": true,
+    "independent_verification_pass": true,
+    "pilot_H12_MAE_harm_at_most_0_05": true,
+    "pilot_primary_MAE_gain_at_least_0_03": true,
+    "supported_tail_or_missing_group_harms": true
+  },
+  "decision_basis": "Frozen W1+W4/H12 Train pilot, independent reconstruction, and declared regression gates only; no Test/Kaggle evidence.",
+  "profile": "STANDARD",
+  "status": "ADVANCE",
+  "subgroup_diagnostics": {
+    "minimum_support": 100,
+    "supported_guard_failures": [],
+    "supported_tail_or_missing_MAE_harm_max": 0.25,
+    "views": {
+      "H12": {
+        "entry_friction_0": {
+          "evidence_status": "SUPPORTED",
+          "guard_applies": false,
+          "guard_pass": null,
+          "mae_harm_candidate_minus_control": -0.11243352954388008,
+          "n": 26048,
+          "supported": true
+        },
+        "entry_friction_1": {
+          "evidence_status": "SUPPORTED",
+          "guard_applies": false,
+          "guard_pass": null,
+          "mae_harm_candidate_minus_control": -0.08420373303965256,
+          "n": 12540,
+          "supported": true
+        },
+        "stream_missing": {
+          "evidence_status": "SUPPORTED",
+          "guard_applies": true,
+          "guard_pass": true,
+          "mae_harm_candidate_minus_control": 0.1542020605750256,
+          "n": 2578,
+          "supported": true
+        },
+        "stream_present": {
+          "evidence_status": "SUPPORTED",
+          "guard_applies": false,
+          "guard_pass": null,
+          "mae_harm_candidate_minus_control": -0.12169164959840906,
+          "n": 36010,
+          "supported": true
+        },
+        "target_ge_95": {
+          "evidence_status": "SUPPORTED",
+          "guard_applies": true,
+          "guard_pass": true,
+          "mae_harm_candidate_minus_control": 0.0463181225083904,
+          "n": 1955,
+          "supported": true
+        },
+        "target_le_5": {
+          "evidence_status": "SUPPORTED",
+          "guard_applies": true,
+          "guard_pass": true,
+          "mae_harm_candidate_minus_control": -0.30685954698832774,
+          "n": 1928,
+          "supported": true
+        }
+      },
+      "primary": {
+        "entry_friction_0": {
+          "evidence_status": "SUPPORTED",
+          "guard_applies": false,
+          "guard_pass": null,
+          "mae_harm_candidate_minus_control": -0.07209089666871726,
+          "n": 6131,
+          "supported": true
+        },
+        "entry_friction_1": {
+          "evidence_status": "SUPPORTED",
+          "guard_applies": false,
+          "guard_pass": null,
+          "mae_harm_candidate_minus_control": -0.040059754433146466,
+          "n": 2933,
+          "supported": true
+        },
+        "stream_missing": {
+          "evidence_status": "SUPPORTED",
+          "guard_applies": true,
+          "guard_pass": true,
+          "mae_harm_candidate_minus_control": 0.17036135818969989,
+          "n": 734,
+          "supported": true
+        },
+        "stream_present": {
+          "evidence_status": "SUPPORTED",
+          "guard_applies": false,
+          "guard_pass": null,
+          "mae_harm_candidate_minus_control": -0.08217644467461938,
+          "n": 8330,
+          "supported": true
+        },
+        "target_ge_95": {
+          "evidence_status": "SUPPORTED",
+          "guard_applies": true,
+          "guard_pass": true,
+          "mae_harm_candidate_minus_control": 0.11554214259770745,
+          "n": 462,
+          "supported": true
+        },
+        "target_le_5": {
+          "evidence_status": "SUPPORTED",
+          "guard_applies": true,
+          "guard_pass": true,
+          "mae_harm_candidate_minus_control": -0.225708047620774,
+          "n": 449,
+          "supported": true
+        }
+      }
+    }
+  },
+  "thresholds": {
+    "full_H12_MAE_harm_max": 0.05,
+    "full_nonnegative_windows_min": 4,
+    "full_primary_MAE_gain_min": 0.03,
+    "individual_pilot_view_MAE_harm_max": 0.5,
+    "pilot_H12_MAE_harm_max": 0.05,
+    "pilot_primary_MAE_gain_min": 0.03,
+    "supported_group_n_min": 100,
+    "supported_tail_or_missing_MAE_harm_max": 0.25
+  }
+}

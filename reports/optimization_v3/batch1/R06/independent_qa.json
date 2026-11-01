@@ -1,0 +1,50 @@
+{
+  "card_id": "R06",
+  "status": "INDEPENDENT_QA_PASS",
+  "review_scope": "Read-only audit of revision 02 frozen inputs, saved bundles, reports, fit ledger, and independent verifier; no refit.",
+  "freeze_signature": "02ae1b4e6e6424a8ac7f66fd0f1b955e478f6265c4f071989d9d8c5ef532c0a8",
+  "official_train_sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+  "checks": {
+    "freeze_and_input_identity_pass": true,
+    "two_cutoff_bundles_and_record_id_alignment_pass": true,
+    "exact_view_denominators_pass": true,
+    "independent_prediction_reconstruction_pass": true,
+    "fit_accounting_two_started_two_saved_zero_failed": true,
+    "fit_only_temporal_source_boundaries_pass": true,
+    "feature_allowlist_and_target_leakage_checks_pass": true,
+    "pilot_and_subgroup_gates_pass": true,
+    "official_test_read": false,
+    "kaggle_accessed": false
+  },
+  "fit_accounting": {
+    "cutoffs": [55, 67],
+    "fit_rows": {"55": 12020, "67": 29705},
+    "score_rows": {"55": 17685, "67": 20903},
+    "fit_started_events": 2,
+    "fit_saved_events": 2,
+    "fit_failed_events": 0,
+    "predictor_fit_calls": 2,
+    "fit_seconds": {"55": 128.67884209996555, "67": 217.67754389997572},
+    "technical_retries": 0
+  },
+  "views": {
+    "W1": {"rows": 4114, "baseline_mae": 15.882111974427762, "candidate_mae": 15.816833317596279, "gain": 0.0652786568314827},
+    "W4": {"rows": 4950, "baseline_mae": 11.455005081083685, "candidate_mae": 11.396231716836489, "gain": 0.05877336424719637},
+    "primary": {"rows": 9064, "baseline_mae": 13.464395831218011, "candidate_mae": 13.402669822035715, "gain": 0.06172600918229598},
+    "H12": {"rows": 38588, "baseline_mae": 14.04753258299653, "candidate_mae": 13.944272932590284, "gain": 0.10325965040624574}
+  },
+  "gate": {
+    "status": "ADVANCE",
+    "checks": {
+      "pilot_primary_MAE_gain_at_least_0_03": true,
+      "pilot_H12_MAE_harm_at_most_0_05": true,
+      "W1_MAE_harm_at_most_0_5": true,
+      "W4_MAE_harm_at_most_0_5": true,
+      "supported_tail_or_missing_group_harms": true,
+      "independent_verification_pass": true,
+      "fit_attempt_accounting_pass": true
+    },
+    "supported_guard_failures": []
+  },
+  "nonblocking_warning": "The run emitted a scikit-learn feature-name warning when the sparse matrix was passed to LightGBM; fit artifacts and independent verification passed."
+}
