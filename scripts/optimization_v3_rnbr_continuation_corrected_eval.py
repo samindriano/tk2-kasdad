@@ -158,10 +158,15 @@ def evaluate() -> dict[str, Any]:
         if independent.get("status") != "PASS":
             raise CorrectedEvaluationError(f"Independent bundle check failed: {fit_id}")
         verified_arrays[fit_id] = arrays
+        receipt_path = runner.RUN_ROOT / "bundles" / fit_id / "receipt.json"
+        npz_path = runner.RUN_ROOT / "bundles" / fit_id / "arrays.npz"
         verified[fit_id] = {"status": "PASS", "fit_id": fit_id,
                             "donor_rows": independent["donor_rows"],
                             "query_rows": independent["query_rows"],
                             "independent_neighbor_values_recomputed": independent["independent_neighbor_values_recomputed"],
+                            "receipt_file_sha256": hashlib.sha256(receipt_path.read_bytes()).hexdigest(),
+                            "receipt_integrity_sha256": receipt["integrity_sha256"],
+                            "bundle_npz_sha256": receipt["npz_sha256"],
                             "query_targets_read_during_fit_verification": False}
 
     prior_path = pilot.REPORT_ROOT / "INDEPENDENT_VERIFICATION.json"
