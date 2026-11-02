@@ -6,6 +6,7 @@ import pandas as pd
 import pytest
 
 from scripts import optimization_v3_b01_benchmark as benchmark
+from scripts import optimization_v3_b01_benchmark_resume as resume
 
 
 def _synthetic_inputs():
@@ -173,6 +174,13 @@ def test_test_feature_loader_source_has_explicit_target_free_usecols():
     assert "pd.read_csv(TEST_PATH, usecols=list(ALLOWED_TEST_COLUMNS)" in source
     assert "pd.read_csv(SAMPLE_PATH, nrows=0)" in source
     assert "artifact_signal" not in benchmark.ALLOWED_TEST_COLUMNS
+
+
+def test_resume_requires_existing_candidate_artifacts(monkeypatch, tmp_path):
+    monkeypatch.setattr(benchmark, "CSV_PATH", tmp_path / "missing.csv")
+    monkeypatch.setattr(benchmark, "PREDICTIONS_PATH", tmp_path / "missing.npz")
+    with pytest.raises(RuntimeError, match="already-materialized"):
+        resume.main()
 
 
 def test_reviewed_b01_source_hash_binds_to_code_not_freeze_json():
