@@ -7,12 +7,20 @@ from src.models.classification_c19_fulltrain import C19FullTrainClassifier
 from src.models.optimization_v3_batch1_c19 import FEATURE_NAMES
 from scripts.optimization_v3_c19_benchmark import _route_c19_probability
 from scripts.optimization_v3_a02_synthetic import run_synthetic
+from scripts.optimization_v3_a02_neighbors import CACHE_SCORE_CYCLE_WINDOWS
 
 
 def test_c19_fulltrain_wrapper_changes_only_accepted_cutoff():
     model = C19FullTrainClassifier()
     assert model.cutoff == 79
     assert model.__class__.__mro__[1].__name__ == "XGBoostSVD32Classifier"
+
+
+def test_a02_cache_cycle_windows_match_persisted_oof_blocks():
+    assert CACHE_SCORE_CYCLE_WINDOWS == {
+        55: (56, 67), 59: (60, 63), 63: (64, 67),
+        67: (68, 79), 71: (72, 75), 75: (76, 79),
+    }
 
 
 def test_c19_route_has_exact_missing_fallback_and_fixed_present_blend():

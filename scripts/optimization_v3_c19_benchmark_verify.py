@@ -42,7 +42,7 @@ def _array_digest(values: np.ndarray, dtype: str) -> str:
 
 def verify() -> dict[str, Any]:
     freeze = _read_json(FREEZE_PATH)
-    protocol_path = ROOT / "experiments/optimization_v3/c19_a02_v1/C19/protocol.json"
+    protocol_path = ROOT / "experiments/optimization_v3/c19_a02_v2/C19/protocol.json"
     protocol = _read_json(protocol_path)
     if canonical_sha256(protocol) != freeze.get("protocol_sha256"):
         raise RuntimeError("C19 verifier: protocol hash mismatch")

@@ -25,14 +25,15 @@ from src.models.research_next_contract import canonical_sha256, file_sha256  # n
 from src.models.research_next_budget import read_events  # noqa: E402
 from src.models.optimization_v3_budget_amendment import AMENDMENT_ID  # noqa: E402
 from scripts.optimization_v3_a02_neighbors import (  # noqa: E402
-    CACHE_PATHS as A02_CACHE_PATHS, EXPECTED_TRAIN_SHA256 as A02_TRAIN_SHA256,
+    CACHE_PATHS as A02_CACHE_PATHS, CACHE_SCORE_CYCLE_WINDOWS,
+    EXPECTED_TRAIN_SHA256 as A02_TRAIN_SHA256,
     REPORT_ROOT as A02_REPORT_ROOT, SYNTHETIC_QA_PATH,
 )
 
 
-C19_ROOT = ROOT / "experiments/optimization_v3/c19_a02_v1/C19"
-A02_ROOT = ROOT / "experiments/optimization_v3/c19_a02_v1/A02"
-C19_REPORT = ROOT / "reports/optimization_v3/c19_benchmark_v1"
+C19_ROOT = ROOT / "experiments/optimization_v3/c19_a02_v2/C19"
+A02_ROOT = ROOT / "experiments/optimization_v3/c19_a02_v2/A02"
+C19_REPORT = ROOT / "reports/optimization_v3/c19_benchmark_v2"
 C19_TRAIN = ROOT / "data/raw/classification/Train.csv"
 C19_TEST = ROOT / "data/raw/classification/Test.csv"
 C19_SAMPLE = ROOT / "data/raw/classification/SampleSubmission.csv"
@@ -198,6 +199,8 @@ def prepare() -> dict[str, Any]:
                     "E67_shuffled": FIT_IDS_LOCAL(67, "shuffled"),
                     "E75_observed": FIT_IDS_LOCAL(75, "observed"),
                     "E75_shuffled": FIT_IDS_LOCAL(75, "shuffled")},
+        "cache_score_cycle_windows": {str(key): list(value)
+                                       for key, value in CACHE_SCORE_CYCLE_WINDOWS.items()},
         "task_fit_count": 4,
         "baseline": "verified frozen sparse25 probability from C16 cache baseline_prediction; never C16 prediction or raw_candidate",
         "bank": {

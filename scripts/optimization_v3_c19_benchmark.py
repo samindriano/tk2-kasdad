@@ -46,11 +46,11 @@ from src.models.research_next_contract import canonical_sha256, file_sha256  # n
 from src.models.round1_models import CATEGORICAL_FEATURES, EXPANDED_FEATURES  # noqa: E402
 
 
-PROTOCOL_PATH = ROOT / "experiments/optimization_v3/c19_a02_v1/C19/protocol.json"
-FREEZE_PATH = ROOT / "experiments/optimization_v3/c19_a02_v1/C19/freeze.json"
+PROTOCOL_PATH = ROOT / "experiments/optimization_v3/c19_a02_v2/C19/protocol.json"
+FREEZE_PATH = ROOT / "experiments/optimization_v3/c19_a02_v2/C19/freeze.json"
 LEDGER_PATH = ROOT / "experiments/runs/optimization_v3_research_next_v1/budget.jsonl"
-RUN_ROOT = ROOT / "experiments/runs/optimization_v3_c19_benchmark_v1"
-REPORT_ROOT = ROOT / "reports/optimization_v3/c19_benchmark_v1"
+RUN_ROOT = ROOT / "experiments/runs/optimization_v3_c19_benchmark_v2"
+REPORT_ROOT = ROOT / "reports/optimization_v3/c19_benchmark_v2"
 TRAIN_PATH = ROOT / "data/raw/classification/Train.csv"
 TEST_PATH = ROOT / "data/raw/classification/Test.csv"
 SAMPLE_PATH = ROOT / "data/raw/classification/SampleSubmission.csv"
@@ -544,7 +544,7 @@ def _route_c19_probability(
 def _prepare_csv(test: pd.DataFrame, sample: pd.DataFrame, prediction_path: Path,
                  state: dict[str, Any], fit_receipt: dict[str, Any],
                  preflight: dict[str, Any]) -> dict[str, Any]:
-    csv_path = ROOT / "submissions/optimization_v3/c19_benchmark_v1/c19_xgb_svd32.csv"
+    csv_path = ROOT / "submissions/optimization_v3/c19_benchmark_v2/c19_xgb_svd32.csv"
     manifest_path = REPORT_ROOT / "submission_manifest.json"
     with np.load(prediction_path, allow_pickle=False) as archive:
         values = {name: np.asarray(archive[name]).copy() for name in archive.files}
@@ -628,7 +628,7 @@ def _prepare_csv(test: pd.DataFrame, sample: pd.DataFrame, prediction_path: Path
         "prediction_counts": {str(int(k)): int(v) for k, v in frame["artifact_signal"].value_counts().sort_index().items()},
         "candidate_labels_differing_from_sparse25": int(np.count_nonzero(values["labels"] != (values["baseline_probability"] >= 0.5).astype(np.int8))),
         "missing_branch_label_changes": int(np.count_nonzero(values["labels"][values["missing_mask"]] != (values["baseline_missing"][values["missing_mask"]] >= 0.5).astype(np.int8))),
-        "kaggle_preflight_path": "reports/optimization_v3/c19_benchmark_v1/kaggle_preflight.json",
+        "kaggle_preflight_path": "reports/optimization_v3/c19_benchmark_v2/kaggle_preflight.json",
         "preflight_sha256": canonical_sha256(preflight),
         "packages": {name: importlib.metadata.version(name) for name in
                      ["numpy", "pandas", "scikit-learn", "scipy", "xgboost", "threadpoolctl", "joblib"]},

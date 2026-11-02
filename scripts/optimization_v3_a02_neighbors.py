@@ -33,8 +33,8 @@ from src.models.research_next_contract import canonical_sha256, file_sha256  # n
 
 
 TRAIN_PATH = ROOT / "data/raw/classification/Train.csv"
-PROTOCOL_PATH = ROOT / "experiments/optimization_v3/c19_a02_v1/A02/protocol.json"
-FREEZE_PATH = ROOT / "experiments/optimization_v3/c19_a02_v1/A02/freeze.json"
+PROTOCOL_PATH = ROOT / "experiments/optimization_v3/c19_a02_v2/A02/protocol.json"
+FREEZE_PATH = ROOT / "experiments/optimization_v3/c19_a02_v2/A02/freeze.json"
 LEDGER_PATH = ROOT / "experiments/runs/optimization_v3_research_next_v1/budget.jsonl"
 RUN_ROOT = ROOT / "experiments/runs/optimization_v3_a02_neighbors_v1"
 REPORT_ROOT = ROOT / "reports/optimization_v3/a02_neighbors_v1"
@@ -47,6 +47,10 @@ CACHE_PATHS = {
     67: ROOT / "experiments/runs/optimization_v3_batch1/C16/C16_fit67.npz",
     71: ROOT / "experiments/runs/optimization_v3_final_continuation/C16/C16_fit71.npz",
     75: ROOT / "experiments/runs/optimization_v3_final_continuation/C16/C16_fit75.npz",
+}
+CACHE_SCORE_CYCLE_WINDOWS = {
+    55: (56, 67), 59: (60, 63), 63: (64, 67),
+    67: (68, 79), 71: (72, 75), 75: (76, 79),
 }
 
 EXPECTED_TRAIN_SHA256 = "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c"
@@ -181,7 +185,8 @@ def _load_cache(origin: int, train: pd.DataFrame) -> dict[str, np.ndarray]:
     if not np.array_equal(reconstruction, p_base):
         raise RuntimeError(f"A02 C16 baseline_prediction is not bit-exact sparse25 at cutoff {origin}")
     cycles = pd.to_numeric(train["cycle_code"], errors="raise").to_numpy(dtype=np.int64)[rows]
-    if not np.array_equal(np.unique(cycles), np.arange(origin + 1, min(origin + 12, 79) + 1)):
+    cycle_window = CACHE_SCORE_CYCLE_WINDOWS[origin]
+    if not np.array_equal(np.unique(cycles), np.arange(cycle_window[0], cycle_window[1] + 1)):
         raise RuntimeError(f"A02 C16 cache {origin} does not cover its declared complete score cycles")
     for cycle in np.unique(cycles):
         if np.count_nonzero(cycles == cycle) != np.count_nonzero(train["cycle_code"].to_numpy() == cycle):

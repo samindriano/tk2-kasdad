@@ -24,6 +24,12 @@ from scripts.optimization_v3_a02_neighbors import (  # noqa: E402
 )
 
 
+_EXPECTED_CACHE_CYCLE_WINDOWS = {
+    "55": [56, 67], "59": [60, 63], "63": [64, 67],
+    "67": [68, 79], "71": [72, 75], "75": [76, 79],
+}
+
+
 def _metric(y: np.ndarray, probability: np.ndarray) -> dict[str, Any]:
     truth = np.asarray(y, dtype=np.int8)
     pred = (np.asarray(probability, dtype=np.float64) >= 0.5).astype(np.int8)
@@ -83,7 +89,8 @@ def _check_frozen_inputs(freeze: dict[str, Any], protocol: dict[str, Any]) -> di
             "budget_event_pass": True}
 
 
-def _read_source_cache_independently(cutoff: int, train: pd.DataFrame) -> dict[str, np.ndarray]:
+def _read_source_cache_independently(cutoff: int, train: pd.DataFrame,
+                                     protocol: dict[str, Any]) -> dict[str, np.ndarray]:
     path = CACHE_PATHS[cutoff]
     side = json.loads(path.with_suffix(".json").read_text(encoding="utf-8"))
     if hashlib.sha256(path.read_bytes()).hexdigest() != side.get("npz_sha256"):
@@ -117,7 +124,9 @@ def _read_source_cache_independently(cutoff: int, train: pd.DataFrame) -> dict[s
     if not np.array_equal(independently_routed, base):
         raise RuntimeError(f"A02 verifier: C16 baseline_prediction is not sparse25 at {cutoff}")
     cycles = train.cycle_code.to_numpy(dtype=np.int64)[rows]
-    if not np.array_equal(np.unique(cycles), np.arange(cutoff + 1, min(cutoff + 12, 79) + 1)):
+    window = protocol["cache_score_cycle_windows"][str(cutoff)]
+    if (window != _EXPECTED_CACHE_CYCLE_WINDOWS[str(cutoff)]
+            or not np.array_equal(np.unique(cycles), np.arange(window[0], window[1] + 1))):
         raise RuntimeError(f"A02 verifier: C16 cache cycles are incomplete at {cutoff}")
     for cycle in np.unique(cycles):
         if np.sum(cycles == cycle) != np.sum(train.cycle_code.to_numpy() == cycle):
@@ -491,7 +500,7 @@ def _score_report(samples: dict[tuple[int, str], dict[str, Any]], train: pd.Data
 
 
 def verify(*, write_outputs: bool = True) -> dict[str, Any]:
-    protocol_path = ROOT / "experiments/optimization_v3/c19_a02_v1/A02/protocol.json"
+    protocol_path = ROOT / "experiments/optimization_v3/c19_a02_v2/A02/protocol.json"
     protocol = _read_json(protocol_path)
     freeze = _read_json(FREEZE_PATH)
     hashes = _check_frozen_inputs(freeze, protocol)
@@ -502,7 +511,10 @@ def verify(*, write_outputs: bool = True) -> dict[str, Any]:
                         dtype={"record_id": str})
     if len(train) != EXPECTED_ROWS or not train.record_id.is_unique:
         raise RuntimeError("A02 verifier: Train ID/row count mismatch")
-    caches = {cutoff: _read_source_cache_independently(cutoff, train) for cutoff in sorted(CACHE_PATHS)}
+    if protocol.get("cache_score_cycle_windows") != _EXPECTED_CACHE_CYCLE_WINDOWS:
+        raise RuntimeError("A02 verifier: frozen C16 cache coverage map differs")
+    caches = {cutoff: _read_source_cache_independently(cutoff, train, protocol)
+              for cutoff in sorted(CACHE_PATHS)}
     banks = {origin: _source_bank(origin, caches, train) for origin in (67, 75)}
     samples = {}
     for origin in (67, 75):
