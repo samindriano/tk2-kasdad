@@ -13,6 +13,8 @@ from typing import Any, Callable
 
 from scripts import optimization_v3_classification_sparse_mlp_v1_recovery_verify as recovery_verify
 
+_ORIGINAL_VERIFY_RECOVERED = recovery_verify.verify_recovered
+
 
 def _catboost_fit_rows_from_nested_metadata(metadata: dict[str, Any]) -> int:
     state = metadata.get("state", {})
@@ -43,7 +45,7 @@ def verify_recovered() -> dict[str, Any]:
 
     independent._json = _json_with_nested_fit_rows
     try:
-        return recovery_verify.verify_recovered()
+        return _ORIGINAL_VERIFY_RECOVERED()
     finally:
         independent._json = original_json
 
