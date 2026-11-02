@@ -24,6 +24,11 @@ if str(ROOT) not in sys.path:
 from scripts import optimization_v3_rnbr_final_e79 as runner  # noqa: E402
 from scripts import optimization_v3_rnbr_official as official  # noqa: E402
 from src.models.regression_neighbor_rnbr import EXPECTED_SOURCE_CUTOFFS, MAX_NEIGHBORS, MIN_NEIGHBORS  # noqa: E402
+from src.models.rnbr_final_e79_qa import (  # noqa: E402
+    validate_csv_roundtrip,
+    validate_e79_fit_accounting,
+    validate_e79_fit_receipt,
+)
 
 _LIMITER = threadpool_limits(limits=2)
 VERIFY = runner.REPORT / "verification.json"
@@ -81,13 +86,16 @@ def verify() -> dict[str, Any]:
     if freeze != runner.make_freeze():
         raise runner.E79Error("Frozen E79 sources, inputs, or preflight changed")
     receipt = runner._read_json(runner.FIT_RECEIPT)
-    receipt_body = {k: v for k, v in receipt.items() if k != "receipt_sha256"}
-    if (receipt.get("fit_id") != runner.FIT_ID or receipt.get("status") != "FIT_OUTPUT_DURABLE"
-            or receipt.get("receipt_sha256") != runner.digest_bytes(runner.canonical_bytes(receipt_body))
-            or receipt.get("bundle_sha256") != runner.sha_file(runner.BUNDLE)
-            or receipt.get("bank_matrix_file_sha256") != runner.sha_file(runner.BANK_MATRIX)
-            or receipt.get("freeze_signature") != freeze["freeze_signature"]):
-        raise runner.E79Error("E79 durable fit receipt does not verify")
+    try:
+        validate_e79_fit_receipt(
+            receipt,
+            expected_fit_id=runner.FIT_ID,
+            expected_freeze_signature=freeze["freeze_signature"],
+            expected_bundle_sha256=runner.sha_file(runner.BUNDLE),
+            expected_bank_matrix_sha256=runner.sha_file(runner.BANK_MATRIX),
+        )
+    except ValueError as exc:
+        raise runner.E79Error("E79 durable fit receipt does not verify") from exc
     with np.load(runner.BUNDLE, allow_pickle=False) as archive:
         bundle = {key: np.asarray(archive[key]).copy() for key in archive.files}
     required = {
@@ -189,18 +197,26 @@ def verify() -> dict[str, Any]:
     csv_frame = pd.read_csv(runner.CSV, dtype={"record_id": str})
     manifest = runner._read_json(runner.MANIFEST)
     csv_values = csv_frame.threat_rank.to_numpy(dtype=np.float64)
-    csv_max_abs_error = float(np.max(np.abs(csv_values - prediction)))
     if (csv_frame.columns.tolist() != ["record_id", "threat_rank"] or len(csv_frame) != 29_421
-            or not np.array_equal(csv_frame.record_id.astype(str).to_numpy(), sample.record_id.astype(str).to_numpy())
-            or csv_max_abs_error > 5e-14
-            or runner.sha_file(runner.CSV) != manifest.get("csv", {}).get("sha256")
+            or not np.array_equal(csv_frame.record_id.astype(str).to_numpy(), sample.record_id.astype(str).to_numpy())):
+        raise runner.E79Error("Final E79 CSV schema/order/values/hash failed")
+    try:
+        csv_max_abs_error = validate_csv_roundtrip(prediction, csv_values, atol=5e-14)
+    except ValueError as exc:
+        raise runner.E79Error("Final E79 CSV schema/order/values/hash failed") from exc
+    if (runner.sha_file(runner.CSV) != manifest.get("csv", {}).get("sha256")
             or manifest.get("csv", {}).get("prediction_raw_sha256") != runner.sha_array(prediction, "<f8")):
         raise runner.E79Error("Final E79 CSV schema/order/values/hash failed")
     events = runner._ledger_events()
-    starts = [event for event in events if event.get("fit_id") == runner.FIT_ID and event.get("event") == "FIT_STARTED"]
-    saved = [event for event in events if event.get("fit_id") == runner.FIT_ID and event.get("event") == "FIT_SAVED"]
-    if (len(starts) != 1 or len(saved) != 1 or saved[0].get("receipt_sha256") != runner.sha_file(runner.FIT_RECEIPT)
-            or runner._ledger_snapshot()["pending"] != 0):
+    try:
+        validate_e79_fit_accounting(
+            events,
+            fit_id=runner.FIT_ID,
+            receipt_file_sha256=runner.sha_file(runner.FIT_RECEIPT),
+        )
+    except ValueError as exc:
+        raise runner.E79Error("E79 fit ledger does not reconcile to one saved slot") from exc
+    if runner._ledger_snapshot()["pending"] != 0:
         raise runner.E79Error("E79 fit ledger does not reconcile to one saved slot")
     result = {
         "status": "PASS", "fit_id": runner.FIT_ID, "freeze_signature": freeze["freeze_signature"],
