@@ -1,0 +1,48 @@
+{
+  "status": "PASS",
+  "fit_type": "SYNTHETIC_ONLY",
+  "official_fit_count": 0,
+  "synthetic_predictor_fits": 2,
+  "synthetic_test_or_sample_access": false,
+  "steps": [
+    "fit_text_space",
+    "fit_observed",
+    "fit_shuffled",
+    "predict",
+    "missing_route",
+    "zero_vector",
+    "failure_injection",
+    "atomic_publish_recovery",
+    "joblib_persistence_resume",
+    "pickle_free_npz_roundtrip",
+    "independent_neighbor_formula_reconstruction",
+    "metric",
+    "group_support",
+    "gate"
+  ],
+  "checks": {
+    "failed_publish_left_no_final_model": true,
+    "resume_reused_fitted_model_without_refit": true,
+    "probability_reconstruction_bit_exact": true,
+    "missing_fallback_bit_exact": true,
+    "zero_similarity_row_zero_correction": true,
+    "query_labels_absent_from_prediction_signature": true,
+    "unsupported_group_marked_by_minimum_support": true
+  },
+  "synthetic_group_support": {
+    "missing": {
+      "n": 1,
+      "class0": 0,
+      "class1": 1
+    },
+    "present": {
+      "n": 11,
+      "class0": 6,
+      "class1": 5
+    }
+  },
+  "synthetic_example_metric": {
+    "baseline_macro_f1": 0.5,
+    "candidate_macro_f1": 0.6666666666666666
+  }
+}
