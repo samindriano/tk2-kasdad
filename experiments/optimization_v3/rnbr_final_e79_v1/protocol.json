@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "protocol_id": "RNBR_FINAL_E79_OBSERVED_TEST_BENCHMARK_V1",
+  "fit_id": "RNBR_FINAL_E79_OBSERVED",
+  "fit_semantics": "one target-memory build over present-stream Regression Train donors, cycles 56-79; no estimator or preprocessing fit",
+  "donor_source": {
+    "dataset": "official Regression Train only",
+    "rows": "signal_stream present and cycle_code in [56,79]",
+    "target": "threat_rank",
+    "r06_oof_cutoffs": {"56-59": 55, "60-63": 59, "64-67": 63, "68-71": 67, "72-75": 71, "76-79": 75}
+  },
+  "query_source": {
+    "dataset": "official Regression Test features only",
+    "baseline": "original full-Train R06 prediction artifact",
+    "classification_test_use": "verify ID, cycle_code, and signal_stream one-to-one alignment only; never labels or probabilities"
+  },
+  "geometry": {
+    "preprocessor": "reuse fitted A02 E75 observed word-TFIDF vectorizer; no refit",
+    "max_neighbors": 32,
+    "positive_cosine_only": true,
+    "selection_order": "descending cosine, then ascending Regression Train source row for ties",
+    "weight": "cosine squared"
+  },
+  "prediction": {
+    "minimum_neighbors": 5,
+    "weighted_median_order": "residual then source row; equal residual weights grouped",
+    "exact_half_tie": "midpoint of adjacent distinct residuals within 1e-12 of total mass",
+    "delta": "clip(0.25 * weighted_median_residual, -5, +5)",
+    "final": "clip(R06 full-Train Test prediction + delta, 0, 100)",
+    "fallback": "exact unchanged R06 prediction when stream missing or positive neighbors <5",
+    "rerank": false
+  },
+  "resources": {"concurrent_jobs": 1, "threads": 2, "job_rss_cap_bytes": 6442450944, "free_memory_reserve_bytes": 2147483648},
+  "boundaries": {
+    "classification_labels_or_probabilities": "never read",
+    "test_labels": "never read",
+    "test_use": "feature-only inference",
+    "sample_submission_use": "schema and ID order only",
+    "kaggle_upload": false,
+    "git_push": false
+  }
+}
