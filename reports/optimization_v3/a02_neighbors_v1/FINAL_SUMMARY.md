@@ -63,6 +63,14 @@ These metrics were computed from persisted `baseline_prediction` and `prediction
 
 Observed improves AUC, average precision, and Brier score versus sparse25 in all four views. Log loss is worse than sparse25 in all four views and worse than shuffled in W6, primary, and H12-L. This disagreement among probability scores is a material calibration/severe-error diagnostic; no calibration or threshold search was authorized.
 
+### Primary log-loss endpoint diagnosis (zero fit)
+
+The primary log-loss increase is concentrated in rare catastrophic endpoint errors. Recomputing only from the saved observed probabilities for W4 (E67, cycles 68–71) and W6 (E75, cycles 76–79), joined to `artifact_signal` in official Train by `score_rows`, gives 13,441 rows. The persisted NPZ `labels` field is the thresholded prediction, not the ground-truth target, and was not used as `y_true`. IDs and cycle codes were checked against Train.
+
+Under the historical report's manual `1e-15` clipping convention, exactly 1,653 candidate probabilities are 0 or 1; 19 are wrong endpoints (8 predicted 0 for target 1, 11 predicted 1 for target 0). Their candidate-minus-baseline log-loss contribution is **+0.043337257** when divided by all 13,441 primary rows. The remaining 13,422 rows contribute **−0.003998229** on that same denominator, leaving the pooled delta **+0.039339027** (candidate 0.392924391 vs baseline 0.353585364). These are additive contributions to pooled log loss, not separate average losses. Full sums and row-count details are in [logloss_endpoint_diagnostic.json](logloss_endpoint_diagnostic.json).
+
+For comparison, the installed scikit-learn 1.8.0 `log_loss(y, p)` default clips float64 probabilities at machine epsilon (`2.220446049250313e-16`), producing candidate **0.395051009** and baseline **0.353585364**. This is a different clipping convention from the `1e-15` calculation in the probability table above; the two candidate values must not be treated as numerically interchangeable. The diagnosis uses frozen saved probabilities and Train labels only: no refit, probability edit, calibration, or threshold change. It explains the pooled log-loss worsening as sensitivity to a small number of extreme errors; it does not change A02's pilot verdict or qualify the candidate.
+
 ### Cycle-level effects
 
 The table reports Macro F1 gain for observed A02 versus each comparator. All cycles and denominators are included.

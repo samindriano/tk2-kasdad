@@ -1,0 +1,73 @@
+{
+  "status": "RECOMPUTED_FROM_DURABLE_PREDICTIONS_NO_FIT",
+  "question": "How much of the primary candidate-minus-baseline log-loss difference is contributed by wrong exact-endpoint probabilities?",
+  "source_boundaries": {
+    "label_source": "official Classification Train artifact_signal joined by score_rows",
+    "train_path": "data/raw/classification/Train.csv",
+    "train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "test_or_sample_accessed": false,
+    "model_fit_performed": false,
+    "probabilities_modified": false
+  },
+  "prediction_sources": {
+    "W4_E67_cycles_68_71": {
+      "path": "experiments/runs/optimization_v3_a02_neighbors_v1/E67/observed/predictions.npz",
+      "sha256": "49442235f6c828618d8aa12569a802bcad6d12ae6f5d6040294a6f4ac9323eca",
+      "rows": 4950,
+      "id_and_cycle_join_verified": true
+    },
+    "W6_E75_cycles_76_79": {
+      "path": "experiments/runs/optimization_v3_a02_neighbors_v1/E75/observed/predictions.npz",
+      "sha256": "d5a7f8658172370f8e1c30a0b363198a25af52abf40ae7c69fb504b1dbc621bc",
+      "rows": 8491,
+      "id_and_cycle_join_verified": true
+    }
+  },
+  "target_handling": {
+    "npz_labels_field": "thresholded predictions; not used as ground truth",
+    "ground_truth": "artifact_signal from official Train indexed by score_rows",
+    "npz_labels_equal_thresholded_prediction_on_primary": true,
+    "npz_labels_equal_ground_truth_on_primary": false
+  },
+  "primary": {
+    "rows": 13441,
+    "manual_clipping_epsilon": 1e-15,
+    "definition": "per-row binary log loss after clipping p to [epsilon, 1-epsilon]",
+    "candidate_probability_exactly_0_or_1_rows": 1653,
+    "wrong_exact_endpoint_rows": 19,
+    "wrong_endpoint_breakdown": {
+      "p_equals_0_and_y_equals_1": 8,
+      "p_equals_1_and_y_equals_0": 11
+    },
+    "wrong_endpoint_subset": {
+      "rows": 19,
+      "candidate_log_loss_sum": 656.2455470750351,
+      "baseline_log_loss_sum": 73.7494809526804,
+      "candidate_minus_baseline_sum": 582.4960661223548,
+      "candidate_minus_baseline_contribution_to_pooled_mean": 0.043337256612034435,
+      "contribution_denominator_rows": 13441
+    },
+    "all_other_rows": {
+      "rows": 13422,
+      "candidate_log_loss_sum": 4625.051195143606,
+      "baseline_log_loss_sum": 4678.791394681246,
+      "candidate_minus_baseline_sum": -53.740199537639725,
+      "candidate_minus_baseline_contribution_to_pooled_mean": -0.00399822926401605,
+      "contribution_denominator_rows": 13441
+    },
+    "pooled": {
+      "candidate_log_loss": 0.39292439120739836,
+      "baseline_log_loss": 0.35358536385937994,
+      "candidate_minus_baseline": 0.03933902734801838
+    }
+  },
+  "library_default_comparison": {
+    "library": "scikit-learn",
+    "version": "1.8.0",
+    "default_float64_clipping_epsilon": 2.220446049250313e-16,
+    "candidate_log_loss": 0.3950510088190485,
+    "baseline_log_loss": 0.35358536385937994,
+    "note": "This default-epsilon candidate value differs from the historical manual 1e-15-clipped value; do not report them as the same calculation."
+  },
+  "interpretation": "The pooled worsening is accounted for by 19 wrong exact-endpoint predictions; the other rows collectively offset part of that penalty. This is a descriptive diagnosis of frozen probabilities, not evidence for calibration, clipping, threshold changes, or qualification. A02 verdict remains PILOT_PASS only."
+}
