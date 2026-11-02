@@ -260,7 +260,7 @@ def _load_verified_inputs() -> dict[str, Any]:
     a02_freeze = a02.verify_freeze()
     b01_freeze = json.loads(B01_RECIPE_FREEZE_PATH.read_text(encoding="utf-8"))
     if (b01_freeze.get("status") != "B01_RECIPE_FROZEN_PRE_SCORE"
-            or _sha256_file(b01.FREEZE_PATH) != b01_freeze.get("code_sha256")
+            or _sha256_file(Path(b01.__file__)) != b01_freeze.get("code_sha256")
             or b01_freeze.get("official_train_sha256") != EXPECTED_TRAIN_SHA256):
         raise RuntimeError("The reviewed B01 formula freeze/source hash does not validate")
 

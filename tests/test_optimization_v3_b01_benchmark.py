@@ -128,3 +128,8 @@ def test_test_feature_loader_source_has_explicit_target_free_usecols():
     assert "pd.read_csv(SAMPLE_PATH, nrows=0)" in source
     assert "artifact_signal" not in benchmark.ALLOWED_TEST_COLUMNS
 
+
+def test_reviewed_b01_source_hash_binds_to_code_not_freeze_json():
+    recipe_freeze = benchmark.json.loads(benchmark.B01_RECIPE_FREEZE_PATH.read_text(encoding="utf-8"))
+    assert recipe_freeze["status"] == "B01_RECIPE_FROZEN_PRE_SCORE"
+    assert benchmark._sha256_file(benchmark.Path(benchmark.b01.__file__)) == recipe_freeze["code_sha256"]
