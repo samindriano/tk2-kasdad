@@ -1,0 +1,103 @@
+{
+  "frozen_at_local": "2026-11-02T14:40:27.718596+07:00",
+  "id": "CLASSIFICATION_SPARSE_MLP_V1",
+  "identity": {
+    "campaign": "CLASSIFICATION_SPARSE_MLP_V1",
+    "code_sha256": {
+      "scripts/optimization_v3_classification_next_v1.py": "0f5e63c8ce8786e1fe1b11664637f781f34a87eebc9dc50ea976581530f9af4c",
+      "scripts/optimization_v3_classification_sparse_mlp_v1.py": "6d7d841a278fcb79bd62fd8d8da1d82aceafca6737f738d57086815ded019827",
+      "scripts/optimization_v3_classification_sparse_mlp_v1_verify.py": "152ededd6dbf5669466b22773e2aa8e6a8afdf897e98ffb2b3d3e846a7d2a929",
+      "scripts/optimization_v3_research_next_n01.py": "55b83477db45555b0bee2686ee62831bf33f0e423ce9eabb62cb52bd79fb2461",
+      "scripts/research_campaign_classification.py": "1a6f5979c1e1194225356bbd224f34d468114f1c71170e67180f90a70602bcbf",
+      "src/models/classification_metrics.py": "db77dd99210835006f96db1659bf4e87213179962b8f692d181af831b6539563",
+      "src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+      "src/models/classification_round2_models.py": "239008f056c6f5e004e84d2b9df9f5bfb20695ccfad90eed4deec3463c7d4575",
+      "src/models/classification_sparse_mlp_v1.py": "a5bfd30aa94f92a2c65583dcf6929bcaed0bfa0f989373ed330d0cbdac09f096",
+      "src/models/research_next_budget.py": "b19ca985ff28a2f3c80415bf48374e04ad064b003876f1f6d6c077dab7ed73a8",
+      "src/models/research_next_contract.py": "486a3f144afbfc783a90ce3948f11cee69d702a05dd3ac113e93b3bda53d7185",
+      "src/models/research_next_n02.py": "638bade6b81b9c07391c5eca8688f906e5cfc000a8b5ee1fb38a2af3400b29fd",
+      "src/models/round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+      "src/utils/paths.py": "dabb75f9a5e3a87965d78ee5aee119d1cd2bb1b1addc2d510459692c3e873555",
+      "tests/test_optimization_v3_classification_sparse_mlp_v1.py": "394270c2c54977323f0b1baa175ddf890b0dfc91c07cae7c1a3cd6c02ac28941"
+    },
+    "estimator": {
+      "class": "sklearn.neural_network.MLPClassifier",
+      "input": "exactC2_B main-effect design, unchangedscaling/OHE/TFIDF/missingindicator; all learnedpreprocessingfitonlyprefix, noSVD/newfeatures/newnormalization",
+      "parameters": {
+        "activation": "relu",
+        "alpha": 0.01,
+        "batch_size": 256,
+        "beta_1": 0.9,
+        "beta_2": 0.999,
+        "early_stopping": false,
+        "epsilon": 1e-08,
+        "hidden_layer_sizes": [
+          32
+        ],
+        "learning_rate": "constant",
+        "learning_rate_init": 0.001,
+        "max_fun": 15000,
+        "max_iter": 30,
+        "momentum": 0.9,
+        "n_iter_no_change": 31,
+        "nesterovs_momentum": true,
+        "power_t": 0.5,
+        "random_state": 42,
+        "shuffle": true,
+        "solver": "adam",
+        "tol": 0.0,
+        "validation_fraction": 0.1,
+        "verbose": false,
+        "warm_start": false
+      },
+      "training_schedule": "Exactly30Adam epochs; no earlystopping/outerlabelmonitoring. n_iter_no_change31 prevents earlytraininglosspatience stop. Reachingfixedmax_iter mayissueConvergenceWarning, recordedasexpectednotclaimofconvergence; nonfinite/divergentloss orpredictions istechnicalfail. No epochrescue."
+    },
+    "input_sha256": {
+      "data/raw/classification/Train.csv": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+      "experiments/optimization_v3/classification_mlp_v1/protocol.json": "d110156b85b115857218c040d1dc88d8d249c3824310be9f05d58d9ed9906042",
+      "experiments/optimization_v3/classification_sparse/freeze.json": "18f49d3e235bc4fe8ff2fcd1e550bef09cc8b681f9420b103aca1080fdda8910",
+      "experiments/optimization_v3/classification_sparse/protocol.json": "2cc006183d89ce6a21ffb740e5e9bf38afc3bfb4f5014fc57e83b9c701f0a635",
+      "experiments/runs/classification_round1_v1/fit55__C2_B.npz": "ce49c6b471f4b9eca8be1c24fa37b487d9a688b28dc543e3faa1a8b6fc7d177c",
+      "experiments/runs/classification_round1_v1/fit67__C2_B.npz": "853a8c44ac2b3ea50fc1824fec78f63948aee6b1c47678dc1ddc8ecb505ecdea",
+      "experiments/runs/dual_cls_catboost_v1/fit55.json": "eeadc3f3db6c29137a1d0028ed4f08aea0d7b5e40b01af3c217ca003ab293ef8",
+      "experiments/runs/dual_cls_catboost_v1/fit55.npz": "0cda97c481aef51495e3fd4a23c43b0a906f23ffc9080e91194250e7be4d046a",
+      "experiments/runs/dual_cls_catboost_v1/fit67.json": "df1b7a8d434767c723f98a65ae7a8442c418692fecccffdc6ef9b11dbeb6a538",
+      "experiments/runs/dual_cls_catboost_v1/fit67.npz": "4b63070ac665e2ed2a9f567fb5c945f640da1eace5533af8d87d7df1a66ead59",
+      "experiments/runs/optimization_v3_batch1/C19/C19_fit55.json": "bed7dc6db851ac3d90088f03616219b1c9450aadbeb02b55817b453fa5d59ce7",
+      "experiments/runs/optimization_v3_batch1/C19/C19_fit55.npz": "50bc51f4949e97acacf04c24e2cbb7b6e331ad031a04243ce887fe096d228c49",
+      "experiments/runs/optimization_v3_batch1/C19/C19_fit67.json": "e2c84f8b3b01211a7c2d8b4dc9797458f3fa800a955c7a38efd84bfc5adbefad",
+      "experiments/runs/optimization_v3_batch1/C19/C19_fit67.npz": "66da625562cf72ab68ad7218de71bcfee7d6d10c6b574f248deee87c873e03e0",
+      "experiments/runs/optimization_v3_classification_sparse/fit55.json": "764fbfcd6ee191e90d9519561ea591b042bdef2845f62452ba055d6dcf884551",
+      "experiments/runs/optimization_v3_classification_sparse/fit55.npz": "0efbfd81ac9489c29c9ae1e06922e8769dbc1227a7242a1bb779940cfe682f5b",
+      "experiments/runs/optimization_v3_classification_sparse/fit67.json": "6427f9a9bbf9bbcc35f6ef85ac5ab4d5875315cc902d17cb650dadb02cdb3ffc",
+      "experiments/runs/optimization_v3_classification_sparse/fit67.npz": "61232d3fdcadbbd6923154bc53302f56cdbab7c9d3255055441fa10abf077af4",
+      "reports/classification_round1/fit_audits/fit55.json": "1a6c84022dbbb806b635e9548020428fd2202a4cff7e7c1e12fe61915aed6074",
+      "reports/classification_round1/fit_audits/fit67.json": "a854215f01672733b64b1adf3c778fd653342dcbd7abc960a0fe9c0ca1330a2a",
+      "reports/optimization_v3/classification_diagnostics/FINDINGS.md": "bd64b821c586131d09fb8d16e53a73a1caf495e2c54e02ec0f1ee07810cdc997",
+      "reports/optimization_v3/classification_mlp_v1/DECISION.md": "87a5b3c933dab353abfb78c153456adb614285e782a16d0888d8aa5f1e68a105",
+      "reports/optimization_v3/classification_next_v1/FINAL_SUMMARY.md": "94e0e21de68f616c1cd862f323aac28889224b771d62d46ebf321a95beb013ca",
+      "reports/optimization_v3/classification_sparse/pilot.json": "893256cc76aded8606d00a922dc7a275914468184fad9ae3e7c33d2678040392"
+    },
+    "kaggle_access": false,
+    "origins": [
+      55,
+      67
+    ],
+    "packages": {
+      "joblib": "1.5.3",
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "psutil": "7.0.0",
+      "scikit-learn": "1.8.0",
+      "scipy": "1.18.0",
+      "threadpoolctl": "3.6.0"
+    },
+    "protocol_sha256": "d110156b85b115857218c040d1dc88d8d249c3824310be9f05d58d9ed9906042",
+    "sample_submission_read": false,
+    "source_commit": "e1d44d3bfe6062a009d049bc285c211f90897e89",
+    "test_read": false
+  },
+  "outcome_blind_to_official_mlp_fits": true,
+  "schema": 1,
+  "signature": "46d9362cdf543b87af58653fe1666d79cbe13b4d012397d5f730b15959debd18"
+}
