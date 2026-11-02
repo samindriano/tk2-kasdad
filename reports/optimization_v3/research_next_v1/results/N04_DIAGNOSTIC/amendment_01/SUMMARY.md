@@ -42,7 +42,7 @@ Cutoff 55 berada tipis di bawah batas AUC pada satu fold (0,549576) dan lebih re
 
 Setiap window, primary, dan H12 menyimpan denominator, MAE kandidat, R22, shuffled-weight, protected legacy, dan R06 untuk `stream_missing`, target aktual `<=5`, dan target aktual `>=95`. Gain positif berarti kandidat mengurangi MAE terhadap kontrol. Tail target hanya dipakai sebagai mask evaluasi. `supported` mengikuti minimum n=100; hasil ini diagnostik, bukan penerapan gate baru.
 
-| View | Subgroup | n | Gain vs R22 | Gain vs shuffle | Harm vs legacy | Candidate MAE | R06 MAE |
+| View | Subgroup | n | Harm vs R22 | Gain vs shuffle | Harm vs legacy | Candidate MAE | R06 MAE |
 |---|---|---:|---:|---:|---:|---:|---:|
 | W1_55_to_56_59 | stream_missing | 392 | +0.202732 | +0.005644 | +0.115590 | 13.948865 | 14.228832 |
 | W1_55_to_56_59 | observed_target_le5_evaluation_only | 205 | -0.084176 | +0.177562 | -1.006293 | 20.505915 | 21.445207 |
@@ -75,7 +75,7 @@ Setiap window, primary, dan H12 menyimpan denominator, MAE kandidat, R22, shuffl
 | H12 origin 67 | observed_target_le5_evaluation_only | 1,048 | -0.037586 | +0.039841 | -0.459153 | 8.815985 | 8.896898 |
 | H12 origin 67 | observed_target_ge95_evaluation_only | 1,057 | +0.050415 | -0.045962 | +0.218264 | 7.577146 | 7.478323 |
 
-Tail subgroup masks use observed evaluation targets for reporting only; the task fits never receive evaluation targets.
+For this subgroup table, `harm_vs_R22 = candidate MAE - R22 MAE`; positive values mean the candidate is worse than R22. The column `gain_vs_shuffle` remains `shuffle MAE - candidate MAE`; positive values mean the candidate is better than shuffled weights. `harm_vs_legacy` is `candidate MAE - legacy MAE`; positive values mean worse than legacy. Tail subgroup masks use observed evaluation targets for reporting only; the task fits never receive evaluation targets.
 
 ## Verifikasi dan batas interpretasi
 
