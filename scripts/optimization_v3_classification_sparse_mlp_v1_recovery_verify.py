@@ -50,6 +50,18 @@ def _same(a: Any, b: Any) -> bool:
     return a == b
 
 
+def _recovery_event_hashes_match(
+    event: dict[str, Any], *, model_sha: str, state_sha: str,
+    receipt_sha: str, recovery_sha: str,
+) -> bool:
+    return (
+        event.get("model_joblib_sha256") == model_sha and
+        event.get("fit_state_sha256") == state_sha and
+        event.get("bundle_receipt_sha256") == receipt_sha and
+        event.get("recovery_code_sha256") == recovery_sha
+    )
+
+
 def verify_recovered() -> dict[str, Any]:
     problems: list[str] = []
     frozen = _json(FREEZE)
@@ -70,6 +82,8 @@ def verify_recovered() -> dict[str, Any]:
     events = read_events(LEDGER)
     outputs: dict[int, dict[str, Any]] = {}
     fit_audits: dict[str, Any] = {}
+    recovery_chain_valid = False
+    cutoff67_saved_valid = False
 
     for cutoff in runner.ORIGINS:
         fit_id = f"{runner.CARD_ID}_{cutoff}"
@@ -79,13 +93,26 @@ def verify_recovered() -> dict[str, Any]:
         if len(starts) != 1 or len(terminals) != 1:
             problems.append(f"ledger start/terminal cardinality mismatch at cutoff {cutoff}")
             continue
+        if (starts[0].get("card_id") != runner.CARD_ID or starts[0].get("stage") != runner.STAGE or
+                starts[0].get("cutoff") != cutoff or starts[0].get("fit_consumed_at_start") is not True):
+            problems.append(f"ledger FIT_STARTED identity invalid at cutoff {cutoff}")
         if cutoff == 55:
             if terminals[0].get("event") != "FIT_FAILED" or len(recoveries) != 1:
                 problems.append("cutoff55 original failure and artifact recovery chain not preserved")
-            elif recoveries[0].get("original_terminal_status") != "FIT_FAILED" or recoveries[0].get("refit_performed") is not False:
-                problems.append("cutoff55 recovery ledger metadata invalid")
+            elif (terminals[0].get("card_id") != runner.CARD_ID or terminals[0].get("stage") != runner.STAGE or
+                  terminals[0].get("cutoff") != 55 or
+                  terminals[0].get("error") != "TypeError: Object of type int64 is not JSON serializable"):
+                problems.append("cutoff55 FIT_FAILED identity/error differs from preserved technical failure")
+            elif (recoveries[0].get("card_id") != runner.CARD_ID or recoveries[0].get("stage") != runner.STAGE or
+                  recoveries[0].get("cutoff") != 55 or recoveries[0].get("original_terminal_status") != "FIT_FAILED" or
+                  recoveries[0].get("original_terminal_event_preserved") is not True or
+                  recoveries[0].get("refit_performed") is not False):
+                problems.append("cutoff55 recovery ledger identity/metadata invalid")
         elif terminals[0].get("event") != "FIT_SAVED" or recoveries:
             problems.append("cutoff67 must be one normal saved fit with no recovery event")
+        elif (terminals[0].get("card_id") != runner.CARD_ID or terminals[0].get("stage") != runner.STAGE or
+              terminals[0].get("cutoff") != 67):
+            problems.append("cutoff67 FIT_SAVED ledger identity invalid")
 
         fit_dir = RUNS / f"fit{cutoff}"
         model_path = fit_dir / "fitted_state.joblib"
@@ -99,6 +126,15 @@ def verify_recovered() -> dict[str, Any]:
             problems.append(f"model/state identity mismatch at cutoff {cutoff}")
         if state.get("input_hashes") != identity["input_sha256"]:
             problems.append(f"state input hashes mismatch at cutoff {cutoff}")
+        historical_state = _json(ROOT / f"reports/classification_round1/fit_audits/fit{cutoff}.json")["C2_B"]["fitted_state"]
+        pre_state = state.get("preprocessing_state", {})
+        if pre_state.get("structured_preprocessor") != historical_state.get("preprocessor"):
+            problems.append(f"saved structured preprocessing audit differs from historical C2_B at cutoff {cutoff}")
+        if pre_state.get("tfidf_idf_sha256") != historical_state.get("text", {}).get("idf_sha256"):
+            problems.append(f"saved TF-IDF IDF digest differs from historical C2_B at cutoff {cutoff}")
+        parity = pre_state.get("c2b_historical_preprocessing_parity")
+        if not isinstance(parity, dict) or parity.get("status") != "PASS" or not all(parity.get("checks", {}).values()):
+            problems.append(f"saved C2_B preprocessing parity receipt is missing or failed at cutoff {cutoff}")
 
         stored = joblib.load(model_path)
         base, estimator = stored["base"], stored["estimator"]
@@ -154,8 +190,36 @@ def verify_recovered() -> dict[str, Any]:
             problems.append(f"bundle route/control reconstruction failed at cutoff {cutoff}: {checks}")
         if cutoff == 55 and recoveries and recoveries[0].get("bundle_receipt_sha256") != bundle.receipt["receipt_sha256"]:
             problems.append("cutoff55 recovery event receipt differs from recovered bundle")
+        if cutoff == 55 and recoveries and recoveries[0].get("recovery_code_sha256") != _sha(RECOVERY):
+            problems.append("cutoff55 recovery event source hash differs from verified recovery code")
+        if cutoff == 55 and recoveries:
+            recovery = recoveries[0]
+            exact_recovery_hashes = _recovery_event_hashes_match(
+                recovery, model_sha=model_sha, state_sha=_sha(state_path),
+                receipt_sha=bundle.receipt["receipt_sha256"], recovery_sha=_sha(RECOVERY),
+            )
+            if not exact_recovery_hashes:
+                problems.append("cutoff55 recovery event artifact hashes do not match model/state/bundle/code")
+            if terminals[0].get("error") != "TypeError: Object of type int64 is not JSON serializable":
+                problems.append("cutoff55 preserved FIT_FAILED is not the authorized post-fit serializer failure")
+            recovery_chain_valid = bool(
+                exact_recovery_hashes and recovery.get("card_id") == runner.CARD_ID and
+                recovery.get("stage") == runner.STAGE and recovery.get("cutoff") == 55 and
+                recovery.get("original_terminal_status") == "FIT_FAILED" and
+                recovery.get("original_terminal_event_preserved") is True and
+                recovery.get("refit_performed") is False and terminals[0].get("event") == "FIT_FAILED" and
+                terminals[0].get("fit_id") == f"{runner.CARD_ID}_55" and
+                terminals[0].get("error") == "TypeError: Object of type int64 is not JSON serializable"
+            )
         if cutoff == 67 and terminals[0].get("receipt_sha256") != bundle.receipt["receipt_sha256"]:
             problems.append("cutoff67 FIT_SAVED receipt differs from bundle")
+        if cutoff == 67:
+            cutoff67_saved_valid = bool(
+                terminals[0].get("event") == "FIT_SAVED" and
+                terminals[0].get("receipt_sha256") == bundle.receipt["receipt_sha256"] and
+                terminals[0].get("card_id") == runner.CARD_ID and
+                terminals[0].get("stage") == runner.STAGE and terminals[0].get("cutoff") == 67
+            )
         outputs[cutoff] = {
             "score_rows": arrays["score_rows"].astype(np.int64),
             "score_record_ids": arrays["score_record_ids"].astype(str),
@@ -208,8 +272,8 @@ def verify_recovered() -> dict[str, Any]:
             "historical_control_routes_rebuilt_independently": len(baselines) == 2,
             "both_model_states_and_routes_recomputed": len(outputs) == 2,
             "metrics_groups_cycles_and_gate_recomputed": len(recomputed_metrics) == 6,
-            "cutoff55_failed_event_preserved_and_recovered_without_refit": any(e.get("event")=="FIT_OUTPUT_RECOVERED" and e.get("fit_id")==f"{runner.CARD_ID}_55" and e.get("refit_performed") is False for e in events),
-            "cutoff67_one_saved_fit": any(e.get("event")=="FIT_SAVED" and e.get("fit_id")==f"{runner.CARD_ID}_67" for e in events),
+            "cutoff55_failed_event_preserved_and_recovered_without_refit": recovery_chain_valid and sum(e.get("event")=="FIT_OUTPUT_RECOVERED" and e.get("fit_id")==f"{runner.CARD_ID}_55" for e in events) == 1,
+            "cutoff67_one_saved_fit": cutoff67_saved_valid and sum(e.get("event")=="FIT_SAVED" and e.get("fit_id")==f"{runner.CARD_ID}_67" for e in events) == 1,
             "test_sample_submission_and_kaggle_untouched": identity.get("test_read") is False and identity.get("sample_submission_read") is False and identity.get("kaggle_access") is False,
         },
         "fit_audits": fit_audits,

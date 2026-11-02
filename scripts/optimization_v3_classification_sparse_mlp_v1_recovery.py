@@ -12,7 +12,10 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
+import subprocess
 import sys
+import tempfile
 from time import perf_counter
 from typing import Any, Mapping
 import warnings
@@ -29,11 +32,17 @@ from scripts import optimization_v3_classification_sparse_mlp_v1 as runner
 from src.models.classification_models import _array_digest, _json_digest
 from src.models.classification_sparse_mlp_v1 import transform_score_design
 from src.models.research_next_budget import _append, read_events
-from src.models.research_next_contract import publish_bundle, read_bundle
+from src.models.research_next_contract import read_bundle, resume_or_publish_bundle
 from src.models.round1_models import _to_builtin
 
 
 RECOVERY_NOTE = runner.REPORT_ROOT / "POSTFIT_SERIALIZATION_RECOVERY.json"
+RESUME_AMENDMENT = runner.CONFIG_DIR / "POSTFIT_SERIALIZATION_RECOVERY_RESUME_AMENDMENT.json"
+RESUME_AMENDMENT_HASHED_FILES = (
+    "scripts/optimization_v3_classification_sparse_mlp_v1_recovery.py",
+    "scripts/optimization_v3_classification_sparse_mlp_v1_recovery_verify.py",
+    "tests/test_optimization_v3_classification_sparse_mlp_v1_recovery.py",
+)
 
 
 def _vocab_sha(vectorizer: Any) -> str:
@@ -85,8 +94,13 @@ def _atomic_json(path: Path, value: Mapping[str, Any]) -> None:
         if path.read_text(encoding="utf-8") != payload:
             raise RuntimeError(f"Refusing to overwrite nonidentical recovery receipt: {path}")
         return
-    temporary = path.with_name(path.name + ".tmp")
-    with temporary.open("x", encoding="utf-8", newline="\n") as stream:
+    # A unique same-directory staging file avoids collisions with leftovers from
+    # an interrupted earlier write while keeping the destination atomic.
+    with tempfile.NamedTemporaryFile(
+        mode="w", encoding="utf-8", newline="\n", dir=path.parent,
+        prefix=f".{path.name}.", suffix=".tmp", delete=False,
+    ) as stream:
+        temporary = Path(stream.name)
         stream.write(payload)
         stream.flush()
         os.fsync(stream.fileno())
@@ -116,7 +130,60 @@ def _sha(path: Path) -> str:
     return runner._sha(path)
 
 
+def _validate_pinned_source_hashes(
+    pinned: Any,
+    source_commit: str,
+    current_sha: Any,
+    committed_sha: Any,
+) -> None:
+    if not isinstance(pinned, dict) or set(pinned) != set(RESUME_AMENDMENT_HASHED_FILES):
+        raise RuntimeError("Recovery resume amendment must hash the exact required recovery source set")
+    for relpath in RESUME_AMENDMENT_HASHED_FILES:
+        expected_sha = pinned.get(relpath)
+        if not isinstance(expected_sha, str) or not re.fullmatch(r"[0-9a-f]{64}", expected_sha):
+            raise RuntimeError(f"Recovery source hash is malformed: {relpath}")
+        if current_sha(relpath) != expected_sha:
+            raise RuntimeError(f"Recovery source differs from amendment freeze: {relpath}")
+        if committed_sha(source_commit, relpath) != expected_sha:
+            raise RuntimeError(f"Pinned source commit does not contain amended recovery source: {relpath}")
+
+
+def _validate_resume_amendment() -> dict[str, Any]:
+    if not RESUME_AMENDMENT.is_file():
+        raise RuntimeError("Idempotent recovery resume amendment is missing")
+    amendment = json.loads(RESUME_AMENDMENT.read_text(encoding="utf-8"))
+    frozen = runner._json(runner.FREEZE)
+    if amendment.get("status") != "FROZEN_BEFORE_RECOVERY_RESUME_AND_CUTOFF67_FIT":
+        raise RuntimeError("Recovery resume amendment is not frozen for execution")
+    if amendment.get("original_freeze_signature") != frozen.get("signature"):
+        raise RuntimeError("Recovery resume amendment refers to a different original MLP freeze")
+    source_commit = amendment.get("source_commit")
+    if not isinstance(source_commit, str) or not re.fullmatch(r"[0-9a-f]{40}", source_commit):
+        raise RuntimeError("Recovery resume amendment must pin a full source commit hash")
+    if not runner._git_is_ancestor(source_commit):
+        raise RuntimeError("Recovery resume amendment code commit is not an ancestor of current HEAD")
+    def committed_sha(commit: str, relpath: str) -> str | None:
+        result = subprocess.run(
+            ["git", "-C", str(ROOT), "show", f"{commit}:{relpath}"],
+            check=False, capture_output=True,
+        )
+        if result.returncode != 0:
+            return None
+        return hashlib.sha256(result.stdout).hexdigest()
+
+    _validate_pinned_source_hashes(
+        amendment.get("recovery_code_sha256"), source_commit,
+        lambda relpath: _sha(ROOT / relpath), committed_sha,
+    )
+    if amendment.get("recipe_changed") is not False or amendment.get("additional_estimator_fits") != 0:
+        raise RuntimeError("Recovery resume amendment must remain technical-only with no extra estimator fit")
+    if amendment.get("cutoff55_action") != "recover_persisted_fit_no_refit" or amendment.get("cutoff67_action") != "second_original_planned_fit":
+        raise RuntimeError("Recovery resume amendment does not preserve the original two-fit plan")
+    return amendment
+
+
 def recover_cutoff55() -> dict[str, Any]:
+    _validate_resume_amendment()
     frozen = runner._check_preflight()
     cutoff = 55
     fit_id = f"{runner.CARD_ID}_{cutoff}"
@@ -132,8 +199,8 @@ def recover_cutoff55() -> dict[str, Any]:
     model_path = fit_dir / "fitted_state.joblib"
     state_path = fit_dir / "fit_state.json"
     bundle_path = fit_dir / "bundle"
-    if not model_path.is_file() or state_path.exists() or bundle_path.exists():
-        raise RuntimeError("Unexpected partial cutoff 55 state; inspect before recovery")
+    if not model_path.is_file():
+        raise RuntimeError("Durable cutoff 55 fitted_state.joblib is missing; no refit is authorized")
     model_sha = _sha(model_path)
     stored = joblib.load(model_path)
     base, estimator = stored["base"], stored["estimator"]
@@ -202,21 +269,18 @@ def recover_cutoff55() -> dict[str, Any]:
         },
     }
     bundle_identity = runner._bundle_identity(frozen["identity"], frozen["signature"], cutoff, model_sha, state_sha)
-    receipt = publish_bundle(bundle_path, payload, bundle_identity, task="classification")
-    saved = read_bundle(bundle_path, bundle_identity, task="classification")
+    saved = resume_or_publish_bundle(bundle_path, payload, bundle_identity, task="classification")
     rebuilt_route = runner.route_probabilities("candidate", saved.arrays["baseline_prediction"],
         saved.arrays["raw_mlp_probability"], saved.arrays["control_c2b_probability"],
         saved.arrays["control_cb_probability"], saved.arrays["control_stream_missing"])
     np.testing.assert_array_equal(rebuilt_route, saved.arrays["prediction"])
-    if saved.receipt["receipt_sha256"] != receipt["receipt_sha256"]:
-        raise RuntimeError("Recovered cutoff 55 bundle did not read back exactly")
-    event = _recovered_event(fit_id, cutoff, receipt["receipt_sha256"], model_sha, state_sha)
+    event = _recovered_event(fit_id, cutoff, saved.receipt["receipt_sha256"], model_sha, state_sha)
     note = {
         "status": "RECOVERED_NO_REFIT", "fit_id": fit_id, "cutoff": cutoff,
         "original_fit_terminal_event": "FIT_FAILED", "original_fit_terminal_error": failures[0]["error"],
         "original_budget_start_utc": starts[0].get("at_utc"),
         "recovery_event": event, "model_joblib_sha256": model_sha,
-        "fit_state_sha256": state_sha, "bundle_receipt_sha256": receipt["receipt_sha256"],
+        "fit_state_sha256": state_sha, "bundle_receipt_sha256": saved.receipt["receipt_sha256"],
         "refit_performed": False, "score_rows": int(len(score_rows)),
         "train_sha256": _sha(context["train_path"]), "test_read": False,
         "sample_submission_read": False, "kaggle_access": False,
@@ -227,16 +291,55 @@ def recover_cutoff55() -> dict[str, Any]:
 
 def run_cutoff67_with_safe_serializer() -> dict[str, Any]:
     frozen = runner._check_preflight()
+    _validate_resume_amendment()
     fit_id = f"{runner.CARD_ID}_67"
     starts = [event for event in read_events(runner.LEDGER)
               if event.get("event") == "FIT_STARTED" and event.get("fit_id") == fit_id]
     if starts:
         raise RuntimeError("Cutoff 67 already has a FIT_STARTED event; do not start another fit")
-    _mlp55_terminal = [event for event in read_events(runner.LEDGER)
+    current_events = read_events(runner.LEDGER)
+    _mlp55_starts = [event for event in current_events
+                     if event.get("event") == "FIT_STARTED" and event.get("fit_id") == f"{runner.CARD_ID}_55"]
+    _mlp55_terminal = [event for event in current_events
                        if event.get("event") in {"FIT_FAILED", "FIT_SAVED"}
                        and event.get("fit_id") == f"{runner.CARD_ID}_55"]
-    if len(_mlp55_terminal) != 1 or _mlp55_terminal[0].get("event") != "FIT_FAILED":
+    recovery_events = [event for event in current_events if event.get("event") == "FIT_OUTPUT_RECOVERED"
+                       and event.get("fit_id") == f"{runner.CARD_ID}_55"]
+    if (len(_mlp55_starts) != 1 or len(_mlp55_terminal) != 1 or
+            _mlp55_terminal[0].get("event") != "FIT_FAILED" or len(recovery_events) != 1):
         raise RuntimeError("Cutoff 67 recovery wrapper expected the preserved cutoff 55 FIT_FAILED event")
+    start55, failure55, recovery55 = _mlp55_starts[0], _mlp55_terminal[0], recovery_events[0]
+    if (start55.get("card_id") != runner.CARD_ID or start55.get("stage") != runner.STAGE or
+            start55.get("cutoff") != 55 or start55.get("fit_consumed_at_start") is not True or
+            failure55.get("card_id") != runner.CARD_ID or failure55.get("stage") != runner.STAGE or
+            failure55.get("cutoff") != 55 or
+            failure55.get("error") != "TypeError: Object of type int64 is not JSON serializable"):
+        raise RuntimeError("Cutoff 55 ledger start/failure identity differs from the authorized serializer error")
+    recovered_bundle = runner.RUN_ROOT / "fit55/bundle"
+    recovered_state = runner.RUN_ROOT / "fit55/fit_state.json"
+    recovered_model = runner.RUN_ROOT / "fit55/fitted_state.joblib"
+    if not recovered_bundle.exists() or not recovered_state.is_file() or not recovered_model.is_file():
+        raise RuntimeError("Cutoff 55 must be durably recovered before cutoff 67 starts")
+    recovered_state_json = runner._json(recovered_state)
+    model_sha, state_sha = _sha(recovered_model), _sha(recovered_state)
+    if (recovered_state_json.get("model_joblib_sha256") != model_sha or
+            recovered_state_json.get("freeze_signature") != frozen["signature"] or
+            recovered_state_json.get("input_hashes") != frozen["identity"]["input_sha256"] or
+            recovered_state_json.get("recovery", {}).get("original_fit_terminal_event") != "FIT_FAILED" or
+            recovered_state_json.get("recovery", {}).get("refit_performed") is not False):
+        raise RuntimeError("Cutoff 55 fit-state receipt does not match its durable model/freeze/recovery facts")
+    recovered_identity = runner._bundle_identity(frozen["identity"], frozen["signature"], 55,
+        model_sha, state_sha)
+    verified_bundle = read_bundle(recovered_bundle, recovered_identity, task="classification")
+    if (recovery55.get("card_id") != runner.CARD_ID or recovery55.get("stage") != runner.STAGE or
+            recovery55.get("cutoff") != 55 or recovery55.get("original_terminal_status") != "FIT_FAILED" or
+            recovery55.get("original_terminal_event_preserved") is not True or
+            recovery55.get("refit_performed") is not False or
+            recovery55.get("model_joblib_sha256") != model_sha or
+            recovery55.get("fit_state_sha256") != state_sha or
+            recovery55.get("bundle_receipt_sha256") != verified_bundle.receipt["receipt_sha256"] or
+            recovery55.get("recovery_code_sha256") != _sha(Path(__file__))):
+        raise RuntimeError("Cutoff 55 recovery event identity/hashes differ from verified durable artifacts")
     previous = runner._fit_state
     runner._fit_state = _fit_state_json_safe
     try:
