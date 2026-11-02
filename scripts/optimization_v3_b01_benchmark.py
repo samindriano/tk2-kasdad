@@ -70,6 +70,10 @@ SAFE_PREDICTION_KEYS = (
     "correction", "correction_unclipped",
 )
 EXPECTED_PREDICTION_KEYS = set(SAFE_PREDICTION_KEYS) | {"labels"}
+EXPECTED_FULLTRAIN_BANK_BLOCKS = (
+    (55, 56, 59), (59, 60, 63), (63, 64, 67),
+    (67, 68, 71), (71, 72, 75), (75, 76, 79),
+)
 SOURCE_PATHS = (
     "scripts/optimization_v3_b01_benchmark.py",
     "tests/test_optimization_v3_b01_benchmark.py",
@@ -255,6 +259,31 @@ def _load_train_bank_labels_only(rows: np.ndarray, ids: np.ndarray,
     return labels
 
 
+def _rebuild_fulltrain_oof_bank(manifest: dict[str, Any], caches: dict[int, dict[str, np.ndarray]],
+                                train_features: pd.DataFrame) -> dict[str, np.ndarray]:
+    """Rebuild the six-block E79 bank from frozen C16 caches without Train targets."""
+    blocks = tuple(tuple(map(int, block)) for block in manifest.get("OOF_bank_blocks", []))
+    if blocks != EXPECTED_FULLTRAIN_BANK_BLOCKS:
+        raise RuntimeError("A02 E79 manifest OOF blocks differ from the frozen six-block full-Train recipe")
+    parts = [a02.pilot._cache_subset(caches[source], train_features, low, high)
+             for source, low, high in blocks]
+    joined = {
+        key: np.concatenate([part[key] for part in parts])
+        for key in ("rows", "ids", "cycles", "baseline", "missing")
+    }
+    order = np.argsort(joined["rows"], kind="stable")
+    bank = {key: values[order] for key, values in joined.items()}
+    expected_rows = np.flatnonzero(train_features.cycle_code.between(56, 79).to_numpy())
+    if (not np.array_equal(bank["rows"], expected_rows)
+            or len(np.unique(bank["rows"])) != len(bank["rows"])
+            or len(bank["rows"]) != int(manifest.get("OOF_bank_rows", -1))
+            or int((~bank["missing"]).sum()) != int(manifest.get("OOF_bank_present_rows", -1))
+            or not np.array_equal(bank["ids"].astype(str), train_features.record_id.astype(str).to_numpy()[bank["rows"]])
+            or np.any(bank["cycles"] > 79)):
+        raise RuntimeError("A02 E79 six-block OOF bank does not reconstruct from target-free Train features")
+    return bank
+
+
 def _load_verified_inputs() -> dict[str, Any]:
     resource = _preflight_memory()
     a02_freeze = a02.verify_freeze()
@@ -288,8 +317,7 @@ def _load_verified_inputs() -> dict[str, Any]:
 
     # Feature-only Train rows and six frozen C16 OOF caches; no query targets.
     train, caches, _banks, _queries = a02._load_structural_inputs(include_target=False)
-    protocol = a02._read_protocol()
-    full_bank = a02._build_bank(79, caches, train, protocol)
+    full_bank = _rebuild_fulltrain_oof_bank(a02_manifest, caches, train)
     present = ~full_bank["missing"].astype(bool)
     expected_rows = full_bank["rows"][present].astype(np.int64)
     expected_ids = full_bank["ids"][present].astype(str)
@@ -309,7 +337,7 @@ def _load_verified_inputs() -> dict[str, Any]:
             or not np.array_equal(model.residual_assignment, np.arange(len(bank_rows), dtype=np.int64))
             or np.any(bank_cycles > 79)):
         raise RuntimeError("Full-Train A02 bank rows/IDs/cycles/OOF/labels do not reconstruct from frozen C16 blocks")
-    expected_blocks = [list(map(int, row)) for row in a02._bank_blocks(79, protocol)]
+    expected_blocks = [list(block) for block in EXPECTED_FULLTRAIN_BANK_BLOCKS]
     if (a02_manifest.get("OOF_bank_blocks") != expected_blocks
             or a02_manifest.get("OOF_bank_rows") != len(full_bank["rows"])
             or a02_manifest.get("OOF_bank_present_rows") != len(bank_rows)):

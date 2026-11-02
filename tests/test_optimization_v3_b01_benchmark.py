@@ -74,6 +74,33 @@ def test_train_label_loader_selects_only_verified_bank_rows(monkeypatch, tmp_pat
     assert "artifact_signal" not in features_only.columns
 
 
+def test_fulltrain_bank_rebuild_uses_six_manifest_blocks_without_targets():
+    cycles = np.arange(56, 80, dtype=np.int16)
+    train = pd.DataFrame({"record_id": [f"r{i}" for i in range(len(cycles))],
+                          "cycle_code": cycles,
+                          "signal_stream": ["token"] * len(cycles)})
+    caches = {}
+    for cutoff in (55, 59, 63, 67, 71, 75):
+        rows = np.flatnonzero((cycles >= cutoff + 1) & (cycles <= cutoff + 4))
+        caches[cutoff] = {
+            "cycles": cycles[rows], "score_rows": rows,
+            "score_record_ids": train.record_id.to_numpy()[rows],
+            "baseline_prediction": np.full(len(rows), 0.4, dtype=np.float64),
+            "stream_missing": np.zeros(len(rows), dtype=bool),
+        }
+    manifest = {
+        "OOF_bank_blocks": [list(block) for block in benchmark.EXPECTED_FULLTRAIN_BANK_BLOCKS],
+        "OOF_bank_rows": len(cycles), "OOF_bank_present_rows": len(cycles),
+    }
+
+    bank = benchmark._rebuild_fulltrain_oof_bank(manifest, caches, train)
+
+    np.testing.assert_array_equal(bank["rows"], np.arange(len(cycles)))
+    np.testing.assert_array_equal(bank["cycles"], cycles)
+    np.testing.assert_array_equal(bank["ids"], train.record_id.to_numpy())
+    assert "artifact_signal" not in train.columns
+
+
 def test_test_and_sample_schema_gate_rejects_any_test_target_column():
     benchmark._validate_input_schemas(
         ["record_id", "cycle_code", "signal_stream", "entry_friction"],
