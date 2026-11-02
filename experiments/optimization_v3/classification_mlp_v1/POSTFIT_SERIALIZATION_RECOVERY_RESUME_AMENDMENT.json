@@ -1,0 +1,25 @@
+{
+  "additional_estimator_fits": 0,
+  "authorized_scope": "Technical serialization and report recovery only. Do not change the original sparse MLP recipe, feature population, preprocessing, gate, route, or threshold.",
+  "cutoff55_action": "recover_persisted_fit_no_refit",
+  "cutoff67_action": "second_original_planned_fit",
+  "frozen_before_action_local": "2026-11-02",
+  "id": "CLASSIFICATION_SPARSE_MLP_V1_POSTFIT_SERIALIZATION_RECOVERY_RESUME",
+  "original_freeze_signature": "46d9362cdf543b87af58653fe1666d79cbe13b4d012397d5f730b15959debd18",
+  "original_recipe_sha256": "d110156b85b115857218c040d1dc88d8d249c3824310be9f05d58d9ed9906042",
+  "recipe_changed": false,
+  "recovery_code_sha256": {
+    "scripts/optimization_v3_classification_sparse_mlp_v1_recovery.py": "e70ddab1df49a53a96ee9983970ad82b4c68b2d233aaf2a13513d18d19e1e462",
+    "scripts/optimization_v3_classification_sparse_mlp_v1_recovery_verify.py": "8a60e39e2b2d057e3e1f763e10447379a2369ab406b777e9fc0a92304079f7b5",
+    "tests/test_optimization_v3_classification_sparse_mlp_v1_recovery.py": "881e08e786dc2ce55884648d3ce938ad3c7b23026fb3a60bd5c14265d0c44d18"
+  },
+  "source_commit": "907b3967f9fdf530a13a24496ad7510605d99489",
+  "status": "FROZEN_BEFORE_RECOVERY_RESUME_AND_CUTOFF67_FIT",
+  "technical_details": {
+    "cutoff55_fit_consumption": "already consumed by original FIT_STARTED; existing FIT_FAILED event remains unchanged",
+    "cutoff55_refit_performed": false,
+    "cutoff67_fit_consumption": "second and final fit in original two-fit reservation",
+    "new_retry": false,
+    "serializer_change": "JSON-safe serialization only; estimator, preprocessing, and predictions remain frozen"
+  }
+}
