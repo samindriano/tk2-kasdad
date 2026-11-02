@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "candidate_id": "A02_LEXICAL_NEIGHBOR_RESIDUAL",
+  "task": "classification",
+  "question": "Within past-only residual banks, do text-neighbor residuals predict later Classification errors better than cycle × OOF-probability-decile shuffled residuals?",
+  "origins": [
+    67,
+    75
+  ],
+  "fit_ids": {
+    "E67_observed": "A02_E67_OBSERVED",
+    "E67_shuffled": "A02_E67_SHUFFLED",
+    "E75_observed": "A02_E75_OBSERVED",
+    "E75_shuffled": "A02_E75_SHUFFLED"
+  },
+  "task_fit_count": 4,
+  "baseline": "verified frozen sparse25 probability from C16 cache baseline_prediction; never C16 prediction or raw_candidate",
+  "bank": {
+    "E67": {
+      "source_blocks": [
+        [
+          55,
+          56,
+          59
+        ],
+        [
+          59,
+          60,
+          63
+        ],
+        [
+          63,
+          64,
+          67
+        ]
+      ],
+      "rows": 17685,
+      "present_rows": 16482
+    },
+    "E75": {
+      "source_blocks": [
+        [
+          55,
+          56,
+          59
+        ],
+        [
+          59,
+          60,
+          63
+        ],
+        [
+          63,
+          64,
+          67
+        ],
+        [
+          67,
+          68,
+          71
+        ],
+        [
+          71,
+          72,
+          75
+        ]
+      ],
+      "rows": 30097,
+      "present_rows": 28045
+    },
+    "residual": "artifact_signal - past-only baseline_prediction; present-stream bank only",
+    "record_id_and_row_join": "exact official Train row positions plus record_id equality"
+  },
+  "text_space": {
+    "recipe_source": "src.models.classification_models._TFIDF_PARAMS and _text_values",
+    "fit_population": "all official Classification Train feature texts with cycle_code <= origin, including empty-stream rows as empty documents",
+    "similarity": "L2-normalized word-TFIDF cosine only; no structured feature in similarity",
+    "query_block_rows": 128,
+    "top_positive_neighbors": 32,
+    "tie_break": "similarity descending then official Train row position ascending"
+  },
+  "residual_predictor": {
+    "observed_arm": "fit with observed past-only OOF residual assignments",
+    "matched_control": "shuffle residual values within cycle_code × min(9,floor(10*OOF probability)), stable row order, default_rng(42) reset once per origin",
+    "weight": "positive cosine similarity squared",
+    "shrinkage": 4.0,
+    "correction_clip": 0.05,
+    "present_prediction": "clip(baseline_probability + correction, 0, 1)",
+    "missing_prediction": "exact baseline_probability",
+    "threshold": 0.5
+  },
+  "views": {
+    "W4": {
+      "origin": 67,
+      "cycles": [
+        68,
+        71
+      ],
+      "rows": 4950
+    },
+    "W6": {
+      "origin": 75,
+      "cycles": [
+        76,
+        79
+      ],
+      "rows": 8491
+    },
+    "primary": {
+      "components": [
+        "W4",
+        "W6"
+      ],
+      "disjoint_rows": 13441
+    },
+    "H12_L": {
+      "origin": 67,
+      "cycles": [
+        68,
+        79
+      ],
+      "rows": 20903
+    }
+  },
+  "scientific_gate": {
+    "H12_L_gain_vs_sparse25_at_least": 0.0005,
+    "H12_L_gain_vs_shuffled_at_least": 0.0002,
+    "primary_gain_vs_sparse25_at_least": 0.0,
+    "primary_gain_vs_shuffled_at_least": 0.0,
+    "W4_and_W6_max_harm_vs_sparse25": 0.003,
+    "H12_L_max_harm_vs_sparse25": 0.001,
+    "integrity_and_source_boundaries": "all pass"
+  },
+  "subgroups": {
+    "fields": [
+      "stream_availability",
+      "entry_friction",
+      "fit_prefix_defined_text_load_quartile"
+    ],
+    "views": [
+      "primary",
+      "W4",
+      "W6",
+      "H12_L"
+    ],
+    "minimum_support": {
+      "n": 200,
+      "each_class": 30
+    },
+    "risk_review_only_thresholds": {
+      "macro_f1_harm_gt": 0.03,
+      "positive_recall_harm_gt": 0.05
+    },
+    "historical_reference_thresholds_to_report": {
+      "macro_f1_harm": [
+        0.01,
+        0.02,
+        0.03
+      ],
+      "positive_recall_harm": [
+        0.02,
+        0.03,
+        0.05
+      ]
+    }
+  },
+  "sources_boundary": {
+    "only_official_classification_train_and_verified_c16_oof_cache": true,
+    "test_or_sample_submission_access": false,
+    "test_labels_used": false,
+    "no_public_score_or_test_feedback_in_recipe": true
+  },
+  "resource_policy": {
+    "threads": 2,
+    "job_cap_bytes": 6442450944,
+    "minimum_free_ram_bytes": 4294967296,
+    "one_training_job_at_a_time": true
+  },
+  "no_retry_no_continuation_no_submission": true
+}

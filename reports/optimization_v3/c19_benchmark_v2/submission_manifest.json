@@ -1,0 +1,67 @@
+{
+  "status": "PREPARED_VALIDATED_NOT_SUBMITTED",
+  "candidate_id": "C19_XGB_SVD32_BENCHMARK",
+  "competition": "tp2-classification-cyber-vulnerability-kasdd-gasal-2026-2027",
+  "submission_message": "Samuel C19 XGB SVD32 Frozen Benchmark",
+  "historical_C19_verdict_remains": "RETIRE / prior frozen-gate failure; this full-Train upload is a separate benchmark exception",
+  "source_commit": "ecf48c32481a3a8d9d6e56e6d1cba3de52f97420",
+  "protocol_sha256": "782279f8364a4cfceb6ac0e7f248aeb773bed8e6192f0b6f69516d73c77b98d5",
+  "freeze_signature": "920d7a68da677c3b5477b108471bce5a9fe063546e3fb1eac4c7fc3765040915",
+  "official_train_rows": 50608,
+  "official_train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+  "fit_cycle_range": [
+    47,
+    79
+  ],
+  "fit_predictor_count": 1,
+  "fit_receipt_sha256": "10de1eba5e54c91e7f95525e9e6ca7892d2edd9a9e6c49ef09522059db36addd",
+  "fit_state_sha256": "d4b978c23d7a72ce6a96142c795ce0bd105eaf41ef8a9131c8de281847041322",
+  "model_sha256": "bca34d36ad1ae59df000786b86abbed72574285f898cf560b6bc125ad1f78310",
+  "test_rows": 29421,
+  "test_target_column_loaded": false,
+  "preprocessing_fit_only_train": true,
+  "test_features_used_for_inference_only": true,
+  "sample_submission_used_for_schema_verification_only": true,
+  "input_sha256": {
+    "data/raw/classification/Train.csv": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "data/raw/classification/Test.csv": "4e6c381d582ed24f92d17f620f4f0ad25e2e0def29eb57a91a5482867f6afe3c",
+    "data/raw/classification/SampleSubmission.csv": "889f97d69659a64945421d841dcf96e5813020606f29b2992d4b9560cecdcba7",
+    "experiments/optimization_v3/batch1/C19/recipe.json": "8e585c5111b63b864da5451f3a66dcbe9a3286dc4912cc3cb2e26f5b329118f4",
+    "experiments/runs/optimization_v3_inference/v3_cls_sparse25.npz": "31ef6945ae74a14b1e4ff46220667ac3a08de3401120257e7932745c927d6103",
+    "reports/optimization_v3/kaggle/v3_cls_sparse25.json": "6e7c2cb50fe6d0ee4767a44c40f152b6538b933fab6cf7082659b16d791f7d1e",
+    "submissions/dual_campaign/optimization_v3/v3_cls_sparse25.csv": "bc926edcb3258ec76ed8334db64fcb6ae1382e849a8128b9d88d1f9d342595b2"
+  },
+  "baseline_cache_sha256": "31ef6945ae74a14b1e4ff46220667ac3a08de3401120257e7932745c927d6103",
+  "baseline_manifest_sha256": "6e7c2cb50fe6d0ee4767a44c40f152b6538b933fab6cf7082659b16d791f7d1e",
+  "baseline_csv_sha256": "bc926edcb3258ec76ed8334db64fcb6ae1382e849a8128b9d88d1f9d342595b2",
+  "route": {
+    "present": ".75*current sparse25 probability + .25*C19 raw probability",
+    "missing": "exact frozen sparse25 CB_MISSING probability",
+    "threshold": 0.5
+  },
+  "csv_path": "submissions/optimization_v3/c19_benchmark_v2/c19_xgb_svd32.csv",
+  "csv_sha256": "4dc88a17d3e5708fb2d9f051161fd340d7cba89af6e120c620efbc0db66d6e35",
+  "test_ids_sha256": "0e325676d1e91ac8d594390a6fa44bee70270da489cdcb323b6fc8bff66f01ea",
+  "columns": [
+    "record_id",
+    "artifact_signal"
+  ],
+  "rows": 29421,
+  "prediction_counts": {
+    "0": 22782,
+    "1": 6639
+  },
+  "candidate_labels_differing_from_sparse25": 344,
+  "missing_branch_label_changes": 0,
+  "kaggle_preflight_path": "reports/optimization_v3/c19_benchmark_v2/kaggle_preflight.json",
+  "preflight_sha256": "6e828014b1f43ad419774dfbdecb6b553676352b7a1dfe18488427d7d6b40f62",
+  "packages": {
+    "numpy": "2.4.2",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.8.0",
+    "scipy": "1.18.0",
+    "xgboost": "3.2.0",
+    "threadpoolctl": "3.6.0",
+    "joblib": "1.5.3"
+  }
+}
