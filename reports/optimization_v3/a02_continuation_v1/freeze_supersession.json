@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "status": "SUPERSEDED_BEFORE_OFFICIAL_FIT",
+  "superseded_freeze": {
+    "path": "experiments/optimization_v3/a02_continuation_v1/freeze.json",
+    "freeze_signature": "c02ecf49a7909ad0a3c4afe0308b3541eb165ec76027b18c874dbfde3567324d",
+    "source_commit": "681fc5e715a795a71632578a016984647247f7f6",
+    "associated_preflight": "reports/optimization_v3/a02_continuation_v1/preflight.json"
+  },
+  "successor_freeze": {
+    "path": "experiments/optimization_v3/a02_continuation_v1/freeze_v2.json",
+    "freeze_signature": "93a2f388673e5cbb2fde60364fd0121918695ecb908c9b2c9c8b91e239de54e6",
+    "sha256": "96dcc220dd3c7d7e9b87379524df8601e6dc345af0f982ec2ccc44b04769dc8d",
+    "source_commit": "31a8c275de8a69df05444ab4ec01e1f2c9b23941",
+    "associated_preflight": "reports/optimization_v3/a02_continuation_v1/preflight_v2.json"
+  },
+  "reason": "The cap amendment validator expected a nested accounting object, while the frozen checkpoint stores accounting fields at the top level. The validation failed closed before any ledger append. Adapter and tests were corrected in a successor code commit; protocol, gates, inputs, and source boundaries are unchanged.",
+  "protocol_sha256_unchanged": true,
+  "ledger_at_failed_attempt": {
+    "rows": 155,
+    "sha256": "e25cc099b7af148bacb6a67ae105799d2d3e24e92676929833478f3e993276ae",
+    "matches_pre_amendment_checkpoint": true,
+    "a02_cap_amendments": 0,
+    "a02_reservations": 0,
+    "a02_starts": 0
+  },
+  "official_fit_or_test_access_after_first_preflight": false,
+  "review_note": "The first preflight remains preserved as a historical resource/source check; successor preflight v2 is the governing preparation receipt."
+}
