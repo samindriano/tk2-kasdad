@@ -1,0 +1,53 @@
+{
+  "checks": {
+    "a02_fulltrain_model_state_receipt_hashes_verified": true,
+    "a02_geometry_top32_ids_ties_padding_historical_cycles_verified": true,
+    "a02_prediction_labels_match_already_uploaded_csv": true,
+    "all_six_oof_blocks_rebuilt_and_bank_y_rows_cycles_probabilities_verified": true,
+    "b01_failed_scientific_qualification_preserved": true,
+    "b01_formula_independent_convex_replay_with_cap_and_fallback": {
+      "independent_formula": "(4*b + sum(s^2*y_bank))/(4 + sum(s^2)); clip correction to +/-0.05, then probability to [0,1]",
+      "max_abs_probability_difference": 3.3306690738754696e-16,
+      "missing_stream_exact_baseline": true,
+      "status": "PASS",
+      "zero_neighbor_exact_baseline": true
+    },
+    "b01_npz_and_csv_hashes_match_prepared_manifest": true,
+    "b01_probabilities_finite_range_and_ordered_hash": true,
+    "fit_ledger_hash_and_66_fit_accounting_unchanged": true,
+    "fulltrain_sparse25_baseline_cache_and_route_verified": true,
+    "no_kaggle_api_ui_upload_or_final_entry_selection": true,
+    "no_model_fit_transform_predict_or_neighbor_search": true,
+    "no_test_target_accuracy_prevalence_or_score_claim": true,
+    "official_test_ordered_ids_29421_unique_match_saved_a02_and_baseline": true,
+    "official_test_target_column_absent_and_not_loaded": true,
+    "original_a02_probabilities_reconstructed_bit_exact_before_b01": true,
+    "pre_inference_freeze_formula_source_and_inputs_verified": true,
+    "sample_submission_header_only_schema_check": true,
+    "submission_csv_schema_rows_ids_unique_and_integer_binary": true
+  },
+  "fit_ledger_after": {
+    "cap": 66,
+    "failed": 2,
+    "pending": [],
+    "remaining": 0,
+    "saved": 64,
+    "sha256": "6fcc4b4d427e3ff03139e0e9ee429f529f7c7bf6ad91ce0eb9a52d55e2503147",
+    "starts": 66
+  },
+  "fit_ledger_before": {
+    "cap": 66,
+    "failed": 2,
+    "pending": [],
+    "remaining": 0,
+    "saved": 64,
+    "sha256": "6fcc4b4d427e3ff03139e0e9ee429f529f7c7bf6ad91ce0eb9a52d55e2503147",
+    "starts": 66
+  },
+  "freeze_sha256": "a95b6e6e0d325bb7d63bf801803e8c50050efd6854c7932ceb29a1d90becba18",
+  "manifest_sha256": "f82ab953fdfbead62671fea20a92c52fe200a10967cf989136ff1377316dd7eb",
+  "result_sha256": "03b1a4117804689f6e778d70879652499ca7be50cd10d7b3f2df379b349e7b86",
+  "source_commit": "03248360d98d3811709f0e68ac9311a977a39929",
+  "status": "PASS",
+  "summary_sha256": "f6a53d02fc589ad60d334c2822ed33d1045cde3291bd26cdbed58b6f4bff670c"
+}
