@@ -402,7 +402,7 @@ def _load_verified_inputs() -> dict[str, Any]:
             or not np.array_equal(baseline_missing, stream_missing)):
         raise RuntimeError("Full-Train C16 Sparse25 control probabilities or availability route differ")
 
-    ids, a02_labels, a02_csv_evidence = _check_original_csv(test_ids, sample_columns, a02_manifest)
+    a02_labels, a02_csv_evidence = _check_original_csv(test_ids, sample_columns, a02_manifest)
     if not np.array_equal(a02_labels, (prediction["candidate_probability"] >= THRESHOLD).astype(np.int8)):
         raise RuntimeError("Already-uploaded A02 CSV labels do not reconstruct from its saved probability vector")
 

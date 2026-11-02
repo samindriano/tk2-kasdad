@@ -132,6 +132,25 @@ def test_transition_counts_are_predictions_only_and_sum_exactly():
     assert sum(x["a02_1_to_b01_0"] for x in report["by_cycle_and_availability"]) == 2
 
 
+def test_original_csv_check_returns_labels_and_hash_evidence(monkeypatch, tmp_path):
+    csv_path = tmp_path / "a02.csv"
+    receipts_path = tmp_path / "receipts.jsonl"
+    csv_path.write_text("record_id,artifact_signal\na,1\nb,0\n", encoding="utf-8")
+    receipts_path.write_text("receipt\n", encoding="utf-8")
+    monkeypatch.setattr(benchmark, "A02_CSV_PATH", csv_path)
+    monkeypatch.setattr(benchmark, "A02_RECEIPTS_PATH", receipts_path)
+    monkeypatch.setattr(benchmark, "ROOT", tmp_path)
+    monkeypatch.setattr(benchmark, "EXPECTED_TEST_ROWS", 2)
+    manifest = {"csv_sha256": benchmark._sha256_file(csv_path)}
+
+    labels, evidence = benchmark._check_original_csv(
+        np.array(["a", "b"]), ["record_id", "artifact_signal"], manifest)
+
+    np.testing.assert_array_equal(labels, np.array([1, 0], dtype=np.int8))
+    assert evidence["sha256"] == manifest["csv_sha256"]
+    assert evidence["previously_uploaded_status"] == "USER_REPORTED_ONLY"
+
+
 def test_atomic_output_writer_is_idempotent_and_blocks_partial_stage(tmp_path):
     path = tmp_path / "candidate.csv"
     payload = b"record_id,artifact_signal\nx,1\n"
