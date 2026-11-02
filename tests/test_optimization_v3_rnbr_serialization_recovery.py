@@ -63,6 +63,60 @@ def _safe_payload_with_object_inputs(monkeypatch):
         raise
 
 
+def test_query_origin_baseline_and_donor_oof_alignment_are_distinct():
+    rows = np.asarray([100], dtype=np.int64)
+    cache = {
+        67: {"rows": rows, "prediction": np.asarray([67.0])},
+        71: {"rows": rows, "prediction": np.asarray([71.0])},
+        75: {"rows": rows, "prediction": np.asarray([75.0])},
+    }
+    query_cycle_76 = np.asarray([76], dtype=np.int64)
+    e67_baseline = recovery._expected_query_origin_baseline(rows, 67, cache)
+    e75_baseline = recovery._expected_query_origin_baseline(rows, 75, cache)
+    later_cycle_donor_oof = recovery._expected_donor_r06_oof(rows, query_cycle_76, cache)
+    assert e67_baseline.tolist() == [67.0]
+    assert e75_baseline.tolist() == [75.0]
+    assert later_cycle_donor_oof.tolist() == [75.0]
+
+
+def test_independent_verifier_override_changes_query_lookup_only(monkeypatch):
+    train = {"cycles": np.asarray([76, 66, 76], dtype=np.int64)}
+    query_rows = np.asarray([2], dtype=np.int64)
+    cache = {
+        67: {"rows": np.asarray([2]), "prediction": np.asarray([10.0])},
+        71: {"rows": np.asarray([2]), "prediction": np.asarray([20.0])},
+        75: {"rows": np.asarray([0, 2]), "prediction": np.asarray([30.0, 40.0])},
+    }
+    monkeypatch.setattr(recovery.runner, "load_geometry",
+                        lambda origin, _train, _parent: {"score_rows": query_rows})
+    original_lookup = recovery.independent._r06_for_rows
+
+    def fake_verify(fit_id, _parent, _train, source_cache):
+        query = recovery.independent._r06_for_rows(
+            query_rows, train["cycles"][query_rows], source_cache, "prediction")
+        donor = recovery.independent._r06_for_rows(
+            np.asarray([0]), np.asarray([76]), source_cache, "prediction")
+        return {"fit_id": fit_id, "query_baseline": query.tolist(), "donor_oof": donor.tolist()}
+
+    monkeypatch.setattr(recovery.independent, "verify_fit", fake_verify)
+    try:
+        e67 = recovery._verify_fit_with_origin_query_baseline("RNBR_PILOT_E67_SHUFFLED", {}, train, cache)
+        assert e67["query_baseline"] == [10.0]
+        assert e67["donor_oof"] == [30.0]
+
+        cache[71]["prediction"][0] = 710.0
+        cache[75]["prediction"][1] = 750.0
+        e67_after_perturbation = recovery._verify_fit_with_origin_query_baseline(
+            "RNBR_PILOT_E67_SHUFFLED", {}, train, cache)
+        e75_after_perturbation = recovery._verify_fit_with_origin_query_baseline(
+            "RNBR_PILOT_E75_OBSERVED", {}, train, cache)
+        assert e67_after_perturbation["query_baseline"] == [10.0]
+        assert e75_after_perturbation["query_baseline"] == [750.0]
+        assert e67_after_perturbation["donor_oof"] == [30.0]
+    finally:
+        assert recovery.independent._r06_for_rows is original_lookup
+
+
 def test_object_and_unicode_inputs_build_safe_payload_and_round_trip(tmp_path, monkeypatch):
     arrays, metadata, freeze, adapter, original = _safe_payload_with_object_inputs(monkeypatch)
     try:

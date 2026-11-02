@@ -28,10 +28,11 @@ from scripts import optimization_v3_rnbr_official as runner  # noqa: E402
 from scripts import optimization_v3_rnbr_official_verify as independent  # noqa: E402
 
 PARENT_FREEZE = ROOT / "experiments/optimization_v3/rnbr_pilot_v1/official_freeze.json"
-ADAPTER_FREEZE = ROOT / "experiments/optimization_v3/rnbr_pilot_v1/official_freeze_serialization_adapter_01.json"
+PREVIOUS_ADAPTER_FREEZE = ROOT / "experiments/optimization_v3/rnbr_pilot_v1/official_freeze_serialization_adapter_01.json"
+ADAPTER_FREEZE = ROOT / "experiments/optimization_v3/rnbr_pilot_v1/official_freeze_serialization_adapter_02.json"
 ADAPTER_SOURCE = "scripts/optimization_v3_rnbr_serialization_recovery.py"
 ADAPTER_TESTS = "tests/test_optimization_v3_rnbr_serialization_recovery.py"
-RECOVERY_REPORT = ROOT / "reports/optimization_v3/rnbr_pilot_v1/official_execution_v1/SERIALIZATION_RECOVERY.json"
+RECOVERY_REPORT = ROOT / "reports/optimization_v3/rnbr_pilot_v1/official_execution_v1/SERIALIZATION_RECOVERY_V2.json"
 ORIGINAL_COMMIT = "738ad02ab8e13d87c4473ad36e296c1a87e3bca0"
 EXPECTED_LEDGER_AFTER_FAILURE = "69424b6047c9889360f18f402b7e0ea477d646e6077209a07ca8d10f18ee4a47"
 FIT_ID = "RNBR_PILOT_E67_OBSERVED"
@@ -84,14 +85,22 @@ def _write_json_once(path: Path, payload: Mapping[str, Any]) -> None:
 
 def adapter_freeze_body() -> dict[str, Any]:
     parent = json.loads(PARENT_FREEZE.read_text(encoding="utf-8"))
+    previous_adapter = json.loads(PREVIOUS_ADAPTER_FREEZE.read_text(encoding="utf-8"))
     if sha_bytes(canonical_bytes({k: v for k, v in parent.items() if k != "freeze_signature"})) != parent.get("freeze_signature"):
         raise RecoveryError("Original R-NBR freeze signature is invalid")
     return {
-        "schema_version": 1,
-        "adapter_id": "RNBR_SAFE_UNICODE_SERIALIZATION_RECOVERY_01",
+        "schema_version": 2,
+        "adapter_id": "RNBR_SAFE_UNICODE_SERIALIZATION_RECOVERY_02",
         "parent_freeze_path": str(PARENT_FREEZE.relative_to(ROOT)).replace("\\", "/"),
         "parent_freeze_sha256": sha_file(PARENT_FREEZE),
         "parent_freeze_signature": parent["freeze_signature"],
+        "supersedes_adapter_freeze": {
+            "path": str(PREVIOUS_ADAPTER_FREEZE.relative_to(ROOT)).replace("\\", "/"),
+            "sha256": sha_file(PREVIOUS_ADAPTER_FREEZE),
+            "signature": previous_adapter.get("adapter_signature"),
+            "status": "SUPERSEDED_BEFORE_OFFICIAL_RECOVERY_OR_FIT",
+            "reason": "Its target-free verifier applied donor-cycle R06 OOF alignment to query baseline predictions.",
+        },
         "original_source_commit": ORIGINAL_COMMIT,
         "adapter_code_sha256": {
             ADAPTER_SOURCE: sha_file(ROOT / ADAPTER_SOURCE),
@@ -112,6 +121,13 @@ def adapter_freeze_body() -> dict[str, Any]:
             "split_or_gate_changed": False,
             "fit_count_added": 0,
             "original_FIT_FAILED_event_rewritten": False,
+        },
+        "prediction_lineage_semantics": {
+            "query_baseline": "Use the frozen R06 cache at the fit origin for every row in that query horizon.",
+            "donor_residual_base": "Use the past-only per-cycle R06 OOF cutoff mapping for donor rows.",
+            "source_implementation": "scripts/optimization_v3_rnbr_official.py:build_official_payload",
+            "original_independent_verifier_overridden_in_memory": True,
+            "frozen_source_files_modified": False,
         },
         "inherited_recipe_and_input_identity": {
             "recipe_freeze_signature": parent["freeze_signature"],
@@ -253,6 +269,58 @@ def _id_digest(values: np.ndarray) -> str:
     return runner.sha256_array(np.asarray(values, dtype=str))
 
 
+def _expected_donor_r06_oof(rows: np.ndarray, cycles: np.ndarray,
+                             cache: Mapping[int, Mapping[str, np.ndarray]]) -> np.ndarray:
+    """Past-only, per-cycle R06 cutoff mapping used for donor residuals."""
+    return runner.aligned_r06_predictions(rows, cycles, cache)
+
+
+def _expected_query_origin_baseline(rows: np.ndarray, origin: int,
+                                    cache: Mapping[int, Mapping[str, np.ndarray]]) -> np.ndarray:
+    """R06 origin model prediction for every row in its frozen query horizon."""
+    source = cache.get(int(origin))
+    if source is None:
+        raise RecoveryError(f"Missing frozen query-origin R06 cache: {origin}")
+    source_rows = np.asarray(source["rows"], dtype=np.int64)
+    predictions = np.asarray(source["prediction"], dtype=np.float64)
+    if (source_rows.ndim != 1 or predictions.shape != source_rows.shape
+            or len(np.unique(source_rows)) != len(source_rows)
+            or not np.isfinite(predictions).all()):
+        raise RecoveryError(f"Invalid R06 query-origin cache arrays: {origin}")
+    lookup = {int(row): float(prediction) for row, prediction in zip(source_rows, predictions)}
+    try:
+        result = np.asarray([lookup[int(row)] for row in np.asarray(rows, dtype=np.int64)], dtype=np.float64)
+    except KeyError as exc:
+        raise RecoveryError(f"R06 origin {origin} does not contain query row {exc.args[0]}") from exc
+    return result
+
+
+def _verify_fit_with_origin_query_baseline(fit_id: str, parent: Mapping[str, Any],
+                                           train: Mapping[str, np.ndarray],
+                                           cache: Mapping[int, Mapping[str, np.ndarray]]) -> dict[str, Any]:
+    """Use the frozen verifier but correct only its query-baseline lookup in memory."""
+    origin = int(fit_id.split("_")[2][1:])
+    geometry = runner.load_geometry(origin, train, parent)
+    query_rows = np.asarray(geometry["score_rows"], dtype=np.int64)
+    query_cycles = np.asarray(train["cycles"][query_rows], dtype=np.int64)
+    original_r06_lookup = independent._r06_for_rows
+
+    def recipe_r06_lookup(rows: np.ndarray, cycles: np.ndarray,
+                          source_cache: Mapping[int, Mapping[str, np.ndarray]],
+                          prediction_key: str) -> np.ndarray:
+        if (prediction_key == "prediction"
+                and np.array_equal(np.asarray(rows, dtype=np.int64), query_rows)
+                and np.array_equal(np.asarray(cycles, dtype=np.int64), query_cycles)):
+            return _expected_query_origin_baseline(query_rows, origin, source_cache)
+        return original_r06_lookup(rows, cycles, source_cache, prediction_key)
+
+    independent._r06_for_rows = recipe_r06_lookup
+    try:
+        return independent.verify_fit(fit_id, dict(parent), dict(train), dict(cache))
+    finally:
+        independent._r06_for_rows = original_r06_lookup
+
+
 def repair_source_arrays(*, original_npz: Path, headers: Mapping[str, Mapping[str, Any]],
                          donor_rows: np.ndarray, train_ids: np.ndarray) -> dict[str, np.ndarray]:
     arrays = load_nonobject_arrays(original_npz, headers)
@@ -305,11 +373,11 @@ def _validate_recovered_arrays(arrays: Mapping[str, np.ndarray], receipt: Mappin
                                    for c in train["cycles"][expected_donor_rows]], dtype=np.int64)
     if not np.array_equal(arrays["donor_source_cutoffs"], expected_cutoffs):
         raise RecoveryError("Saved donor R06 source-cutoff assignment differs")
-    expected_r06 = runner.aligned_r06_predictions(expected_donor_rows,
-                                                   train["cycles"][expected_donor_rows], cache)
+    expected_r06 = _expected_donor_r06_oof(expected_donor_rows,
+                                           train["cycles"][expected_donor_rows], cache)
     if not np.array_equal(arrays["donor_r06_predictions"], expected_r06):
         raise RecoveryError("Saved donor OOF R06 values do not match frozen cutoff/row membership")
-    expected_base = runner.aligned_r06_predictions(rows, cycles, cache)
+    expected_base = _expected_query_origin_baseline(rows, origin=67, cache=cache)
     if not np.array_equal(arrays["baseline_prediction"], expected_base):
         raise RecoveryError("Saved query R06 base predictions differ from the frozen complete E67 horizon")
     for name in ("score_rows", "score_record_ids", "score_cycles", "neighbor_count",
@@ -700,7 +768,7 @@ def independent_verify_available(*, all_fits: bool, parent: Mapping[str, Any],
             if not terminal and not directory.is_dir():
                 continue
             arrays, receipt = runner.load_bundle(fit_id, parent, source_commit=source_commit_id)
-            item = independent.verify_fit(fit_id, parent, train, cache)
+            item = _verify_fit_with_origin_query_baseline(fit_id, parent, train, cache)
             if terminal and terminal[0].get("receipt_sha256") != receipt.get("integrity_sha256"):
                 raise RecoveryError(f"Saved FIT_SAVED receipt mismatches {fit_id}")
         available.append(item)

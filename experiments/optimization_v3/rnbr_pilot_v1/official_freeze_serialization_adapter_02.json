@@ -1,0 +1,203 @@
+{
+  "schema_version": 2,
+  "adapter_id": "RNBR_SAFE_UNICODE_SERIALIZATION_RECOVERY_02",
+  "parent_freeze_path": "experiments/optimization_v3/rnbr_pilot_v1/official_freeze.json",
+  "parent_freeze_sha256": "364fd24158f315122554496fa3d7019fd2d11af658cf4cc951bec75df3a87db2",
+  "parent_freeze_signature": "b4467f22077287c94f18e81f4b5e306307cd9d81646241f487ebf2537d3cab91",
+  "supersedes_adapter_freeze": {
+    "path": "experiments/optimization_v3/rnbr_pilot_v1/official_freeze_serialization_adapter_01.json",
+    "sha256": "2d5ddc577e140c9dc42375c23d936a565c575f4b0027aa350efa26a1c80a48d4",
+    "signature": "cbabd1be88543538a0f0a756cf1c7a4382fac877ba759e047de92c3a0f10680a",
+    "status": "SUPERSEDED_BEFORE_OFFICIAL_RECOVERY_OR_FIT",
+    "reason": "Its target-free verifier applied donor-cycle R06 OOF alignment to query baseline predictions."
+  },
+  "original_source_commit": "738ad02ab8e13d87c4473ad36e296c1a87e3bca0",
+  "adapter_code_sha256": {
+    "scripts/optimization_v3_rnbr_serialization_recovery.py": "36f763a681c572b53c48bebec44f19def1461650355d95decf0915547e42f07f",
+    "tests/test_optimization_v3_rnbr_serialization_recovery.py": "803b4c9e913ee3dab3030157011cadbfb29e2c85c9288d55a63ed996075bc9d3"
+  },
+  "original_failed_output": {
+    "fit_id": "RNBR_PILOT_E67_OBSERVED",
+    "npz_path": "experiments/runs/optimization_v3_research_next_v1/RNBR_PILOT_OFFICIAL_V1/bundles/RNBR_PILOT_E67_OBSERVED/arrays.npz",
+    "npz_sha256": "f8f33a71419459a74a70c3edb2bc38191daea11a4628c516a2b89597f2a6972b",
+    "receipt_path": "experiments/runs/optimization_v3_research_next_v1/RNBR_PILOT_OFFICIAL_V1/bundles/RNBR_PILOT_E67_OBSERVED/receipt.json",
+    "receipt_sha256_file": "33548fbe4dc7b0cbb1abd6563924719c5852bc85d38e580e2f7fccf229a34d48"
+  },
+  "serialization_only_amendment": {
+    "object_array_field": "donor_record_ids",
+    "replacement": "fixed-width NumPy Unicode derived from verified official Train IDs by saved donor row index",
+    "model_or_residual_formula_changed": false,
+    "feature_or_geometry_changed": false,
+    "split_or_gate_changed": false,
+    "fit_count_added": 0,
+    "original_FIT_FAILED_event_rewritten": false
+  },
+  "prediction_lineage_semantics": {
+    "query_baseline": "Use the frozen R06 cache at the fit origin for every row in that query horizon.",
+    "donor_residual_base": "Use the past-only per-cycle R06 OOF cutoff mapping for donor rows.",
+    "source_implementation": "scripts/optimization_v3_rnbr_official.py:build_official_payload",
+    "original_independent_verifier_overridden_in_memory": true,
+    "frozen_source_files_modified": false
+  },
+  "inherited_recipe_and_input_identity": {
+    "recipe_freeze_signature": "b4467f22077287c94f18e81f4b5e306307cd9d81646241f487ebf2537d3cab91",
+    "train_sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+    "r06_lineage": {
+      "source_commit": "be5e86750ec725e45698054a91fad299ddc24eb4",
+      "source_path": "src/models/optimization_v3_batch1_r06.py",
+      "source_sha256": "37869d6125d48fc4afb2a3c439cbb19d5586f35f1cd3a501b762e42530fcd970",
+      "recipe_path": "experiments/optimization_v3/batch1/R06/recipe_revision_02.json",
+      "recipe_sha256": "6814978b3228fb741429dbd6b8af6d2c6caa8044eff0e079bbeb50066643b788",
+      "cache_inventory": {
+        "55": {
+          "npz": "experiments/runs/optimization_v3_batch1/R06/R06_fit55.npz",
+          "json": "experiments/runs/optimization_v3_batch1/R06/R06_fit55.json",
+          "npz_sha256": "ed52cf9c8958b693e49e4c2999015babe35aa8f350fea28eb313e492f19e5dd6",
+          "sidecar_sha256": "68e60624d79957075c755ac1c35bd40733d8b983cd2ec931b8186243de0100b0",
+          "freeze_signature": "02ae1b4e6e6424a8ac7f66fd0f1b955e478f6265c4f071989d9d8c5ef532c0a8"
+        },
+        "59": {
+          "npz": "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit59.npz",
+          "json": "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit59.json",
+          "npz_sha256": "6d55cd7fa59662d54816ed4be16470a437af615b5e6544ec0ab15ce10dbcf849",
+          "sidecar_sha256": "840addcfe5fb088d0df0e348b48ec11a86ccdff9392da8e7529c9e6f9e433ab7",
+          "freeze_signature": "6cdecf6e0729b625981f23c7b7be4152a12806011a0a1852dd978eaec30d21ae"
+        },
+        "63": {
+          "npz": "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit63.npz",
+          "json": "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit63.json",
+          "npz_sha256": "f6480ec474dbd9229b401eade141ff51a4bf911f68b10df14336b0a9b997c0c9",
+          "sidecar_sha256": "0eecbe691404e56d38acce03630ac1339f38c50733ad60128624394894b4dea1",
+          "freeze_signature": "6cdecf6e0729b625981f23c7b7be4152a12806011a0a1852dd978eaec30d21ae"
+        },
+        "67": {
+          "npz": "experiments/runs/optimization_v3_batch1/R06/R06_fit67.npz",
+          "json": "experiments/runs/optimization_v3_batch1/R06/R06_fit67.json",
+          "npz_sha256": "4bda0ac6838388ea46ca768e0998f7b0f9a9a1b6defb2b1e5399f6ff83154804",
+          "sidecar_sha256": "faa11f25bfd37fded8db5f84244ce306d6f2027dc153fb143560304fcf91da1e",
+          "freeze_signature": "02ae1b4e6e6424a8ac7f66fd0f1b955e478f6265c4f071989d9d8c5ef532c0a8"
+        },
+        "71": {
+          "npz": "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit71.npz",
+          "json": "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit71.json",
+          "npz_sha256": "47c97efd70dba87b8fd4187e31e85122d325528688553f7c9e8e6a81dcf58894",
+          "sidecar_sha256": "f506ed8f0e97517d6af4d591d89e5cf4cea96640a47bb4d73235573f4c0b0aa8",
+          "freeze_signature": "6cdecf6e0729b625981f23c7b7be4152a12806011a0a1852dd978eaec30d21ae"
+        },
+        "75": {
+          "npz": "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit75.npz",
+          "json": "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit75.json",
+          "npz_sha256": "61ef463a5bf5ee06f3c68162b8a7f874664b2736161979342731de98b5e09abb",
+          "sidecar_sha256": "61f3ab25d1cbc954cb74f47bdf823cc72113b1a2e19394c61802da1bdba7ca45",
+          "freeze_signature": "6cdecf6e0729b625981f23c7b7be4152a12806011a0a1852dd978eaec30d21ae"
+        }
+      }
+    },
+    "a02_saved_geometry": {
+      "67": {
+        "observed": {
+          "npz": "experiments/runs/optimization_v3_a02_neighbors_v1/E67/observed/predictions.npz",
+          "predictions_json": "experiments/runs/optimization_v3_a02_neighbors_v1/E67/observed/predictions.json",
+          "receipt_json": "experiments/runs/optimization_v3_a02_neighbors_v1/E67/observed/fit_receipt.json",
+          "state_json": "experiments/runs/optimization_v3_a02_neighbors_v1/E67/observed/fit_state.json",
+          "model": "experiments/runs/optimization_v3_a02_neighbors_v1/E67/observed/model.joblib",
+          "npz_sha256": "49442235f6c828618d8aa12569a802bcad6d12ae6f5d6040294a6f4ac9323eca",
+          "model_sha256": "7a40ffa9530fca42c16aae8850067eadd7bf157747941814073416c714b4e8c8",
+          "state_sha256": "94ef1ca83eb744af11a2ce8ba35a4d0f56b345bb2ba0a72ac670dd2cfc5377fc",
+          "fit_id": "A02_E67_OBSERVED",
+          "freeze_signature": "cdac164df87d4f559e36795066cc0c3a91034e5917b0b1fd72cebd1051dae08b",
+          "geometry_hashes": {
+            "neighbor_ids_sha256": "49003b7e6b3c8404d43c35dc1cc97c70a27b4ca0fd6fe71a74a39a45f304452e",
+            "neighbor_source_rows_sha256": "e2592fc6f913a4b93cb5934d498c7f0df4da98c1c45be6e36c91ea4ac4727bca",
+            "neighbor_similarities_sha256": "2b749c3c22bad92244bdfc9e7e9b009b9c533ea719ae88c63ee2b7f4d8f12c36"
+          },
+          "predictions_json_sha256": "876f5c58986179f4db3511af240b98493ccf66814e10f457bc89d50da509f27f",
+          "receipt_json_sha256": "58aef7880dd399f3ed4aab3d334205e5cc345f0444369b86f691c6400bf118dc",
+          "state_json_sha256": "9bd7d2d33bc101a5580cec8cc7ebd352e7d4151ada67d4a7bf4c1a22c7b57508"
+        },
+        "shuffled": {
+          "npz": "experiments/runs/optimization_v3_a02_neighbors_v1/E67/shuffled/predictions.npz",
+          "predictions_json": "experiments/runs/optimization_v3_a02_neighbors_v1/E67/shuffled/predictions.json",
+          "receipt_json": "experiments/runs/optimization_v3_a02_neighbors_v1/E67/shuffled/fit_receipt.json",
+          "state_json": "experiments/runs/optimization_v3_a02_neighbors_v1/E67/shuffled/fit_state.json",
+          "model": "experiments/runs/optimization_v3_a02_neighbors_v1/E67/shuffled/model.joblib",
+          "npz_sha256": "943f08b7b7067d49185f49e6e4e48ee1e91e9954326f30901abd53754340a70a",
+          "model_sha256": "cec3bd73a6b9cdf63b8614e9199765febf64df89580b61296a82bd3414559c05",
+          "state_sha256": "a550775b2447c3d4fcf968a1e4b01d5c2033e78351fead701b42ceecfebef35d",
+          "fit_id": "A02_E67_SHUFFLED",
+          "freeze_signature": "cdac164df87d4f559e36795066cc0c3a91034e5917b0b1fd72cebd1051dae08b",
+          "geometry_hashes": {
+            "neighbor_ids_sha256": "49003b7e6b3c8404d43c35dc1cc97c70a27b4ca0fd6fe71a74a39a45f304452e",
+            "neighbor_source_rows_sha256": "e2592fc6f913a4b93cb5934d498c7f0df4da98c1c45be6e36c91ea4ac4727bca",
+            "neighbor_similarities_sha256": "2b749c3c22bad92244bdfc9e7e9b009b9c533ea719ae88c63ee2b7f4d8f12c36"
+          },
+          "predictions_json_sha256": "b6a60135b6dc9d9bdd3885a4f4148116cf1d98049a02aee9d564d10b0d5a224c",
+          "receipt_json_sha256": "72d49e7c12afef0cc7e1694d6fe6bf86f48a92d52e93651538f7dff428226408",
+          "state_json_sha256": "2f3b63ba346b5c6419977bcb139351a7dc7c91c494537441da239c35601946f3"
+        }
+      },
+      "75": {
+        "observed": {
+          "npz": "experiments/runs/optimization_v3_a02_neighbors_v1/E75/observed/predictions.npz",
+          "predictions_json": "experiments/runs/optimization_v3_a02_neighbors_v1/E75/observed/predictions.json",
+          "receipt_json": "experiments/runs/optimization_v3_a02_neighbors_v1/E75/observed/fit_receipt.json",
+          "state_json": "experiments/runs/optimization_v3_a02_neighbors_v1/E75/observed/fit_state.json",
+          "model": "experiments/runs/optimization_v3_a02_neighbors_v1/E75/observed/model.joblib",
+          "npz_sha256": "d5a7f8658172370f8e1c30a0b363198a25af52abf40ae7c69fb504b1dbc621bc",
+          "model_sha256": "5a8d6f5effa449c468b3ec53415a52430b1ceac3445f7703ac86add76bb13e32",
+          "state_sha256": "a3ac99dd182bda03e9d02861b82635d7d4ee11123c5f4a1401fd7142e147dd94",
+          "fit_id": "A02_E75_OBSERVED",
+          "freeze_signature": "cdac164df87d4f559e36795066cc0c3a91034e5917b0b1fd72cebd1051dae08b",
+          "geometry_hashes": {
+            "neighbor_ids_sha256": "e41c15f67901c5d5f5a68220444c84b7f81e521666eabc51b9db5f51aa544820",
+            "neighbor_source_rows_sha256": "f1a384cd9c6903c1c6b1c8b71e67e0b0860be08c70d0a4242b9c3a8fe86b7eb9",
+            "neighbor_similarities_sha256": "eba810412a4f009d54abef2732a6e17c0346117b520a0b3c2c912699c452762b"
+          },
+          "predictions_json_sha256": "3975a83fadc49d1efb846be0e8675dbc359bc2a5f471423d7802e90ee4c64a8d",
+          "receipt_json_sha256": "72cba8fff8ca3c5e8f43d054b062e31fa89b0f24f897cd5effaec817725c611e",
+          "state_json_sha256": "ba9f7bf4f984fab20e990963004a2348caf6f06f71ce76fc9c420f7e14e33998"
+        },
+        "shuffled": {
+          "npz": "experiments/runs/optimization_v3_a02_neighbors_v1/E75/shuffled/predictions.npz",
+          "predictions_json": "experiments/runs/optimization_v3_a02_neighbors_v1/E75/shuffled/predictions.json",
+          "receipt_json": "experiments/runs/optimization_v3_a02_neighbors_v1/E75/shuffled/fit_receipt.json",
+          "state_json": "experiments/runs/optimization_v3_a02_neighbors_v1/E75/shuffled/fit_state.json",
+          "model": "experiments/runs/optimization_v3_a02_neighbors_v1/E75/shuffled/model.joblib",
+          "npz_sha256": "52b6e5dde87f4092e6de69dba7db2730290cec927ee976c0c86bdf6cb177ac23",
+          "model_sha256": "b795e663c6b39a87f908998ac54d819afda5bcc659d757025cf94cfb4ee50e83",
+          "state_sha256": "a12ab5c11ac0de820bc61258809945190ed8133775dd85b2de4a22b49fe71b99",
+          "fit_id": "A02_E75_SHUFFLED",
+          "freeze_signature": "cdac164df87d4f559e36795066cc0c3a91034e5917b0b1fd72cebd1051dae08b",
+          "geometry_hashes": {
+            "neighbor_ids_sha256": "e41c15f67901c5d5f5a68220444c84b7f81e521666eabc51b9db5f51aa544820",
+            "neighbor_source_rows_sha256": "f1a384cd9c6903c1c6b1c8b71e67e0b0860be08c70d0a4242b9c3a8fe86b7eb9",
+            "neighbor_similarities_sha256": "eba810412a4f009d54abef2732a6e17c0346117b520a0b3c2c912699c452762b"
+          },
+          "predictions_json_sha256": "e5736b7ddb155e65fb783a38cb381d2864d0756b97e1266b5d56dc147474f175",
+          "receipt_json_sha256": "ed0ffd62abb4115e26a87e3c5415d9b17dc44c89ea06fc7cde2eb452084bf2cc",
+          "state_json_sha256": "ef9bc7d51152e8831d24ebf3486420226ce2e16d9926b4d7d80a454d8ce3ca68"
+        }
+      }
+    },
+    "protocol_sha256": "561c9270ae74d52627c55af8242e692dae1298d3d6d20b82d5b9b09588081a7f",
+    "fit_ids": [
+      "RNBR_PILOT_E67_OBSERVED",
+      "RNBR_PILOT_E67_SHUFFLED",
+      "RNBR_PILOT_E75_OBSERVED",
+      "RNBR_PILOT_E75_SHUFFLED"
+    ]
+  },
+  "new_fit_ids_authorized": [
+    "RNBR_PILOT_E67_SHUFFLED",
+    "RNBR_PILOT_E75_OBSERVED",
+    "RNBR_PILOT_E75_SHUFFLED"
+  ],
+  "recovered_fit_id": "RNBR_PILOT_E67_OBSERVED",
+  "source_boundaries": {
+    "query_targets_read_during_recovery": false,
+    "test_or_sample_submission_opened": false,
+    "classification_labels_used": false,
+    "pickle_loading": false
+  },
+  "adapter_signature": "4e72370ed8b6f71f432331a36c1200504b37a1b0f27cdbe7783571549dbd2eec"
+}
