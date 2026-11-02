@@ -1,12 +1,17 @@
+import hashlib
+import json
+
 import numpy as np
 import pandas as pd
 import pytest
 from sklearn.metrics import confusion_matrix, f1_score
 
 from scripts.optimization_v3_a02_b01_centering import (
+    _commit_output_bundle,
     compute_from_saved_geometry,
     fit_prefix_text_load_groups,
     _probability_metrics,
+    write_once,
 )
 
 
@@ -125,3 +130,51 @@ def test_fit_prefix_text_load_quartiles_reproduce_right_closed_edges():
         "text_load": np.array([1., 2., 3., 4., 1., 2., 3., 4.]),
     })
     assert fit_prefix_text_load_groups(train, 50, np.array([0, 1, 2, 3])).tolist() == [0, 1, 2, 3]
+
+
+def test_completed_result_bundle_is_published_as_one_directory(tmp_path):
+    result = {"value": 7}
+    qa = {"status": "PASS", "result_sha256": None, "summary_sha256": None}
+    summary = "# complete\n"
+
+    bundle, written_qa = _commit_output_bundle(tmp_path, result, qa, summary)
+
+    assert bundle == tmp_path / "B01_OUTPUTS"
+    result_text = (bundle / "RESULTS.json").read_text(encoding="utf-8")
+    summary_text = (bundle / "SUMMARY.md").read_text(encoding="utf-8")
+    persisted_qa = json.loads((bundle / "QA.json").read_text(encoding="utf-8"))
+    assert json.loads(result_text) == result
+    assert summary_text == summary
+    assert persisted_qa == written_qa
+    assert persisted_qa["result_sha256"] == hashlib.sha256(result_text.encode("utf-8")).hexdigest()
+    assert persisted_qa["summary_sha256"] == hashlib.sha256(summary_text.encode("utf-8")).hexdigest()
+    assert not (tmp_path / ".B01_OUTPUTS.staging").exists()
+
+
+def test_interrupted_staging_blocks_automatic_replacement(tmp_path):
+    staging = tmp_path / ".B01_OUTPUTS.staging"
+    staging.mkdir()
+    with pytest.raises(RuntimeError, match="interrupted staging"):
+        _commit_output_bundle(tmp_path, {"value": 1}, {}, "summary")
+    assert staging.is_dir()
+    assert not (tmp_path / "B01_OUTPUTS").exists()
+
+
+def test_immutable_freeze_write_is_atomic_idempotent_and_fail_closed(tmp_path):
+    path = tmp_path / "FREEZE.json"
+    write_once(path, {"status": "frozen"})
+    original = path.read_text(encoding="utf-8")
+
+    write_once(path, {"status": "frozen"})
+    assert path.read_text(encoding="utf-8") == original
+    assert not (tmp_path / ".FREEZE.json.staging").exists()
+    with pytest.raises(RuntimeError, match="nonidentical immutable"):
+        write_once(path, {"status": "changed"})
+
+    other = tmp_path / "FREEZE2.json"
+    staging = tmp_path / ".FREEZE2.json.staging"
+    staging.write_text("partial", encoding="utf-8")
+    with pytest.raises(RuntimeError, match="Interrupted immutable output staging"):
+        write_once(other, {"status": "frozen"})
+    assert not other.exists()
+    assert staging.read_text(encoding="utf-8") == "partial"

@@ -11,6 +11,7 @@ from contextlib import contextmanager
 import gc
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 from typing import Any, Mapping
@@ -30,10 +31,13 @@ from scripts.optimization_v3_a02_next_decision import exact_top_k, matched_count
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "reports/optimization_v3/a02_b01_centering_v1"
-FREEZE_PATH = REPORT / "FREEZE.json"
-RESULTS_PATH = REPORT / "RESULTS.json"
-QA_PATH = REPORT / "QA.json"
-SUMMARY_PATH = REPORT / "SUMMARY.md"
+FREEZE_PATH = REPORT / "FREEZE_V2.json"
+SUPERSEDED_FREEZE_PATH = REPORT / "FREEZE.json"
+OUTPUT_BUNDLE_PATH = REPORT / "B01_OUTPUTS"
+OUTPUT_STAGING_PATH = REPORT / ".B01_OUTPUTS.staging"
+RESULTS_PATH = OUTPUT_BUNDLE_PATH / "RESULTS.json"
+QA_PATH = OUTPUT_BUNDLE_PATH / "QA.json"
+SUMMARY_PATH = OUTPUT_BUNDLE_PATH / "SUMMARY.md"
 TRAIN_PATH = ROOT / "data/raw/classification/Train.csv"
 LEDGER_PATH = ROOT / "experiments/runs/optimization_v3_research_next_v1/budget.jsonl"
 PARENT_QA_PATH = ROOT / "reports/optimization_v3/a02_decision_boundary_audit_v1/QA.json"
@@ -120,6 +124,7 @@ CONTROL_PATHS = [
     "reports/optimization_v3/a02_next_decision_v1/QA.json",
     "reports/optimization_v3/a02_next_decision_v1/matched_count_results.json",
     "reports/optimization_v3/a02_next_decision_v1/confidence_gap_descriptor.json",
+    "reports/optimization_v3/a02_b01_centering_v1/FREEZE.json",
 ]
 
 
@@ -139,13 +144,50 @@ def json_bytes(value: Any) -> str:
 def write_once(path: Path, value: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     encoded = json_bytes(value)
+    staging_path = path.with_name(f".{path.name}.staging")
     if path.exists():
         if path.read_text(encoding="utf-8") != encoded:
             raise RuntimeError(f"Refusing to overwrite nonidentical immutable output: {path}")
         return
-    with path.open("x", encoding="utf-8", newline="\n") as stream:
+    if staging_path.exists():
+        raise RuntimeError(f"Interrupted immutable output staging exists; inspect before retrying: {staging_path}")
+    with staging_path.open("x", encoding="utf-8", newline="\n") as stream:
         stream.write(encoded)
         stream.flush()
+        os.fsync(stream.fileno())
+    staging_path.rename(path)
+
+
+def _commit_output_bundle(report_dir: Path, result: dict[str, Any], qa: dict[str, Any],
+                          summary: str) -> tuple[Path, dict[str, Any]]:
+    """Write all result files to staging, then publish the completed directory once."""
+    final_path = report_dir / "B01_OUTPUTS"
+    staging_path = report_dir / ".B01_OUTPUTS.staging"
+    if final_path.exists() or staging_path.exists():
+        raise RuntimeError("B01 output bundle or interrupted staging already exists; inspect before resuming")
+    result_text = json_bytes(result)
+    summary_text = summary
+    qa_record = dict(qa)
+    qa_record["result_sha256"] = hashlib.sha256(result_text.encode("utf-8")).hexdigest()
+    qa_record["summary_sha256"] = hashlib.sha256(summary_text.encode("utf-8")).hexdigest()
+    files = {
+        "RESULTS.json": result_text,
+        "SUMMARY.md": summary_text,
+        "QA.json": json_bytes(qa_record),
+    }
+    report_dir.mkdir(parents=True, exist_ok=True)
+    staging_path.mkdir()
+    try:
+        for name, content in files.items():
+            with (staging_path / name).open("x", encoding="utf-8", newline="\n") as stream:
+                stream.write(content)
+                stream.flush()
+                os.fsync(stream.fileno())
+        staging_path.rename(final_path)
+    except BaseException:
+        # Keep staging for inspection; never delete partial evidence automatically.
+        raise
+    return final_path, qa_record
 
 
 def _git_head() -> str:
@@ -232,7 +274,7 @@ def _check_input_scope(paths: list[str]) -> None:
 
 
 def freeze_recipe() -> dict[str, Any]:
-    if RESULTS_PATH.exists() or QA_PATH.exists() or SUMMARY_PATH.exists():
+    if OUTPUT_BUNDLE_PATH.exists() or OUTPUT_STAGING_PATH.exists():
         raise RuntimeError("B01 score outputs already exist; refusing to create a post-score freeze")
     parent = _parent_integrity()
     ledger = _verify_ledger()
@@ -259,6 +301,12 @@ def freeze_recipe() -> dict[str, Any]:
         "matched_positive_count": "descriptive only; root helper; per (origin, cycle); exact ties use ascending source row; never selects deployment K",
         "official_train_rows": 50_608,
         "official_train_sha256": EXPECTED_TRAIN_SHA256,
+        "superseded_pre_score_freeze": {
+            "filename": SUPERSEDED_FREEZE_PATH.name,
+            "sha256": sha256_file(SUPERSEDED_FREEZE_PATH),
+            "status": _read_json(SUPERSEDED_FREEZE_PATH).get("status"),
+            "reason": "Atomic output-bundle hardening before any B01 score calculation; formula and gates unchanged.",
+        },
         "fit_ledger_before_scores": ledger,
         "pre_score_parent_integrity": {
             "a02_parent_qa_status": "PASS",
@@ -284,6 +332,13 @@ def verify_freeze() -> tuple[dict[str, Any], dict[str, Any]]:
         raise RuntimeError("B01 subgroup/view definitions differ from the pre-score freeze")
     if freeze.get("official_train_sha256") != EXPECTED_TRAIN_SHA256:
         raise RuntimeError("B01 frozen official Train hash differs")
+    superseded = freeze.get("superseded_pre_score_freeze")
+    superseded_relative = SUPERSEDED_FREEZE_PATH.relative_to(ROOT).as_posix()
+    if (not isinstance(superseded, dict)
+            or superseded.get("filename") != SUPERSEDED_FREEZE_PATH.name
+            or superseded.get("sha256") != freeze.get("input_sha256", {}).get(superseded_relative)
+            or superseded.get("status") != _read_json(SUPERSEDED_FREEZE_PATH).get("status")):
+        raise RuntimeError("B01 V2 freeze does not consistently identify the preserved pre-score freeze")
     if sha256_file(Path(__file__)) != freeze.get("code_sha256"):
         raise RuntimeError("B01 source code changed after the pre-score freeze")
     test_path = ROOT / "tests/test_optimization_v3_a02_b01_centering.py"
@@ -875,8 +930,8 @@ def run_b01() -> dict[str, Any]:
     freeze, pre = verify_freeze()
     before_ledger = pre["ledger_before"]
     parent = pre["parent"]
-    if RESULTS_PATH.exists() or QA_PATH.exists() or SUMMARY_PATH.exists():
-        raise RuntimeError("B01 result output already exists; refusing to overwrite or score twice")
+    if OUTPUT_BUNDLE_PATH.exists() or OUTPUT_STAGING_PATH.exists():
+        raise RuntimeError("B01 result bundle or interrupted staging exists; refusing to overwrite or score twice")
     with threadpool_limits(limits=THREADS), forbid_training_and_inference_calls() as blocked:
         train = load_train()
         freeze_state = audit.verify_freezes_and_inputs()
@@ -967,12 +1022,7 @@ def run_b01() -> dict[str, Any]:
     if not all(qa["checks"].values()):
         raise RuntimeError(f"B01 independent QA contains a failed check: {qa['checks']}")
     summary = _make_summary(result)
-    REPORT.mkdir(parents=True, exist_ok=True)
-    RESULTS_PATH.write_text(json_bytes(result), encoding="utf-8", newline="\n")
-    SUMMARY_PATH.write_text(summary, encoding="utf-8", newline="\n")
-    qa["result_sha256"] = sha256_file(RESULTS_PATH)
-    qa["summary_sha256"] = sha256_file(SUMMARY_PATH)
-    QA_PATH.write_text(json_bytes(qa), encoding="utf-8", newline="\n")
+    _, qa = _commit_output_bundle(REPORT, result, qa, summary)
     return result
 
 
@@ -1017,9 +1067,11 @@ def _make_summary(result: dict[str, Any]) -> str:
         "",
         "The results are adaptive Train-only diagnostics on repeatedly used development rows. H12-L overlaps primary. A `PASS` only means B01 may return for review; it does not qualify the recipe, authorize Test inference, alter the champion, or authorize Kaggle upload. Descriptive matched-positive-count tables use the frozen root utility and do not select K.",
         "",
-        "Per-origin, subgroup, confusion, AUC/AP, Brier, both log-loss conventions, endpoint counts and descriptive count-matched results are in `RESULTS.json`. Hashes, zero-fit evidence and integrity checks are in `QA.json`; the recipe and inputs were frozen before score calculation in `FREEZE.json`.",
+        "Per-origin, subgroup, confusion, AUC/AP, Brier, both log-loss conventions, endpoint counts and descriptive count-matched results are in `RESULTS.json`. Hashes, zero-fit evidence and integrity checks are in `QA.json`; the recipe and inputs were frozen before score calculation in `FREEZE_V2.json`.",
         "",
         f"Official Train SHA-256: `{result['provenance']['official_train_sha256']}`. Fit ledger SHA-256: `{result['provenance']['ledger_before']['sha256']}`; 66 starts / 64 saved / 2 historical failures before and after.",
+        "",
+        f"The pre-score recipe freeze is recorded in `{FREEZE_PATH.name}`. Completed results are published together as an atomic output bundle.",
     ]
     return "\n".join(lines) + "\n"
 
