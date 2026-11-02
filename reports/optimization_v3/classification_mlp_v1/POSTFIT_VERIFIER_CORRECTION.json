@@ -1,0 +1,35 @@
+{
+  "additional_estimator_fits": 0,
+  "amendment_id": "CLASSIFICATION_SPARSE_MLP_V1_POSTFIT_VERIFIER_SCHEMA_ADAPTER",
+  "authorized_scope": "Technical verification/report completion only after both originally planned MLP fits reached terminal status. No recipe, preprocessing, routing, threshold, metric, gate, or model-selection change.",
+  "fit_status_at_amendment": {
+    "55": "FIT_FAILED_OUTPUT_RECOVERED_NO_REFIT",
+    "67": "FIT_SAVED"
+  },
+  "frozen_before_reverification": true,
+  "frozen_source_commit": "ecce239358750c39ab2d657fd6388d58e9cddc27",
+  "input_sha256": {
+    "reports/optimization_v3/classification_mlp_v1/budget_snapshot.json": "c5475645537d29a26a381d7e958bc369585b528b60f68f9ecb48c1e00a21f14c",
+    "reports/optimization_v3/classification_mlp_v1/results.json": "2e4555100b16e78bf8e993dca5cafc8b0315d68beb1851dac0c558caee737273"
+  },
+  "observed_verifier_error": {
+    "category": "historical sidecar schema mismatch",
+    "message": "independent verifier looked for `fit_rows` at the CatBoost metadata root; actual frozen sidecars store it at `state.fit_rows`",
+    "occurrence": "after results.json and the reservation release snapshot were already written; no fit was running and no extra fit began",
+    "outcome_blind": false
+  },
+  "original_freeze_signature": "46d9362cdf543b87af58653fe1666d79cbe13b4d012397d5f730b15959debd18",
+  "original_resume_amendment_preserved": "experiments/optimization_v3/classification_mlp_v1/POSTFIT_SERIALIZATION_RECOVERY_RESUME_AMENDMENT.json",
+  "postfit_adapter_source_sha256": {
+    "scripts/optimization_v3_classification_sparse_mlp_v1_finalize_adapter.py": "5c49a307857fed263f0623e4bbdd685060142d86fecf95623c54648de0f281fd",
+    "scripts/optimization_v3_classification_sparse_mlp_v1_postfit_verify.py": "bb7acd58733c62d71c88a22abc7de8c709dd81570359033bc192d85c64253cbc",
+    "scripts/optimization_v3_classification_sparse_mlp_v1_recovery.py": "e70ddab1df49a53a96ee9983970ad82b4c68b2d233aaf2a13513d18d19e1e462",
+    "scripts/optimization_v3_classification_sparse_mlp_v1_recovery_verify.py": "8a60e39e2b2d057e3e1f763e10447379a2369ab406b777e9fc0a92304079f7b5",
+    "tests/test_optimization_v3_classification_sparse_mlp_v1_postfit_verify.py": "9c653773f7d4b2199100e6a82b0bb4a7c780ac10887c8e163801956648424fb8"
+  },
+  "recipe_changed": false,
+  "schema_correction": "copy nested state.fit_rows to a temporary top-level field in memory only, after validating every fit_only_preprocessor.category_counts[*].training_rows against state.fit_rows; leave all frozen sidecar and verifier files untouched",
+  "test_read": false,
+  "sample_submission_read": false,
+  "kaggle_access": false
+}
