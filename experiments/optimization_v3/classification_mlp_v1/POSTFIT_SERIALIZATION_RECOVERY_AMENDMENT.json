@@ -1,0 +1,30 @@
+{
+  "authorized_scope": "Serialization and report recovery only; original sparse MLP recipe, 30 epochs, cutoff populations, gate, threshold, preprocessing, and routing remain unchanged.",
+  "budget": "No extra estimator fit reserved by this amendment. Cutoff55 FIT_STARTED remains consumed; cutoff67 is the second and final planned fit. No technical retry.",
+  "created_from_commit": "cb1ca1d4263a1d0edac697141a21e968f410cd00",
+  "cutoff55_recovery": "Reconstruct fit-state receipt and score bundle from the already durable fitted_state.joblib; do not call fit or change the original FIT_FAILED event.",
+  "cutoff67_execution": "Use a JSON-safe serializer for the already frozen estimator after verifying the same original freeze; one planned MLP estimator fit only.",
+  "id": "CLASSIFICATION_SPARSE_MLP_V1_POSTFIT_SERIALIZATION_RECOVERY",
+  "kaggle_access": false,
+  "observed_failure": {
+    "error": "TypeError: Object of type int64 is not JSON serializable",
+    "fit_id": "CLASSIFICATION_SPARSE_MLP_V1_55",
+    "fit_state_json_written": false,
+    "model_binary_durable_before_recovery": true,
+    "model_joblib_sha256": "e61dffb1f219c15e9680baca87ba73e804e76f73faa0c3a9df36ab778da720a8",
+    "prediction_bundle_written": false,
+    "started_events": 1,
+    "terminal_event": "FIT_FAILED"
+  },
+  "original_freeze_signature": "46d9362cdf543b87af58653fe1666d79cbe13b4d012397d5f730b15959debd18",
+  "original_recipe_sha256": "d110156b85b115857218c040d1dc88d8d249c3824310be9f05d58d9ed9906042",
+  "original_source_commit": "e1d44d3bfe6062a009d049bc285c211f90897e89",
+  "recovery_code_sha256": {
+    "scripts/optimization_v3_classification_sparse_mlp_v1_recovery.py": "192c28fee993c45e9af674edb7ae2b2eace6653bdcf81f5ce38c38e459c4ec34",
+    "scripts/optimization_v3_classification_sparse_mlp_v1_recovery_verify.py": "3b5e6fa9937c059b95475de44636a8cf1a1ae3a1b41745cc5f705e6f7894c2c8",
+    "tests/test_optimization_v3_classification_sparse_mlp_v1_recovery.py": "6e076f490bc9771ca41c9daa97892ef17404bc4e1c0315ea2527d9640b52d420"
+  },
+  "sample_submission_read": false,
+  "status": "FROZEN_BEFORE_RECOVERY_AND_CUTOFF67_FIT",
+  "test_read": false
+}
