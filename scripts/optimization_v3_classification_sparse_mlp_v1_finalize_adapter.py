@@ -14,6 +14,8 @@ import sys
 from typing import Any
 
 from scripts import optimization_v3_classification_sparse_mlp_v1_recovery as recovery
+from scripts import optimization_v3_classification_sparse_mlp_v1_recovery_verify as recovery_verify
+from scripts import optimization_v3_classification_sparse_mlp_v1_postfit_verify as postfit_verify
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -37,6 +39,7 @@ def finalize() -> dict[str, Any]:
             raise RuntimeError("Frozen runner does not expose its reservation release helper")
         runner.release_unused_reservation = release
         compatibility_alias_added = True
+    recovery_verify.verify_recovered = postfit_verify.verify_recovered
 
     result = recovery.finalize_and_verify()
     if result["verification"].get("status") != "PASS":
@@ -48,9 +51,11 @@ def finalize() -> dict[str, Any]:
         "adapter_source_commit": _git_head(),
         "adapter_source_sha256": runner._sha(Path(__file__)),
         "recovery_source_sha256": runner._sha(Path(recovery.__file__)),
+        "postfit_verifier_source_sha256": runner._sha(Path(postfit_verify.__file__)),
         "freeze_signature": frozen["signature"],
         "runtime_compatibility_alias_added": compatibility_alias_added,
         "release_method": "runner._release_if_reserved -> research_next_budget.release_unused",
+        "verifier_correction": "adapt historical CatBoost sidecar state.fit_rows to verifier top-level fit_rows in memory; verify all nested category training row counts",
         "scientific_verdict": result["result"]["scientific_verdict"],
         "verification_status": result["verification"]["status"],
         "test_read": False,
