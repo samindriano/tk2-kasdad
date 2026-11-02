@@ -1,0 +1,148 @@
+{
+  "id": "CLASSIFICATION_SPARSE_MLP_V1",
+  "status": "FROZEN_BEFORE_OFFICIAL_MODEL_OUTCOMES",
+  "source_head": "bb9548094ab653c0a5b11346dec645c3fc6cbf16",
+  "scope": "ONE fixed sparseMLP candidate, two temporalpilotfits. No sweep, Testaccess, fullTrain orKaggle.",
+  "hypothesis": "Learned nonlinear hidden representation over exact C2_B structured+TFIDF design may add signal not captured by currentlinear/sparseLGB blend. This is a performancecandidate, not a causal isolation of nonlinearcapacity versus optimizer.",
+  "prior_knowledge": "Adaptiveafter45card, N01/N02, C19fullsix andTTRfailures, publicClassOnly.82774. NB-SVM/LinearSVC alreadytested andnotrepeated; FM/DAN onlyplanned, noMLPClassifierfit found inrepository. No untouchedholdoutclaim.",
+  "model": {
+    "class": "sklearn.neural_network.MLPClassifier",
+    "parameters": {
+      "activation": "relu",
+      "alpha": 0.01,
+      "batch_size": 256,
+      "beta_1": 0.9,
+      "beta_2": 0.999,
+      "early_stopping": false,
+      "epsilon": 1e-08,
+      "hidden_layer_sizes": [
+        32
+      ],
+      "learning_rate": "constant",
+      "learning_rate_init": 0.001,
+      "max_fun": 15000,
+      "max_iter": 30,
+      "momentum": 0.9,
+      "n_iter_no_change": 31,
+      "nesterovs_momentum": true,
+      "power_t": 0.5,
+      "random_state": 42,
+      "shuffle": true,
+      "solver": "adam",
+      "tol": 0.0,
+      "validation_fraction": 0.1,
+      "verbose": false,
+      "warm_start": false
+    },
+    "input": "exactC2_B main-effect design, unchangedscaling/OHE/TFIDF/missingindicator; all learnedpreprocessingfitonlyprefix, noSVD/newfeatures/newnormalization",
+    "training_schedule": "Exactly30Adam epochs; no earlystopping/outerlabelmonitoring. n_iter_no_change31 prevents earlytraininglosspatience stop. Reachingfixedmax_iter mayissueConvergenceWarning, recordedasexpectednotclaimofconvergence; nonfinite/divergentloss orpredictions istechnicalfail. No epochrescue."
+  },
+  "origins": [
+    55,
+    67
+  ],
+  "fit_rows_expected": {
+    "55": 12020,
+    "67": 29705
+  },
+  "views": {
+    "primary": [
+      [
+        55,
+        56,
+        59
+      ],
+      [
+        67,
+        68,
+        71
+      ]
+    ],
+    "W1": [
+      [
+        55,
+        56,
+        59
+      ]
+    ],
+    "W4": [
+      [
+        67,
+        68,
+        71
+      ]
+    ],
+    "H12_55": [
+      [
+        55,
+        56,
+        67
+      ]
+    ],
+    "H12_67": [
+      [
+        67,
+        68,
+        79
+      ]
+    ],
+    "H12_pooled": [
+      [
+        55,
+        56,
+        67
+      ],
+      [
+        67,
+        68,
+        79
+      ]
+    ]
+  },
+  "candidate_policy": "present .75*frozenSparse25Probability+.25*MLPProbability; missing frozenCBexact; threshold.50",
+  "matched_policy": "present .75*frozenSparse25Probability+.25*frozenC2_BProbability; missing frozenCBexact; threshold.50. Zero-fitallocationcontrol; no newlinearheadfit.",
+  "comparators": [
+    "sparse25",
+    "matched_policy",
+    "C2_B diagnostic"
+  ],
+  "gates": {
+    "primary_gain_vs_sparse25_min": 0.0005,
+    "primary_gain_vs_matched_policy_min": 0.0002,
+    "H12_pooled_gain_vs_sparse25_min": 0.0,
+    "H12_origin67_harm_max": 0.0005,
+    "individual_W1W4_harm_max": 0.003,
+    "group_min_n": 200,
+    "group_each_class_min": 30,
+    "group_F1_harm_max": 0.01,
+    "group_recall_harm_max": 0.03,
+    "group_scope": "primary,W1,W4,H12perorigin+pooled; fitdefinedtext_loadquartile,availability,entry_friction; additionallyreportoriginal.02recallfailures",
+    "propermetrics": "ROC_AUC,AP,logloss,Brier,precision/recall,loss_curve descriptive; noselectiononTestdistribution/publicscores"
+  },
+  "budget": {
+    "original_phase_cap": 60,
+    "consumed_before": 48,
+    "new_planned_fits": 2,
+    "new_technical_retry_max": 1,
+    "maximum_consumed_after": 51,
+    "category": "continuation:21+2=23<=24. True stageMLP_NEW_PILOT; explicitreuseunusedcontinuationallowance fornew boundedpilot. Retryinoriginaltechnical_retryprior1+newmax1<=4. No extraC2B/controlrefits/budgetreset.",
+    "ledger": "experiments/runs/optimization_v3_research_next_v1/budget.jsonl"
+  },
+  "preconditions": [
+    "InstalledsklearnCSRfit/predictsyntheticfeasibilityPASS; noTorch/newdependency/GPU needed",
+    "ExactC2_B designprefix/schemafit-onlysyntheticparity andverifiedcachedcontrols; ifreuseunverifiable doNOTrefitcontrols",
+    "Fullfit+score+Adamstate+matrix temporary peak estimate <=6GiB plus2GiBfree reserve,onejob2threads",
+    "Sameactualpayloadbuilder synthetic fit/predict/durablefittedstate/publish/read/independentreconstruct/metrics/allviewguards/report andfailure/resume beforeofficialfits",
+    "Persistmandatorybaseline_prediction with explicitprobability/hardlabelsemantics; CSVwritersnotusedbecause noCSVauthorized"
+  ],
+  "stop": "After2pilotfits+independentQA returnresults toSol thenstop regardlessPASS/FAIL; noautocontinuation/CSV/upload. Ifscientificfails closeONErecipe, noarchitecture/epoch/alpha/thresholdsearch.",
+  "raw_train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+  "input_sha256": {
+    "src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+    "reports/optimization_v3/classification_next_v1/FINAL_SUMMARY.md": "94e0e21de68f616c1cd862f323aac28889224b771d62d46ebf321a95beb013ca",
+    "reports/optimization_v3/classification_diagnostics/FINDINGS.md": "bd64b821c586131d09fb8d16e53a73a1caf495e2c54e02ec0f1ee07810cdc997"
+  },
+  "references": [
+    "https://scikit-learn.org/1.8/modules/generated/sklearn.neural_network.MLPClassifier.html"
+  ]
+}
