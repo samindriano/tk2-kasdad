@@ -68,6 +68,15 @@ def _prediction_at_stored_k(probability: np.ndarray, missing: np.ndarray,
     return prediction, floor, excluded
 
 
+def _sort_scope_arrays(rows: np.ndarray, ids: np.ndarray, cycles: np.ndarray,
+                       predictions: dict[str, dict[str, np.ndarray]]) -> tuple[
+                           np.ndarray, np.ndarray, np.ndarray, dict[str, dict[str, np.ndarray]]]:
+    order = np.argsort(rows, kind="stable")
+    return (np.asarray(rows)[order], np.asarray(ids)[order], np.asarray(cycles)[order],
+            {source: {policy: np.asarray(values)[order] for policy, values in arms.items()}
+             for source, arms in predictions.items()})
+
+
 def _verify_old_view_from_origin_confusions(source_results: dict[str, Any]) -> dict[str, Any]:
     old_view = source_results["scope_metrics"]["new_origin_aggregate"]
     reconstructed: dict[str, Any] = {"rows": 0, "arms": {}}
@@ -147,13 +156,6 @@ def _build_corrected_metrics(data: dict[str, Any], source_results: dict[str, Any
     rows = np.concatenate(rows_parts).astype(np.int64)
     ids = np.concatenate(ids_parts).astype(str)
     cycles = np.concatenate(cycles_parts).astype(np.int16)
-    if (len(np.unique(rows)) != len(rows) or len(rows) != EXPECTED_NEW_ORIGIN_ROWS
-            or tuple(sorted(np.unique(cycles).astype(int))) != LEGACY_NEW_ORIGIN_CYCLES
-            or not np.array_equal(rows, np.sort(rows, kind="stable"))
-            or not np.array_equal(ids, data["train"].record_id.to_numpy(dtype=str)[rows])
-            or not np.array_equal(cycles, data["train"].cycle_code.to_numpy(dtype=np.int16)[rows])):
-        raise RuntimeError("Corrected legacy new-origin row membership/coverage/ID/cycle checks failed")
-
     predictions = {
         source: {
             "fixed_half": np.concatenate(fixed_parts[source]).astype(np.int8),
@@ -161,6 +163,14 @@ def _build_corrected_metrics(data: dict[str, Any], source_results: dict[str, Any
         }
         for source in SOURCES
     }
+    rows, ids, cycles, predictions = _sort_scope_arrays(rows, ids, cycles, predictions)
+    if (len(np.unique(rows)) != len(rows) or len(rows) != EXPECTED_NEW_ORIGIN_ROWS
+            or tuple(sorted(np.unique(cycles).astype(int))) != LEGACY_NEW_ORIGIN_CYCLES
+            or not np.array_equal(rows, np.sort(rows, kind="stable"))
+            or not np.array_equal(ids, data["train"].record_id.to_numpy(dtype=str)[rows])
+            or not np.array_equal(cycles, data["train"].cycle_code.to_numpy(dtype=np.int16)[rows])):
+        raise RuntimeError("Corrected legacy new-origin row membership/coverage/ID/cycle checks failed")
+
     # Prediction arrays and all K values are fixed before this selected Train-label read.
     y = b02._selected_train_labels(rows, ids, data["train"])
     groups = b02._query_group_values(data, rows)
