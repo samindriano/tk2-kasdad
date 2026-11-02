@@ -117,7 +117,7 @@ def apply_cap_amendment(
                           and e.get("category") == "technical_retry"]
     retry_started = [e for e in starts if any(r.get("reservation_key") == e.get("reservation_key")
                                                for r in retry_reservations)]
-    expected = checkpoint.get("accounting", {})
+    expected = checkpoint
     if (categories != PRIOR_ACTIVE_RESERVATIONS or active_total != 59 or len(starts) != 59
             or len(terminal) != 59 or pending or released != 4
             or len(retry_reservations) != 1 or int(retry_reservations[0].get("fits", -1)) != 1

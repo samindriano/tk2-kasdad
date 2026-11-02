@@ -75,12 +75,10 @@ def test_budget_amendment_is_exact_idempotent_and_enforces_cap(tmp_path):
             "budget_checkpoint": {
                 "event_rows": 155,
                 "ledger_sha256": hashlib.sha256(ledger.read_bytes()).hexdigest(),
-                "accounting": {
-                    "active_reservations_by_category": {
-                        "pilot": 34, "continuation": 24, "control_replay": 0, "technical_retry": 1,
-                    },
-                    "started": 59, "saved": 57, "failed": 2,
+            "active_reservations_by_category": {
+                "pilot": 34, "continuation": 24, "control_replay": 0, "technical_retry": 1,
                 },
+            "started": 59, "saved": 57, "failed": 2,
             },
         },
     }

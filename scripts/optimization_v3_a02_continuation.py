@@ -38,13 +38,13 @@ from scripts import optimization_v3_a02_neighbors as pilot  # noqa: E402
 
 
 PROTOCOL_PATH = ROOT / "experiments/optimization_v3/a02_continuation_v1/protocol.json"
-FREEZE_PATH = ROOT / "experiments/optimization_v3/a02_continuation_v1/freeze.json"
+FREEZE_PATH = ROOT / "experiments/optimization_v3/a02_continuation_v1/freeze_v2.json"
 TRAIN_PATH = ROOT / "data/raw/classification/Train.csv"
 LEDGER_PATH = ROOT / "experiments/runs/optimization_v3_research_next_v1/budget.jsonl"
 RUN_ROOT = ROOT / "experiments/runs/optimization_v3_a02_continuation_v1"
 REPORT_ROOT = ROOT / "reports/optimization_v3/a02_continuation_v1"
 SYNTHETIC_QA_PATH = REPORT_ROOT / "synthetic_qa.json"
-PREFLIGHT_PATH = REPORT_ROOT / "preflight.json"
+PREFLIGHT_PATH = REPORT_ROOT / "preflight_v2.json"
 CARD_ID = "CLASSIFICATION_A02_NEIGHBOR_RESIDUAL_CONTINUATION"
 STAGE = "A02_SIX_FIT_CONTINUATION"
 THREADS = 2
