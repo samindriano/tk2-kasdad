@@ -1,0 +1,47 @@
+{
+  "status": "PASS",
+  "checks": {
+    "official_train_hash_and_source_row_cycle_target_join": true,
+    "matching_selector_has_no_y_argument": true,
+    "exact_positive_count_and_self_threshold_reconstruction": true,
+    "both_algebraic_paths_reconstruct_total_gain": true,
+    "missing_W1_fallback_unchanged": true,
+    "model_hash_receipts_verified_for_gap_descriptor": true,
+    "all_neighbor_bank_cycles_at_or_before_origin": true,
+    "ledger_before_after_identical": true
+  },
+  "test_results": "3 passed; tie/extremeK/stratifiedfallback/confusionF1reference",
+  "fits": 0,
+  "fit_ledger_counts": {
+    "BATCH_ALLOWANCE_AUTHORIZED": 1,
+    "CARD_FITS_RESERVED": 19,
+    "FIT_STARTED": 66,
+    "FIT_SAVED": 64,
+    "RESERVATION_UNUSED_RELEASED": 15,
+    "FIT_FAILED": 2,
+    "OUTPUT_PREPARATION_RECOVERED": 1,
+    "FIT_OUTPUT_RECOVERED": 1,
+    "BUDGET_CATEGORY_AMENDMENT": 2,
+    "BUDGET_CAP_AMENDMENT": 1
+  },
+  "ledger_sha256": "6fcc4b4d427e3ff03139e0e9ee429f529f7c7bf6ad91ce0eb9a52d55e2503147",
+  "test_sample_kaggle_access": false,
+  "independent_review": "Luna checked 6 targeted historical files read-only; no equivalent count-matched comparison found there; weak reliability proposal counterevidence retained",
+  "limitations": [
+    "ID integrity inherited from existing hashed audited arrays; current script freshly checks row/cycle/target alignment.",
+    "No top32 geometry search replay; reuse prior independently verified geometry.",
+    "Descriptors and all labels are adaptively reused; no future-generalization guarantee."
+  ],
+  "output_sha256": {
+    "B01_CARD.md": "7f9a24256a13e85ab2bb659899425c592d0b247150a2ee2faf25cfee20403d85",
+    "confidence_gap_descriptor.json": "5a557e755489a3d8739abdebb12a2b6fb13e2176bd46e1f67ebc016192370188",
+    "DECISION.md": "43e69004695d8b6d16f23e9e9eabf81527a5bb28812b3273af7d56a79d5d362b",
+    "matched_count_results.json": "95ce68ed05e0294ce242dfb27909816ef2700a67e9d2dd247215d2cbba02d887",
+    "PLAN.md": "3875c07f91a7954a6fabffd1c54cc18a79539edc744c983b9f969a051ea53fc5"
+  },
+  "source_sha256": {
+    "scripts\\optimization_v3_a02_next_decision.py": "a964c9eac6497ee8dea601e938b89d35f2431c7878046da8a50ac1fbaee3bc86",
+    "scripts\\optimization_v3_a02_confidence_gap.py": "9898ea4155f6167bcbbec5b9f8d5e2ab927c57cd14537e7ac1b6663b4a648cf5",
+    "tests\\test_optimization_v3_a02_next_decision.py": "6e90e221a37aa9b38ec67e946725195ff7a73ca4a6600ce80f59e3b11d90bf1e"
+  }
+}
