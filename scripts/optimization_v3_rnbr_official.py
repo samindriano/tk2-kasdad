@@ -757,12 +757,14 @@ def finish_fit(fit_id: str, status: str, *, receipt_sha256: str | None = None,
 def assert_resource_budget() -> dict[str, Any]:
     own_pid = os.getpid()
     competing = []
+    active_markers = ("optimization_v3_batch1_", "optimization_v3_research_next_n",
+                      "optimization_v3_final_continuation_", "optimization_v3_rnbr_official.py --run")
     for process in psutil.process_iter(["pid", "cmdline"]):
         if process.info.get("pid") == own_pid:
             continue
         cmdline = " ".join(process.info.get("cmdline") or []).lower()
         process_name = str(process.info.get("name") or "").lower()
-        if process_name.startswith("python") and ("optimization_v3" in cmdline or "rnbr_pilot" in cmdline):
+        if process_name.startswith("python") and any(marker in cmdline for marker in active_markers):
             competing.append({"pid": process.info.get("pid"), "cmdline": cmdline[:240]})
     if competing:
         raise OfficialRnbrError(f"Another project training/fit process is active: {competing}")
@@ -796,6 +798,7 @@ def run_official() -> dict[str, Any]:
     train = load_targetfree_train()
     r06_cache = load_r06_predictions(train, freeze)
     geo_by_origin = {o: load_geometry(o, train, freeze) for o in PILOT_ORIGINS}
+    initial_resource_guard = assert_resource_budget()
     budget = amend_and_reserve(freeze, source_commit)
     RUN_ROOT.mkdir(parents=True, exist_ok=True)
     fit_receipts = []
@@ -876,6 +879,7 @@ def run_official() -> dict[str, Any]:
         "budget_before_and_after": budget,
         "ledger_final_sha256": sha256_file(LEDGER),
         "independent_verification": all_verified,
+        "initial_resource_guard": initial_resource_guard,
         "query_truth_used_after_fit_bundles": True,
         "test_or_sample_submission_opened": False,
         "kaggle_used": False,
@@ -891,6 +895,7 @@ def targetfree_preflight() -> dict[str, Any]:
     r06 = load_r06_predictions(train, freeze)
     geometry = {o: load_geometry(o, train, freeze) for o in PILOT_ORIGINS}
     events = _read_ledger()
+    resources = assert_resource_budget()
     return {
         "status": "PASS", "ledger_sha256": sha256_file(LEDGER),
         "ledger_snapshot": ledger_snapshot(events),
@@ -899,6 +904,7 @@ def targetfree_preflight() -> dict[str, Any]:
         "r06_cutoffs_verified": sorted(r06),
         "a02_query_rows": {str(o): int(len(geometry[o]["score_rows"])) for o in PILOT_ORIGINS},
         "freeze_signature": freeze["freeze_signature"],
+        "resource_preflight": resources,
     }
 
 
