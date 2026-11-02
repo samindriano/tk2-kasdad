@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "candidate_id": "A02_LEXICAL_NEIGHBOR_RESIDUAL_CONTINUATION",
+  "parent_candidate_id": "CLASSIFICATION_A02_NEIGHBOR_RESIDUAL",
+  "question": "Do past-only lexical-neighbor residuals improve later Classification predictions over the frozen C16 baseline and a within-cycle-by-probability-decile shuffled-residual control at additional origins?",
+  "task": "classification",
+  "official_train": {
+    "path": "data/raw/classification/Train.csv",
+    "rows": 50608,
+    "cycles": [47, 79],
+    "sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c"
+  },
+  "pilot_lineage": {
+    "active_protocol": "experiments/optimization_v3/c19_a02_v2/A02/protocol.json",
+    "active_freeze": "experiments/optimization_v3/c19_a02_v2/A02/freeze.json",
+    "pilot_prediction_root": "experiments/runs/optimization_v3_a02_neighbors_v1",
+    "pilot_verification": "reports/optimization_v3/a02_neighbors_v1/verification.json",
+    "pilot_is_qualified": false,
+    "pilot_verdict": "PILOT_PASS_ONLY",
+    "pilot_use": "reuse saved W4/W6 and H12_L evidence; do not refit pilot origins"
+  },
+  "origins": [59, 63, 71],
+  "fit_ids": {
+    "E59_observed": "A02_CONT_E59_OBSERVED",
+    "E59_shuffled": "A02_CONT_E59_SHUFFLED",
+    "E63_observed": "A02_CONT_E63_OBSERVED",
+    "E63_shuffled": "A02_CONT_E63_SHUFFLED",
+    "E71_observed": "A02_CONT_E71_OBSERVED",
+    "E71_shuffled": "A02_CONT_E71_SHUFFLED"
+  },
+  "task_fit_count": 6,
+  "final_conditional_fit_count": 1,
+  "baseline": "exact verified C16 cache baseline_prediction route (present .75*C2_B + .25*sparse25 raw; missing C4-HGB); never use C16 candidate prediction as the A02 baseline",
+  "cache_score_cycle_windows": {
+    "55": [56, 67],
+    "59": [60, 63],
+    "63": [64, 67],
+    "67": [68, 79],
+    "71": [72, 75],
+    "75": [76, 79]
+  },
+  "oof_bank_blocks": {
+    "59": [[55, 56, 59]],
+    "63": [[55, 56, 59], [59, 60, 63]],
+    "71": [[55, 56, 59], [59, 60, 63], [63, 64, 67], [67, 68, 71]]
+  },
+  "bank_recipe": {
+    "source": "verified C16 baseline_prediction OOF probabilities joined by official Train row positions and record_id",
+    "rows": "complete declared four-cycle OOF blocks only, score cycles 56 through origin inclusive, sorted by official Train row position for deterministic alignment",
+    "eligible_rows": "signal_stream present only",
+    "residual": "official Train artifact_signal - C16 baseline_prediction; only past OOF labels enter the residual bank",
+    "future_policy": "bank cycle must be <= origin; query cycle must be > origin; CSV row order is not temporal order"
+  },
+  "text_space": {
+    "parameters_source": "src.models.classification_models._TFIDF_PARAMS and _text_values, preserved through src.models.classification_a02_neighbors.fit_text_space",
+    "parameters": {
+      "dtype": "float64",
+      "lowercase": true,
+      "max_df": 0.995,
+      "max_features": 20000,
+      "min_df": 3,
+      "ngram_range": [1, 2],
+      "strip_accents": "unicode",
+      "sublinear_tf": true,
+      "norm": "l2"
+    },
+    "fit_population": "all official Train feature texts with cycle_code <= origin, including empty streams as empty documents",
+    "similarity": "word-TFIDF cosine only",
+    "query_block_rows": 128,
+    "top_positive_neighbors": 32,
+    "stable_tie_break": "similarity descending then official Train row position ascending"
+  },
+  "residual_predictor": {
+    "observed_arm": "observed past-only OOF residual assignments",
+    "matched_control": "shuffle residual values within cycle_code x min(9,floor(10*OOF probability)); stable source order; numpy default_rng(42) reset once per origin",
+    "neighbor_weight": "positive cosine similarity squared",
+    "shrinkage_denominator": "4 + sum(neighbor_similarity^2)",
+    "correction_clip": [-0.05, 0.05],
+    "probability_route": "clip(C16 baseline_probability + correction, 0, 1)",
+    "missing_stream": "candidate probability equals C16 baseline exactly",
+    "decision_threshold": 0.5,
+    "calibration_or_threshold_search": false
+  },
+  "windows": {
+    "W1": {"origin": 55, "cycles": [56, 59], "rows": 4114, "route": "exact C16 baseline fallback for both comparison arms; no learned residual bank"},
+    "W2": {"origin": 59, "cycles": [60, 63], "rows": 6493, "route": "new observed and shuffled fits"},
+    "W3": {"origin": 63, "cycles": [64, 67], "rows": 7078, "route": "new observed and shuffled fits"},
+    "W4": {"origin": 67, "cycles": [68, 71], "rows": 4950, "route": "reuse saved A02 pilot observed and shuffled predictions"},
+    "W5": {"origin": 71, "cycles": [72, 75], "rows": 7462, "route": "new observed and shuffled fits"},
+    "W6": {"origin": 75, "cycles": [76, 79], "rows": 8491, "route": "reuse saved A02 pilot observed and shuffled predictions"},
+    "new_origin_aggregate": {"components": ["W2", "W3", "W5"], "rows": 21033},
+    "full_six_primary": {"components": ["W1", "W2", "W3", "W4", "W5", "W6"], "unique_rows": 38588},
+    "late": {"components": ["W5", "W6"], "unique_rows": 15953},
+    "inherited_H12_L": {"origin": 67, "cycles": [68, 79], "rows": 20903, "source": "saved pilot E67 predictions; re-used development rows, not independent confirmation"}
+  },
+  "evaluation": {
+    "primary_metric": "Macro F1",
+    "probability_metrics": ["ROC AUC", "average_precision", "Brier", "log_loss_manual_eps_1e-15", "log_loss_sklearn_default_dtype_epsilon"],
+    "endpoint_diagnostic": "count p exactly 0 or 1, wrong endpoints, and their candidate-minus-baseline log-loss contribution without modifying predictions",
+    "labels": "official Train artifact_signal joined by score_rows only after predictions are produced; NPZ labels are thresholded predictions, not y_true",
+    "temporal_bias": "evaluation cycles were used in prior research; only the origin-specific A02 predictions are new. Do not describe these views as untouched holdout or independent confirmation."
+  },
+  "scientific_gates": {
+    "integrity_and_source_boundaries": "all PASS",
+    "new_origin_aggregate_gain_vs_baseline_min": 0.0005,
+    "new_origin_aggregate_gain_vs_matched_shuffle_min": 0.0002,
+    "new_windows_nonnegative_vs_baseline_min_count": 2,
+    "new_window_harm_vs_baseline_max": 0.003,
+    "full_six_primary_gain_vs_baseline_min": 0.0,
+    "full_six_primary_gain_vs_matched_shuffle_min": 0.0,
+    "late_W5_W6_harm_vs_baseline_max": 0.001,
+    "inherited_H12_L_gain_vs_baseline_min": 0.0005,
+    "inherited_H12_L_gain_vs_matched_shuffle_min": 0.0002,
+    "inherited_H12_L_independent": false
+  },
+  "subgroups": {
+    "fields": ["stream_availability", "entry_friction", "fit_prefix_defined_text_load_quartile"],
+    "views": ["W1", "W2", "W3", "W4", "W5", "W6", "new_origin_aggregate", "full_six_primary", "late", "inherited_H12_L"],
+    "minimum_support": {"n": 200, "each_class": 30},
+    "report_historical_harm_flags": {"macro_f1_gt": 0.01, "positive_recall_gt": [0.02, 0.03]},
+    "risk_review_hold": {"macro_f1_harm_gt": 0.03, "positive_recall_harm_gt": 0.05},
+    "comparison": "all subgroup harms are measured against the exact C16 baseline on the same rows"
+  },
+  "fit_budget": {
+    "previous_global_cap": 60,
+    "amended_global_cap": 66,
+    "previous_effective_category_caps": {"pilot": 34, "continuation": 24, "control_replay": 0, "technical_retry": 2},
+    "amended_category_caps": {"pilot": 34, "continuation": 31, "control_replay": 0, "technical_retry": 1},
+    "new_continuation_reservation_fits": 6,
+    "conditional_final_reservation_fits": 1,
+    "no_automatic_retry": true,
+    "append_only": true
+  },
+  "resource_policy": {
+    "one_job_at_a_time": true,
+    "threads": 2,
+    "per_job_rss_cap_bytes": 6442450944,
+    "required_free_ram_bytes": 4294967296,
+    "query_similarity_chunk_rows_max": 128,
+    "no_full_query_similarity_matrix": true
+  },
+  "conditional_final": {
+    "only_if": "all scientific gates PASS and no RISK_REVIEW_HOLD",
+    "origin": 79,
+    "task_fit_count": 1,
+    "training_rows": 50608,
+    "text_prefix": "official Train cycles 47-79",
+    "OOF_residual_bank": "present-stream rows 56-79 from six validated C16 OOF blocks ending at origin 75",
+    "base_probabilities": "reuse verified full-Train C16 sparse25 route from experiments/runs/optimization_v3_inference/v3_cls_sparse25.npz; no baseline refit",
+    "test_use": "official Test features/IDs and SampleSubmission may be read only after all gates pass, for this single inference",
+    "outputs": "one verified 29,421-row CSV and manifest; do not submit to Kaggle without separate Sol review",
+    "conditional_final_fit_id": "A02_CONT_E79_OBSERVED_FULLTRAIN"
+  },
+  "interpretation_limits": [
+    "This is predictive-association evidence on reused development cycles, not causal evidence or untouched temporal confirmation.",
+    "The E55 W1 fallback is the exact C16 baseline and is not a learned A02 origin fit.",
+    "The full-six evaluation has five learned A02 origins including two inherited pilot origins, not six new fits.",
+    "A02 remains pilot-only unless the prespecified continuation and risk gates pass."
+  ]
+}
