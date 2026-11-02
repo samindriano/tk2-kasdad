@@ -1,0 +1,135 @@
+{
+  "id": "CLASS_BLEND_REVIEW_V1",
+  "status": "FIXED_BEFORE_COMPUTING_NEW_BLEND_OUTCOMES",
+  "source_head": "6139081307433beac43d5da0a04b94ef518d29a6",
+  "created_at_utc": "2026-11-02T01:19:12.302555+00:00",
+  "prior_knowledge": "Adaptive hypothesis selected after reviewing component pilot outcomes, N02 H12 recall failure, and N01 class-only full-six findings. Public history previously known. No claim of untouched holdout or outcome-blind research.",
+  "recipe": {
+    "candidate": ".5 * routed N02 sketch + .5 * routed N01 class_only",
+    "matched_control": ".5 * routed N02 no_sketch + .5 * routed N01 class_only",
+    "threshold": 0.5,
+    "stream_missing": "exact same frozen CB fallback; verify both components identical",
+    "forbidden": [
+      "weight search",
+      "threshold search",
+      "new fitting",
+      "Test or Kaggle access",
+      "changing gates after evaluation"
+    ]
+  },
+  "origins": [
+    55,
+    67
+  ],
+  "views": {
+    "primary": [
+      [
+        55,
+        56,
+        59
+      ],
+      [
+        67,
+        68,
+        71
+      ]
+    ],
+    "W1": [
+      [
+        55,
+        56,
+        59
+      ]
+    ],
+    "W4": [
+      [
+        67,
+        68,
+        71
+      ]
+    ],
+    "H12_55": [
+      [
+        55,
+        56,
+        67
+      ]
+    ],
+    "H12_67": [
+      [
+        67,
+        68,
+        79
+      ]
+    ],
+    "H12_pooled": [
+      [
+        55,
+        56,
+        67
+      ],
+      [
+        67,
+        68,
+        79
+      ]
+    ]
+  },
+  "view_rows": {
+    "primary": 9064,
+    "W1": 4114,
+    "W4": 4950,
+    "H12_55": 17685,
+    "H12_67": 20903,
+    "H12_pooled": 38588
+  },
+  "gates": {
+    "primary_gain_vs_sparse25_min": 0.0005,
+    "primary_gain_vs_each_component_min": 0.0002,
+    "primary_gain_vs_matched_combo_min": 0.0002,
+    "h12_harm_vs_sparse25_max": 0.001,
+    "h12_scope": [
+      "H12_55",
+      "H12_67",
+      "H12_pooled"
+    ],
+    "individual_primary_window_harm_max": 0.005,
+    "subgroup_f1_harm_max": 0.01,
+    "subgroup_positive_recall_harm_max": 0.02,
+    "minimum_group_n": 200,
+    "minimum_each_class_n": 30,
+    "group_fields": [
+      "entry_friction",
+      "stream_availability",
+      "fit_defined_text_load_quartile"
+    ],
+    "group_scope": "all six named views",
+    "text_bins": "finite parsed text_load within cycle<=cutoff; unique q25/q50/q75, side=right; missing=-1; retain origin-specific bins when pooling",
+    "all_checks_required": true
+  },
+  "decision_policy": {
+    "pass": "Recommend at most8 continuation fits(new N02 sketch+no_sketch at59/63/71/75), conditional on independent verification and stable continuation freeze before training. Reuse all N01 class-only fits. No auto champion/refit/Test/CSV/Kaggle.",
+    "fail": "NO_GO_FURTHER_FITS_FOR_THIS_BLEND; preserve negative evidence, no rescue sweep; report cheaper mechanism findings only."
+  },
+  "official_new_fits": 0,
+  "input_sha256": {
+    "experiments/runs/optimization_v3_research_next_v1/N01/pilot/cutoff_55/class_only/arrays.npz": "847317a77c01d0b7e698620e94bb1b600e082e660579430dd9cd10966ed2b37f",
+    "experiments/runs/optimization_v3_research_next_v1/N01/pilot/cutoff_55/class_only/receipt.json": "8fc04751637802055766aa1150444f9965f03847b39b47f1a5e400ed17c5926e",
+    "experiments/runs/optimization_v3_research_next_v1/N01/pilot/cutoff_67/class_only/arrays.npz": "2302a3f55b9670c86cda412fa6ec5c3574d6ee29f5aa2bd2116ed0ac5960d80a",
+    "experiments/runs/optimization_v3_research_next_v1/N01/pilot/cutoff_67/class_only/receipt.json": "10f9f843b5bcece4154973c143e8583e6e5c8359dd0c99570c1df77099201720",
+    "experiments/runs/optimization_v3_research_next_v1/N02/pilot/cutoff_55/sketch/arrays.npz": "8c0c9301831188cdc38388e348ea31afb67890e803b5ab90dcf6e73ce560ca9e",
+    "experiments/runs/optimization_v3_research_next_v1/N02/pilot/cutoff_55/sketch/receipt.json": "9cbf5e6bc39fdfeff3856ca9b332abc2503960b44b7a07c03b3272c056150798",
+    "experiments/runs/optimization_v3_research_next_v1/N02/pilot/cutoff_67/sketch/arrays.npz": "01e39d6532db95326d1fec16d420d2483aae3ac46dbe5d9d92a1c508ec0b9791",
+    "experiments/runs/optimization_v3_research_next_v1/N02/pilot/cutoff_67/sketch/receipt.json": "60da5d78f141bfd140ae92662e3236951ae6a492e4e71b9f4e219fc65d57337d",
+    "experiments/runs/optimization_v3_research_next_v1/N02/pilot/cutoff_55/no_sketch/arrays.npz": "c99762207c3ce5cfc9835f1d131b3e2ae8e6afd5827667c81791f90747e0f262",
+    "experiments/runs/optimization_v3_research_next_v1/N02/pilot/cutoff_55/no_sketch/receipt.json": "4b130e3812118e8582b271398bc0e852d50af396c16116f4703cf57d2d759191",
+    "experiments/runs/optimization_v3_research_next_v1/N02/pilot/cutoff_67/no_sketch/arrays.npz": "8382663ca6158225822bfd807909b9b4434633f1c39e2664b896e0ae34288e9f",
+    "experiments/runs/optimization_v3_research_next_v1/N02/pilot/cutoff_67/no_sketch/receipt.json": "481e1cff094d64214035fd51dfbe4219f712fc4779193951ea3b26fc1e06c5ae",
+    "data/raw/classification/Train.csv": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "experiments/optimization_v3/research_next_v1/frozen/N01/freeze.json": "ae40427eadd6a02d92bd1bc7b4c189e56867455129df50873653d735a4c3e437",
+    "experiments/optimization_v3/research_next_v1/frozen/N02/amendment_02/freeze.json": "dfa1671539afe4fb2d75718bbdfaa92d05de51759352d65fac741278777e8d87",
+    "experiments/optimization_v3/research_next_v1/queue.json": "c22c13ea0ead142e32bfe7abc2655ec19c608d1f537db721e35dfc4c38b8eb45"
+  },
+  "budget_ledger": "experiments/runs/optimization_v3_research_next_v1/budget.jsonl",
+  "ledger_sha256_before": "e70b0e850b300b380c9c134532926a2317bd76803d23c571a2ab56978a6c0b8a"
+}
