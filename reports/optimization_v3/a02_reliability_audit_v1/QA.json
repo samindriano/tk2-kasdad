@@ -1,0 +1,71 @@
+{
+  "status": "PASS",
+  "checks": {
+    "pilot_protocol_hash": true,
+    "continuation_protocol_hash": true,
+    "pilot_freeze_signature": true,
+    "continuation_freeze_signature": true,
+    "official_train_hash": true,
+    "all_frozen_parent_inputs": true,
+    "no_test_sample_or_kaggle_paths_in_scope": true,
+    "pilot_and_continuation_historical_verifiers_pass": true,
+    "all_six_c16_cache_routes_and_hashes_reconstructed": true,
+    "all_five_saved_origin_observed_and_shuffle_bundles_validated": true,
+    "train_row_id_cycle_joins_exact": true,
+    "oof_bank_rows_past_only_and_origin_bound": true,
+    "npz_labels_never_used_as_y_true": true,
+    "all_saved_neighbor_corrections_reconstructed_without_predict_or_fit": true,
+    "observed_and_shuffle_neighbor_geometry_identical": true,
+    "missing_stream_exact_fallback": true,
+    "unique_view_denominators_and_overlap_rules": true,
+    "f1_anchor_reconstruction": true,
+    "fresh_confusion_and_additive_loss_math": true,
+    "fit_call_guard_zero": true,
+    "fit_cap_66_consumed_and_unchanged": true,
+    "row_level_artifacts_under_gitignored_run_root": true,
+    "tracked_reports_contain_no_raw_text_or_record_ids": true,
+    "max_two_informative_pngs_written": true,
+    "test_sample_kaggle_or_submission_access": false
+  },
+  "row_level_outputs_ignored": [
+    "experiments/runs/optimization_v3_a02_reliability_audit_v1/row_level_full_six_primary.npz",
+    "experiments/runs/optimization_v3_a02_reliability_audit_v1/row_level_new_origin_aggregate.npz",
+    "experiments/runs/optimization_v3_a02_reliability_audit_v1/row_level_late.npz",
+    "experiments/runs/optimization_v3_a02_reliability_audit_v1/row_level_inherited_H12_L.npz"
+  ],
+  "tracked_outputs": [
+    "reports/optimization_v3/a02_reliability_audit_v1/AUDIT_PLAN.md",
+    "reports/optimization_v3/a02_reliability_audit_v1/statistics.json",
+    "reports/optimization_v3/a02_reliability_audit_v1/group_tables.csv",
+    "reports/optimization_v3/a02_reliability_audit_v1/reliability_similarity_confidence.png",
+    "reports/optimization_v3/a02_reliability_audit_v1/age_within_similarity.png",
+    "reports/optimization_v3/a02_reliability_audit_v1/QA.json"
+  ],
+  "group_tables_sha256": "e71fda3fc7d272047005ce411c7a1db87640807c1bfbe5b67cb54d6eed552777",
+  "plots": [
+    {
+      "path": "reports/optimization_v3/a02_reliability_audit_v1/reliability_similarity_confidence.png",
+      "sha256": "412b8e56b551dd742be6972f0dce6c98a7520791f30be5c0f9091b69a5307631",
+      "supported_cells": 37,
+      "cells": 50
+    },
+    {
+      "path": "reports/optimization_v3/a02_reliability_audit_v1/age_within_similarity.png",
+      "sha256": "8c127f9696205e34a7bb507a117ab7c2a01fcd439ad9da24d6e574b4301dd1d3",
+      "supported_cells": 9,
+      "cells": 18
+    }
+  ],
+  "fit_calls_observed": 0,
+  "ledger_sha256": "6fcc4b4d427e3ff03139e0e9ee429f529f7c7bf6ad91ce0eb9a52d55e2503147",
+  "fit_starts_saved_failed": [
+    66,
+    64,
+    2
+  ],
+  "known_unknowns": [
+    "Kaggle screenshot/public score is not part of this audit and was not queried.",
+    "The top-32 neighborhood was not recomputed from all candidates; existing frozen verifier tie-order checks were relied on.",
+    "Per-row derived targets/features are stored only in the ignored run namespace, not tracked reports."
+  ]
+}
