@@ -6,8 +6,8 @@
 
 - A02 independent reconstruction returns `PILOT_PASS`. This is pilot evidence only; it does not qualify A02 or authorize continuation.
 - The four authorized A02 fits and prediction bundles are durable. Verification started no fits and reports zero A02 fit failures.
-- C19 full-Train CSV is validated and ready for the one authorized benchmark upload, but was not uploaded. It remains an experimental benchmark; the historical C19 verdict `RETIRE / prior frozen-gate failure` is preserved.
-- The Kaggle upload was blocked before a file was selected. Computer Use later stopped before opening the Chrome extension settings, so that setting did not change. Sam chose to upload the CSV manually.
+- C19 full-Train CSV passed local validation. Sam later reported uploading it manually and seeing `Complete`, public Macro F1 0.82760. This is human-reported, not verified through Kaggle API/live access; reference, exact upload time, and server-side file hash are unknown. The historical C19 verdict `RETIRE / prior frozen-gate failure` is preserved.
+- Our browser upload attempt remained blocked before file selection. Computer Use stopped before opening Chrome extension settings, so that setting did not change. The one C19 upload authorization is now considered used based on Sam's report; do not retry or submit again.
 
 ## A02 frozen scope and source boundaries
 
@@ -165,11 +165,11 @@ Absolute path: `C:\Users\Sam\OneDrive\Documents\KASDAD\TP 2\submissions\optimiza
 
 SHA-256: `4dc88a17d3e5708fb2d9f051161fd340d7cba89af6e120c620efbc0db66d6e35`
 
-The file has 29,421 rows and columns `record_id, artifact_signal`; labels are integer 0/1 and IDs match official Test IDs in order. The manifest records 344 labels different from sparse25 and zero changed labels on the missing-stream route. Manifest status is `PREPARED_VALIDATED_NOT_SUBMITTED`; no Kaggle score or submission reference exists.
+The file has 29,421 rows and columns `record_id, artifact_signal`; labels are integer 0/1 and IDs match official Test IDs in order. The manifest records 344 labels different from sparse25 and zero changed labels on the missing-stream route. The pre-upload manifest remains unchanged as the hash-lineage record; its `PREPARED_VALIDATED_NOT_SUBMITTED` status reflects that preparation checkpoint. The append-only receipt now records Sam's manual-upload report: Complete, public Macro F1 0.82760 versus best sparse25 0.82908 (reported delta −0.00148). Exact Kaggle reference, upload time, and server file hash remain UNKNOWN; no API/live verification was performed. Treat the user report as the latest status and the previous browser block as historical.
 
 Competition: `tp2-classification-cyber-vulnerability-kasdd-gasal-2026-2027`. Proposed upload message: `Samuel C19 XGB SVD32 Frozen Benchmark`. Historical C19 status remains `RETIRE / prior frozen-gate failure; experimental benchmark exception only`.
 
-The live preflight snapshot at 2026-11-02 11:27:59 UTC reported rules accepted, team `kasdud lovers`, and 9 uploads remaining that day. The subsequent browser file chooser failed before file selection (`UPLOAD_BLOCKED_BEFORE_FILE_SELECTION`); quota remained 9 and Submit was not clicked. After the user authorized enabling file-URL access, the Computer Use runtime stopped before opening the Chrome extension page because it could not confidently establish the current browser URL. No extension setting changed and no data was transmitted. Do not claim upload success. Sam chose manual upload; the separate CSV and manifest are ready.
+The live preflight snapshot at 2026-11-02 11:27:59 UTC reported rules accepted, team `kasdud lovers`, and 9 uploads remaining that day. The subsequent browser file chooser failed before file selection (`UPLOAD_BLOCKED_BEFORE_FILE_SELECTION`); quota remained 9 and Submit was not clicked. After the user authorized enabling file-URL access, the Computer Use runtime stopped before opening the Chrome extension page because it could not confidently establish the current browser URL. No extension setting changed and our browser session transmitted no data. Sam later reported manual submission complete; the append-only receipt records that report without claiming live/API verification. The authorization is considered consumed; no repeat upload is allowed.
 
 ## Evidence files
 
@@ -185,6 +185,6 @@ The live preflight snapshot at 2026-11-02 11:27:59 UTC reported rules accepted, 
 - Independent A02 verifier: `PASS`, 37 checks; scientific verdict `PILOT_PASS`.
 - Budget reconciliation: 59/60 starts consumed; all four A02 fit receipts match the ledger; no new starts during verification or report generation.
 - Probability metrics: recomputed solely from persisted A02 probability arrays and official Train labels; no fit performed.
-- C19 CSV: prior independent verifier PASS, 29,421 rows, expected schema and IDs; upload blocked before file selection.
+- C19 CSV: prior independent verifier PASS, 29,421 rows, expected schema and IDs; manual completion and public score are user-reported only; server reference/time/hash UNKNOWN.
 - No modeling, refit, Test/Sample access, additional experiment, Kaggle submission, or UI retry was performed for this checkpoint.
-- Stop here for Sol/user review. Any continuation or further submission requires its own existing/new authorization; no new work is implied by this report.
+- Stop here for Sol/user review. The C19 upload allowance is used; no retry or additional submission is authorized. Any A02 continuation requires separate review/authorization; no new work is implied by this report.
