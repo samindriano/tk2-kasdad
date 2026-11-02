@@ -1,0 +1,145 @@
+{
+  "candidate": "CLASS_ONLY",
+  "created_at_utc": "2026-11-02T02:31:41.892691+00:00",
+  "csv": {
+    "columns": [
+      "record_id",
+      "artifact_signal"
+    ],
+    "labels": {
+      "0": 22611,
+      "1": 6810
+    },
+    "ordered_ids_sha256": "0e325676d1e91ac8d594390a6fa44bee70270da489cdcb323b6fc8bff66f01ea",
+    "path_gitignored": "submissions/optimization_v3/measured_benchmark_v1/class_only.csv",
+    "rows": 29421,
+    "sha256": "59deb0ca3d0a86b16b5c646190f11c02e3fec1053ef5c9d87273f2a265dfc030"
+  },
+  "fit_bundle": "experiments/runs/optimization_v3_measured_benchmark_v1/CLASSIFICATION/FULLTRAIN_RETRIES/CLASS_ONLY_RETRY_01",
+  "fit_cycle_range": [
+    47,
+    79
+  ],
+  "fit_ledger": {
+    "active_reserved": 40,
+    "authorized_cap": 60,
+    "category_reservations": {
+      "continuation": 13,
+      "control_replay": 0,
+      "pilot": 30,
+      "technical_retry": 1
+    },
+    "event_rows": 104,
+    "failed_or_interrupted_started": 1,
+    "released_unused": 4,
+    "remaining_capacity_after_reservations": 16,
+    "reserved_total": 44,
+    "saved": 39,
+    "started_and_consumed": 40
+  },
+  "fit_receipt_sha256": "80edcf1343775231c06dac57512aa6c5887659a0dea48a14d6dea4dfc0864fae",
+  "fit_rows": 50608,
+  "fit_state_sha256": "07292871c401df870dba12f0b52ea308a50df94fa9dde7479c7273d53e7d1a1e",
+  "kaggle_called": false,
+  "official_input_sha256": {
+    "measured_protocol": "be8e1e1516927204ffcacef5a72702b819d97d06c8d4bedbff5002492e167c8d",
+    "original_measured_freeze": "b756a20064230eaf822b7843cc6c07ef1ccb8d6f672d277c2dd522db4648a15d",
+    "sample": "889f97d69659a64945421d841dcf96e5813020606f29b2992d4b9560cecdcba7",
+    "technical_retry_amendment_freeze": "57cde85a0d9ff445a84adf2a6a71dcfad38cf735674611c663b559657b25b66a",
+    "test": "4e6c381d582ed24f92d17f620f4f0ad25e2e0def29eb57a91a5482867f6afe3c",
+    "train": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c"
+  },
+  "output_recovery": {
+    "estimator_refit": false,
+    "event": "OUTPUT_PREPARATION_RECOVERED",
+    "ledger_event_sha256": "a12d5f2313ba5faacb34b6813460e39cc8223579a91792e2c2c070a9521b0559",
+    "reason": "post-FIT_SAVED CSV writer type mismatch"
+  },
+  "parent_freeze_signature": "ff1a6a97235a4b2e2d276b2af86f7be834a512aee3ee919f236f9f1911e56651",
+  "preprocessing_fit_only_train": true,
+  "recipe": "N01 exact class_only sparse recipe; all official Train cycles 47-79; present .75 C2_B + .25 weighted sparse expert; missing frozen CB_MISSING; threshold 0.50",
+  "reuse_audit": {
+    "cache_sha256": "31ef6945ae74a14b1e4ff46220667ac3a08de3401120257e7932745c927d6103",
+    "manifest_sha256": "6e7c2cb50fe6d0ee4767a44c40f152b6538b933fab6cf7082659b16d791f7d1e",
+    "missing_mask_sha256": "b231070591a04ae02d45f42b90bb5a303090c249c33e65fb8c86080410fc38b1",
+    "reused_models": {
+      "C2_B": {
+        "fit_rows": 50608,
+        "prediction_sha256": "49758d1c61d68847a21b0e9dd7f5765513320dedc7359c47f715441725e6fb70"
+      },
+      "CB_MISSING": {
+        "fit_rows": 50608,
+        "prediction_sha256": "0779620b5f5b436fbce03e4270e3ea06045eb9f9cd89c831aea4adddd0a482bf"
+      }
+    },
+    "source_code_sha256_verified_count": 58,
+    "source_commit": "75ff5bd10187679a2468030bd5791b6b7a5961fe"
+  },
+  "source_commit": "ad7cdebdd227f6668f02954f74b2bfe96fda261c",
+  "status": "PREPARED_VALIDATED_NOT_SUBMITTED",
+  "submission_ref": null,
+  "task": "classification",
+  "technical_retry_amendment_signature": "7a25187fc6a486f474f709882c11419c43a54384b23ff76d4f6787cd43a57093",
+  "technical_retry_of": "MEASURED_CLASS_ONLY_FULLTRAIN",
+  "test_labels_used": false,
+  "test_rows": 29421,
+  "test_target_column_read": false,
+  "weight_plan": {
+    "actual_fit_bin_count": 4,
+    "actual_missing_rows": 0,
+    "bin_levels": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "candidate_class_masses": {
+      "0": 29313.250785664088,
+      "1": 21294.749214335916
+    },
+    "candidate_clipped_weight_max": 1.3459455045654793,
+    "candidate_clipped_weight_min": 0.8309849383046103,
+    "candidate_weight_mean_after_normalization": 1.0000000000000002,
+    "candidate_weight_sha256": "5bdfb55958d4e61adbc4bf358e9a76b75d60cfc17c618b896e256d5c85d4278c",
+    "class_bin_counts": {
+      "0": {
+        "0": 6772,
+        "1": 8107,
+        "2": 9161,
+        "3": 8998
+      },
+      "1": {
+        "0": 5880,
+        "1": 4544,
+        "2": 3492,
+        "3": 3654
+      }
+    },
+    "class_only_class_masses": {
+      "0": 29313.25078566408,
+      "1": 21294.749214335912
+    },
+    "class_only_weight_by_class": {
+      "0": 0.8872586350767022,
+      "1": 1.211994832916102
+    },
+    "class_only_weight_mean": 0.9999999999999999,
+    "class_only_weight_sha256": "f73acc1ac2a643604f32aa08da5986ed7de02e493578d72d1ea2157c4f8a6ca0",
+    "edges": [
+      27.0507,
+      31.3103,
+      36.5289
+    ],
+    "finite_text_load_rows": 50608,
+    "minimum_cell_n": 100,
+    "missing_bin_present_in_fit": false,
+    "n_fit": 50608,
+    "parse_failure_rows": 0,
+    "quantiles": [
+      0.25,
+      0.5,
+      0.75
+    ],
+    "score_rows_used_for_edges_or_weights": false
+  }
+}
