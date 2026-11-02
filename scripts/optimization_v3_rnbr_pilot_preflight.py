@@ -101,7 +101,8 @@ def run_preflight() -> dict[str, Any]:
     present = train["signal_stream"].fillna("").astype(str).str.strip().ne("").to_numpy()
     support = {}
     query_support = {}
-    for origin, start, stop in ((67, 68, 71), (75, 76, 79)):
+    primary_support = {}
+    for origin, start, stop in ((67, 68, 79), (75, 76, 79)):
         donor_mask = (cycles >= 56) & (cycles <= origin) & present
         query_mask = (cycles >= start) & (cycles <= stop)
         query_present = query_mask & present
@@ -109,7 +110,7 @@ def run_preflight() -> dict[str, Any]:
         eligible = next(item for item in geometry if int(item["origin"]) == origin)
         query_support[str(origin)] = _saved_query_support(train, origin, start, stop, present)
         expected_query_rows = int(query_mask.sum())
-        if expected_query_rows != int(eligible["arms"]["observed"]["first_four_rows"]):
+        if expected_query_rows != int(eligible["arms"]["observed"]["query_rows"]):
             raise RuntimeError(f"Saved A02 query row count differs at origin {origin}")
         support[str(origin)] = {
             "donor_cycles": [56, origin],
@@ -140,12 +141,22 @@ def run_preflight() -> dict[str, Any]:
                                   for arm in ("observed", "shuffled")},
         }
 
-    primary_rows = sum(item["query_rows"] for item in support.values())
-    h12_l_rows = int(np.sum((cycles >= 68) & (cycles <= 79)))
+    for origin, start, stop, window in ((67, 68, 71, "W4"), (75, 76, 79, "W6")):
+        primary_support[str(origin)] = _saved_query_support(train, origin, start, stop, present)
+        expected_window_rows = int(np.sum((cycles >= start) & (cycles <= stop)))
+        if primary_support[str(origin)]["arms"]["observed"]["query_rows"] != expected_window_rows:
+            raise RuntimeError(f"Saved A02 primary {window} subset differs at origin {origin}")
+
+    primary_rows = sum(item["arms"]["observed"]["query_rows"] for item in primary_support.values())
+    h12_l_rows = support["67"]["query_rows"]
+    r06_h12 = next(item for item in caches if int(item["cutoff"]) == 67)
     if primary_rows != 13441 or h12_l_rows != 20903:
         raise RuntimeError(
             f"Frozen supported views differ: primary={primary_rows}, H12_L={h12_l_rows}"
         )
+    if (r06_h12["all_score_rows"] != h12_l_rows
+            or r06_h12["all_scored_cycles"] != [68, 79]):
+        raise RuntimeError("E67 R06 saved predictions do not span the full H12_L horizon")
 
     if alignment.get("rows_each") != 50608 or alignment.get("status") != "PASS":
         raise RuntimeError("Official Train feature alignment did not match frozen source expectations")
@@ -184,24 +195,49 @@ def run_preflight() -> dict[str, Any]:
             **alignment,
             "classification_train_path": "data/raw/classification/Train.csv",
             "regression_train_path": "data/raw/regression/Train.csv",
+            "interpretation": "Shared target-free field equality is provenance evidence only; it does not expand the frozen R06 feature allowlist.",
         },
         "R06_source_recipe_lineage": source,
         "R06_saved_cache_inventory": [{
             "cutoff": item["cutoff"], "cache_npz": item["cache_npz"],
             "cache_json": item["cache_json"], "npz_sha256": item["npz_sha256"],
             "sidecar_sha256": item["sidecar_sha256"], "freeze_signature": item["freeze_signature"],
+            "all_score_rows": item["all_score_rows"],
+            "all_scored_cycles": item["all_scored_cycles"],
             "first_four_cycle_window": item["first_four_cycle_window"],
             "first_four_rows": item["first_four_rows"],
             "target_values_loaded": item["target_values_loaded"],
         } for item in caches],
         "A02_saved_geometry": support,
         "saved_neighbor_support": query_support,
+        "primary_window_neighbor_support": primary_support,
         "frozen_view_support": {
             "primary_W4_plus_W6_rows": primary_rows,
-            "W4_rows": support["67"]["query_rows"],
-            "W6_rows": support["75"]["query_rows"],
+            "W4_rows": primary_support["67"]["arms"]["observed"]["query_rows"],
+            "W6_rows": primary_support["75"]["arms"]["observed"]["query_rows"],
             "H12_L_rows": h12_l_rows,
-            "H12_L_definition": "cycles 68-79; W4 and W6 adjusted, intervening W5 left at R06",
+            "H12_L_definition": "all E67 queries in cycles 68-79; E67 candidate/control and E67 R06 baseline; no E75 inputs",
+            "H12_L_source_origin": 67,
+            "H12_L_cycle_range": [68, 79],
+            "H12_L_R06_cutoff": 67,
+        },
+        "view_provenance": {
+            "primary_W4": {"source_origin": 67, "query_cycles": [68, 71],
+                            "geometry_fit_ids": support["67"]["geometry_fit_ids"],
+                            "R06_cache_cutoff": 67},
+            "primary_W6": {"source_origin": 75, "query_cycles": [76, 79],
+                            "geometry_fit_ids": support["75"]["geometry_fit_ids"],
+                            "R06_cache_cutoff": 75},
+            "H12_L": {"source_origin": 67, "query_cycles": [68, 79],
+                      "geometry_fit_ids": support["67"]["geometry_fit_ids"],
+                      "R06_cache_cutoff": 67,
+                      "R06_cache_score_rows": r06_h12["all_score_rows"],
+                      "E75_inputs_included": False},
+        },
+        "supersedes_prior_B0": {
+            "prior_commit": "dbaa3bb0cf3e621daa84537bc8e62f4134153030",
+            "prior_H12_error": "The prior version mixed E67 W4 and E75 W6 with a synthetic R06-only W5 and mislabeled it H12_L despite n=20,903.",
+            "correction": "This successor uses only full E67 cycles 68-79 for H12_L; the prior commit remains in Git history.",
         },
         "current_ledger_snapshot": {**budget, "effective_category_caps": category_caps},
         "pilot_fit_plan": {

@@ -1,7 +1,7 @@
 # R-NBR B0 preparation handoff
 
 **Status:** `READY_FOR_FOUR_FIT_BUDGET_REVIEW`. Target-free preflight passed,
-the synthetic lifecycle and independent verifier passed, and all 12 focused
+the synthetic lifecycle and independent verifier passed, and all 15 focused
 tests passed. This is not a pilot result or a model qualification.
 
 ## Completed in B0
@@ -18,11 +18,17 @@ tests passed. This is not a pilot result or a model qualification.
 - Added a target-free official-source preflight. It checks target-free Train
   row alignment, R06 lineage and saved cache identities, A02 neighbor geometry
   for E67/E75, pilot window coverage and support, ledger accounting, and that
-  the old readiness inventory is unchanged. W4+W6 has 13,441 rows, H12_L has
-  20,903, and every present W4/W6 row has the full 32 saved neighbors.
+  the old readiness inventory is unchanged. Primary is E67 W4 + E75 W6,
+  n=13,441. H12_L is all E67 cycles 68–79, n=20,903; no E75 data enters that
+  view. Every present W4/W6 row has the full 32 saved neighbors.
 - Drafted a cap-70 request for these four task fits only. Nothing was reserved.
 
 ## Historical context kept separate
+
+The first B0 checkpoint at `dbaa3bb` had a view-provenance error: its H12_L
+summary mixed E67 W4 and E75 W6 and held W5 at R06. It is superseded by this
+successor; the prior commit and report hashes are retained in Git history and
+`H12_SEMANTICS_CORRECTION.md`.
 
 R06 remains unqualified under its original legacy group guard: the archived W1
 missing-stream group has n=392 and harm 0.395556 versus legacy, above 0.25.

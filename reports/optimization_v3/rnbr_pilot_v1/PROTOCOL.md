@@ -40,9 +40,9 @@ neighbors keep the R06 prediction exactly unchanged. A row/ID/cycle/hash,
 lineage, or cache integrity failure aborts; it never falls back to R06.
 Predictions are not reranked.
 
-| Origin | Present donor bank | R06 OOF source cutoff by donor cycle | Query window |
+| Origin | Present donor bank | R06 OOF source cutoff by donor cycle | Declared query horizon |
 |---|---|---|---|
-| E67 | cycles 56–67 | 55 for 56–59; 59 for 60–63; 63 for 64–67 | W4, cycles 68–71 |
+| E67 | cycles 56–67 | 55 for 56–59; 59 for 60–63; 63 for 64–67 | cycles 68–79 (W4, W5, W6) |
 | E75 | cycles 56–75 | 55 for 56–59; 59 for 60–63; 63 for 64–67; 67 for 68–71; 71 for 72–75 | W6, cycles 76–79 |
 
 These are the two observed-memory fits. For each origin, the control permutes
@@ -53,30 +53,34 @@ This preserves each cell's residual multiset and breaks its local alignment to
 the saved neighbor geometry. It uses no target-derived bin edges.
 
 The task-estimator budget is exactly four: E67 observed, E67 shuffled, E75
-observed, and E75 shuffled. A residual-memory construction counts as a task
-fit. Saved R06/A02 artifacts are reused only after the hash and identity checks
-in the preflight; no new text transform or neighbor-geometry fit is planned.
+observed, and E75 shuffled. The E67 observed/shuffled memories predict its
+entire saved horizon, cycles 68–79. E75 only predicts cycles 76–79. Scoring all
+12 E67 cycles does not require another fit. A residual-memory construction
+counts as a task fit. Saved R06/A02 artifacts are reused only after the hash
+and identity checks in the preflight; no new text transform or
+neighbor-geometry fit is planned.
 
 ## Evaluation views and gates
 
 The primary view is W4 + W6. The target-free preflight confirms `n=13,441`:
-W4 has 4,950 rows (4,608 present, 342 missing) and W6 has 8,491 rows (7,965
-present, 526 missing). Missing rows remain in evaluation and retain their R06
-predictions. In the saved geometry, all 12,573 present query rows have 32
-positive-cosine neighbors; zero present rows are below the five-neighbor
-minimum. This is a target-free support result, not evidence that the residual
-correction improves MAE.
+W4 uses E67 cycles 68–71 and has 4,950 rows (4,608 present, 342 missing); W6
+uses E75 cycles 76–79 and has 8,491 rows (7,965 present, 526 missing). Missing
+rows remain in evaluation and retain their R06 predictions. In these primary
+windows, all 12,573 present query rows have 32 positive-cosine neighbors; zero
+present rows are below the five-neighbor minimum. This is a target-free support
+result, not evidence that the residual correction improves MAE.
 Report R06, observed-memory, shuffled-memory, R22_ORIGINAL, and legacy MAE on
 identical rows, plus gains and all negative results. Also report W4 and W6
 separately. Compare against the cached R22/legacy values only after verifying
 their row alignment and hashes. Do not select a recipe from Kaggle public
 scores.
 
-H12_L is a separate overlapping view (`n=20,903`, confirmed by preflight): W4 predictions,
-W5 left at the exact R06 prediction, and W6 predictions. W5 therefore has zero
-incremental correction by construction. H12_L overlaps the primary view; it
-is not an independent sample. H12_E is not a new fit comparison for this
-pilot.
+H12_L is the full E67 long-horizon view (`n=20,903`, confirmed by preflight):
+all E67 queries in cycles 68–79, with E67 candidate, E67 shuffled-control, and
+the E67 R06 baseline on those exact rows. W5 is predicted with the E67 memory
+and may receive a correction. E75 predictions, labels, baseline, or donor bank
+do not enter H12_L. H12_L overlaps the primary W4 rows and is not an
+independent sample. H12_E is not a new fit comparison for this pilot.
 
 The predeclared **incremental diagnostic** thresholds compare the candidate
 with R06 and the shuffled control:
@@ -99,7 +103,9 @@ enter a continuation or replace a candidate without a later review.
 ## Boundaries and failure behavior
 
 - Donor targets are Regression `threat_rank` only. Classification labels and
-  A02 prediction/correction arrays are not donor data.
+  A02 prediction/correction arrays are not donor data. Target-free equality of
+  the shared 18 Train columns is provenance evidence only; it does not expand
+  the R06 feature allowlist.
 - Query labels are accessed only after both observed and shuffled predictions
   are frozen and independently verified.
 - No Test or SampleSubmission data, Kaggle calls, full-Train refit, or public
@@ -111,6 +117,8 @@ enter a continuation or replace a candidate without a later review.
 - The synthetic lifecycle test exercises save, interruption, resume,
   independent recomputation, and corruption rejection without official rows,
   targets, predictions, or ledger events.
+- Synthetic and official view-provenance checks assert E67 cycles 68–79 for
+  H12_L, and independently assert E67 W4 + E75 W6 for primary.
 
 ## Evidence already available (historical, not pilot results)
 

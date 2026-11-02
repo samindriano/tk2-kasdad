@@ -70,9 +70,10 @@ PROTOCOL_IDENTITY = {
         "traversal": "ascending cycle then decile; ascending stable source row within cell",
     },
     "origins": [67, 75],
-    "query_windows": {"E67": [68, 71], "E75": [76, 79]},
+    "query_horizons": {"E67": [68, 79], "E75": [76, 79]},
+    "primary_query_windows": {"E67": [68, 71], "E75": [76, 79]},
     "primary_view": "W4+W6",
-    "h12_l_view": "W4 + unchanged R06 W5 + W6; overlapping descriptive view",
+    "H12_L_view": "E67 predictions for all cycles 68-79 only, including W4/W5/W6",
     "arms": ["observed", "shuffled"],
     "diagnostic_gates": {
         "primary_gain_vs_R06_min": 0.03,
@@ -120,13 +121,43 @@ def _protocol_signature() -> str:
     return _sha_bytes(_canonical(PROTOCOL_IDENTITY))
 
 
-def _query_truth_fixture() -> np.ndarray:
-    low = np.full(120, 5.0)
-    high = np.full(120, 95.0)
-    middle = np.full(240, 51.0)
-    missing = np.full(120, 21.0)
-    unsupported = np.asarray([51.0])
-    return np.concatenate([low, high, middle, missing, unsupported])
+QUERY_GROUP_COUNTS = (120, 120, 240, 120, 1)
+QUERY_GROUP_NEIGHBOR_DECILES = (0, 9, 5, None, 5)
+WINDOW_START_CYCLE = {"W4": 68, "W5": 72, "W6": 76}
+
+
+def _query_windows_for_origin(origin: int) -> tuple[str, ...]:
+    return ("W4", "W5", "W6") if origin == 67 else ("W6",)
+
+
+def _window_cycle_rows(window: str) -> np.ndarray:
+    start = WINDOW_START_CYCLE[window]
+    n = sum(QUERY_GROUP_COUNTS)
+    base, remainder = divmod(n, 4)
+    per_cycle = np.full(4, base, dtype=np.int64)
+    per_cycle[:remainder] += 1
+    return np.repeat(np.arange(start, start + 4, dtype=np.int64), per_cycle)
+
+
+def _window_base_values(window: str) -> np.ndarray:
+    if window == "W5":
+        group_values = (30.0, 70.0, 50.0, 30.0, 50.0)
+    else:
+        group_values = (4.0, 94.0, 50.0, 20.0, 50.0)
+    return np.concatenate([np.full(n, value) for n, value in zip(QUERY_GROUP_COUNTS, group_values)])
+
+
+def _query_truth_fixture(origin: int) -> np.ndarray:
+    # Synthetic labels are generated only after all four prediction bundles exist.
+    truth_by_window = {
+        "W4": (5.0, 95.0, 51.0, 21.0, 51.0),
+        "W5": (34.0, 74.0, 54.0, 34.0, 54.0),
+        "W6": (5.0, 95.0, 51.0, 21.0, 51.0),
+    }
+    return np.concatenate([
+        np.concatenate([np.full(n, value) for n, value in zip(QUERY_GROUP_COUNTS, truth_by_window[window])])
+        for window in _query_windows_for_origin(origin)
+    ])
 
 
 def make_synthetic_case(origin: int) -> SyntheticCase:
@@ -144,21 +175,21 @@ def make_synthetic_case(origin: int) -> SyntheticCase:
     donor_residuals[[0, 1, 2, 3, 4, 80, 81, 82, 83, 84, 160, 161, 162, 163, 164]] = 2.0
     donor_targets = donor_r06_predictions + donor_residuals
 
-    query_counts = [120, 120, 240, 120, 1]
-    query_base = np.concatenate([
-        np.full(query_counts[0], 4.0), np.full(query_counts[1], 94.0),
-        np.full(query_counts[2], 50.0), np.full(query_counts[3], 20.0),
-        np.full(query_counts[4], 50.0),
+    windows = _query_windows_for_origin(origin)
+    query_base = np.concatenate([_window_base_values(window) for window in windows])
+    one_window_missing = np.concatenate([
+        np.zeros(sum(QUERY_GROUP_COUNTS[:3]), dtype=bool),
+        np.ones(QUERY_GROUP_COUNTS[3], dtype=bool),
+        np.zeros(QUERY_GROUP_COUNTS[4], dtype=bool),
     ])
-    query_missing = np.concatenate([
-        np.zeros(120 + 120 + 240, dtype=bool),
-        np.ones(120, dtype=bool),
-        np.zeros(1, dtype=bool),
-    ])
+    query_missing = np.tile(one_window_missing, len(windows))
     query_rows = np.arange(50_000 if origin == 67 else 60_000,
                            (50_000 if origin == 67 else 60_000) + len(query_base), dtype=np.int64)
     query_ids = np.asarray([f"SYN_Q_E{origin}_{i:03d}" for i in range(len(query_rows))], dtype="<U24")
-    query_cycles = np.resize(np.arange(origin + 1, origin + 5, dtype=np.int64), len(query_rows))
+    query_cycles = np.concatenate([_window_cycle_rows(window) for window in windows])
+    query_windows = np.concatenate([
+        np.full(sum(QUERY_GROUP_COUNTS), window, dtype="<U2") for window in windows
+    ])
 
     neighbors = np.full((len(query_rows), 32), -1, dtype=np.int64)
     neighbor_ids = np.full((len(query_rows), 32), "", dtype="<U40")
@@ -167,19 +198,19 @@ def make_synthetic_case(origin: int) -> SyntheticCase:
     positive_cosines = np.asarray([0.95, 0.92, 0.90, 0.88, 0.86], dtype=np.float64)
     group_starts = {0: 0, 5: 80, 9: 160}
     offset = 0
-    query_groups = [(120, 0), (120, 9), (240, 5), (120, None), (1, 5)]
-    for group_n, decile in query_groups:
-        for query_index in range(offset, offset + group_n):
-            if decile is None:
-                continue
-            start = group_starts[decile]
-            k = 4 if group_n == 1 else 5
-            source_rows = donor_rows[start:start + k]
-            neighbors[query_index, :k] = source_rows
-            neighbor_ids[query_index, :k] = [f"str_:{value}" for value in donor_ids[start:start + k]]
-            cosines[query_index, :k] = positive_cosines[:k]
-            counts[query_index] = k
-        offset += group_n
+    for _window in windows:
+        for group_n, decile in zip(QUERY_GROUP_COUNTS, QUERY_GROUP_NEIGHBOR_DECILES):
+            for query_index in range(offset, offset + group_n):
+                if decile is None:
+                    continue
+                start = group_starts[decile]
+                k = 4 if group_n == 1 else 5
+                source_rows = donor_rows[start:start + k]
+                neighbors[query_index, :k] = source_rows
+                neighbor_ids[query_index, :k] = [f"str_:{value}" for value in donor_ids[start:start + k]]
+                cosines[query_index, :k] = positive_cosines[:k]
+                counts[query_index] = k
+            offset += group_n
 
     return SyntheticCase(
         dataset_tag=SYNTHETIC_TAG,
@@ -194,6 +225,7 @@ def make_synthetic_case(origin: int) -> SyntheticCase:
         query_rows=query_rows,
         query_ids=query_ids,
         query_cycles=query_cycles,
+        query_windows=query_windows,
         query_missing=query_missing,
         query_r06_predictions=query_base,
         neighbor_rows=neighbors,
@@ -251,6 +283,7 @@ def _build_arrays(case: SyntheticCase, arm: str) -> dict[str, np.ndarray]:
         "query_rows": case.query_rows,
         "query_ids": case.query_ids,
         "query_cycles": case.query_cycles,
+        "query_windows": case.query_windows,
         "query_missing": case.query_missing,
         "query_r06_predictions": case.query_r06_predictions,
         "neighbor_rows": case.neighbor_rows,
@@ -359,29 +392,26 @@ def _truth_arrays() -> dict[str, np.ndarray]:
     query_ids = []
     query_origin = []
     query_window = []
+    query_cycles = []
     query_base = []
     query_missing = []
     for origin in PILOT_ORIGINS:
         case = make_synthetic_case(origin)
-        query_truths.append(_query_truth_fixture())
+        query_truths.append(_query_truth_fixture(origin))
         query_ids.append(case.query_ids)
         query_origin.append(np.full(len(case.query_ids), origin, dtype=np.int16))
-        query_window.append(np.full(len(case.query_ids), "W4" if origin == 67 else "W6", dtype="<U2"))
+        query_window.append(case.query_windows)
+        query_cycles.append(case.query_cycles)
         query_base.append(case.query_r06_predictions)
         query_missing.append(case.query_missing)
-    # H12_L includes the W4 and W6 query blocks plus W5, which remains exact R06.
-    w5_n = 300
-    w5_base = np.full(w5_n, 50.0, dtype=np.float64)
-    w5_truth = np.full(w5_n, 51.0, dtype=np.float64)
     return {
         "query_truth": np.concatenate(query_truths),
         "query_ids": np.concatenate(query_ids),
         "query_origin": np.concatenate(query_origin),
         "query_window": np.concatenate(query_window),
+        "query_cycles": np.concatenate(query_cycles),
         "query_r06_predictions": np.concatenate(query_base),
         "query_missing": np.concatenate(query_missing),
-        "w5_r06_predictions": w5_base,
-        "w5_truth": w5_truth,
     }
 
 

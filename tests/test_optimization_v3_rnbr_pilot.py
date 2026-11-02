@@ -18,6 +18,8 @@ from scripts.optimization_v3_rnbr_pilot_synthetic import (  # noqa: E402
     EXPECTED_LEDGER_SHA256,
     make_synthetic_case,
 )
+from scripts.optimization_v3_rnbr_pilot_preflight import run_preflight  # noqa: E402
+from scripts.optimization_v3_rnbr_pilot_verify import compose_validation_views  # noqa: E402
 from src.models.regression_neighbor_rnbr import (  # noqa: E402
     RnbrProtocolError,
     correction_delta,
@@ -81,6 +83,20 @@ def test_geometry_integrity_is_fail_closed() -> None:
     with pytest.raises(RnbrProtocolError, match="Neighbor ID does not match"):
         validate_saved_geometry(**kwargs)
 
+    query_cycle_80 = case.query_cycles.copy()
+    query_cycle_80[-1] = 80
+    kwargs["neighbor_ids"] = case.neighbor_ids
+    kwargs["query_cycles"] = query_cycle_80
+    with pytest.raises(RnbrProtocolError, match="temporal or present-stream boundary"):
+        validate_saved_geometry(**kwargs)
+
+    donor_cycle_68 = case.donor_cycles.copy()
+    donor_cycle_68[-1] = 68
+    kwargs["query_cycles"] = case.query_cycles
+    kwargs["donor_cycles"] = donor_cycle_68
+    with pytest.raises(RnbrProtocolError, match="temporal or present-stream boundary"):
+        validate_saved_geometry(**kwargs)
+
 
 def test_donor_target_and_r06_oof_lineage_requires_exact_row_id_cycle_match() -> None:
     case = make_synthetic_case(67)
@@ -96,6 +112,90 @@ def test_donor_target_and_r06_oof_lineage_requires_exact_row_id_cycle_match() ->
     kwargs["target_ids"] = case.donor_ids[::-1].copy()
     with pytest.raises(RnbrProtocolError, match="row/ID/cycle alignment"):
         validate_donor_value_lineage(**kwargs)
+    kwargs["target_ids"] = case.donor_ids.copy()
+    kwargs["donor_cycles"] = case.donor_cycles.copy()
+    kwargs["donor_cycles"][-1] = 68
+    kwargs["target_cycles"] = kwargs["donor_cycles"].copy()
+    kwargs["r06_cycles"] = kwargs["donor_cycles"].copy()
+    with pytest.raises(RnbrProtocolError, match="outside the frozen origin history"):
+        validate_donor_value_lineage(**kwargs)
+
+
+def test_synthetic_origins_have_distinct_full_query_horizons() -> None:
+    e67 = make_synthetic_case(67)
+    e75 = make_synthetic_case(75)
+    assert np.array_equal(np.unique(e67.query_cycles), np.arange(68, 80))
+    assert np.array_equal(np.unique(e75.query_cycles), np.arange(76, 80))
+    assert np.array_equal(e67.query_windows[e67.query_cycles == 73], np.full(150, "W5"))
+    assert np.array_equal(e75.query_windows, np.full(len(e75.query_windows), "W6"))
+
+
+def test_h12_is_e67_only_and_w6_primary_responds_to_e75_changes() -> None:
+    ids67 = np.asarray([f"E67-{cycle}" for cycle in range(68, 80)])
+    cycles67 = np.arange(68, 80)
+    ids75 = np.asarray([f"E75-{cycle}" for cycle in range(76, 80)])
+    cycles75 = np.arange(76, 80)
+    query_meta = {
+        67: {"query_ids": ids67, "query_cycles": cycles67,
+             "query_windows": np.asarray(["W4"] * 4 + ["W5"] * 4 + ["W6"] * 4),
+             "query_missing": np.zeros(12, dtype=bool)},
+        75: {"query_ids": ids75, "query_cycles": cycles75,
+             "query_windows": np.asarray(["W6"] * 4),
+             "query_missing": np.zeros(4, dtype=bool)},
+    }
+    baseline = {67: np.full(12, 50.0), 75: np.full(4, 50.0)}
+    predictions = {
+        (67, "observed"): np.arange(50.5, 62.5, 1.0),
+        (67, "shuffled"): np.full(12, 50.0),
+        (75, "observed"): np.full(4, 51.0),
+        (75, "shuffled"): np.full(4, 50.0),
+    }
+    truth = {
+        "query_ids": np.concatenate([ids67, ids75]),
+        "query_origin": np.asarray([67] * 12 + [75] * 4),
+        "query_cycles": np.concatenate([cycles67, cycles75]),
+        "query_window": np.asarray([
+            "W4" if 68 <= cycle <= 71 else "W5" if 72 <= cycle <= 75 else "W6"
+            for cycle in np.concatenate([cycles67, cycles75])
+        ]),
+        "query_truth": np.concatenate([np.full(12, 52.0), np.full(4, 51.0)]),
+    }
+    first = compose_validation_views(query_meta, predictions, baseline, truth)
+    h12_before = {key: first["H12_L"][key].copy() for key in ("ids", "cycles", "truth", "baseline", "observed", "shuffled")}
+    assert first["H12_L"]["declared_source_origin"] == 67
+    assert set(first["H12_L"]["source_origin"].tolist()) == {67}
+    assert np.array_equal(np.unique(first["H12_L"]["cycles"]), np.arange(68, 80))
+    assert len(first["H12_L"]["ids"]) == 12
+    assert np.any(first["W5_E67"]["observed"] != first["W5_E67"]["baseline"])
+
+    # Change the entire E75 branch (the result of changing its bank/output/labels).
+    changed_predictions = dict(predictions)
+    changed_predictions[(75, "observed")] = np.full(4, 99.0)
+    changed_predictions[(75, "shuffled")] = np.full(4, 1.0)
+    changed_baseline = {67: baseline[67].copy(), 75: np.full(4, 7.0)}
+    changed_truth = {key: value.copy() for key, value in truth.items()}
+    changed_truth["query_truth"][-4:] = 0.0
+    second = compose_validation_views(query_meta, changed_predictions, changed_baseline, changed_truth)
+    for key, expected in h12_before.items():
+        assert np.array_equal(second["H12_L"][key], expected)
+    assert not np.array_equal(second["W6_PRIMARY"]["observed"], first["W6_PRIMARY"]["observed"])
+    assert not np.array_equal(second["W6_PRIMARY"]["truth"], first["W6_PRIMARY"]["truth"])
+
+
+def test_official_target_free_preflight_checks_full_e67_h12_provenance() -> None:
+    report = run_preflight()
+    assert report["status"] == "PASS"
+    assert report["scope"]["official_regression_train_target_loaded"] is False
+    assert report["scope"]["official_classification_target_loaded"] is False
+    assert report["scope"]["official_candidate_predictions_created"] is False
+    assert report["A02_saved_geometry"]["67"]["query_cycles"] == [68, 79]
+    assert report["A02_saved_geometry"]["67"]["query_rows"] == 20903
+    assert report["R06_saved_cache_inventory"][3]["cutoff"] == 67
+    assert report["R06_saved_cache_inventory"][3]["all_score_rows"] == 20903
+    assert report["R06_saved_cache_inventory"][3]["all_scored_cycles"] == [68, 79]
+    assert report["frozen_view_support"]["primary_W4_plus_W6_rows"] == 13441
+    assert report["view_provenance"]["H12_L"]["source_origin"] == 67
+    assert report["view_provenance"]["H12_L"]["E75_inputs_included"] is False
 
 
 def test_missing_and_under_supported_queries_fall_back_to_r06() -> None:
@@ -155,7 +255,11 @@ def test_synthetic_failure_resume_independent_verifier_and_corruption_guard(tmp_
     assert result["failure_injection"]["interrupted_after_durable_bundles"] is True
     assert result["failure_injection"]["resume_reused_verified_bundles"] == 4
     assert result["synthetic_primary_n"] == 2 * 601
-    assert result["synthetic_H12_L_n"] == 2 * 601 + 300
+    assert result["synthetic_H12_L_n"] == 3 * 601
+    assert result["synthetic_H12_L_source_origin"] == 67
+    assert result["synthetic_H12_L_query_cycle_range"] == [68, 79]
+    assert result["view_provenance_validation"]["status"] == "PASS"
+    assert result["synthetic_W5_E67_candidate_changed_R06"] is True
     assert result["independent_prediction_recompute"] == "PASS"
     assert _sha256(ledger) == EXPECTED_LEDGER_SHA256
 

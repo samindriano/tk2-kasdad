@@ -1,7 +1,7 @@
 {
   "audit": "R-NBR pilot B0 target-free preparation preflight",
   "status": "PASS",
-  "source_repo_head_before_B0_changes": "f3c35ed215fe1f2d96d3e30156be6b4ced923528",
+  "source_repo_head_before_B0_changes": "dbaa3bb0cf3e621daa84537bc8e62f4134153030",
   "scope": {
     "official_regression_train_target_loaded": false,
     "official_classification_target_loaded": false,
@@ -64,7 +64,8 @@
     ],
     "status": "PASS",
     "classification_train_path": "data/raw/classification/Train.csv",
-    "regression_train_path": "data/raw/regression/Train.csv"
+    "regression_train_path": "data/raw/regression/Train.csv",
+    "interpretation": "Shared target-free field equality is provenance evidence only; it does not expand the frozen R06 feature allowlist."
   },
   "R06_source_recipe_lineage": {
     "source_commit": "be5e86750ec725e45698054a91fad299ddc24eb4",
@@ -99,6 +100,11 @@
       "npz_sha256": "ed52cf9c8958b693e49e4c2999015babe35aa8f350fea28eb313e492f19e5dd6",
       "sidecar_sha256": "68e60624d79957075c755ac1c35bd40733d8b983cd2ec931b8186243de0100b0",
       "freeze_signature": "02ae1b4e6e6424a8ac7f66fd0f1b955e478f6265c4f071989d9d8c5ef532c0a8",
+      "all_score_rows": 17685,
+      "all_scored_cycles": [
+        56,
+        67
+      ],
       "first_four_cycle_window": [
         56,
         59
@@ -113,6 +119,11 @@
       "npz_sha256": "6d55cd7fa59662d54816ed4be16470a437af615b5e6544ec0ab15ce10dbcf849",
       "sidecar_sha256": "840addcfe5fb088d0df0e348b48ec11a86ccdff9392da8e7529c9e6f9e433ab7",
       "freeze_signature": "6cdecf6e0729b625981f23c7b7be4152a12806011a0a1852dd978eaec30d21ae",
+      "all_score_rows": 6493,
+      "all_scored_cycles": [
+        60,
+        63
+      ],
       "first_four_cycle_window": [
         60,
         63
@@ -127,6 +138,11 @@
       "npz_sha256": "f6480ec474dbd9229b401eade141ff51a4bf911f68b10df14336b0a9b997c0c9",
       "sidecar_sha256": "0eecbe691404e56d38acce03630ac1339f38c50733ad60128624394894b4dea1",
       "freeze_signature": "6cdecf6e0729b625981f23c7b7be4152a12806011a0a1852dd978eaec30d21ae",
+      "all_score_rows": 7078,
+      "all_scored_cycles": [
+        64,
+        67
+      ],
       "first_four_cycle_window": [
         64,
         67
@@ -141,6 +157,11 @@
       "npz_sha256": "4bda0ac6838388ea46ca768e0998f7b0f9a9a1b6defb2b1e5399f6ff83154804",
       "sidecar_sha256": "faa11f25bfd37fded8db5f84244ce306d6f2027dc153fb143560304fcf91da1e",
       "freeze_signature": "02ae1b4e6e6424a8ac7f66fd0f1b955e478f6265c4f071989d9d8c5ef532c0a8",
+      "all_score_rows": 20903,
+      "all_scored_cycles": [
+        68,
+        79
+      ],
       "first_four_cycle_window": [
         68,
         71
@@ -155,6 +176,11 @@
       "npz_sha256": "47c97efd70dba87b8fd4187e31e85122d325528688553f7c9e8e6a81dcf58894",
       "sidecar_sha256": "f506ed8f0e97517d6af4d591d89e5cf4cea96640a47bb4d73235573f4c0b0aa8",
       "freeze_signature": "6cdecf6e0729b625981f23c7b7be4152a12806011a0a1852dd978eaec30d21ae",
+      "all_score_rows": 7462,
+      "all_scored_cycles": [
+        72,
+        75
+      ],
       "first_four_cycle_window": [
         72,
         75
@@ -169,6 +195,11 @@
       "npz_sha256": "61ef463a5bf5ee06f3c68162b8a7f874664b2736161979342731de98b5e09abb",
       "sidecar_sha256": "61f3ab25d1cbc954cb74f47bdf823cc72113b1a2e19394c61802da1bdba7ca45",
       "freeze_signature": "6cdecf6e0729b625981f23c7b7be4152a12806011a0a1852dd978eaec30d21ae",
+      "all_score_rows": 8491,
+      "all_scored_cycles": [
+        76,
+        79
+      ],
       "first_four_cycle_window": [
         76,
         79
@@ -186,11 +217,11 @@
       "eligible_present_donor_rows": 16482,
       "query_cycles": [
         68,
-        71
+        79
       ],
-      "query_rows": 4950,
-      "present_query_rows": 4608,
-      "missing_query_rows_unchanged_R06": 342,
+      "query_rows": 20903,
+      "present_query_rows": 19528,
+      "missing_query_rows_unchanged_R06": 1375,
       "source_prediction_npz_sha256": {
         "observed": "49442235f6c828618d8aa12569a802bcad6d12ae6f5d6040294a6f4ac9323eca",
         "shuffled": "943f08b7b7067d49185f49e6e4e48ee1e91e9954326f30901abd53754340a70a"
@@ -344,6 +375,74 @@
       "origin": 67,
       "query_cycles": [
         68,
+        79
+      ],
+      "arms": {
+        "observed": {
+          "query_rows": 20903,
+          "present_query_rows": 19528,
+          "missing_query_rows_unchanged_R06": 1375,
+          "present_query_rows_with_at_least_5_neighbors": 19528,
+          "present_query_rows_with_1_to_4_neighbors_unchanged_R06": 0,
+          "present_query_neighbor_count_min": 32,
+          "present_query_neighbor_count_median": 32.0
+        },
+        "shuffled": {
+          "query_rows": 20903,
+          "present_query_rows": 19528,
+          "missing_query_rows_unchanged_R06": 1375,
+          "present_query_rows_with_at_least_5_neighbors": 19528,
+          "present_query_rows_with_1_to_4_neighbors_unchanged_R06": 0,
+          "present_query_neighbor_count_min": 32,
+          "present_query_neighbor_count_median": 32.0
+        }
+      },
+      "observed_shuffled_support_identical": true,
+      "support_arrays_loaded": [
+        "score_rows",
+        "neighbor_count"
+      ],
+      "target_and_prediction_arrays_loaded": false
+    },
+    "75": {
+      "origin": 75,
+      "query_cycles": [
+        76,
+        79
+      ],
+      "arms": {
+        "observed": {
+          "query_rows": 8491,
+          "present_query_rows": 7965,
+          "missing_query_rows_unchanged_R06": 526,
+          "present_query_rows_with_at_least_5_neighbors": 7965,
+          "present_query_rows_with_1_to_4_neighbors_unchanged_R06": 0,
+          "present_query_neighbor_count_min": 32,
+          "present_query_neighbor_count_median": 32.0
+        },
+        "shuffled": {
+          "query_rows": 8491,
+          "present_query_rows": 7965,
+          "missing_query_rows_unchanged_R06": 526,
+          "present_query_rows_with_at_least_5_neighbors": 7965,
+          "present_query_rows_with_1_to_4_neighbors_unchanged_R06": 0,
+          "present_query_neighbor_count_min": 32,
+          "present_query_neighbor_count_median": 32.0
+        }
+      },
+      "observed_shuffled_support_identical": true,
+      "support_arrays_loaded": [
+        "score_rows",
+        "neighbor_count"
+      ],
+      "target_and_prediction_arrays_loaded": false
+    }
+  },
+  "primary_window_neighbor_support": {
+    "67": {
+      "origin": 67,
+      "query_cycles": [
+        68,
         71
       ],
       "arms": {
@@ -412,7 +511,58 @@
     "W4_rows": 4950,
     "W6_rows": 8491,
     "H12_L_rows": 20903,
-    "H12_L_definition": "cycles 68-79; W4 and W6 adjusted, intervening W5 left at R06"
+    "H12_L_definition": "all E67 queries in cycles 68-79; E67 candidate/control and E67 R06 baseline; no E75 inputs",
+    "H12_L_source_origin": 67,
+    "H12_L_cycle_range": [
+      68,
+      79
+    ],
+    "H12_L_R06_cutoff": 67
+  },
+  "view_provenance": {
+    "primary_W4": {
+      "source_origin": 67,
+      "query_cycles": [
+        68,
+        71
+      ],
+      "geometry_fit_ids": {
+        "observed": "A02_E67_OBSERVED",
+        "shuffled": "A02_E67_SHUFFLED"
+      },
+      "R06_cache_cutoff": 67
+    },
+    "primary_W6": {
+      "source_origin": 75,
+      "query_cycles": [
+        76,
+        79
+      ],
+      "geometry_fit_ids": {
+        "observed": "A02_E75_OBSERVED",
+        "shuffled": "A02_E75_SHUFFLED"
+      },
+      "R06_cache_cutoff": 75
+    },
+    "H12_L": {
+      "source_origin": 67,
+      "query_cycles": [
+        68,
+        79
+      ],
+      "geometry_fit_ids": {
+        "observed": "A02_E67_OBSERVED",
+        "shuffled": "A02_E67_SHUFFLED"
+      },
+      "R06_cache_cutoff": 67,
+      "R06_cache_score_rows": 20903,
+      "E75_inputs_included": false
+    }
+  },
+  "supersedes_prior_B0": {
+    "prior_commit": "dbaa3bb0cf3e621daa84537bc8e62f4134153030",
+    "prior_H12_error": "The prior version mixed E67 W4 and E75 W6 with a synthetic R06-only W5 and mislabeled it H12_L despite n=20,903.",
+    "correction": "This successor uses only full E67 cycles 68-79 for H12_L; the prior commit remains in Git history."
   },
   "current_ledger_snapshot": {
     "ledger_sha256": "6fcc4b4d427e3ff03139e0e9ee429f529f7c7bf6ad91ce0eb9a52d55e2503147",

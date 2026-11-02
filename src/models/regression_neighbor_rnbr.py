@@ -14,6 +14,8 @@ import numpy as np
 
 
 PILOT_ORIGINS = (67, 75)
+PILOT_QUERY_HORIZONS = {67: 79, 75: 79}
+PILOT_QUERY_WINDOWS = {67: (68, 79), 75: (76, 79)}
 PILOT_ARMS = ("observed", "shuffled")
 ALPHA = 0.25
 CORRECTION_CAP = 5.0
@@ -50,6 +52,7 @@ class SyntheticCase:
     query_rows: np.ndarray
     query_ids: np.ndarray
     query_cycles: np.ndarray
+    query_windows: np.ndarray
     query_missing: np.ndarray
     query_r06_predictions: np.ndarray
     neighbor_rows: np.ndarray
@@ -216,8 +219,9 @@ def validate_saved_geometry(
         raise RnbrProtocolError("Query source rows and IDs must be unique")
     if np.intersect1d(dr, qr).size or set(di).intersection(qi):
         raise RnbrProtocolError("Donor and query identities overlap")
+    query_horizon = PILOT_QUERY_HORIZONS[origin]
     if (np.any((dc < 56) | (dc > origin)) or np.any(ds >= dc)
-            or np.any(~dp) or np.any(qc <= origin) or np.any(qc > origin + 4)):
+            or np.any(~dp) or np.any(qc <= origin) or np.any(qc > query_horizon)):
         raise RnbrProtocolError("Donor/query temporal or present-stream boundary failed")
     for cycle, source in zip(dc, ds):
         if EXPECTED_SOURCE_CUTOFFS.get(int(cycle)) != int(source):
@@ -432,6 +436,7 @@ def evaluate_incremental_gates(metrics: Mapping[str, Any]) -> dict[str, Any]:
 __all__ = [
     "ALPHA", "CORRECTION_CAP", "EXPECTED_SOURCE_CUTOFFS", "MAX_NEIGHBORS",
     "MIN_NEIGHBORS", "PILOT_ARMS", "PILOT_ORIGINS", "RnbrProtocolError",
+    "PILOT_QUERY_HORIZONS", "PILOT_QUERY_WINDOWS",
     "SHUFFLE_SEED", "SyntheticCase", "correction_delta", "evaluate_incremental_gates",
     "fixed_prediction_decile", "plan_pilot_fits", "predict_from_saved_neighbors",
     "shuffle_residuals_within_cycle_decile", "validate_donor_value_lineage", "validate_saved_geometry",
