@@ -320,7 +320,8 @@ def _build_oof_bank(origin: int, caches: dict[int, dict[str, np.ndarray]],
 def _read_origin_inputs(origin: int, train: pd.DataFrame,
                         caches: dict[int, dict[str, np.ndarray]],
                         protocol: dict[str, Any],
-                        neighbors_protocol: dict[str, Any]) -> dict[str, Any]:
+                        neighbors_protocol: dict[str, Any],
+                        neighbors_freeze_signature: str) -> dict[str, Any]:
     bank_full = _build_oof_bank(origin, caches, train, protocol, neighbors_protocol)
     present = ~bank_full["missing"].astype(bool)
     bank_rows = bank_full["rows"][present].astype(np.int64)
@@ -353,22 +354,32 @@ def _read_origin_inputs(origin: int, train: pd.DataFrame,
 
     prediction_path = observed_folder / "predictions.npz"
     sidecar = json.loads((observed_folder / "predictions.json").read_text(encoding="utf-8"))
+    observed_test_data_claim = sidecar.get("test_data_used")
+    observed_source_freeze_matches = (
+        sidecar.get("freeze_signature") == neighbors_freeze_signature
+        if origin in (67, 75) else observed_test_data_claim is False)
     if (sidecar.get("npz_sha256") != _sha256_file(prediction_path)
             or sidecar.get("fit_receipt_sha256") != observed_receipt["receipt_sha256"]
             or sidecar.get("origin_cycle") != origin
             or sidecar.get("residual_arm") != "observed"
             or sidecar.get("query_labels_passed_to_prediction") is not False
-            or sidecar.get("test_data_used") is not False):
+            or observed_test_data_claim not in (None, False)
+            or not observed_source_freeze_matches):
         raise RuntimeError(f"A02 observed prediction sidecar does not attest target-free inference at E{origin}")
     saved = _load_npz_without_targets(prediction_path)
     shuffled_prediction_path = shuffled_folder / "predictions.npz"
     shuffled_sidecar = json.loads((shuffled_folder / "predictions.json").read_text(encoding="utf-8"))
+    shuffled_test_data_claim = shuffled_sidecar.get("test_data_used")
+    shuffled_source_freeze_matches = (
+        shuffled_sidecar.get("freeze_signature") == neighbors_freeze_signature
+        if origin in (67, 75) else shuffled_test_data_claim is False)
     if (shuffled_sidecar.get("npz_sha256") != _sha256_file(shuffled_prediction_path)
             or shuffled_sidecar.get("fit_receipt_sha256") != shuffled_receipt["receipt_sha256"]
             or shuffled_sidecar.get("origin_cycle") != origin
             or shuffled_sidecar.get("residual_arm") != "shuffled"
             or shuffled_sidecar.get("query_labels_passed_to_prediction") is not False
-            or shuffled_sidecar.get("test_data_used") is not False):
+            or shuffled_test_data_claim not in (None, False)
+            or not shuffled_source_freeze_matches):
         raise RuntimeError(f"A02 shuffled prediction sidecar does not attest target-free inference at E{origin}")
     shuffled_saved = _load_npz_without_targets(shuffled_prediction_path)
     rows = saved["score_rows"].astype(np.int64)
@@ -483,8 +494,14 @@ def _load_all_candidate_inputs() -> dict[str, Any]:
     train, caches, a02_freeze = _read_feature_only_train()
     protocol = a02._read_protocol()
     neighbors_protocol, neighbors_freeze = a02_neighbors._load_frozen()
+    neighbors_verification = json.loads(
+        (ROOT / "reports/optimization_v3/a02_neighbors_v1/verification.json").read_text(encoding="utf-8"))
     if (neighbors_protocol.get("task") != "classification"
-            or neighbors_protocol.get("origins") != [67, 75]):
+            or neighbors_protocol.get("origins") != [67, 75]
+            or neighbors_verification.get("status") != "PASS"
+            or neighbors_verification.get("checks", {}).get("input_hashes_pass") is not True
+            or neighbors_verification.get("checks", {}).get("source_boundaries_pass") is not True
+            or neighbors_verification.get("checks", {}).get("test_or_sample_access") is not False):
         raise RuntimeError("Frozen A02 neighbors protocol does not match the E67/E75 cache lineage")
     b01_freeze = json.loads(B01_FREEZE.read_text(encoding="utf-8"))
     b01_results = json.loads((B01_REPORT / "RESULTS.json").read_text(encoding="utf-8"))
@@ -501,7 +518,8 @@ def _load_all_candidate_inputs() -> dict[str, Any]:
     if ledger_before != EXPECTED_LEDGER:
         raise RuntimeError("B02 zero-fit ledger is not the exact consumed 66-fit checkpoint")
     origins = {
-        origin: _read_origin_inputs(origin, train, caches, protocol, neighbors_protocol)
+        origin: _read_origin_inputs(origin, train, caches, protocol, neighbors_protocol,
+                                    neighbors_freeze["freeze_signature"])
         for origin in ORIGINS
     }
 
