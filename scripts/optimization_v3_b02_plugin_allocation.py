@@ -24,6 +24,7 @@ from threadpoolctl import threadpool_limits
 
 from scripts import optimization_v3_a02_b01_centering as b01
 from scripts import optimization_v3_a02_continuation as a02
+from scripts import optimization_v3_a02_neighbors as a02_neighbors
 from src.models.research_next_contract import canonical_sha256
 
 
@@ -125,6 +126,8 @@ STATIC_INPUTS = (
     "reports/optimization_v3/a02_b01_centering_v1/B01_OUTPUTS/QA.json",
     "experiments/optimization_v3/a02_continuation_v1/protocol.json",
     "experiments/optimization_v3/a02_continuation_v1/freeze_v2.json",
+    "experiments/optimization_v3/c19_a02_v2/A02/protocol.json",
+    "experiments/optimization_v3/c19_a02_v2/A02/freeze.json",
     "reports/optimization_v3/a02_continuation_v1/verification.json",
     "reports/optimization_v3/a02_neighbors_v1/verification.json",
     "reports/optimization_v3/a02_continuation_v1/submission_manifest.json",
@@ -295,10 +298,30 @@ def _validate_saved_geometry(saved: dict[str, np.ndarray], bank_rows: np.ndarray
             raise RuntimeError("Saved A02 neighbors violate temporal/ID/similarity/tie-order constraints")
 
 
+def _build_oof_bank(origin: int, caches: dict[int, dict[str, np.ndarray]],
+                    train: pd.DataFrame, continuation_protocol: dict[str, Any],
+                    neighbors_protocol: dict[str, Any]) -> dict[str, np.ndarray]:
+    if origin in (67, 75):
+        bank_key = f"E{origin}"
+        declared = neighbors_protocol.get("bank", {}).get(bank_key)
+        if (neighbors_protocol.get("task") != "classification"
+                or origin not in neighbors_protocol.get("origins", [])
+                or not isinstance(declared, dict)):
+            raise RuntimeError(f"Frozen neighbors protocol does not declare {bank_key}")
+        bank = a02_neighbors._build_bank(origin, caches, train)
+        present_rows = int((~bank["missing"].astype(bool)).sum())
+        if (len(bank["rows"]) != int(declared["rows"])
+                or present_rows != int(declared["present_rows"])):
+            raise RuntimeError(f"Frozen neighbors bank counts differ from protocol at {bank_key}")
+        return bank
+    return a02._build_bank(origin, caches, train, continuation_protocol)
+
+
 def _read_origin_inputs(origin: int, train: pd.DataFrame,
                         caches: dict[int, dict[str, np.ndarray]],
-                        protocol: dict[str, Any]) -> dict[str, Any]:
-    bank_full = a02._build_bank(origin, caches, train, protocol)
+                        protocol: dict[str, Any],
+                        neighbors_protocol: dict[str, Any]) -> dict[str, Any]:
+    bank_full = _build_oof_bank(origin, caches, train, protocol, neighbors_protocol)
     present = ~bank_full["missing"].astype(bool)
     bank_rows = bank_full["rows"][present].astype(np.int64)
     bank_ids = bank_full["ids"][present].astype(str)
@@ -459,6 +482,10 @@ def _load_all_candidate_inputs() -> dict[str, Any]:
     resources = _preflight_resources()
     train, caches, a02_freeze = _read_feature_only_train()
     protocol = a02._read_protocol()
+    neighbors_protocol, neighbors_freeze = a02_neighbors._load_frozen()
+    if (neighbors_protocol.get("task") != "classification"
+            or neighbors_protocol.get("origins") != [67, 75]):
+        raise RuntimeError("Frozen A02 neighbors protocol does not match the E67/E75 cache lineage")
     b01_freeze = json.loads(B01_FREEZE.read_text(encoding="utf-8"))
     b01_results = json.loads((B01_REPORT / "RESULTS.json").read_text(encoding="utf-8"))
     b01_qa = json.loads((B01_REPORT / "QA.json").read_text(encoding="utf-8"))
@@ -474,7 +501,7 @@ def _load_all_candidate_inputs() -> dict[str, Any]:
     if ledger_before != EXPECTED_LEDGER:
         raise RuntimeError("B02 zero-fit ledger is not the exact consumed 66-fit checkpoint")
     origins = {
-        origin: _read_origin_inputs(origin, train, caches, protocol)
+        origin: _read_origin_inputs(origin, train, caches, protocol, neighbors_protocol)
         for origin in ORIGINS
     }
 
@@ -545,6 +572,8 @@ def _load_all_candidate_inputs() -> dict[str, Any]:
         "a02_freeze": a02_freeze,
         "b01_freeze": b01_freeze,
         "protocol": protocol,
+        "neighbors_protocol_sha256": canonical_sha256(neighbors_protocol),
+        "neighbors_freeze_signature": neighbors_freeze["freeze_signature"],
         "origins": origins,
         "w1": w1,
         "input_sha256": input_sha256,
@@ -580,6 +609,8 @@ def _freeze() -> dict[str, Any]:
         "fit_transform_predict_or_neighbor_search_calls": 0,
         "candidate_probability_hashes": data["probability_hashes"],
         "query_geometry_and_bank_provenance": data["arrays"],
+        "neighbors_protocol_sha256": data["neighbors_protocol_sha256"],
+        "neighbors_freeze_signature": data["neighbors_freeze_signature"],
         "input_sha256": data["input_sha256"],
         "fit_ledger_before": data["ledger_before"],
     }
@@ -615,6 +646,8 @@ def _verify_freeze() -> tuple[dict[str, Any], dict[str, Any]]:
     if (data["input_sha256"] != freeze["input_sha256"]
             or data["probability_hashes"] != freeze["candidate_probability_hashes"]
             or data["arrays"] != freeze["query_geometry_and_bank_provenance"]
+            or data["neighbors_protocol_sha256"] != freeze["neighbors_protocol_sha256"]
+            or data["neighbors_freeze_signature"] != freeze["neighbors_freeze_signature"]
             or data["ledger_before"] != freeze["fit_ledger_before"]):
         raise RuntimeError("B02 reconstructed probabilities/banks differ from frozen pre-decoder state")
     return freeze, data

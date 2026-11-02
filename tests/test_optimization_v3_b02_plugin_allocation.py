@@ -127,6 +127,32 @@ def test_npz_reader_never_returns_saved_query_labels(tmp_path):
     assert set(loaded) == set(b02.PREDICTION_LOAD_KEYS)
 
 
+def test_bank_origin_uses_frozen_neighbor_bank_for_e67(monkeypatch):
+    train = pd.DataFrame({"cycle_code": [56, 57], "record_id": ["a", "b"]})
+    expected = {"rows": np.array([0, 1]), "missing": np.array([False, False])}
+    calls = []
+    monkeypatch.setattr(b02.a02_neighbors, "_build_bank", lambda origin, caches, frame: (calls.append(origin) or expected))
+    monkeypatch.setattr(b02.a02, "_build_bank", lambda *args: pytest.fail("continuation bank used for E67"))
+    bank = b02._build_oof_bank(
+        67, {}, train, {},
+        {"task": "classification", "origins": [67, 75],
+         "bank": {"E67": {"rows": 2, "present_rows": 2}}})
+    assert calls == [67]
+    assert bank is expected
+
+
+def test_bank_origin_rejects_mismatch_with_frozen_neighbor_support(monkeypatch):
+    monkeypatch.setattr(
+        b02.a02_neighbors, "_build_bank",
+        lambda origin, caches, train: {
+            "rows": np.array([0, 1]), "missing": np.array([False, False])})
+    with pytest.raises(RuntimeError, match="counts differ"):
+        b02._build_oof_bank(
+            67, {}, pd.DataFrame(), {},
+            {"task": "classification", "origins": [67, 75],
+             "bank": {"E67": {"rows": 3, "present_rows": 3}}})
+
+
 def test_atomic_output_bundle_is_idempotent_and_refuses_different_bytes(monkeypatch, tmp_path):
     final = tmp_path / "B02_OUTPUTS"
     staging = tmp_path / ".B02_OUTPUTS.staging"
