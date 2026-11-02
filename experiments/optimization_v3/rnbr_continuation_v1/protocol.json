@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "protocol_id": "RNBR_THREE_ORIGIN_SIX_FIT_CONTINUATION_V1",
+  "status": "AUTHORIZED_BOUNDED_CONTINUATION",
+  "decision_source_commit": "5bbead1cd6274e28cf492919b9e4847974e8fc55",
+  "question": "Do R06 out-of-fold residuals from saved lexical top32 neighbors improve three additional next-four-cycle query windows over exact R06-origin predictions and a matched within-cycle-by-prediction-decile shuffle?",
+  "new_fits": {
+    "origins": [59, 63, 71],
+    "arms": ["observed", "shuffled"],
+    "fit_ids": [
+      "RNBR_CONT_E59_OBSERVED", "RNBR_CONT_E59_SHUFFLED",
+      "RNBR_CONT_E63_OBSERVED", "RNBR_CONT_E63_SHUFFLED",
+      "RNBR_CONT_E71_OBSERVED", "RNBR_CONT_E71_SHUFFLED"
+    ],
+    "fit_semantics": "one residual-memory construction per origin and arm; no estimator or text-geometry refit",
+    "query_windows": {
+      "59": {"cycles": [60, 63], "rows": 6493},
+      "63": {"cycles": [64, 67], "rows": 7078},
+      "71": {"cycles": [72, 75], "rows": 7462}
+    },
+    "new_origin_pooled_rows": 21033
+  },
+  "recipe": {
+    "geometry": "reuse frozen target-free A02 word-TFIDF top32 geometry; positive cosine neighbors only; stable order cosine descending then source row ascending",
+    "donors": "present signal_stream rows, cycle 56 through origin inclusive",
+    "donor_residual": "threat_rank minus frozen R06 OOF prediction whose source cutoff is strictly before donor cycle",
+    "neighbor_weight": "cosine squared",
+    "residual_summary": "weighted median; stable residual then donor source row order; midpoint between distinct values when cumulative weight is exactly half",
+    "shrinkage": 0.25,
+    "delta_clip": [-5.0, 5.0],
+    "prediction_clip": [0.0, 100.0],
+    "fallback": "missing-stream or fewer than five neighbors retains exact R06 prediction",
+    "query_baseline": "origin-specific full R06 prediction cache for every query row; never donor OOF per-cycle mapping",
+    "shuffle": "within exact donor cycle by fixed R06 prediction decile min(9,floor(clip(prediction,0,100)/10)); NumPy default_rng(42) reset for each origin; cells ascending cycle then decile and rows ascending official source row"
+  },
+  "views": {
+    "W1": {"cycles": [56, 59], "rows": 4114, "prediction": "exact R06 fallback", "learned_win_counted": false},
+    "W2": {"origin": 59, "cycles": [60, 63], "rows": 6493},
+    "W3": {"origin": 63, "cycles": [64, 67], "rows": 7078},
+    "W4": {"origin": 67, "cycles": [68, 71], "rows": 4950, "prediction": "verified existing E67 pilot"},
+    "W5": {"origin": 71, "cycles": [72, 75], "rows": 7462},
+    "W6": {"origin": 75, "cycles": [76, 79], "rows": 8491, "prediction": "verified existing E75 pilot"},
+    "new_origin_aggregate": {"windows": ["W2", "W3", "W5"], "rows": 21033},
+    "full_primary": {"windows": ["W1", "W2", "W3", "W4", "W5", "W6"], "rows": 38588},
+    "late_W5_W6": {"windows": ["W5", "W6"], "rows": 15953},
+    "inherited_H12_L": {"origin": 67, "cycles": [68, 79], "rows": 20903, "source": "existing E67 pilot only; never combine E71/E75"}
+  },
+  "prospective_gates": {
+    "full_primary_MAE_gain_vs_R06_min": 0.03,
+    "full_primary_MAE_gain_vs_matched_shuffle_min": 0.01,
+    "new_origin_aggregate_gain_vs_R06_min": 0.0,
+    "new_origin_aggregate_gain_vs_shuffle_min": 0.0,
+    "learned_primary_windows_nonnegative_vs_R06_min_count": 3,
+    "late_W5_W6_gain_vs_R06_strictly_positive": true,
+    "inherited_H12_L_harm_vs_R06_max": 0.05,
+    "each_learned_window_harm_vs_R06_strictly_below": 0.25,
+    "missing_and_actual_target_tail_minimum_n": 100,
+    "missing_and_actual_target_tail_harm_vs_R06_max": 0.25,
+    "missing_stream_incremental_change_exactly_zero": true,
+    "unsupported_groups": "report n and mark NOT_EVALUATED; never imply PASS from unsupported support"
+  },
+  "budget": {
+    "starting_ledger_sha256": "29ec18718bf0dadae033098c1dec95136bd56d0ec32d9aa5ad13f92cd6a663a9",
+    "starting_global_cap": 70,
+    "new_global_cap": 76,
+    "starting_continuation_cap": 31,
+    "new_continuation_cap": 37,
+    "other_category_caps_unchanged": {"pilot": 38, "control_replay": 0, "technical_retry": 1},
+    "new_reservation_fits": 6,
+    "no_retry_or_refund": true,
+    "append_only": true
+  },
+  "boundaries": {
+    "only_official_regression_train_targets": true,
+    "donor_target_rows_only_for_each_fit": true,
+    "query_target_access": "after all six output bundles are durable and independently verified",
+    "test_sample_kaggle": "not opened or accessed",
+    "classification_labels": "not opened",
+    "full_train_refit": false,
+    "install": false,
+    "notebook_edits": false,
+    "push": false,
+    "existing_pilot_freeze": "immutable; use fresh v1 continuation wrappers and namespace"
+  },
+  "resources": {"one_fit_job_at_a_time": true, "threads": 2, "max_rss_bytes": 6442450944, "free_memory_reserve_bytes": 2147483648},
+  "stop_point": "After exactly six starts, independent verification, declared views/gates and local commit; hand off to Sol and stop for review. No origin79 fit or Kaggle submission."
+}
