@@ -1,0 +1,47 @@
+# R-NBR three-origin continuation — results
+
+**Status:** `EVALUATED_DIAGNOSTIC_ONLY`; this tranche does not qualify a global model.
+
+**Freeze:** `f469cfcda87cf1452d3e54d725eb390f299153b54e9a343bbad2bf2dc01d593b`  
+**Execution commit:** `c1f23d4427faac014c7cba2a8c510c92b94505e0`
+
+Query targets were opened only after the six new bundles were durably saved and independently recomputed. H12-L is the inherited E67 68–79 view; it does not use E71/E75 predictions.
+
+## Main views
+
+| View | n | R06 MAE | R-NBR observed | Shuffled | R22_ORIGINAL | Gain vs R06 | Gain vs shuffle | Gain vs R22 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| W1 | 4114 | 15.816833 | 15.816833 | 15.816833 | 15.743656 | +0.000000 | +0.000000 | -0.073178 |
+| W2 | 6493 | 11.857170 | 11.337376 | 11.842248 | 11.833929 | +0.519793 | +0.504871 | +0.496553 |
+| W3 | 7078 | 11.926889 | 11.456377 | 11.936401 | 12.084101 | +0.470512 | +0.480024 | +0.627724 |
+| W4 | 4950 | 11.396232 | 11.508788 | 11.477601 | 11.390307 | -0.112556 | -0.031187 | -0.118481 |
+| W5 | 7462 | 10.281664 | 11.518492 | 11.525104 | 10.333223 | -1.236828 | +0.006612 | -1.185269 |
+| W6 | 8491 | 9.921613 | 11.670595 | 11.692925 | 9.880454 | -1.748982 | +0.022330 | -1.790141 |
+| new_origin_aggregate | 21033 | 11.321680 | 11.441678 | 11.761417 | 11.385703 | -0.119998 | +0.319739 | -0.055975 |
+| full_primary | 38588 | 11.502413 | 11.967109 | 12.142301 | 11.519691 | -0.464695 | +0.175192 | -0.447418 |
+| late_W5_W6 | 15953 | 10.090026 | 11.599449 | 11.614427 | 10.092236 | -1.509423 | +0.014978 | -1.507213 |
+| inherited_H12_L_E67 | 20903 | 11.529709 | 11.577980 | 11.582025 | 11.511220 | -0.048271 | +0.004046 | -0.066760 |
+
+## Gate summary
+
+- `full_primary_gain_vs_R06_ge_0_03`: **False**
+- `full_primary_gain_vs_shuffle_ge_0_01`: **True**
+- `new_origin_gain_vs_R06_nonnegative`: **False**
+- `new_origin_gain_vs_shuffle_nonnegative`: **True**
+- `learned_primary_windows_nonnegative_at_least_3_of_5`: **False**
+- `late_W5_W6_gain_vs_R06_positive`: **False**
+- `inherited_H12_L_harm_vs_R06_le_0_05`: **True**
+- `each_learned_window_harm_vs_R06_lt_0_25`: **False**
+- `all_supported_subgroup_guards_pass`: **False**
+
+Archived R06-vs-legacy W1 missing-stream guard: harm **+0.395556 MAE** on n=392; historical qualified=False. This failure remains in force regardless of continuation results.
+
+The line item `supported_missing_and_target_tail_group_guards` in the JSON reports every supported and unsupported subgroup for every declared view. Unsupported cells are shown explicitly and are not turned into a pass claim.
+
+## Interpretation
+
+The origin comparison is descriptive because there are only three new origins and their windows are reused development cycles. All losses are reported against both exact R06 and the matched shuffle. R22_ORIGINAL uses only verified frozen prediction caches. Historical R06-versus-legacy subgroup guard failures remain unchanged and separate from this incremental check.
+
+## Reproduction
+
+Run the frozen synthetic and unit checks before official execution. Official fit bundles are under the ignored `experiments/runs/optimization_v3_research_next_v1/RNBR_CONTINUATION_OFFICIAL_V1/bundles/` directory; machine-readable verification and view metrics are in this report directory.
