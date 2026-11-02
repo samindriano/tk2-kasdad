@@ -31,6 +31,12 @@ class BridgeError(RuntimeError):
     """A mismatch in immutable inherited pilot-recovery evidence."""
 
 
+def assert_frozen_source_bytes(committed: bytes, current: bytes, relative: str) -> None:
+    """Compare exact bytes so Windows console decoding cannot hide code drift."""
+    if committed != current:
+        raise BridgeError(f"Frozen fit source differs from the recorded source commit: {relative}")
+
+
 def load_verified_e67_observed() -> tuple[dict[str, np.ndarray], dict[str, Any], dict[str, Any]]:
     """Load only safe recovered arrays after validating recovery report and hashes."""
     report = json.loads(RECOVERY_REPORT.read_text(encoding="utf-8"))
@@ -132,8 +138,7 @@ def verified_fit_source_commit(freeze: dict[str, Any]) -> str:
     for relative in pinned_paths:
         committed = subprocess.check_output(["git", "show", f"{source_commit}:{relative}"], cwd=ROOT)
         current = (ROOT / relative).read_bytes()
-        if committed != current:
-            raise BridgeError(f"Frozen fit source differs from the recorded source commit: {relative}")
+        assert_frozen_source_bytes(committed, current, relative)
     return source_commit
 
 
