@@ -1,0 +1,110 @@
+{
+  "status": "PASS",
+  "audit": "A02 decision-boundary and useful-vs-harmful flip audit; zero estimator fits",
+  "outcome_blind": false,
+  "checks": {
+    "parent_a02_reliability_qa_pass": true,
+    "official_train_hash_matches_frozen": true,
+    "all_six_cache_hashes_match_parent_report": true,
+    "all_ten_prediction_hashes_match_parent_report": true,
+    "all_four_row_artifact_joins_match_official_train_cycle_and_target": true,
+    "record_ids_unique_for_all_joined_rows": true,
+    "stream_missing_mask_matches_official_train": true,
+    "same_rows_paired_across_baseline_observed_shuffle": true,
+    "h12_rows_subset_of_primary_and_overlap_disclosed": true,
+    "w1_fallback_exact_sparse25_and_unchanged": true,
+    "missing_stream_exact_sparse25_and_unchanged": true,
+    "observed_correction_within_frozen_005_bound": true,
+    "shuffle_correction_within_frozen_005_bound": true,
+    "label_changes_outside_fixed_margin": true,
+    "threshold_is_exact_greater_equal_050": true,
+    "fixed_probability_band_edges_and_support_rules_used": true,
+    "descriptor_summaries_exclude_fallback_and_missing_stream": true,
+    "review_taper_lane_rejected_by_frozen_probability_bound": true,
+    "no_taper_replay_or_new_probability_policy_or_sweep": true,
+    "zero_estimator_or_preprocessor_fit_calls": true,
+    "ledger_sha_unchanged": true,
+    "no_test_sample_kaggle_or_submission_access": true,
+    "no_row_level_artifact_written": true,
+    "overall_checks_pass": true
+  },
+  "official_train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+  "ledger_sha256_before": "6fcc4b4d427e3ff03139e0e9ee429f529f7c7bf6ad91ce0eb9a52d55e2503147",
+  "ledger_sha256_after": "6fcc4b4d427e3ff03139e0e9ee429f529f7c7bf6ad91ce0eb9a52d55e2503147",
+  "fit_starts_saved_failed_before_after": {
+    "before": [
+      66,
+      64,
+      2
+    ],
+    "after": [
+      66,
+      64,
+      2
+    ]
+  },
+  "estimator_fit_calls_observed": 0,
+  "outside_margin_label_change_count": 0,
+  "review_taper_check": {
+    "provenance": "independent Sol review of the saved four audit views",
+    "hard_label_changes_reported": 0,
+    "full_primary_probability_values_changed_reported": 6134,
+    "logic": "For baseline p > 0.8, attenuation g is in [0,1] and |delta| <= 0.05, so tapered p >= p - 0.05 > 0.75; threshold 0.50 labels cannot change.",
+    "replayed_by_this_script": false,
+    "interpretation": "optional probability-quality note only; not a Macro F1 lane"
+  },
+  "max_abs_probability_delta": {
+    "observed": 0.050000000000000044,
+    "shuffled": 0.050000000000000044
+  },
+  "learned_present_primary_rows": 32288,
+  "full_primary_stream_present_rows": 36010,
+  "primary_w1_fallback_rows": 4114,
+  "primary_w1_fallback_stream_present_rows": 3722,
+  "primary_w1_fallback_stream_missing_rows": 392,
+  "primary_learned_origin_stream_missing_rows": 2186,
+  "primary_learned_present_exact_endpoint_rows": 4006,
+  "primary_learned_present_wrong_exact_endpoint_rows": 62,
+  "mechanism_candidates": [],
+  "source_hashes": {
+    "c16_caches": {
+      "55": "7d900c7f66ebcd6f0fcb9d059534bb15cfa47d8073f1119bf046d4a9d0fd54c9",
+      "59": "bff872a0c5de661a7e2997feb3d1953bbc2caaf1a6a7eedf87ea99f75e15cf26",
+      "63": "9194845881e823a010505f253b7e08476c6efeef5a209b9778c058186a700aa0",
+      "67": "7aa025dc1c49d8a76c63d5e8efe27dcbafb600bf0f64a8ed3cbec8db82d31ab3",
+      "71": "94e69d5bd83b5edb1ae0337cfe78e8b59a61f2733bcbb580f7c810104f50aa47",
+      "75": "5e5f25c35cd15b9332c950b78fe8b650cc6a8138a18d6546fa1728ac35c88708"
+    },
+    "prediction_bundles": {
+      "E59_observed": "5b861d3e07395944be6ab7b98abaf0e7b7ffb567b03288c287f1ce3dcad109e9",
+      "E59_shuffled": "0780dd0d2e04a9d2807fd07479be7d6b717920e73bedd4fb07366c431f586d61",
+      "E63_observed": "d59b35c89d48079d1880e8465f4435c13c676a591b1d6b650bd923c083f7d4d9",
+      "E63_shuffled": "d7f5c9835f4be9a647f0f427b9abeb2056845a59a11a61938f841d7251c370c5",
+      "E67_observed": "49442235f6c828618d8aa12569a802bcad6d12ae6f5d6040294a6f4ac9323eca",
+      "E67_shuffled": "943f08b7b7067d49185f49e6e4e48ee1e91e9954326f30901abd53754340a70a",
+      "E71_observed": "086508fbc6227c0b7833f7ff444f0207d7b63185edbde5c11cddc59e7315083f",
+      "E71_shuffled": "b8a5fd4c73f0d2aabbcaf6e75052a24c3056ac1e96834d9cb569090882279d8f",
+      "E75_observed": "d5a7f8658172370f8e1c30a0b363198a25af52abf40ae7c69fb504b1dbc621bc",
+      "E75_shuffled": "52b6e5dde87f4092e6de69dba7db2730290cec927ee976c0c86bdf6cb177ac23"
+    },
+    "row_level_inputs": {
+      "full_six_primary": "89c1ddde95230b2a9b4172ce95b9b6f9f4ac23bd36e53ff5013e90ab5ddf6d35",
+      "new_origin_aggregate": "49665597eb8fbad8af8599acfc76efa3450c9abefb0d2c397b7b297da4548965",
+      "late": "fa2d2e68ecf32566557d6e504b06e094d5ee4df5ed58be922fc9a26148b1c4a2",
+      "inherited_H12_L": "26f941edc88599bdec2d5389aa37c283b6cd2aeede6c1e2ff0d592d1f9fd7165"
+    }
+  },
+  "outputs": [
+    "SUMMARY.md",
+    "flip_summary.csv",
+    "baseline_band_summary.csv",
+    "band_descriptor_summary.csv"
+  ],
+  "output_sha256": {
+    "SUMMARY.md": "cf978e70aacdffd7dd5a0d34909e0aa86ca6942eadd096f5e78b71d31fb39b29",
+    "flip_summary.csv": "ee20faea8eeafdf14f619d30c2b467371207f8271fc25a083877d37367e64c3f",
+    "baseline_band_summary.csv": "aaf93aee1c59d9d63e87076baace9317e5a661270f006432bb56a1f07a15db6d",
+    "band_descriptor_summary.csv": "b65a93309cef52ceb72e9b7e87ecaf2b778c49ca9f0ba9fd6c19f69712489638"
+  },
+  "qa_path": "reports/optimization_v3/a02_decision_boundary_audit_v1/QA.json"
+}
