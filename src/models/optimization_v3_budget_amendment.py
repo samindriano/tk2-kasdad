@@ -96,7 +96,10 @@ def apply_c19_a02_transfer(ledger_path: str | Path, *, source_commit: str) -> di
         raise BudgetAmendmentError("Original global 60-fit authorization is missing")
     if _latest_effective_caps(events) != PRIOR_CAPS:
         raise BudgetAmendmentError("Prior effective category caps differ")
-    active, total = _active_by_category(events)
+    active_raw, total = _active_by_category(events)
+    # The ledger omits categories that have never had a reservation; treat
+    # those absent keys as zero when comparing the reviewed checkpoint.
+    active = {category: active_raw.get(category, 0) for category in PRIOR_CAPS}
     if active != EXPECTED_ACTIVE or total != 54:
         raise BudgetAmendmentError(f"Live active fit reservations differ: {active}, total={total}")
 
