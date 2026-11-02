@@ -524,7 +524,8 @@ def _load_all_candidate_inputs() -> dict[str, Any]:
     }
 
     # W1 is carried forward unchanged and contributes no allocation decision.
-    w1_cache = caches[59]
+    # W1 covers cycles 56-59 and therefore comes from the frozen cutoff-55 cache.
+    w1_cache = caches[55]
     w1_mask = (w1_cache["cycles"] >= W1_WINDOW[0]) & (w1_cache["cycles"] <= W1_WINDOW[1])
     w1_rows = w1_cache["score_rows"][w1_mask].astype(np.int64)
     w1_ids = w1_cache["score_record_ids"][w1_mask].astype(str)
