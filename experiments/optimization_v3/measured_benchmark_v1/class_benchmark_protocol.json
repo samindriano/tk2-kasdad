@@ -1,0 +1,92 @@
+{
+  "id": "MEASURED_CLASS_BENCHMARK_V1",
+  "status": "AUTHORIZED_RESEARCH_AND_CSV_PREPARATION_UPLOAD_REQUIRES_ROOT_DECISION",
+  "source_head": "1a59cce2dfaf47cf0df4202fdf60be1e4a49c952",
+  "created_at_utc": "2026-11-02T01:46:12.668698+00:00",
+  "user_authority": "User explicitly authorizes iterative Sol/Luna research, measured Kaggle usage with final upload decisions retained by Sol, and bidirectional chat messages. This new instruction supersedes prior stop/no-Test boundary only for this bounded benchmark preparation milestone. No original gate verdict is changed.",
+  "objective": "Competition MacroF1 benchmark under explicit risk tolerances; separate from original fullyqualified researchtrack. Existing outcome knowledge is documented; adaptive research, not outcome-blind.",
+  "candidates": {
+    "CLASS_ONLY": {
+      "recipe": "Exact N01 matched class-only sparse recipe; class means of original N01 class-by-volume weights calculated on same fitprefix; present .75C2_B+.25weightedSparse, missing frozenCB, threshold.50",
+      "temporal_evidence": "Reuse existing sixorigins and pilotH12; no more temporal fits",
+      "planned_fulltrain_fits": 1
+    },
+    "N02_SKETCH": {
+      "recipe": "Exact frozen N02 amendment02 main-effects+degree2TensorSketch1024+LR, original policy .75currentSparse25Route+.25newexpert onpresent, frozenCB onmissing; threshold.50",
+      "temporal_origins": [
+        59,
+        63,
+        71,
+        75
+      ],
+      "matched_control": "Exact no-sketch LR, same policy; fit at all four continuation origins",
+      "planned_temporal_fits": 8,
+      "planned_fulltrain_fits_if_benchmark_gates_pass": 1
+    }
+  },
+  "benchmark_gates": {
+    "primary_fullsix_gain_vs_sparse25_min": 0.0002,
+    "H12_pooled_harm_vs_sparse25_max": 0.001,
+    "late_W5_W6_harm_vs_sparse25_max": 0.001,
+    "W6_harm_vs_sparse25_max": 0.002,
+    "nonnegative_primary_windows_min": 3,
+    "N02_primary_fullsix_gain_vs_nosketch_min": 0.0,
+    "minimum_group_n": 200,
+    "minimum_each_class_n": 30,
+    "subgroup_f1_harm_max": 0.01,
+    "subgroup_positive_recall_harm_max": 0.03,
+    "scope": "fullsixprimary, eachW1..W6,lateW5+W6,pilotH12perorigin andpooled; fitdefinedquartiles; comparecandidateagainstsameoriginSparse25",
+    "risk_amendment": "Original recall guard.02 remains originalqualificationcriterion. For these TWO fixed benchmark recipes ONLY, allow explicit.03 ceiling, with allviolations of original.02 disclosed. This is a new risk policy, not a retrospective PASS."
+  },
+  "CLASS_ONLY_root_decision": "PREPARE_ONE_CSV_BENCHMARK_EXCEPTION: fullsixgain+.000687,late-.000237,W6+.001000,H12pooled+.000596 and64supportedguardsPASS. Still diagnostic-only historically, not originalqualified.",
+  "fit_budget": {
+    "existing_consumed": 30,
+    "phase_cap_unchanged": 60,
+    "planned_new_temporal_fits": 8,
+    "planned_new_fulltrain_candidate_fits_max": 2,
+    "planned_new_fits_max": 10,
+    "extra_control_refits_authorized": 0,
+    "technical_retries_max": 2,
+    "retry_category": "technical_retry; within originalcap4 and total60; atmostone retry perfailedfit after syntheticfix",
+    "reservation_category": "continuation",
+    "allocation_amendment": "Explicitly repurpose atmost2 unspentcontinuation slots for candidateFULLTRAIN benchmark fits; recordstageBENCHMARK_FULLTRAIN. Originalcategorycap24 andtotal60 unchanged. Priorcontinuation4 +new8+2=14. No pilotcap reset; no release/start duplicate; allstartedunsavedcounts."
+  },
+  "fulltrain_boundaries": {
+    "train": "official Classification Train50608rows cycle47-79 only",
+    "test": "official Classification Test29421rows cycle80-91 allowed ONLY after temporalselection for frozeninference andCSVverification",
+    "fit_population": "Exact originalrecipe allofficialTrain; do notchange topresent-only justbecause routepresent",
+    "controls": "Reuse fullTrain C2_B/CB/currentSparse25 attestedcomponentpredictions onlyafter Train/Testhash/ID/source/recipe/fitbounds checks. No new controlfits unless Sol laterapproves; cachecapabilityfailure blocksFULLTRAINonly, notindependenttemporalevaluation.",
+    "prohibited": [
+      "Testlabels",
+      "other-tasklabels",
+      "transductivepreprocessingfitonTest",
+      "threshold/weight/seedsearch",
+      "finalnotebooks",
+      "auto-championchange",
+      "push"
+    ]
+  },
+  "submission_budget": {
+    "this_batch_classification_max": 2,
+    "this_batch_regression_max": 0,
+    "upload_authorization": "No upload duringthismilestone. ReturnCSVQA/manifest/internalresults toSol; Sol decideseachupload. No duplicatefilenamehashupload; no Kagglepublic-basedtuning withinbatch."
+  },
+  "deliverables": [
+    "N02fullsixresults+allviewguards+independentverifier",
+    "CLASS_ONLYCSV+manifest+CSVQA",
+    "N02CSV+manifest+CSVQA onlyifbenchmarkgatespass",
+    "fitledgerreconciliation",
+    "one report distinguishingoriginalqualificationandbenchmarkexception"
+  ],
+  "input_sha256": {
+    "experiments/optimization_v3/research_next_v1/queue.json": "c22c13ea0ead142e32bfe7abc2655ec19c608d1f537db721e35dfc4c38b8eb45",
+    "experiments/optimization_v3/research_next_v1/frozen/N01/freeze.json": "ae40427eadd6a02d92bd1bc7b4c189e56867455129df50873653d735a4c3e437",
+    "experiments/optimization_v3/research_next_v1/frozen/N02/amendment_02/freeze.json": "dfa1671539afe4fb2d75718bbdfaa92d05de51759352d65fac741278777e8d87",
+    "reports/optimization_v3/research_next_v1/results/N01_CLASS_ONLY_DIAGNOSTIC/amendment_01/results.json": "d97346f926ed6c2ee45724e46a05b307741edce3e22b26994b4673d0560ddd99",
+    "reports/optimization_v3/research_next_v1/results/N01_CLASS_ONLY_DIAGNOSTIC/amendment_01/verification.json": "2023be585b36922f1aa9edac11c9d455f2fd699ed01371ed78f48117c839b1b2",
+    "reports/optimization_v3/research_next_v1/results/N01_N02_GUARD_AUDIT/amendment_01/results.json": "b91f4b56d87303b650faf44d20c1da40761b9eff744593457c6aacfd8326fd43",
+    "reports/optimization_v3/research_next_v1/results/N01_N02_GUARD_AUDIT/amendment_01/verification.json": "0f2db0ab52b28d5550111982534d8659f56833cb2b2c80f2b4e0ee54d7a6d8c9",
+    "data/raw/classification/Train.csv": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c"
+  },
+  "stop_and_return": "After prepared/verified outputs or documentedisolatedblocker, sendcompactresultandpaths toSolchat01a19569-16e0-7253-aa14-57a0a3160e03, thenwait fordecision. Do not keepfitting/uploading."
+}

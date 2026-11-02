@@ -1,0 +1,124 @@
+{
+  "id": "MEASURED_REG_MIDPOINT_V1",
+  "created_at_utc": "2026-11-02T01:43:00.285946+00:00",
+  "source_head": "1a59cce2dfaf47cf0df4202fdf60be1e4a49c952",
+  "recipe": ".5 * R06_ORIGINAL + .5 * R22_ORIGINAL; all rows; no routing change or reranking of mapped predictions",
+  "status": "FROZEN_BEFORE_NEW_MIDPOINT_OUTCOMES",
+  "prior_knowledge": "Adaptive development selected after previous45cards, fullsix component scores, N03 failure and knownhistoricalpublic scores. Public R06 best is secondary motivation, not evidence of paired internal benefit. No untouchedholdout claim.",
+  "origins": [
+    55,
+    59,
+    63,
+    67,
+    71,
+    75
+  ],
+  "primary_blocks": [
+    [
+      55,
+      56,
+      59
+    ],
+    [
+      59,
+      60,
+      63
+    ],
+    [
+      63,
+      64,
+      67
+    ],
+    [
+      67,
+      68,
+      71
+    ],
+    [
+      71,
+      72,
+      75
+    ],
+    [
+      75,
+      76,
+      79
+    ]
+  ],
+  "H12_blocks": [
+    [
+      55,
+      56,
+      67
+    ],
+    [
+      67,
+      68,
+      79
+    ]
+  ],
+  "primary_rows": 38588,
+  "H12_rows": 38588,
+  "late_rows": 15953,
+  "gates": {
+    "primary_gain_vs_R06_min": 0.02,
+    "primary_gain_vs_R22_min": 0.0,
+    "H12_harm_vs_each_component_max": 0.05,
+    "late_gain_vs_R06_min": 0.0,
+    "nonnegative_primary_windows_vs_R06_min": 4,
+    "individual_window_harm_vs_R06_max": 0.5,
+    "minimum_subgroup_n": 100,
+    "subgroup_harm_vs_each_baseline_max": 0.25,
+    "subgroup_baselines": [
+      "legacy",
+      "R06",
+      "R22"
+    ],
+    "subgroup_fields": [
+      "stream_missing",
+      "target_le5_evaluation_only",
+      "target_ge95_evaluation_only"
+    ],
+    "subgroup_scope": "each sixoriginprimarywindow, pooledprimary, lateprimary, H12origin55, H12origin67 andpooledH12",
+    "threshold_reason": "A .02 primary MAE hurdle is a deliberately conservative materiality/cost filter set before midpoint evaluation, not a significance test or a data-derived optimum."
+  },
+  "decision_policy": {
+    "allpass": "Candidate for one optional Regression benchmark after rootreviews independentQA andcurrentregistry; no automatic upload. MayderiveCSVfromattestedfullTraincomponentpredictions onlyifexactrecipes/inputhashesverified.",
+    "fail": "No midpoint submission or weight/route rescue; preserve outcome and close this recipe."
+  },
+  "input_sha256": {
+    "data/raw/regression/Train.csv": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+    "experiments/runs/optimization_v3_batch1/R22/R22_fit55.npz": "7978b1326d251586d226daeafaa6412626028964bdeedc4a9688e61f1db930d7",
+    "experiments/runs/optimization_v3_batch1/R22/R22_fit55.json": "ad60bac203748ea3d50c4b6f6b33b77e94de0a0507e1e293cd0ca4a364e49716",
+    "experiments/runs/optimization_v3_batch1/R06/R06_fit55.npz": "ed52cf9c8958b693e49e4c2999015babe35aa8f350fea28eb313e492f19e5dd6",
+    "experiments/runs/optimization_v3_batch1/R06/R06_fit55.json": "68e60624d79957075c755ac1c35bd40733d8b983cd2ec931b8186243de0100b0",
+    "experiments/runs/optimization_v3_final_continuation/R22/R22_fit59.npz": "3682bdb816f510adf3cb53bef81ba9545111e872ca277ced1f6da9a52826f600",
+    "experiments/runs/optimization_v3_final_continuation/R22/R22_fit59.json": "2b3b9616121a105adb170dc01b746b435e5e051732bb85d74e48c823f485cc9d",
+    "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit59.npz": "6d55cd7fa59662d54816ed4be16470a437af615b5e6544ec0ab15ce10dbcf849",
+    "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit59.json": "840addcfe5fb088d0df0e348b48ec11a86ccdff9392da8e7529c9e6f9e433ab7",
+    "experiments/runs/optimization_v3_final_continuation/R22/R22_fit63.npz": "fe3374619abcb514fa6d99b5187603897d33a70549bbe2c03e882456c8506b83",
+    "experiments/runs/optimization_v3_final_continuation/R22/R22_fit63.json": "5907965f2bd45a02fadcd59c6ab7e9a9c5216e41f73bf706fd097b5e4ad7489c",
+    "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit63.npz": "f6480ec474dbd9229b401eade141ff51a4bf911f68b10df14336b0a9b997c0c9",
+    "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit63.json": "0eecbe691404e56d38acce03630ac1339f38c50733ad60128624394894b4dea1",
+    "experiments/runs/optimization_v3_batch1/R22/R22_fit67.npz": "cf8e02933e4fc9138b378fa1352ee64625484c8795cbdecc34b9d9604bd1d722",
+    "experiments/runs/optimization_v3_batch1/R22/R22_fit67.json": "32ad552d372fe6f8024b65fadfd66354bf188565c64c8e4126923e1ce14537dd",
+    "experiments/runs/optimization_v3_batch1/R06/R06_fit67.npz": "4bda0ac6838388ea46ca768e0998f7b0f9a9a1b6defb2b1e5399f6ff83154804",
+    "experiments/runs/optimization_v3_batch1/R06/R06_fit67.json": "faa11f25bfd37fded8db5f84244ce306d6f2027dc153fb143560304fcf91da1e",
+    "experiments/runs/optimization_v3_final_continuation/R22/R22_fit71.npz": "5b5e6684a5afaaabf70afe6b253eb4f732bcdbcc7bdeb311a9f31561aa87d69b",
+    "experiments/runs/optimization_v3_final_continuation/R22/R22_fit71.json": "0846e8e6d57f19f14867532ac125b9aab6c89dc8541586d0627f9db603ccb4c1",
+    "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit71.npz": "47c97efd70dba87b8fd4187e31e85122d325528688553f7c9e8e6a81dcf58894",
+    "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit71.json": "f506ed8f0e97517d6af4d591d89e5cf4cea96640a47bb4d73235573f4c0b0aa8",
+    "experiments/runs/optimization_v3_final_continuation/R22/R22_fit75.npz": "91981eb993becda4d6f2cad33fabdb8348fdbc8891c04af90e13e6b58e492a36",
+    "experiments/runs/optimization_v3_final_continuation/R22/R22_fit75.json": "3925dd13f6b88f38dcb695b7332e2db67e876b6d745df6bbe913d502e28f7c8f",
+    "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit75.npz": "61ef463a5bf5ee06f3c68162b8a7f874664b2736161979342731de98b5e09abb",
+    "experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit75.json": "61f3ab25d1cbc954cb74f47bdf823cc72113b1a2e19394c61802da1bdba7ca45"
+  },
+  "official_new_fits": 0,
+  "boundaries": {
+    "Train_only": true,
+    "Test": false,
+    "Kaggle": false
+  },
+  "ledger_path": "experiments/runs/optimization_v3_research_next_v1/budget.jsonl",
+  "ledger_sha256_before": "e70b0e850b300b380c9c134532926a2317bd76803d23c571a2ab56978a6c0b8a"
+}
