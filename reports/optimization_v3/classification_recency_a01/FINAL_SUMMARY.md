@@ -1,8 +1,8 @@
 # A01 weighted recency classification — final review summary
 
-**Status:** `COMPLETE_REVIEW_REQUIRED`  
-**Frozen scientific verdict:** `NO_GO_GATE_FAILED`  
-**Campaign:** `CLASSIFICATION_RECENCY_A01`  
+**Status:** `COMPLETE_REVIEW_REQUIRED`
+**Frozen scientific verdict:** `NO_GO_GATE_FAILED`
+**Campaign:** `CLASSIFICATION_RECENCY_A01`
 **Review boundary:** stop after this A01 checkpoint. No continuation, Test inference, Kaggle submission, or other experiment was started.
 
 ## Question and frozen recipe
