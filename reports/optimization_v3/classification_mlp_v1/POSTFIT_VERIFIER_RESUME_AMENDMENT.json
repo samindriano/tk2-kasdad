@@ -1,0 +1,30 @@
+{
+  "amendment_id": "CLASSIFICATION_SPARSE_MLP_V1_POSTFIT_VERIFIER_RESUME",
+  "additional_estimator_fits": 0,
+  "authorized_scope": "Resume post-fit report verification only. The two originally planned MLP fit origins are terminal; do not refit or change their saved outputs.",
+  "frozen_before_verifier_retry": true,
+  "source_commit": "d9edf64b25d9ff1a00e266cbe440f5084b529dec",
+  "input_sha256": {
+    "reports/optimization_v3/classification_mlp_v1/POSTFIT_VERIFIER_CORRECTION.json": "6a97eccf12b7b4ad4758ca2b192229c0b2a7a6520a2a3bf4823027db1e218977",
+    "reports/optimization_v3/classification_mlp_v1/budget_snapshot.json": "c5475645537d29a26a381d7e958bc369585b528b60f68f9ecb48c1e00a21f14c",
+    "reports/optimization_v3/classification_mlp_v1/results.json": "2e4555100b16e78bf8e993dca5cafc8b0315d68beb1851dac0c558caee737273"
+  },
+  "observed_adapter_error": {
+    "message": "Recursive invocation after the runtime adapter replaced the verifier module attribute",
+    "occurrence": "during post-fit verifier retry; no estimator fit began and no experiment output or ledger event changed",
+    "outcome_blind": false
+  },
+  "original_freeze_signature": "46d9362cdf543b87af58653fe1666d79cbe13b4d012397d5f730b15959debd18",
+  "prior_postfit_correction_preserved": "reports/optimization_v3/classification_mlp_v1/POSTFIT_VERIFIER_CORRECTION.json",
+  "source_sha256": {
+    "scripts/optimization_v3_classification_sparse_mlp_v1_finalize_adapter.py": "5c49a307857fed263f0623e4bbdd685060142d86fecf95623c54648de0f281fd",
+    "scripts/optimization_v3_classification_sparse_mlp_v1_postfit_verify.py": "329a2023b8a83d29b70d03f2210472259c432556799f22303948ea6d81d9cce2",
+    "scripts/optimization_v3_classification_sparse_mlp_v1_recovery.py": "e70ddab1df49a53a96ee9983970ad82b4c68b2d233aaf2a13513d18d19e1e462",
+    "scripts/optimization_v3_classification_sparse_mlp_v1_recovery_verify.py": "8a60e39e2b2d057e3e1f763e10447379a2369ab406b777e9fc0a92304079f7b5",
+    "tests/test_optimization_v3_classification_sparse_mlp_v1_postfit_verify.py": "72ccc29a5c2b2e45dcd0c0ef49cbbb4d2aa0d8ffd6553c8bc3ae69b2c725d747"
+  },
+  "recipe_changed": false,
+  "test_read": false,
+  "sample_submission_read": false,
+  "kaggle_access": false
+}
