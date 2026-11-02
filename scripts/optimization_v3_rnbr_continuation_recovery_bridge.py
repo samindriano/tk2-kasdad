@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import subprocess
 import sys
 from typing import Any
 
@@ -102,9 +103,44 @@ def precheck_all_inherited_pilot_bundles() -> dict[str, Any]:
             "query_labels_read": False, "Test_or_SampleSubmission_opened": False}
 
 
+def verified_fit_source_commit(freeze: dict[str, Any]) -> str:
+    """Recover the immutable fit source commit from all six receipts and pin its code."""
+    fit_ids = [f"RNBR_CONT_E{origin}_{arm.upper()}"
+               for origin in runner.ORIGINS for arm in runner.ARMS]
+    source_commits: set[str] = set()
+    for fit_id in fit_ids:
+        _, receipt = runner.load_bundle(fit_id, freeze)
+        source = receipt.get("identity", {}).get("source_commit")
+        if not isinstance(source, str) or len(source) != 40:
+            raise BridgeError(f"Missing valid fit source commit in receipt: {fit_id}")
+        source_commits.add(source)
+    if len(source_commits) != 1:
+        raise BridgeError(f"Continuation receipts disagree on fit source commit: {sorted(source_commits)}")
+    source_commit = next(iter(source_commits))
+    try:
+        subprocess.run(["git", "merge-base", "--is-ancestor", source_commit, "HEAD"],
+                       cwd=ROOT, check=True, capture_output=True, text=True)
+    except subprocess.CalledProcessError as exc:
+        raise BridgeError("Fit source commit is not an ancestor of the current review checkpoint") from exc
+    pinned_paths = (
+        "scripts/optimization_v3_rnbr_continuation.py",
+        "scripts/optimization_v3_rnbr_continuation_verify.py",
+        "src/models/regression_neighbor_rnbr.py",
+        "experiments/optimization_v3/rnbr_continuation_v1/freeze.json",
+        "experiments/optimization_v3/rnbr_continuation_v1/protocol.json",
+    )
+    for relative in pinned_paths:
+        committed = subprocess.check_output(["git", "show", f"{source_commit}:{relative}"], cwd=ROOT)
+        current = (ROOT / relative).read_bytes()
+        if committed != current:
+            raise BridgeError(f"Frozen fit source differs from the recorded source commit: {relative}")
+    return source_commit
+
+
 def evaluate() -> dict[str, Any]:
     freeze = runner.load_freeze()
     safe_arrays, safe_receipt, bridge = load_verified_e67_observed()
+    fit_source_commit = verified_fit_source_commit(freeze)
     old_loader = pilot.load_bundle
 
     def load_with_recovered_e67(fit_id: str, pilot_freeze: Any, *, source_commit: str | None = None):
@@ -118,12 +154,13 @@ def evaluate() -> dict[str, Any]:
 
     pilot.load_bundle = load_with_recovered_e67
     try:
-        source_commit = pilot._run_git("rev-parse", "HEAD")
-        result = verifier.write_reports(freeze, source_commit)
+        bridge_commit = pilot._run_git("rev-parse", "HEAD")
+        result = verifier.write_reports(freeze, fit_source_commit)
     finally:
         pilot.load_bundle = old_loader
     out = ROOT / "reports/optimization_v3/rnbr_continuation_v1/recovery_bridge_verification.json"
-    payload = {"status": "PASS", "source_commit": source_commit,
+    payload = {"status": "PASS", "fit_source_commit": fit_source_commit,
+               "postfit_bridge_commit": bridge_commit,
                "bridge": bridge, "continuation_freeze_signature": freeze["freeze_signature"],
                "evaluation_status": result["status"], "gate_pass": result["gate_pass"],
                "query_targets_accessed_after_new_fits_verified": True}
