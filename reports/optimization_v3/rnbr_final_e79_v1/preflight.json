@@ -1,0 +1,81 @@
+{
+  "status": "PASS",
+  "target_columns_loaded": false,
+  "test_labels_loaded": false,
+  "classification_labels_or_probabilities_read": false,
+  "train_rows": 50608,
+  "train_cycle_range": [
+    47,
+    79
+  ],
+  "donor_rows": 36010,
+  "donor_present_stream_rows": 36010,
+  "donor_cycles": [
+    56,
+    79
+  ],
+  "test_rows": 29421,
+  "test_cycles": [
+    80,
+    91
+  ],
+  "test_ids_and_shared_features_aligned_by_explicit_one_to_one_id_map": true,
+  "sample_schema": [
+    "record_id",
+    "threat_rank"
+  ],
+  "r06_test_manifest": {
+    "manifest_sha256": "3f77e4ac148ada5fb79e5e2c16e7975e77726f4bfcc42a29f9234f801c697d67",
+    "npz_sha256": "ce034e82a7063ec5dd873b1126d60731dd291d3852c57936c7aa1ee449a81eba",
+    "csv_sha256": "4a72b13e0d6ac93e18adee23010bb15ddf15fcb2a9543dc903154d5af60ee64f",
+    "prediction_sha256": "eb032101ec3b363e5e2f12d7f34f5b272b7e39cb9cad8fca001350384b857c3e",
+    "cycle_code_sha256": "910cb3b5fc8d5aac6e2ad6fbd8f22966be8442de75ac89b35a1fbe1abe9d8fe5",
+    "rows": 29421,
+    "test_ids_bound_through_manifest_csv_order": true
+  },
+  "r06_oof_cutoffs_loaded": [
+    55,
+    59,
+    63,
+    67,
+    71,
+    75
+  ],
+  "a02_text_space_audit": {
+    "card_id": "CLASSIFICATION_A02_NEIGHBOR_RESIDUAL",
+    "origin_cycle": 75,
+    "fit_rows": 42117,
+    "fit_row_positions_sha256": "e733031bb45eac2f1f55b94e45bc7161c1e80801f85564a25a289758100e2bc9",
+    "fit_documents_sha256": "e4537b03354f313cdd6440f86555530e18617fc89cda2e8509cea0aeffb0d554",
+    "tfidf_parameters": {
+      "ngram_range": [
+        1,
+        2
+      ],
+      "min_df": 3,
+      "max_df": 0.995,
+      "max_features": 20000,
+      "sublinear_tf": true,
+      "lowercase": true,
+      "strip_accents": "unicode",
+      "dtype": "float64"
+    },
+    "tfidf_norm": "l2",
+    "tfidf_vocabulary_size": 20000,
+    "vocabulary_sha256": "2603bf8ba90f509ccc81a4155159e7683b0a3660d7c2c0602ba49ee291266083",
+    "idf_sha256": "68fc4caea39a15a0ce7e79869ddab4ae6c239b4ae86ba10c3c01dfa1770980b5",
+    "text_only_cosine": true
+  },
+  "vectorizer_extracted_hash": "a697aefb71096e4f379764d8022d273d22b9a42845b72a03c5444abcc8b784b8",
+  "resource_preflight": {
+    "available_ram_bytes": 13055102976,
+    "free_disk_bytes": 16725458944,
+    "estimated_peak_bytes": 3221225472,
+    "job_rss_cap_bytes": 6442450944,
+    "reserve_bytes": 2147483648,
+    "threads": 2,
+    "concurrent_jobs": 1
+  },
+  "preparation_code_commit": "cb8fef2481af27e754ad6994c747937228f0841e",
+  "created_at_utc": "2026-11-02T20:13:04.566999+00:00"
+}
