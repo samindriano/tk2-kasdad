@@ -1,0 +1,81 @@
+{
+  "freeze_signature": "7a25187fc6a486f474f709882c11419c43a54384b23ff76d4f6787cd43a57093",
+  "identity": {
+    "amendment_id": "FULLTRAIN_RETRY_AMENDMENT_01",
+    "budget_before_retry": {
+      "active_reserved": 39,
+      "authorized_cap": 60,
+      "category_reservations": {
+        "continuation": 13,
+        "control_replay": 0,
+        "pilot": 30,
+        "technical_retry": 0
+      },
+      "event_rows": 99,
+      "failed_or_interrupted_started": 1,
+      "released_unused": 4,
+      "remaining_capacity_after_reservations": 17,
+      "reserved_total": 43,
+      "saved": 38,
+      "started_and_consumed": 39
+    },
+    "kaggle_called": false,
+    "official_input_sha256": {
+      "sample": "889f97d69659a64945421d841dcf96e5813020606f29b2992d4b9560cecdcba7",
+      "test": "4e6c381d582ed24f92d17f620f4f0ad25e2e0def29eb57a91a5482867f6afe3c",
+      "train": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c"
+    },
+    "official_test_ordered_ids_sha256": "0e325676d1e91ac8d594390a6fa44bee70270da489cdcb323b6fc8bff66f01ea",
+    "official_train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "original_failed_fit": {
+      "event": {
+        "at_utc": "2026-11-02T02:18:24.132394+00:00",
+        "batch_id": "optimization_v3_research_next_v1",
+        "card_id": "MEASURED_CLASS_ONLY",
+        "cutoff": 79,
+        "error": "BundleContractError: Missing required arrays: ['baseline_prediction']",
+        "event": "FIT_FAILED",
+        "fit_id": "MEASURED_CLASS_ONLY_FULLTRAIN",
+        "receipt_sha256": null,
+        "reservation_key": "MEASURED_CLASS_ONLY:BENCHMARK_FULLTRAIN",
+        "stage": "BENCHMARK_FULLTRAIN"
+      },
+      "fit_id": "MEASURED_CLASS_ONLY_FULLTRAIN"
+    },
+    "parent_freeze_sha256": "b756a20064230eaf822b7843cc6c07ef1ccb8d6f672d277c2dd522db4648a15d",
+    "parent_freeze_signature": "ff1a6a97235a4b2e2d276b2af86f7be834a512aee3ee919f236f9f1911e56651",
+    "prepared_at_head": "e2dc5e8ef3ba94a10f73f4bd271975e6798f0dc2",
+    "protocol_sha256": "be8e1e1516927204ffcacef5a72702b819d97d06c8d4bedbff5002492e167c8d",
+    "recovery_audit": {
+      "attested_frozen_c2b_cb_sparse25_controls_remain_available": true,
+      "expert_raw_prediction_artifact_exists": false,
+      "original_class_only_csv_exists": false,
+      "original_class_only_manifest_exists": false,
+      "original_class_only_retry_bundle_exists": false,
+      "original_fulltrain_model_bundle_exists": false,
+      "original_runner_process_completed_with_exception": true,
+      "recovery_conclusion": "the reused baselines are recoverable, but the newly fitted ClassOnly estimator and its raw Test probabilities were never persisted; one technical retry is required"
+    },
+    "retry_source_sha256": {
+      "scripts/optimization_v3_measured_classification_retry.py": "edb8d620317ec02edb305dab1fbc76331ac9bf9d0c7205ac660e85a7d10e2405",
+      "scripts/optimization_v3_measured_classification_retry_verify.py": "6f397d021dc1c6d7c2be641bc46d27a8c35cfc53e9eb5904cb663d95ccc15c7e",
+      "tests/test_optimization_v3_measured_classification_retry.py": "3444553e3a1b44a8ac2dc68215d67a2059cf51858eb6dd33d7b985f8d0947290"
+    },
+    "schema_version": 1,
+    "status": "FROZEN_TECHNICAL_RETRY_ONLY",
+    "synthetic_preflight_sha256": "44dfd4b9ef03974388c6e9bef90c34ab37288098eb60f2cc3d3ca784334fcefa",
+    "technical_retry": {
+      "blend": "present .75 C2_B + .25 class-only sparse expert; missing frozen CB_MISSING",
+      "card_id": "MEASURED_CLASS_ONLY_TECHNICAL_RETRY_01",
+      "category": "technical_retry",
+      "estimator": "N01 exact class_only sparse recipe; full official Train cycles 47-79",
+      "fit_id": "MEASURED_CLASS_ONLY_FULLTRAIN_RETRY_01",
+      "maximum_fits": 1,
+      "only_change": "persist the existing comparison baseline in the required baseline_prediction bundle field",
+      "recipe_unchanged": true,
+      "stage": "BENCHMARK_FULLTRAIN_TECHNICAL_RETRY",
+      "threshold": 0.5
+    },
+    "temporal_result_sha256": "7682ff435b9f24bdd451481e5cd918441374391435dc4110482d98ec2c6faef2"
+  }
+}
