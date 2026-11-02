@@ -1,0 +1,138 @@
+{
+  "id": "CLASSIFICATION_NEXT_V1",
+  "status": "ROOT_DECISION_READY_TO_IMPLEMENT_NOT_RUN",
+  "source_head": "031905ec04608012bef149f4bbc43955deba16ff",
+  "created_at_utc": "2026-11-02T06:19:20.732554+00:00",
+  "prior_knowledge": "Adaptive research selected after prior45cards/ResearchNext and user-confirmed CLASS_ONLY public.82774. New C19 continuation and treeTTR outcomes notyet computed. No untouchedholdout claim.",
+  "goal": "Find predictive improvements beyond operating-point shifts while retaining sparse25 currentchampion. No publicthreshold/weight tuning.",
+  "data_boundaries": {
+    "research": "OfficialClassificationTrain only",
+    "raw_Test": "Only for one C19 finalCSV after frozenbenchmarkgatespass; noTestlabels; Train-onlylearnedpreprocessing",
+    "other_task_labels": false,
+    "notebooks": "untouched",
+    "Kaggle_uploads": 0,
+    "final_selected_entries": "untouched"
+  },
+  "control": {
+    "recipe": "v3_cls_sparse25, threshold.50, original C2_B/sparse25 present and frozenCB missing",
+    "public_previous_verified": 0.82908,
+    "CLASS_ONLY_public_user_confirmed": 0.82774,
+    "CLASS_ONLY_upload_authorization": "already consumed; do not upload again; receipt reference/method need reconciliation"
+  },
+  "order": [
+    "Receipt_reconciliation",
+    "C19_CONTINUATION",
+    "TREE_TTR_PILOT",
+    "QA_and_return"
+  ],
+  "lanes": {
+    "C19_CONTINUATION": {
+      "kind": "Benchmarkexception continuation ofexactoldC19; originalRETIRE remains",
+      "source_recipe": "experiments/optimization_v3/batch1/C19/recipe.json",
+      "source_freeze": "experiments/optimization_v3/batch1/C19/freeze.json",
+      "recipe": "ExactXGBbinarylogistic600trees_depth4_lr.05_minchild20_lambda5_colsample.8_subsample1_seed42_threads2 on original structured/OHE+fit-onlyTFIDF/SVD32 design. Reuse sourceparameters, no parametersearch.",
+      "route": "present:.75currentSparse25_probability+.25C19_raw; missing:frozenCB exactly; threshold.50",
+      "reuse_origins": [
+        55,
+        67
+      ],
+      "new_origins": [
+        59,
+        63,
+        71,
+        75
+      ],
+      "new_score_horizon": "exactnext4cycles, only55/67inheritedH12",
+      "new_temporal_fits": 4,
+      "gates": {
+        "primary_fullsix_gain_min": 0.0005,
+        "H12_pooled_gain_min": 0.002,
+        "H12_origin67_gain_min": 0.001,
+        "late_W5W6_harm_max": 0.0005,
+        "W6_harm_max": 0.001,
+        "nonnegative_primary_windows_min": 4,
+        "minimum_group_n": 200,
+        "minimum_each_class_n": 30,
+        "group_F1_harm_max": 0.01,
+        "group_positive_recall_harm_max": 0.03,
+        "scope": "eachW1..W6,pooledprimary,lateW5W6,inheritedH12perorigin+pooled; fitdefinedtext_loadquartiles. Original.02recallfailures mustalso bereported."
+      },
+      "pilot_zero_fit_gate_before_newfits": "VerifyoriginalC19pilotmetrics/arrays/sourcecomposition andall-viewsubgroups againstbenchmark.03recall/.01F1safety. Ifunsupported/corruptsharedcontrol blockdependents; ifscientificsafetyfails, reportNO_GO instead oftraining.",
+      "if_pass": "PrepareONE fullTrainC19CSV+manifest usingexactrecipe, max1newfullTrainexpertfit andattestedexistingfullTraincontrols. No upload.",
+      "if_fail": "No C19fullTrain,CSV,recipe rescue orupload; reportnegative andcontinueindependentTTRpilot."
+    },
+    "TREE_TTR_PILOT": {
+      "kind": "New conditional feature mechanism, not rescue ofclassweighting",
+      "question": "DoesTTR addpredictiveinformation beyond exacttoken_count inoriginal sparseLightGBM allowingnonlinearinteractions?",
+      "counterevidence": "42fit priorLRablation hybridTTR increments nearzero/negative; association alone doesnotguaranteeprediction.",
+      "base_source": "src/models/optimization_v3_sparse_classification.py originalSparseTextBoostClassifier/PARAMS; sameTFIDF,structured,fitpopulationandhyperparameters,unweighted",
+      "arms": {
+        "count_control": "appendexacttoken_countonly",
+        "TTR_candidate": "appendexacttoken_countandTTRonly"
+      },
+      "text_rule": {
+        "tokenizer": "lowercase regex [A-Za-z0-9]+, same asformalEDA",
+        "token_count": "len(tokens); null/empty/punctuation-only=>0",
+        "TTR": "len(set(tokens))/len(tokens) ifn>0 elseNaN; preserveundefined, useLightGBMnativeNaNhandling, no newimputedindicator/extra transforms",
+        "operation": "deterministic row-local; no learnedvocabulary orlabels; TFIDFtokenizerunchanged"
+      },
+      "feature_block": "Originalsparsedesign remainsbyte/schemaequivalent; append CSRfloat64 scalarcolumns afterexistingblocks, no densification",
+      "route": "present:.75frozenC2_B+.25newexpert; missing:frozenCBexactly; threshold.50",
+      "origins": [
+        55,
+        67
+      ],
+      "fits": 4,
+      "reusebaseline": "verifiedoriginalsparse25/C2_B/CB predictioncaches; no additionalbaselinefits authorized",
+      "gates": {
+        "primary_gain_vs_sparse25_min": 0.0005,
+        "primary_gain_vs_countonly_min": 0.0002,
+        "H12_harm_vs_sparse25_max": 0.001,
+        "individual_W1W4_harm_max": 0.005,
+        "group_F1_harm_max": 0.01,
+        "group_positive_recall_harm_max": 0.02,
+        "minimum_group_n": 200,
+        "minimum_each_class_n": 30,
+        "scope": "pooledprimary,eachW1/W4,H12eachoriginandpooled; samefitonlyquartiles. ReportROC_AUC/AP/logloss/Brier descriptively, not tuningcriteria."
+      },
+      "stop": "After4pilotfits+independentQAreturn; no automaticcontinuation/fullTrain/Testinference/CSV/upload evenifpilotpass."
+    }
+  },
+  "fit_budget": {
+    "phase_cap_unchanged": 60,
+    "existing_consumed": 40,
+    "original_failed_fit_remains_consumed": true,
+    "planned_C19_continuation": 4,
+    "planned_TTR_pilot": 4,
+    "planned_C19_fullTrain_max": 1,
+    "planned_new_fits_max": 9,
+    "technical_retry_max_new": 1,
+    "expected_total_max_without_retry": 49,
+    "expected_total_max_with_retry": 50,
+    "category": "continuation for9plannedfits: prior13+9=22 <=originalcap24. Explicitly repurpose4unspentcontinuationslots forTTR NEW_PILOT; recordtrue stage. Technicalretry usesoriginalcategory withprior1+max1=2<=4. No additionalcontrolfits orcapreset.",
+    "ledger_note": "Gross44-resolved4release=40active/started; helperreportedremaining16 isgross-based, not20unconsumed. Reconcileappend-onlynetbudget without changingpast events."
+  },
+  "implementation_contract": [
+    "Newwrappersnamespaceclassification_next; noeditfrozen models/protocols",
+    "Completeexactpayloadbuilder synthetic fit/predict/publish/read/reconstruct/report/resume/failureinjection before firstofficialfit",
+    "Everypredictionbundle hasbaseline_prediction; explicitly distinguishprobability vs hardlabel fields",
+    "CSVbytewriter handlesCSVbytes,JSONwriter handlesJSON only; integerdtype readback comparessemantics",
+    "Savefittedstate/rawprobabilitiesdurably BEFOREoptionalreport/CSV stages, recoverwithoutrefit",
+    "Onejob,2threads,6GiBcap,2GiBreserve; fullTrainpreflightbeforefirstpilot",
+    "Independentmetric/group/sourceverification notsamehelpercalledtwice",
+    "Per-fit immediatepersistence andidempotentreservation; frozenstableidentityexcludeschangingHEAD/resource/time/ledger",
+    "Historicalcache reads directverifiedNPZ; do not invokeoldtrainingbudget/contextloader unnecessarily"
+  ],
+  "delivery": "C19fullsix+H12/subgroup+propermetrics, TTRpilotmatchedcontrast+guards, optionalC19CSVQA/manifest onlyifpass, reconciliationCLASS_ONLYComplete.82774,one reportactualledger+commit. ReturntoSol thenSTOP; Soldecidessubmission later.",
+  "input_sha256": {
+    "data/raw/classification/Train.csv": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "experiments/optimization_v3/batch1/C19/recipe.json": "8e585c5111b63b864da5451f3a66dcbe9a3286dc4912cc3cb2e26f5b329118f4",
+    "experiments/optimization_v3/batch1/C19/freeze.json": "8a62b5b5d1e9ba0b75403275432574c6a33f0238e6e803418eddd57af0a377fd",
+    "reports/optimization_v3/batch1/C19/gate.json": "37a71af0715836e48aff02e1c1b48f9f95876496eab610f99460915c3da02c87",
+    "reports/optimization_v3/batch1/C19/verification.json": "34ea30eeec25bd348f7e90a2ed75c0b40a93391e0276ffc39aa61bb9930290ed",
+    "src/models/optimization_v3_sparse_classification.py": "fb5b013fa59d0b748a3386dae90cb14789a0b4cbd9a5c7a115d5ddc3c443d5a3",
+    "reports/classification_ttr/FINDINGS.md": "c4f7826e2d8cdba269e619346ae7275b152c63b6fee42ba7c24d187e3b57c27c",
+    "reports/optimization_v3/classification_next_v1/CLASS_ONLY_POSTMORTEM.json": "5b538cc91865bc7dcfd32db0a5b58f58202aa94e03ebbab96d12649bb70ccd6c",
+    "reports/optimization_v3/classification_next_v1/C19_DIAGNOSTIC.json": "266ee240f6a0af07a3a131426548da453741372bd66983dc06f634fca0a75658"
+  }
+}
