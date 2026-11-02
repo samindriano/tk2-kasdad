@@ -4,9 +4,9 @@
 **Risk review:** no hold flag
 **Conditional final eligible:** True
 
-The three continuation origins (59, 63, 71) produce 21,033 previously used development rows. They add new origin-specific predictions, not an untouched holdout. The 38,588-row full-six view includes an exact C16 fallback at W1 and the already verified A02 pilot predictions at W4/W6.
+The three continuation origins (59, 63, 71) produce 21,033 previously used development rows. They add new origin-specific predictions, not an untouched holdout. The 38,588-row full-six view includes the exact Sparse25 fallback through the C16 cache bridge at W1 and the already verified A02 pilot predictions at W4/W6.
 
-| View | Rows | Baseline Macro F1 | Observed Macro F1 | Δ vs baseline | Δ vs matched shuffle |
+| View | Rows | Sparse25 (C16 cache bridge) Macro F1 | A02 observed Macro F1 | Δ vs Sparse25 | Δ vs matched shuffle |
 |---|---:|---:|---:|---:|---:|
 | W1 | 4,114 | 0.803160 | 0.803160 | +0.000000 | +0.000000 |
 | W2 | 6,493 | 0.851618 | 0.854591 | +0.002972 | +0.002715 |
@@ -23,4 +23,10 @@ H12-L is inherited pilot evidence and reuses development rows. Full per-cycle, s
 
 The endpoint log-loss diagnostic reports manual clipping at 1e-15 separately from scikit-learn's default dtype epsilon. Predictions were not clipped or recalibrated for analysis. The route remains a predictive association; it is not causal.
 
-No Test/SampleSubmission was accessed in the continuation evaluation. A final origin-79 fit/inference is allowed only if all frozen gates pass and no risk-review hold is present.
+The continuation evaluation did not access Test or SampleSubmission. After all frozen gates passed with no risk-review hold, the authorized conditional origin-79 full-Train fit and Test inference were completed; see `FINAL_HANDOFF.md` for lineage and boundaries.
+
+## Submission status — user-reported manual upload
+
+Samuel later pasted a Kaggle submissions-page screenshot in the Sol chat showing `a02_continuation.csv` as **Complete** with public Macro F1 **0.82930**. The screenshot showed account Samuel Indriano and relative time “now”; it did not show a submission message, exact timestamp, submission reference, or server-side file hash. This is recorded as user-reported evidence only, not live/API verification.
+
+The previously reported Sparse25 public Macro F1 is 0.82908, so A02 is the **best observed public result among the reported entries**, by +0.00022. This small leaderboard difference is not a private-score or generalization guarantee and does not automatically select the final academic champion. The local CSV hash was rechecked against the unchanged preparation manifest. The manifest intentionally remains a historical `PREPARED_VALIDATED_NOT_SUBMITTED` snapshot; the later upload receipt supersedes that status. The single A02 upload is consumed; do not upload it again. See `submission_receipts.jsonl` for the receipt and unknown fields.
