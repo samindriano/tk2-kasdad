@@ -1,0 +1,70 @@
+{
+  "status": "PASS",
+  "candidate_id": "A02_LEXICAL_NEIGHBOR_RESIDUAL_CONTINUATION",
+  "source_commit": "31a8c275de8a69df05444ab4ec01e1f2c9b23941",
+  "protocol_sha256": "b4438d953441e566f8107e7f40c4ef6bfa2bb504dea871d9783c88e36a9fcb96",
+  "freeze_signature": "93a2f388673e5cbb2fde60364fd0121918695ecb908c9b2c9c8b91e239de54e6",
+  "checks": {
+    "freeze_sources_inputs_and_budget_amendment": true,
+    "all_six_oof_caches_and_route_reconstructed": true,
+    "three_new_origin_banks_and_temporal_bounds": true,
+    "six_model_states_receipts_and_prediction_hashes": true,
+    "independent_tfidf_cosine_top32_ties_residuals_and_route": true,
+    "observed_and_shuffled_neighbor_geometry_identical": true,
+    "official_train_labels_joined_by_score_rows": true,
+    "npz_labels_not_used_as_ground_truth": true,
+    "full_six_fallback_and_pilot_reuse_verified": true,
+    "conditional_final_not_started_during_continuation": true
+  },
+  "new_continuation_fit_ids": [
+    "A02_CONT_E59_OBSERVED",
+    "A02_CONT_E59_SHUFFLED",
+    "A02_CONT_E63_OBSERVED",
+    "A02_CONT_E63_SHUFFLED",
+    "A02_CONT_E71_OBSERVED",
+    "A02_CONT_E71_SHUFFLED"
+  ],
+  "new_continuation_fits_started_saved_failed": {
+    "started": 6,
+    "saved": 6,
+    "failed": 0
+  },
+  "budget_accounting": {
+    "amendment_id": "A02_CONTINUATION_CAP66_2026_11_02",
+    "global_cap": 66,
+    "effective_caps": {
+      "pilot": 34,
+      "continuation": 31,
+      "control_replay": 0,
+      "technical_retry": 1
+    },
+    "event_rows": 169,
+    "started": 65,
+    "active_reserved": 65,
+    "active_reservations_by_category": {
+      "pilot": 34,
+      "continuation": 30,
+      "control_replay": 0,
+      "technical_retry": 1
+    },
+    "released_unused_total": 4,
+    "remaining_fit_capacity": 1
+  },
+  "gate_summary": {
+    "checks": {
+      "new_aggregate_vs_baseline": true,
+      "new_aggregate_vs_matched_shuffle": true,
+      "at_least_two_new_windows_nonnegative": true,
+      "no_new_window_harm_gt_0_003": true,
+      "full_six_vs_baseline_nonnegative": true,
+      "full_six_vs_matched_shuffle_nonnegative": true,
+      "late_harm_at_most_0_001": true,
+      "inherited_H12_L_vs_baseline": true,
+      "inherited_H12_L_vs_matched_shuffle": true
+    },
+    "scientific_status": "PASS",
+    "risk_review_hold": false,
+    "conditional_final_eligible": true,
+    "failed_checks": []
+  }
+}
