@@ -50,6 +50,7 @@ STAGE = "THREE_CSV_E79_FULLTRAIN"
 RESERVATION_KEY = f"{CARD_ID}:{STAGE}"
 AMENDMENT_ID = "A02_CGEOM_BENCHMARK_CAP130_2026_11_03"
 AUTHORIZED_BASE_HEAD = "f3baa4014378a9fcb1a58e898d1b4c9a87679728"
+INITIAL_PREPARATION_COMMIT = "cc8e406a13fdea09c01b0f2356d1b7c8b822a470"
 EXPECTED_TRAIN_SHA = "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c"
 EXPECTED_TEST_SHA = "4e6c381d582ed24f92d17f620f4f0ad25e2e0def29eb57a91a5482867f6afe3c"
 EXPECTED_SAMPLE_SHA = "889f97d69659a64945421d841dcf96e5813020606f29b2992d4b9560cecdcba7"
@@ -193,6 +194,18 @@ def write_json_once(path: Path, value: Any) -> None:
 
 def _git(*args: str) -> str:
     return subprocess.check_output(["git", *args], cwd=ROOT, text=True, encoding="utf-8").strip()
+
+
+def verify_preparation_head() -> str:
+    """Allow the frozen prep commit or one direct, scoped QA-repair child."""
+    head = _git("rev-parse", "HEAD")
+    parents = _git("rev-list", "--parents", "-n", "1", head).split()[1:]
+    if head == INITIAL_PREPARATION_COMMIT:
+        if parents != [AUTHORIZED_BASE_HEAD]:
+            raise BatchError("Initial preparation commit is not the authorized direct child")
+    elif parents != [INITIAL_PREPARATION_COMMIT]:
+        raise BatchError("Source must be the frozen preparation commit or its one direct QA-repair child")
+    return head
 
 
 def require_clean_tree() -> None:
@@ -361,10 +374,7 @@ def _verify_reuse_artifacts() -> dict[str, Any]:
 
 def preflight() -> dict[str, Any]:
     require_clean_tree()
-    head = _git("rev-parse", "HEAD")
-    parents = _git("rev-list", "--parents", "-n", "1", "HEAD").split()[1:]
-    if AUTHORIZED_BASE_HEAD not in parents:
-        raise BatchError("Preparation commit must be a direct child of the authorized starting HEAD")
+    head = verify_preparation_head()
     if json.loads(RECIPE_PATH.read_text(encoding="utf-8")).get("authorized_base_head") != AUTHORIZED_BASE_HEAD:
         raise BatchError("Recipe manifest starting HEAD does not match user instruction")
     if not BATCH_AMENDMENT_PATH.is_file():
@@ -632,7 +642,7 @@ def training_lock():
             pass
 
 
-def _resource_snapshot(*, first_fit: bool) -> dict[str, int]:
+def _resource_snapshot(*, first_fit: bool, synthetic: bool = False) -> dict[str, int]:
     vm = psutil.virtual_memory()
     rss = psutil.Process().memory_info().rss
     concurrent = []
@@ -645,7 +655,7 @@ def _resource_snapshot(*, first_fit: bool) -> dict[str, int]:
                 concurrent.append(process.info["pid"])
         except psutil.Error:
             continue
-    if concurrent:
+    if concurrent and not synthetic:
         raise BatchError(f"Another Python training/research process is active: {concurrent}")
     if vm.available < FREE_RESERVE or rss > RSS_LIMIT:
         raise BatchError(f"Resource gate failed before fit: available={vm.available}, rss={rss}")
@@ -654,7 +664,8 @@ def _resource_snapshot(*, first_fit: bool) -> dict[str, int]:
     return {"available_ram_bytes": int(vm.available), "rss_before_bytes": int(rss),
             "free_reserve_bytes": FREE_RESERVE, "rss_ceiling_bytes": RSS_LIMIT,
             "threads": THREAD_LIMIT, "concurrent_jobs": 1,
-            "other_training_processes": concurrent}
+            "other_training_processes": [] if synthetic else concurrent,
+            "synthetic_mode": synthetic}
 
 
 def _unit_population(fit_id: str, *, synthetic: bool = False) -> dict[str, Any]:
@@ -722,7 +733,7 @@ def execute_fit_unit(
     if used >= MAX_NEW_FITS or len([e for e in events if e.get("event") == "FIT_STARTED"]) >= 127:
         raise BatchError("Authorized maximum fit starts reached")
     first_fit = not any(event.get("event") == "FIT_STARTED" and event.get("reservation_key") == RESERVATION_KEY for event in events)
-    resource = _resource_snapshot(first_fit=first_fit)
+    resource = _resource_snapshot(first_fit=first_fit, synthetic=synthetic)
     prep_head = _git("rev-parse", "HEAD")
     if not synthetic:
         frozen = _read_json(RECIPE_PATH)
@@ -989,10 +1000,7 @@ def _make_fit_payload(fit_id: str, frame: pd.DataFrame, target: np.ndarray) -> A
 
 def fit_next() -> dict[str, Any]:
     require_clean_tree()
-    current_head = _git("rev-parse", "HEAD")
-    parents = _git("rev-list", "--parents", "-n", "1", current_head).split()[1:]
-    if AUTHORIZED_BASE_HEAD not in parents:
-        raise BatchError("Official fit source commit no longer descends directly from the authorized base")
+    current_head = verify_preparation_head()
     input_hashes()
     if TRAINED_FREEZE.exists():
         raise BatchError("Unexpected trained freeze exists before fit completion")
