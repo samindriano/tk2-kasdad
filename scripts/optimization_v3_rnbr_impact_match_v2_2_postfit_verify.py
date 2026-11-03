@@ -125,6 +125,46 @@ def _validate_memory_receipt_hashes(memory_saves: list[dict[str, Any]]) -> list[
     return result
 
 
+def validate_persisted_verifier_reports(verification: Mapping[str, Any],
+                                        results: Mapping[str, Any],
+                                        expected_freeze_signature: str) -> None:
+    if (verification.get("status") != "PASS"
+            or verification.get("freeze_signature") != expected_freeze_signature
+            or verification.get("query_targets_read_after_integrity") is not True
+            or verification.get("test_or_sample_submission_opened") is not False
+            or verification.get("kaggle_accessed") is not False):
+        raise PostfitVerificationError("Persisted independent verification receipt is incomplete or mismatched")
+    accounting = verification.get("accounting", {})
+    if (accounting.get("status") != "PASS" or accounting.get("replay_started") != 2
+            or accounting.get("replay_saved") != 2 or accounting.get("memory_started") != 4
+            or accounting.get("memory_saved") != 4 or accounting.get("memory_failed") != 0
+            or accounting.get("snapshot") != runner._ledger_snapshot()):
+        raise PostfitVerificationError("Persisted independent verification accounting differs from live ledger")
+    if (results.get("pilot_id") != "RNBR_IMPACT_MATCH_V2_2_DIAGNOSTIC_ONLY"
+            or results.get("source_commit") != FIT_SOURCE_COMMIT
+            or results.get("freeze_signature") != expected_freeze_signature
+            or results.get("status") not in {"DIAGNOSTIC_ONLY_GATES_PASS", "DIAGNOSTIC_ONLY_GATES_FAIL"}
+            or results.get("qualification", "").find("diagnostic-only") < 0
+            or results.get("preflight", {}).get("status") != "PASS"
+            or results.get("integrity", {}).get("ledger_accounting", {}).get("status") != "PASS"):
+        raise PostfitVerificationError("Persisted independent results are not the expected diagnostic-only report")
+
+
+def _load_persisted_verifier_reports(freeze_signature: str) -> Mapping[str, Any] | None:
+    paths = (verifier.VERIFY_PATH, verifier.RESULTS_PATH, verifier.SUMMARY_PATH)
+    existing = [path.is_file() for path in paths]
+    if not any(existing):
+        return None
+    if not all(existing):
+        raise PostfitVerificationError("Persisted independent verifier output set is incomplete; refusing implicit rerun")
+    verification = runner._read_json(verifier.VERIFY_PATH)
+    results = runner._read_json(verifier.RESULTS_PATH)
+    validate_persisted_verifier_reports(verification, results, freeze_signature)
+    if "Four fit accounting: 4 started, 4 saved, 0 failed." not in verifier.SUMMARY_PATH.read_text(encoding="utf-8"):
+        raise PostfitVerificationError("Persisted summary does not describe the four completed memory fits")
+    return results
+
+
 def validate_view_cycles_row_order_aware(geometry: Mapping[int, Mapping[str, np.ndarray]]) -> None:
     """Check cycle membership while preserving original Train row order."""
     expected = {67: set(range(68, 80)), 75: set(range(76, 80))}
@@ -244,18 +284,26 @@ def verify_postfit() -> dict[str, Any]:
     row_identity = validate_geometry_row_identity(geometry, train, impacts)
     del frame, docs, impacts, geometry, train
 
-    original_current_freeze = runner._current_freeze
-    original_view_validator = verifier._validate_view_assignments
-    original_numpy = verifier.np
-    try:
-        runner._current_freeze = lambda: (freeze, protocol, preflight)
-        verifier._validate_view_assignments = validate_view_cycles_row_order_aware
-        verifier.np = _NumpyArrayEqualCompatibility()
-        results = verifier.verify_all()
-    finally:
-        runner._current_freeze = original_current_freeze
-        verifier._validate_view_assignments = original_view_validator
-        verifier.np = original_numpy
+    results = _load_persisted_verifier_reports(freeze["freeze_signature"])
+    reused_persisted_reports = results is not None
+    if results is None:
+        original_current_freeze = runner._current_freeze
+        original_view_validator = verifier._validate_view_assignments
+        original_numpy = verifier.np
+        try:
+            runner._current_freeze = lambda: (freeze, protocol, preflight)
+            verifier._validate_view_assignments = validate_view_cycles_row_order_aware
+            verifier.np = _NumpyArrayEqualCompatibility()
+            results = verifier.verify_all()
+        finally:
+            runner._current_freeze = original_current_freeze
+            verifier._validate_view_assignments = original_view_validator
+            verifier.np = original_numpy
+    else:
+        # The full frozen verifier completed and persisted these reports before
+        # the earlier wrapper run hit a post-verification path-name error.
+        # Validate and reuse them; do not repeat the expensive reconstruction.
+        pass
 
     ledger_sha_after = runner._sha_file(runner.LEDGER)
     if ledger_sha_after != ledger_sha_before:
@@ -274,9 +322,15 @@ def verify_postfit() -> dict[str, Any]:
         "verified_bundle_hashes": bundle_hashes,
         "geometry_row_identity": row_identity,
         "automatic_verification_recovery": {
-            "reason": "frozen pre-memory replay guard expected 79/76 after all four fits were saved",
+            "reason": [
+                "frozen pre-memory replay guard expected 79/76 after all four fits were saved",
+                "frozen cycle-order assertion assumed cycle-sorted rows although original Train row order is not sorted",
+                "NumPy equal_nan comparison was unsupported for string ID arrays",
+            ],
             "frozen_runner_or_recipe_modified": False,
+            "frozen_verifier_modified": False,
             "actual_ledger_values_preserved_for_independent_verifier": True,
+            "completed_reports_reused_after_wrapper_path_fix": reused_persisted_reports,
         },
         "view_order_assumption_correction": {
             "frozen_verifier_or_geometry_modified": False,
@@ -291,7 +345,7 @@ def verify_postfit() -> dict[str, Any]:
             "numeric_equal_nan_comparisons_preserved": True,
         },
         "independent_result_status": results["status"],
-        "independent_result_path": runner.RESULTS_PATH.relative_to(runner.ROOT).as_posix(),
+        "independent_result_path": verifier.RESULTS_PATH.relative_to(runner.ROOT).as_posix(),
         "independent_verification_path": verifier.VERIFY_PATH.relative_to(runner.ROOT).as_posix(),
         "ledger_sha256_before": ledger_sha_before,
         "ledger_sha256_after": ledger_sha_after,

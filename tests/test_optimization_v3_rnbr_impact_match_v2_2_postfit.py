@@ -8,6 +8,7 @@ from scripts.optimization_v3_rnbr_impact_match_v2_2_postfit_verify import (
     _NumpyArrayEqualCompatibility,
     validate_geometry_row_identity,
     validate_postfit_ledger,
+    validate_persisted_verifier_reports,
     validate_view_cycles_row_order_aware,
 )
 from scripts import optimization_v3_rnbr_impact_match_v2 as runner
@@ -135,3 +136,29 @@ def test_numpy_compatibility_compares_ids_and_preserves_numeric_nan_semantics():
     assert not equal(np.asarray(["A", "B"]), np.asarray(["B", "A"]), equal_nan=True)
     assert equal(np.asarray([np.nan]), np.asarray([np.nan]), equal_nan=True)
     assert not equal(np.asarray([np.nan]), np.asarray([np.nan]), equal_nan=False)
+
+
+def test_persisted_verification_report_pair_requires_complete_four_fit_evidence():
+    freeze_signature = "f" * 64
+    verification = {
+        "status": "PASS", "freeze_signature": freeze_signature,
+        "query_targets_read_after_integrity": True,
+        "test_or_sample_submission_opened": False, "kaggle_accessed": False,
+        "accounting": {"status": "PASS", "replay_started": 2, "replay_saved": 2,
+                       "memory_started": 4, "memory_saved": 4, "memory_failed": 0,
+                       "snapshot": runner._ledger_snapshot()},
+    }
+    results = {
+        "status": "DIAGNOSTIC_ONLY_GATES_FAIL",
+        "pilot_id": "RNBR_IMPACT_MATCH_V2_2_DIAGNOSTIC_ONLY",
+        "source_commit": FIT_SOURCE_COMMIT,
+        "freeze_signature": freeze_signature,
+        "qualification": "diagnostic-only; never eligible for continuation",
+        "preflight": {"status": "PASS"},
+        "integrity": {"ledger_accounting": {"status": "PASS"}},
+    }
+    validate_persisted_verifier_reports(verification, results, freeze_signature)
+
+    partial = {**verification, "accounting": {**verification["accounting"], "memory_saved": 3}}
+    with pytest.raises(PostfitVerificationError):
+        validate_persisted_verifier_reports(partial, results, freeze_signature)
