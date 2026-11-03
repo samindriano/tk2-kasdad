@@ -1,0 +1,149 @@
+{
+  "a02_cached_test_predictions_sha256": "c267a4b998aca64982b6f63b10bedb2f3b3061007166db7731d221788ac89e47",
+  "a02_model_sha256": "2791eddf410c7e81b119bde2a0b1d33a694eed4de84027c61cee97f6668dcb6e",
+  "adapter_commit": "8f6a43010160f0bc2b9adfa714712cf9788690a3",
+  "adapter_path": "scripts/optimization_v3_a02_cgeom_inference_adapter_r1.py",
+  "adapter_sha256": "582dc5bba30e0a15f9654ed64281df7b1950212334ec806f53fc80b6c9200488",
+  "approved_single_expression_change": {
+    "model_outputs_and_cached_arrays_changed": false,
+    "new_consumer_expression": "result[\"correction_unclipped\"]",
+    "old_consumer_expression": "result[\"correction_raw\"]"
+  },
+  "batch_manifest_sha256": "eefa6f081ae7bb74ea25052dfe8843ffe1b3cfe838ba154c38ef7c8a84728fc4",
+  "batch_report_sha256": "e5fbe39cc0fc420402a85781010f1452a4f2edfadc5d6571184d15c6d5d1d6aa",
+  "created_at_utc": "2026-11-03T17:26:59.922616+00:00",
+  "csv_verification_status": "PASS_THREE_CSVS_AND_SIX_ID_INTEGRATION_BUDGET_VERIFIED",
+  "csvs": {
+    "CGEOM_ALIGNED": {
+      "columns": [
+        "record_id",
+        "artifact_signal"
+      ],
+      "label_counts": {
+        "0": 22711,
+        "1": 6710
+      },
+      "ordered_ids_sha256": "66caf01502777c1e0575a03e5c940815ff0963b58bc28347f1a5e710c7714c28",
+      "path": "submissions/optimization_v3/a02_cgeom_benchmark_v1/classification_cgeom_aligned_e79.csv",
+      "rows": 29421,
+      "sha256": "edcf3e1289498af5d37b475c23eb7bf087f357c8119e27f3a6b9ed02c91142b8"
+    },
+    "JOINTPOS": {
+      "columns": [
+        "record_id",
+        "artifact_signal"
+      ],
+      "label_counts": {
+        "0": 22597,
+        "1": 6824
+      },
+      "ordered_ids_sha256": "66caf01502777c1e0575a03e5c940815ff0963b58bc28347f1a5e710c7714c28",
+      "path": "submissions/optimization_v3/a02_cgeom_benchmark_v1/classification_jointpos_e79.csv",
+      "rows": 29421,
+      "sha256": "76be1f7b31a4e252141eb464504977da63284d0248e6d378263532a5fad09fe9"
+    },
+    "POS_BAG_OFFSET": {
+      "columns": [
+        "record_id",
+        "artifact_signal"
+      ],
+      "label_counts": {
+        "0": 22531,
+        "1": 6890
+      },
+      "ordered_ids_sha256": "66caf01502777c1e0575a03e5c940815ff0963b58bc28347f1a5e710c7714c28",
+      "path": "submissions/optimization_v3/a02_cgeom_benchmark_v1/classification_posoffset_e79.csv",
+      "rows": 29421,
+      "sha256": "3c7cf1aadcbf3e234264a6080b4c00416660c90a343cd73728dd0e978f8bc945"
+    }
+  },
+  "derived_helper_sha256": "cac04b69555a99d2cac7177861069cdf7cb3a199bf2420e4cc0bf581e5f6955f",
+  "frozen_helper_sha256": "2c7a41f577e87d358337c8cabfb74e130793782661da760d15c60d3b511205d5",
+  "frozen_runner_sha256": "d6af3f3e18787c9cd1e5c52b1463fb30e18398cee6e3dc838e5227cf30a50a3f",
+  "frozen_source_commit": "ec3a16d3a2fd89858fd0c77fd1aa7ced02a8ee8a",
+  "inference_receipt_sha256": "b6dd5b86501b3d20a8e5465b154e1959967620fc0ac5d06161f3b34bfbb93228",
+  "kaggle_contacted": false,
+  "official_inputs_sha256": {
+    "data/raw/classification/SampleSubmission.csv": "889f97d69659a64945421d841dcf96e5813020606f29b2992d4b9560cecdcba7",
+    "data/raw/classification/Test.csv": "4e6c381d582ed24f92d17f620f4f0ad25e2e0def29eb57a91a5482867f6afe3c",
+    "data/raw/classification/Train.csv": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c"
+  },
+  "predict_contract_audit": {
+    "a02": {
+      "consumed_correction_key": "correction_unclipped",
+      "correction_raw_key_present": false,
+      "model_type": "src.models.classification_a02_neighbors.ResidualNeighborPredictor",
+      "predict_return_keys": [
+        "baseline_probability",
+        "candidate_probability",
+        "correction",
+        "correction_unclipped",
+        "neighbor_count",
+        "neighbor_source_rows",
+        "neighbor_ids",
+        "neighbor_similarities",
+        "diagnostics"
+      ],
+      "predict_signature": "(self, query_texts: 'Sequence[Any] | pd.Series', query_record_ids: 'Sequence[Any]', query_row_positions: 'Any', query_cycles: 'Any', baseline_probabilities: 'Any', *, missing_mask: 'Any | None' = None) -> 'dict[str, Any]'",
+      "saved_test_prediction_keys": [
+        "baseline_probability",
+        "candidate_probability",
+        "correction",
+        "correction_unclipped",
+        "labels",
+        "missing_mask",
+        "neighbor_count",
+        "neighbor_ids",
+        "neighbor_similarities",
+        "neighbor_source_rows",
+        "record_ids"
+      ]
+    },
+    "cgeom": {
+      "consumed_return_keys": [
+        "candidate_probability",
+        "correction",
+        "neighbor_count",
+        "neighbor_source_rows",
+        "neighbor_ids",
+        "neighbor_similarities"
+      ],
+      "correction_raw_key_preserved": true,
+      "model_type": "src.models.a02_coefficient_geometry_v1.CoefficientGeometryPredictor",
+      "predict_return_keys": [
+        "candidate_probability",
+        "baseline_probability",
+        "original_a02_probability",
+        "m0",
+        "neighbor_count",
+        "neighbor_source_rows",
+        "neighbor_ids",
+        "neighbor_similarities",
+        "neighbor_weights",
+        "new_cosine_squared_mass",
+        "correction_raw",
+        "correction",
+        "missing_mask",
+        "query_rows",
+        "query_cycles",
+        "query_record_ids",
+        "diagnostics"
+      ],
+      "predict_signature": "(self, *, query_texts: 'Sequence[Any]', query_record_ids: 'Sequence[Any]', query_row_positions: 'Any', query_cycles: 'Any', baseline_probabilities: 'Any', original_a02_probabilities: 'Any', original_a02_neighbor_source_rows: 'Any', original_a02_neighbor_similarities: 'Any', missing_mask: 'Any') -> 'dict[str, Any]'"
+    },
+    "other_inference_calls": {
+      "joint_logistic": "predict_proba and decision_function; outputs compared in formula audit",
+      "positional_gamma": "offset_probability plus direct sigmoid formula; outputs compared in formula audit",
+      "structured_logistic": "predict_proba and decision_function; both outputs are checked against class order / formula"
+    },
+    "status": "PASS_ACTUAL_MODEL_PREDICT_SIGNATURE_AND_RETURN_KEY_AUDIT"
+  },
+  "prediction_bundle_sha256": "ffc55aa2d18b75438257f3cf0aa205baa3f4c2922180e2b3688b36c352c00271",
+  "receipt_writer_commit": "9189e6366c0557468698fd68865b5c6ca91872ee",
+  "receipt_writer_sha256": "534b61d563ff91369e55a34a4eece324b562add8f668d72007b96c5a1440b411",
+  "schema_version": 1,
+  "status": "PASS_INFERENCE_ADAPTER_AND_OUTPUTS_BOUND",
+  "test_targets_loaded": false,
+  "trained_freeze_sha256": "ab0307e6e1c9778ed0f091a3d6ed55e0ac8705ae31b9cb29b9f083e46b5c2b82",
+  "upload_performed": false
+}
