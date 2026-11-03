@@ -257,6 +257,7 @@ def _validate_training_lineage(frozen: Mapping[str, Any]) -> dict[str, Any]:
         "amendment_source_git_blob_sha256": amendment_blob_hashes,
         "training_source_git_blob_sha256": training_blob_hashes,
         "authorization_git_blob_sha256": sha256_bytes(auth_blob),
+        "current_saved_inputs_validation": saved_inputs,
     }
 
 
@@ -442,7 +443,7 @@ def validate_baseline() -> tuple[dict[str, Any], dict[str, Any], dict[str, str]]
         "frozen": frozen, "ready_path": ready_path, "ready_sha256": pilot._sha256_file(ready_path),
         "ready": ready, "blocker_sha256": pilot._sha256_file(POSTFIT_BLOCKER),
         "synthetic_qa_sha256": pilot._sha256_file(ORIGINAL_RUN_ROOT / "SYNTHETIC_QA.json"),
-        "current_saved_inputs_validation": saved_inputs,
+        "current_saved_inputs_validation": amend_sources["current_saved_inputs_validation"],
         "ledger": fit_accounting,
     }
     return original, fit_accounting, amend_sources
