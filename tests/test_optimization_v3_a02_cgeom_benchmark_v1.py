@@ -4,6 +4,7 @@ import tempfile
 from pathlib import Path
 
 import numpy as np
+import pytest
 from scipy import sparse
 from sklearn.ensemble import HistGradientBoostingClassifier
 
@@ -166,17 +167,97 @@ def test_initial_budget_contract_and_recipe_freeze_are_exact() -> None:
         assert snapshot["fit_pending"] == 0
         assert len(events) == 303
     else:
-        # Resume QA after an official unit has started: validate the frozen
-        # reservation and exact event accounting without expecting a reset ledger.
+        # Hash-fix QA validates the exact Sol checkpoint without rewriting/resetting history.
         events = runner.read_events(runner.LEDGER)
         snapshot = runner._batch_budget_status(events)
-        assert snapshot["global_cap"] == runner.AMENDED_CAP
-        assert snapshot["fit_starts"] == 118 + sum(
-            event.get("event") == "FIT_STARTED" and event.get("reservation_key") == runner.RESERVATION_KEY
-            for event in events
-        )
+        assert runner.sha256_file(runner.LEDGER) == runner.RESUME_LEDGER_SHA
+        assert snapshot["global_cap"] == runner.HASHFIX_BASE_CAP
+        assert snapshot["fit_starts"] == runner.RESUME_STARTS
+        assert snapshot["fit_saved"] == runner.RESUME_SAVED
+        assert snapshot["fit_failed"] == runner.RESUME_FAILED
         assert snapshot["fit_pending"] == 0
     recipe = runner._read_json(runner.RECIPE_PATH)
     assert recipe["fit_budget"]["maximum_new_units"] == 9
     assert recipe["fit_budget"]["global_cap"] == {"before": 121, "after": 130}
     assert recipe["fit_budget"]["continuation_cap"] == {"before": 38, "after": 47}
+
+
+def test_a02_row_position_hash_uses_declared_raw_little_endian_algorithm() -> None:
+    positions = np.arange(50_608, dtype="<i8")
+    expected = "b3412a08e9f0877cc37ef9615479de0d182a21b9806068c2d576ed06ae495bb2"
+    digest = runner._a02_row_positions_sha256(positions)
+    assert digest == expected
+    assert digest == a02._array_sha256(positions, "<i8")
+    assert digest != runner.positional.sha256_array(positions)
+
+    altered = positions.copy()
+    altered[-1] += 1
+    assert runner._a02_row_positions_sha256(altered) != digest
+    with pytest.raises(ValueError):
+        runner._a02_row_positions_sha256(positions[::-1])
+
+
+def test_independent_prediction_formula_and_availability_route_audit() -> None:
+    baseline = np.asarray([0.2, 0.4, 0.6])
+    missing = np.asarray([True, False, False])
+    fallback = np.asarray([0.8, 0.8, 0.8])
+    offset = np.asarray([0.1, 0.3, 0.5])
+    joint = np.asarray([0.2, 0.25, 0.6])
+    correction = np.asarray([0.0, -0.1, 0.2])
+    cgeom = np.clip(baseline + correction, 0.0, 1.0)
+    audit = runner._audit_prediction_formulas(
+        baseline=baseline, missing=missing, fallback=fallback,
+        offset_direct=offset, offset_formula=offset.copy(), offset_routed=np.asarray([0.8, 0.3, 0.5]),
+        joint_direct=joint, joint_formula=joint.copy(), joint_routed=np.asarray([0.8, 0.25, 0.6]),
+        cgeom_probability=cgeom, cgeom_correction=correction,
+        cgeom_neighbor_count=np.asarray([0, 2, 1]),
+    )
+    assert audit["status"] == "PASS"
+    assert audit["cgeom_fallback_rows"] == 1
+
+    bad_route = runner._audit_prediction_formulas(
+        baseline=baseline, missing=missing, fallback=fallback,
+        offset_direct=offset, offset_formula=offset.copy(), offset_routed=offset,
+        joint_direct=joint, joint_formula=joint.copy(), joint_routed=np.asarray([0.8, 0.25, 0.6]),
+        cgeom_probability=cgeom, cgeom_correction=correction,
+        cgeom_neighbor_count=np.asarray([0, 2, 1]),
+    )
+    assert bad_route["status"] == "FAIL"
+
+
+def test_hashfix_budget_adds_only_one_id_and_preserves_original_checkpoint() -> None:
+    events = runner.read_events(runner.LEDGER)
+    events.extend([
+        {
+            "event": "BUDGET_CAP_AMENDMENT",
+            "amendment_id": runner.HASHFIX_AMENDMENT_ID,
+            "prior_global_cap": runner.HASHFIX_BASE_CAP,
+            "global_cap": runner.HASHFIX_AMENDED_CAP,
+            "prior_effective_caps": runner.HASHFIX_BASE_CATEGORY_CAPS,
+            "effective_caps": runner.HASHFIX_AMENDED_CATEGORY_CAPS,
+            "pre_amendment_ledger_sha256": runner.RESUME_LEDGER_SHA,
+            "maximum_replacement_fit_units": 1,
+            "maximum_total_starts": runner.MAX_BATCH_STARTS,
+            "replaces_failed_fit_id": runner.FAILED_ORIGINAL_LR_ID,
+            "replacement_fit_id": runner.HASHFIX_REPLACEMENT_ID,
+            "original_failure_and_consumed_slot_preserved": True,
+        },
+        {
+            "event": "CARD_FITS_RESERVED",
+            "reservation_key": runner.HASHFIX_RESERVATION_KEY,
+            "card_id": runner.CARD_ID,
+            "stage": runner.HASHFIX_REPLACEMENT_STAGE,
+            "category": "continuation",
+            "fits": 1,
+            "fit_ids": [runner.HASHFIX_REPLACEMENT_ID],
+        },
+    ])
+    status = runner._batch_budget_status(events)
+    assert status["global_cap"] == 131
+    assert status["active_reservations"] == 128
+    assert status["active_reservations_by_category"]["continuation"] == 48
+    assert status["fit_starts"] == 122
+    assert status["fit_saved"] == 117
+    assert status["fit_failed"] == 5
+    assert len(status["not_started_original_ids"]) == 5
+    assert status["not_started_replacement_id"] == [runner.HASHFIX_REPLACEMENT_ID]

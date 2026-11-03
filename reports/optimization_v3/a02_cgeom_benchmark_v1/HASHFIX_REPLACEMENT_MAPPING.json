@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "status": "AUTHORIZED_SINGLE_PRE_ESTIMATOR_HASH_CHECK_REPLACEMENT",
+  "authorization": "SOL_HASH_FIX_REPLACEMENT_AUTHORIZATION.md",
+  "authorization_commit": "6cffd8044b164fe9167ea2d76b8e727357cdfd98",
+  "source_checkpoint_commit": "4480f74ac909da4641fb9278dd9b536f66d8889d",
+  "original_failed_fit_id": "A02_CGEOM_BENCHMARK_V1_E79_C2B_LR",
+  "original_failed_event_sha256": "666a4382c6fa42a3ab49c5208ef5954589a8952c716560543d906ff9bda2de1f",
+  "original_failure_preserved": true,
+  "original_fit_slot_remains_consumed": true,
+  "single_authorized_replacement_fit_id": "A02_CGEOM_BENCHMARK_V1_E79_C2B_LR_HASHFIX_R1",
+  "replacement_dependency_slot": "C2_B_LOGISTIC_REGRESSION",
+  "downstream_mapping": {
+    "POS_BAG_OFFSET_GAMMA": "replacement C2_B LogisticRegression",
+    "JOINTPOS_LR": "replacement C2_B LogisticRegression recipe base",
+    "CGEOM_ALIGNED_PREDICTOR": "replacement C2_B text coefficient mapping"
+  },
+  "saved_preprocessing_artifacts_reused_without_refit": {
+    "A02_CGEOM_BENCHMARK_V1_E79_C2B_STRUCTURED": {
+      "preparation_commit": "88ae68653a02898051a2ac12f780e8b12ec9c2d4",
+      "artifact_sha256": "3347262f1df86a70011bebe01e8ec7df38bff1aedf0da8edbf30ab4d4c3a537a"
+    },
+    "A02_CGEOM_BENCHMARK_V1_E79_C2B_SCALER": {
+      "preparation_commit": "4480f74ac909da4641fb9278dd9b536f66d8889d",
+      "artifact_sha256": "d45db93e7a02c7b3c2662347d0b2b31a87838df3080b0b6150856c75df4883d9"
+    },
+    "A02_CGEOM_BENCHMARK_V1_E79_C2B_OHE": {
+      "preparation_commit": "4480f74ac909da4641fb9278dd9b536f66d8889d",
+      "artifact_sha256": "85c6f0f7fb4b318d3ffd11bff5f4944cba8a7ea1124355b493d0e92509c3bb77"
+    }
+  },
+  "hash_correction": {
+    "source_field": "A02TextSpace.fit_row_positions_sha256",
+    "algorithm": "SHA256 over raw contiguous bytes of canonical little-endian int64 row positions",
+    "implementation": "classification_a02_neighbors._array_sha256(rows, '<i8')",
+    "model_recipe_changed": false,
+    "vectorizer_refit": false,
+    "preprocessing_or_threshold_changed": false
+  },
+  "replacement_budget": {
+    "global_cap": {"before": 130, "after": 131},
+    "continuation_cap": {"before": 47, "after": 48},
+    "replacement_fits_reserved": 1,
+    "total_batch_fit_starts_maximum": 128,
+    "original_five_unstarted_fit_ids_re_reserved": false,
+    "additional_retry_authorized": false
+  },
+  "submission": {"upload": false, "kaggle_contacted": false}
+}
