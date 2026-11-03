@@ -5,6 +5,7 @@ from scripts.optimization_v3_rnbr_impact_match_v2_2_postfit_verify import (
     EXPECTED_SNAPSHOT,
     FIT_SOURCE_COMMIT,
     PostfitVerificationError,
+    _NumpyArrayEqualCompatibility,
     validate_geometry_row_identity,
     validate_postfit_ledger,
     validate_view_cycles_row_order_aware,
@@ -126,3 +127,11 @@ def test_geometry_row_identity_rejects_swapped_query_and_neighbor_ids():
     swapped_neighbor[67]["neighbor_ids"][0, 0] = "wrong-donor"
     with pytest.raises(PostfitVerificationError):
         validate_geometry_row_identity(swapped_neighbor, train, impacts)
+
+
+def test_numpy_compatibility_compares_ids_and_preserves_numeric_nan_semantics():
+    equal = _NumpyArrayEqualCompatibility.array_equal
+    assert equal(np.asarray(["A", "B"]), np.asarray(["A", "B"]), equal_nan=True)
+    assert not equal(np.asarray(["A", "B"]), np.asarray(["B", "A"]), equal_nan=True)
+    assert equal(np.asarray([np.nan]), np.asarray([np.nan]), equal_nan=True)
+    assert not equal(np.asarray([np.nan]), np.asarray([np.nan]), equal_nan=False)

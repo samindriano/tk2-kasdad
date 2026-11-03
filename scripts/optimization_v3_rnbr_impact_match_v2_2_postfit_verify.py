@@ -34,6 +34,21 @@ class PostfitVerificationError(RuntimeError):
     pass
 
 
+class _NumpyArrayEqualCompatibility:
+    """Delegate NumPy APIs but avoid equal_nan on string/object ID arrays."""
+
+    def __getattr__(self, name: str):
+        return getattr(np, name)
+
+    @staticmethod
+    def array_equal(left, right, *, equal_nan: bool = False) -> bool:
+        left_array = np.asarray(left)
+        right_array = np.asarray(right)
+        if equal_nan and (left_array.dtype.kind in "OUS" or right_array.dtype.kind in "OUS"):
+            return bool(np.array_equal(left_array, right_array))
+        return bool(np.array_equal(left_array, right_array, equal_nan=equal_nan))
+
+
 def _events_for(events: list[dict[str, Any]], event_name: str, reservation_key: str) -> list[dict[str, Any]]:
     return [event for event in events if event.get("event") == event_name
             and event.get("reservation_key") == reservation_key]
@@ -231,13 +246,16 @@ def verify_postfit() -> dict[str, Any]:
 
     original_current_freeze = runner._current_freeze
     original_view_validator = verifier._validate_view_assignments
+    original_numpy = verifier.np
     try:
         runner._current_freeze = lambda: (freeze, protocol, preflight)
         verifier._validate_view_assignments = validate_view_cycles_row_order_aware
+        verifier.np = _NumpyArrayEqualCompatibility()
         results = verifier.verify_all()
     finally:
         runner._current_freeze = original_current_freeze
         verifier._validate_view_assignments = original_view_validator
+        verifier.np = original_numpy
 
     ledger_sha_after = runner._sha_file(runner.LEDGER)
     if ledger_sha_after != ledger_sha_before:
@@ -266,6 +284,11 @@ def verify_postfit() -> dict[str, Any]:
             "cycle_membership_and_bounds_checked": True,
             "independent_rowwise_train_join_checked_before_metric_evaluation": True,
             "vectorizer_row_identity": "frozen replay audits and independent verifier recompute text geometry at exact official Train row positions",
+        },
+        "verifier_array_comparison_compatibility": {
+            "frozen_verifier_modified": False,
+            "string_or_object_ids_compared_exactly": True,
+            "numeric_equal_nan_comparisons_preserved": True,
         },
         "independent_result_status": results["status"],
         "independent_result_path": runner.RESULTS_PATH.relative_to(runner.ROOT).as_posix(),
