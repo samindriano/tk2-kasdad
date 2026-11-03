@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "protocol_id": "RNBR_TARGET_MEDIAN_V1",
+  "status": "FROZEN_FOR_BOUNDED_PILOT",
+  "question": "Does a shrunk local cosine-squared weighted median of past Regression targets improve on the origin-matched R06 forecast?",
+  "origins": [67, 75],
+  "fit_arms": ["observed", "shuffled_target_control"],
+  "fit_count": 4,
+  "fit_semantics": "one donor-target memory construction for each origin x arm; no estimator or preprocessing refit",
+  "source_data": "Official Regression Train only",
+  "donors": "signal_stream-present rows in cycles 56 through the origin; target-free original text-only top-32 positive-cosine geometry",
+  "queries": {
+    "E67": "all Train rows in cycles 68-79; W4 is cycles 68-71; H12 is cycles 68-79",
+    "E75": "all Train rows in cycles 76-79; W6 is cycles 76-79"
+  },
+  "candidate": {
+    "local_statistic": "weighted_median(threat_rank_donor, cosine^2)",
+    "tie_rule": "stable order by target then source row; duplicate target weights grouped; exact half mass returns midpoint to next distinct target",
+    "delta": "clip(0.25 * (local_target_median - R06_origin_query_prediction), -5, +5)",
+    "prediction": "clip(R06_origin_query_prediction + delta, 0, 100)",
+    "fallback": "exact R06_origin_query_prediction for missing signal_stream or fewer than five positive-cosine neighbors",
+    "postprocessing": "no rerank"
+  },
+  "matched_control": {
+    "target_shuffle_cells": "exact donor cycle x fixed R06 prediction decile",
+    "fixed_decile": "min(9, floor(clip(R06_OOF_donor_prediction, 0, 100) / 10))",
+    "traversal": "ascending cycle, decile, then official Train source row",
+    "seed": 42,
+    "reset_per_origin": true,
+    "same_geometry_and_candidate_formula": true,
+    "not_reused": "historical shuffled-residual predictions"
+  },
+  "preflight": {
+    "minimum_supported_present_coverage": 0.95,
+    "minimum_shuffle_source_movement": 0.8,
+    "target_reads": "none before preflight and synthetic lifecycle pass"
+  },
+  "decision_gates": {
+    "W4_gain_vs_R06_at_least": 0.0,
+    "W6_gain_vs_R06_at_least": 0.0,
+    "pooled_W4_W6_gain_vs_R06_at_least": 0.03,
+    "H12_E67_gain_vs_R06_at_least": 0.0,
+    "pooled_gain_vs_matched_target_shuffle_at_least": 0.01,
+    "H12_gain_vs_matched_target_shuffle_at_least": 0.0,
+    "pooled_gain_vs_original_RNBR_at_least": 0.03,
+    "H12_gain_vs_original_RNBR_at_least": 0.0,
+    "protected_groups": ["signal_stream_missing", "threat_rank_le_5", "threat_rank_ge_95"],
+    "protected_group_max_harm_vs_R06": 0.25,
+    "protected_group_min_n": 100,
+    "missing_group_must_equal_R06": true,
+    "all_integrity_and_accounting_checks_must_pass": true
+  },
+  "interpretation_limits": [
+    "A pass is pilot-only and does not qualify continuation or authorize submission.",
+    "A fail retires this functional without a rescue grid.",
+    "All development rows and public feedback are adaptive; no independent holdout claim.",
+    "H12 overlaps W4 and is an additional fixed-origin diagnostic, not an independent sample.",
+    "Protected target subgroups are evaluation-only and never used for fitting or routing."
+  ],
+  "prohibited": [
+    "Test or SampleSubmission access",
+    "Kaggle access or submission",
+    "full A02 model unpickle",
+    "Classification labels or probabilities",
+    "new preprocessing, R06, or base-model fits",
+    "retry or refund of a started memory fit",
+    "weight, threshold, seed, cap, or recipe search",
+    "full-Train refit",
+    "push or edits to historical sources"
+  ],
+  "resource_policy": {
+    "jobs": 1,
+    "threads": 2,
+    "process_rss_max_bytes": 6442450944,
+    "free_ram_min_bytes": 2147483648,
+    "max_concurrent_memory_fits": 1
+  },
+  "budget_amendment": {
+    "amendment_id": "RNBR_TARGET_MEDIAN_CAP87_V1_2026_11_03",
+    "prior_global_cap": 83,
+    "global_cap": 87,
+    "prior_effective_caps": {"pilot": 42, "continuation": 38, "control_replay": 2, "technical_retry": 1},
+    "effective_caps": {"pilot": 46, "continuation": 38, "control_replay": 2, "technical_retry": 1},
+    "reservation_fits": 4,
+    "category": "pilot"
+  }
+}

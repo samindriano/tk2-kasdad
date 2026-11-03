@@ -1,0 +1,71 @@
+{
+  "status": "PASS_SYNTHETIC_END_TO_END",
+  "target_or_test_data_accessed": false,
+  "fit_ledger_used": "temporary_copy_only",
+  "live_ledger_sha256_before_after": {
+    "before": "26745b805f7fca86b1d154e7f3f42a7004e3aec6a32c5001fa7abb505aadea04",
+    "after": "26745b805f7fca86b1d154e7f3f42a7004e3aec6a32c5001fa7abb505aadea04"
+  },
+  "live_ledger_unchanged": true,
+  "direct_target_median": 60.0,
+  "residual_median_distinguishing_case": 20.0,
+  "direct_prediction_distinguishing_case": 52.5,
+  "residual_prediction_distinguishing_case": 55.0,
+  "seed42_shuffle_fraction_moved": 1.0,
+  "synthetic_fit_starts_and_saves": {
+    "starts": 4,
+    "saved": 4,
+    "pending": 0
+  },
+  "resume_added_starts": 0,
+  "temporary_bundle_npz_hashes": {
+    "RNBR_TARGET_MEDIAN_V1_E67_OBSERVED": "a5e37e509c4445d4eff265e2eea96fd3c3457a663f53df7bd63d8a4cdfe7d80d",
+    "RNBR_TARGET_MEDIAN_V1_E67_SHUFFLED": "25da1771a4dd76f31cb7541bb5f023a2751bc9612d5bcaf701cd25af28404584",
+    "RNBR_TARGET_MEDIAN_V1_E75_OBSERVED": "a78a83600c40b0c7a1ac95d3104cf22f46e0dc3eeddb9a24d098d51530505b1c",
+    "RNBR_TARGET_MEDIAN_V1_E75_SHUFFLED": "405cd2748360aee276f087371c2be085eee2df5a303feaa03dfa5a1d1283b6e3"
+  },
+  "temporary_budget_reservation": {
+    "snapshot": {
+      "event_rows": 218,
+      "global_cap": 87,
+      "effective_category_caps": {
+        "continuation": 38,
+        "control_replay": 2,
+        "pilot": 46,
+        "technical_retry": 1
+      },
+      "active_reservations_by_category": {
+        "continuation": 38,
+        "control_replay": 2,
+        "pilot": 46,
+        "technical_retry": 1
+      },
+      "active_reservations": 87,
+      "fit_starts": 83,
+      "fit_saved": 80,
+      "fit_failed": 3,
+      "fit_pending": 0
+    },
+    "ledger_sha256": "ad9ae29164a548f8c6ca3bd8f3f6c5ed93c7df13ef7fd3ce7552b95e64051695",
+    "amendment_id": "RNBR_TARGET_MEDIAN_CAP87_V1_2026_11_03",
+    "reservation_key": "REGRESSION_RNBR_TARGET_MEDIAN_V1:FOUR_FIT_TARGET_MEDIAN_MEMORY_PILOT",
+    "fit_ids": [
+      "RNBR_TARGET_MEDIAN_V1_E67_OBSERVED",
+      "RNBR_TARGET_MEDIAN_V1_E67_SHUFFLED",
+      "RNBR_TARGET_MEDIAN_V1_E75_OBSERVED",
+      "RNBR_TARGET_MEDIAN_V1_E75_SHUFFLED"
+    ]
+  },
+  "assertions": [
+    "direct target median differs from residual median",
+    "exact-half tie midpoint",
+    "duplicate targets grouped",
+    "seed42 shuffle deterministic and multiset-preserving",
+    "missing and fewer-than-five fallback exactly to R06",
+    "four temporary fits persisted",
+    "interrupted saved receipt reconciled without refit",
+    "completed resume adds no starts",
+    "temporary ledger reaches cap 87 with four saves",
+    "live ledger unchanged"
+  ]
+}
