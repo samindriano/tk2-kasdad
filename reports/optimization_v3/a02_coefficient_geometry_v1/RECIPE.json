@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "pilot_id": "CGEOM_V1",
+  "card_id": "A02_COEFFICIENT_GEOMETRY_V1",
+  "hypothesis": "Same-origin C2_B LR token-coefficient magnitudes can change A02 donor retrieval usefully beyond unchanged lexical TF-IDF cosine when the per-query correction mass is fixed to the original A02 mass.",
+  "arms": {
+    "aligned": "Token coefficient magnitude multiplier remains mapped by exact token identity into the original A02 vocabulary column order.",
+    "permuted": "Use the identical multiplier multiset permuted with numpy.random.default_rng(42).permutation, reset independently for each origin. This is an alignment diagnostic, not a formal randomization null."
+  },
+  "coefficient_formula": {
+    "importance": "a_j = 1 + abs(beta_j) / (1 + abs(beta_j))",
+    "column_multiplier": "d_j = sqrt(a_j)",
+    "bounds": "1 <= d_j < sqrt(2)"
+  },
+  "lineage": {
+    "input": "Official Classification Train only",
+    "input_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "a02_text_space": "Exact same-origin saved A02 vectorizer; vocabulary-to-index mapping, all vectorizer parameters, and IDF array must match C2_B bitwise.",
+    "coefficient_source": "Same-origin cached POSITIONAL_TEXT_PILOT_V1 C2_B BAG_LR fitted LogisticRegression with class order [0,1]. Extract coefficients from the verified structured + TF-IDF + missing-indicator assembly by exact token identity.",
+    "bank": "Complete original A02 residual donor bank, saved OOF Sparse25 bank probabilities, observed residuals and cached original query baseline and top-32 similarities.",
+    "query_labels": "Closed until all four candidate NPZ payloads have immutable hashes and the independent prelabel verifier returns PASS."
+  },
+  "predictor": {
+    "tfidf_weighting": "Multiply each original A02 TF-IDF token column by d_j, then row-L2 normalize.",
+    "search": "Top 32 positive weighted-cosine neighbors over the complete original donor bank; stable ties use official source row position.",
+    "same_cycle_or_future_donors": false,
+    "target_based_search": false,
+    "mass_match": "M0(q) = sum(original A02 top-32 cosine^2). For selected new donors u_i = new_cosine_i^2, use w_i = u_i * M0(q) / sum(u_i), so sum_i(w_i)=M0(q).",
+    "correction": "delta(q) = clip(sum_i(w_i * observed_residual_i) / (4 + M0(q)), -0.05, 0.05)",
+    "prediction": "clip(original Sparse25 baseline(q) + delta(q), 0, 1)",
+    "threshold": 0.5,
+    "missing_or_zero_neighbor_fallback": "Exact original A02 baseline prediction; missing rows must be bit-identical to A02.",
+    "m0_zero": "Exact baseline fallback.",
+    "positive_original_mass_without_new_support": "Integrity failure; never silently fall back."
+  },
+  "folds": {
+    "E67": {"fit_cycles": [47, 67], "fit_rows": 29705, "query_cycles": [68, 79], "query_rows": 20903,
+      "views": {"H12": [68, 79], "W4": [68, 71], "W5": [72, 75], "W6": [76, 79]}},
+    "E75": {"fit_cycles": [47, 75], "fit_rows": 42117, "query_cycles": [76, 79], "query_rows": 8491,
+      "views": {"W6": [76, 79]}},
+    "pooled_unique": "Concatenate E67 W4 (cycles 68-71) and E75 W6 (cycles 76-79), expected 13,441 unique rows, no overlap; retain each origin's own geometry map."
+  },
+  "fit_accounting": {
+    "predictor_fits": [
+      "CGEOM_V1_E67_ALIGNED",
+      "CGEOM_V1_E67_PERMUTED",
+      "CGEOM_V1_E75_ALIGNED",
+      "CGEOM_V1_E75_PERMUTED"
+    ],
+    "new_classifier_fits": 0,
+    "new_vectorizer_fits": 0,
+    "new_learned_preprocessing_fits": 0,
+    "initial_ledger_events": 292,
+    "initial_ledger_sha256": "d23c8d365fdf3daae99600ab74a4c02818b0fad27f030fd051a5bdf5c79e8c9f",
+    "global_cap": {"before": 117, "after": 121},
+    "pilot_cap": {"before": 76, "after": 80},
+    "maximum_new_starts": 4,
+    "maximum_total_starts": 118,
+    "retry_or_refund": false
+  },
+  "resource_policy": {
+    "max_rss_bytes": 6442450944,
+    "initial_available_ram_min_bytes": 4294967296,
+    "available_ram_reserve_bytes": 2147483648,
+    "max_concurrent_jobs": 1,
+    "thread_limit": 2
+  },
+  "metrics": {
+    "primary": "E67 H12 Macro F1",
+    "threshold": ">= 0.50",
+    "macro_f1_zero_division": 0,
+    "precision_recall_zero_denominator": 0,
+    "log_loss_probability_clip": 1e-15,
+    "brier": "Unclipped probabilities.",
+    "additional": ["positive recall", "precision", "ROC AUC", "average precision", "log loss", "Brier", "confusion matrix", "per-cycle Macro F1 changes"]
+  },
+  "gates": {
+    "tolerance": 1e-12,
+    "advance_status": "ADVANCE_TO_SOL_REVIEW only; no automatic continuation or champion change.",
+    "macro_f1": [
+      {"view": "E67 H12", "comparator": "A02", "minimum_gain": 0.0005},
+      {"view": "E75 W6", "comparator": "A02", "minimum_gain": 0.0005},
+      {"view": "E67 H12", "comparator": "permuted", "minimum_gain": 0.0002},
+      {"view": "E75 W6", "comparator": "permuted", "minimum_gain": 0.0},
+      {"view": "Each E67 W4, W5, W6", "comparators": ["A02", "permuted"], "minimum_gain": -0.005}
+    ],
+    "subgroups": {
+      "definitions": ["stream availability", "same-origin fit-prefix text_load quartile", "entry_friction"],
+      "minimum_support": {"n": 200, "per_class": 30},
+      "comparators": ["A02", "permuted"],
+      "macro_f1_minimum_gain": -0.01,
+      "positive_recall_minimum_gain": -0.02,
+      "unsupported": "UNKNOWN; disclose support counts and do not estimate subgroup harm."
+    },
+    "failure": "Any failed performance or integrity gate closes this exact lane; no post-hoc weighting rescue."
+  },
+  "stop_boundaries": [
+    "No Test or SampleSubmission access.",
+    "No full-Train refit, Kaggle access, submission, notebook change, teammate change, install, retry, or push.",
+    "All development windows reuse labels; E75 W6 overlaps E67 late rows and is not independent validation.",
+    "Send completed result or real blocker to KASDAD - TK2 - Sol before final user reply, then stop."
+  ]
+}
