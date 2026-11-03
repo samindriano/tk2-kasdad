@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "card_id": "POS_BAG_OFFSET_V1",
+  "status": "FROZEN_EXECUTION_PLAN",
+  "question": "Does the positional channel add predictive value when the original C2_B bag coefficient and intercept are frozen as a logit offset?",
+  "selection_disclosure": "Adaptive follow-up selected after reviewing the positional-text pilot and zero-fit diagnostic; not outcome-blind. The scored temporal windows overlap and are not untouched holdouts.",
+  "fit_budget": {
+    "new_predictor_starts": 4,
+    "preprocessing_fits": 0,
+    "fit_ids": [
+      "POS_BAG_OFFSET_V1_E67_REAL",
+      "POS_BAG_OFFSET_V1_E67_SHUFFLED",
+      "POS_BAG_OFFSET_V1_E75_REAL",
+      "POS_BAG_OFFSET_V1_E75_SHUFFLED"
+    ],
+    "global_cap_before": 105,
+    "global_cap_after": 109,
+    "pilot_cap_before": 64,
+    "pilot_cap_after": 68,
+    "unchanged_category_caps": {"continuation": 38, "control_replay": 2, "technical_retry": 1}
+  },
+  "input": {
+    "path": "data/raw/classification/Train.csv",
+    "sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "rows": 50608,
+    "target": "artifact_signal"
+  },
+  "origins": {
+    "E67": {"fit_cycles": [47, 67], "fit_rows": 29705, "score_cycles": [68, 79], "score_rows": 20903, "views": {"W4": [68, 71], "W5": [72, 75], "W6": [76, 79], "H12_E67": [68, 79]}},
+    "E75": {"fit_cycles": [47, 75], "fit_rows": 42117, "score_cycles": [76, 79], "score_rows": 8491, "views": {"W6": [76, 79]}}
+  },
+  "model": {
+    "fixed_offset": "z0 = saved BAG_LR.intercept_[0] + fit_or_score_base @ BAG_LR.coef_[0], calculated directly in float64 logit space",
+    "learned_parameters": "gamma only, initialized to all-zero, no new intercept",
+    "objective": "sum(logaddexp(0, -(2*y-1)*(z0 + X_position@gamma))) + dot(gamma,gamma)/(2*C)",
+    "gradient": "X_position.T @ (expit(z0 + X_position@gamma) - y) + gamma/C",
+    "C": 1.0,
+    "objective_reduction": "sum",
+    "optimizer": "scipy.optimize.minimize(method='L-BFGS-B', jac=True, float64)",
+    "options": {"maxiter": 2000, "ftol": 1e-12, "gtol": 1e-6, "maxls": 50},
+    "acceptance": "optimizer success; finite loss, gradient, coefficients; final loss <= zero-gamma loss + 1e-8; no retries",
+    "empty_or_blank_position": "zero positional block; prediction exactly follows fixed bag or missing-stream fallback"
+  },
+  "arms": {
+    "REAL": "saved original third-position matrix",
+    "SHUFFLED": "saved deterministic seed-42 within-document shuffled positional matrix",
+    "controls": ["saved original C2_B bag route", "the opposite frozen-offset arm"],
+    "missing_route": "exactly the saved C1_B HGB probability for missing/blank stream rows; threshold >= 0.50"
+  },
+  "source_boundaries": {
+    "fit_labels": "only rows in each frozen origin fit prefix enter its gamma objective",
+    "query_labels": "not read until all four gamma receipts and both prediction bundles are durable and independently verified",
+    "test_sample_kaggle": "not accessed"
+  },
+  "gate": {
+    "E67_H12_E67_real_macro_f1_gain_vs_bag_min": 0.003,
+    "E67_H12_E67_real_macro_f1_gain_vs_shuffled_min": 0.003,
+    "E75_W6_real_macro_f1_gain_vs_bag_min": 0.0,
+    "E75_W6_real_macro_f1_gain_vs_shuffled_min": 0.0,
+    "E67_W4_W5_W6_macro_f1_harm_max_vs_each_control": 0.005,
+    "fit_defined_text_load_Q4_support": {"minimum_n": 200, "minimum_each_class": 30},
+    "fit_defined_text_load_Q4_harm_max": {"macro_f1": 0.01, "positive_recall": 0.02},
+    "interpretation": "Diagnostic mechanism evidence only; FAIL ends positional fits; PASS is review-only and does not qualify a champion or authorize upload."
+  },
+  "limitations": [
+    "Bag offsets are in-sample predictions, so this is sequential additive fitting, not cross-fitted residual training.",
+    "The follow-up was selected adaptively after earlier evidence; it is not outcome-blind.",
+    "The E67 and E75 windows overlap; two origins do not establish generalization.",
+    "Passing ESS/clipping or optimizer convergence does not prove a predictive mechanism."
+  ],
+  "authorization": "reports/optimization_v3/positional_text_diagnostic_v1/SOL_OFFSET_PILOT_AUTHORIZATION.md",
+  "execution_order": [
+    "python scripts/optimization_v3_positional_bag_offset_v1.py --command preflight",
+    "python scripts/optimization_v3_positional_bag_offset_v1.py --command freeze",
+    "python scripts/optimization_v3_positional_bag_offset_v1.py --command reserve",
+    "python scripts/optimization_v3_positional_bag_offset_v1.py --command run-all",
+    "python scripts/optimization_v3_positional_bag_offset_v1.py --command predictions",
+    "python scripts/optimization_v3_positional_bag_offset_v1.py --command verify-prelabel",
+    "python scripts/optimization_v3_positional_bag_offset_v1.py --command score"
+  ]
+}
