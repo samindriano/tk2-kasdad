@@ -54,6 +54,7 @@ AUTHORIZED_BASE_HEAD = "f3baa4014378a9fcb1a58e898d1b4c9a87679728"
 INITIAL_PREPARATION_COMMIT = "cc8e406a13fdea09c01b0f2356d1b7c8b822a470"
 AUTHORIZED_HASHFIX_HEAD = "6cffd8044b164fe9167ea2d76b8e727357cdfd98"
 HASHFIX_AUTH_PARENT = "4480f74ac909da4641fb9278dd9b536f66d8889d"
+HASHFIX_IMPLEMENTATION_HEAD = "cf44d3a0dcc431d1d4697325b620d229f24c4833"
 EXPECTED_TRAIN_SHA = "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c"
 EXPECTED_TEST_SHA = "4e6c381d582ed24f92d17f620f4f0ad25e2e0def29eb57a91a5482867f6afe3c"
 EXPECTED_SAMPLE_SHA = "889f97d69659a64945421d841dcf96e5813020606f29b2992d4b9560cecdcba7"
@@ -226,14 +227,17 @@ def _git(*args: str) -> str:
 
 
 def verify_preparation_head() -> str:
-    """Bind the hash fix to Sol's authorization commit and one scoped child."""
+    """Bind the hash fix to Sol's authorization and at most one review-fix child."""
     head = _git("rev-parse", "HEAD")
     parents = _git("rev-list", "--parents", "-n", "1", head).split()[1:]
     if head == AUTHORIZED_HASHFIX_HEAD:
         if parents != [HASHFIX_AUTH_PARENT]:
             raise BatchError("Sol hash-fix authorization is not a direct child of the reviewed blocker checkpoint")
-    elif parents != [AUTHORIZED_HASHFIX_HEAD]:
-        raise BatchError("Hash-fix source must be the authorization commit or its one direct implementation child")
+    elif head == HASHFIX_IMPLEMENTATION_HEAD:
+        if parents != [AUTHORIZED_HASHFIX_HEAD]:
+            raise BatchError("Hash-fix implementation commit is not a direct child of Sol's authorization")
+    elif parents != [HASHFIX_IMPLEMENTATION_HEAD]:
+        raise BatchError("Hash-fix source must be Sol's authorization, the fixed implementation, or its one review-fix child")
     return head
 
 
@@ -535,7 +539,7 @@ def verify_resume_checkpoint() -> tuple[list[dict[str, Any]], dict[str, Any]]:
             or mapping.get("single_authorized_replacement_fit_id") != HASHFIX_REPLACEMENT_ID
             or mapping.get("replacement_budget", {}).get("total_batch_fit_starts_maximum") != MAX_BATCH_STARTS):
         raise BatchError("Committed replacement mapping differs from Sol's bounded authorization")
-    for fit_id, info in budget["prior_saved_units"].items():
+    for fit_id, info in prior_units.items():
         saved_mapping = mapping.get("saved_preprocessing_artifacts_reused_without_refit", {}).get(fit_id, {})
         if (saved_mapping.get("preparation_commit") != info["preparation_commit"]
                 or saved_mapping.get("artifact_sha256") != info["artifact_sha256"]):

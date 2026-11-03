@@ -261,3 +261,16 @@ def test_hashfix_budget_adds_only_one_id_and_preserves_original_checkpoint() -> 
     assert status["fit_failed"] == 5
     assert len(status["not_started_original_ids"]) == 5
     assert status["not_started_replacement_id"] == [runner.HASHFIX_REPLACEMENT_ID]
+
+
+def test_resume_checkpoint_verifies_mapping_and_saved_artifacts_without_mutation() -> None:
+    if runner.sha256_file(runner.LEDGER) != runner.RESUME_LEDGER_SHA:
+        pytest.skip("Exact Sol checkpoint was already advanced by an authorized batch run")
+    before = runner.sha256_file(runner.LEDGER)
+    events, snapshot = runner.verify_resume_checkpoint()
+    assert len(events) == runner.RESUME_LEDGER_ROWS
+    assert snapshot["fit_starts"] == runner.RESUME_STARTS
+    assert snapshot["fit_saved"] == runner.RESUME_SAVED
+    assert snapshot["fit_failed"] == runner.RESUME_FAILED
+    assert set(snapshot["prior_saved_units"]) == set(runner.FIT_IDS[:3])
+    assert runner.sha256_file(runner.LEDGER) == before
