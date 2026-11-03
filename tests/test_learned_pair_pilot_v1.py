@@ -223,6 +223,3 @@ def test_audit_receipt_is_create_once_and_rejects_identity_drift(tmp_path) -> No
     assert resumed["created"] == "t1"
     with pytest.raises(LearnedPairPilotError):
         _create_once_receipt(path, {"created": "t3", "input": "changed"}, ("input",))
-
-
-\n
