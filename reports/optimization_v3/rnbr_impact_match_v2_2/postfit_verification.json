@@ -1,0 +1,118 @@
+{
+  "status": "PASS",
+  "pilot_id": "RNBR_IMPACT_MATCH_V2_2_POSTFIT_VERIFICATION",
+  "freeze_signature": "6214df286f4059555a60cff581d7db778eb0cbd6eeb2df44f0df31e389c5a5ff",
+  "fit_source_commit": "edc416cbb32776ad72f083f9f2d14ad033a911a4",
+  "postfit_verifier_commit": "1b94dbc7badd0656018dfdbe91cea945df27a74f",
+  "frozen_runner_source_sha256": "f58a1e286db430c44e0c7a79d4a094af0bfa4309ccb5e77df74941e30e2b693a",
+  "frozen_verifier_source_sha256": "c761ad0822cbf72a70e23ab3124e09471fe0272fed48baa34da7b06179c77c77",
+  "postfit_verifier_source_sha256": "095b614da4ca471c307c892cbc9503a9536b8287a99c5a869a27c8b55a4dc948",
+  "accounting": {
+    "status": "PASS",
+    "replay_started": 2,
+    "replay_saved": 2,
+    "memory_started": 4,
+    "memory_saved": 4,
+    "memory_failed": 0,
+    "snapshot": {
+      "events": 216,
+      "global_cap": 83,
+      "caps": {
+        "continuation": 38,
+        "control_replay": 2,
+        "pilot": 42,
+        "technical_retry": 1
+      },
+      "active_by_category": {
+        "continuation": 38,
+        "control_replay": 2,
+        "pilot": 42,
+        "technical_retry": 1
+      },
+      "active_reserved": 83,
+      "started": 83,
+      "saved": 80,
+      "failed": 3,
+      "pending": 0
+    }
+  },
+  "verified_bundle_hashes": [
+    {
+      "fit_id": "RNBR_IMPACT_MATCH_V2_1_E67_OBSERVED",
+      "receipt_sha256": "76e36f985b7097e1d43db9afd5017314a00731e499cf921477428f95466ccb03",
+      "npz_sha256": "479a14578b637cc89b9479c633a92577439b3df375d9b43b8b3963ba700b68ab"
+    },
+    {
+      "fit_id": "RNBR_IMPACT_MATCH_V2_1_E67_SHUFFLED",
+      "receipt_sha256": "2835d9b70232ef65373119a074fb2676b178a207da767c21dc65048981d6d8fc",
+      "npz_sha256": "a7d092925e641666fcebf81aa36e7db4357fa1a78d43c36e504526446b99e8ff"
+    },
+    {
+      "fit_id": "RNBR_IMPACT_MATCH_V2_1_E75_OBSERVED",
+      "receipt_sha256": "22dcd207d18bfb1724f1ccdfde4518be526a8303013de4a6df823c46fb3fecf6",
+      "npz_sha256": "d53b1e64dbf298ebe7fe5192c1fc1067707f6ee945d9822c94be21d217fa7519"
+    },
+    {
+      "fit_id": "RNBR_IMPACT_MATCH_V2_1_E75_SHUFFLED",
+      "receipt_sha256": "f9c34cfecac9f03a1ff957d5efd2bbb622393f23a7840b1cc578ca006b39c56c",
+      "npz_sha256": "6d20f51bcf52ea07740afc55cd8521556a6ca8843da000fc4f6c467e6f8ef03a"
+    }
+  ],
+  "geometry_row_identity": {
+    "status": "PASS",
+    "origins": {
+      "67": {
+        "status": "PASS",
+        "query_rows": 20903,
+        "donor_rows": 16482,
+        "query_cycle_range": [
+          68,
+          79
+        ],
+        "row_order_preserved": true
+      },
+      "75": {
+        "status": "PASS",
+        "query_rows": 8491,
+        "donor_rows": 28045,
+        "query_cycle_range": [
+          76,
+          79
+        ],
+        "row_order_preserved": true
+      }
+    },
+    "query_and_donor_train_row_joins": true,
+    "neighbor_id_to_donor_row_links_checked": 871452
+  },
+  "automatic_verification_recovery": {
+    "reason": [
+      "frozen pre-memory replay guard expected 79/76 after all four fits were saved",
+      "frozen cycle-order assertion assumed cycle-sorted rows although original Train row order is not sorted",
+      "NumPy equal_nan comparison was unsupported for string ID arrays"
+    ],
+    "frozen_runner_or_recipe_modified": false,
+    "frozen_verifier_modified": false,
+    "actual_ledger_values_preserved_for_independent_verifier": true,
+    "completed_reports_reused_after_wrapper_path_fix": true
+  },
+  "view_order_assumption_correction": {
+    "frozen_verifier_or_geometry_modified": false,
+    "original_train_row_order_preserved": true,
+    "cycle_membership_and_bounds_checked": true,
+    "independent_rowwise_train_join_checked_before_metric_evaluation": true,
+    "vectorizer_row_identity": "frozen replay audits and independent verifier recompute text geometry at exact official Train row positions"
+  },
+  "verifier_array_comparison_compatibility": {
+    "frozen_verifier_modified": false,
+    "string_or_object_ids_compared_exactly": true,
+    "numeric_equal_nan_comparisons_preserved": true
+  },
+  "independent_result_status": "DIAGNOSTIC_ONLY_GATES_FAIL",
+  "independent_result_path": "reports/optimization_v3/rnbr_impact_match_v2_2/results.json",
+  "independent_verification_path": "reports/optimization_v3/rnbr_impact_match_v2_2/verification.json",
+  "ledger_sha256_before": "26745b805f7fca86b1d154e7f3f42a7004e3aec6a32c5001fa7abb505aadea04",
+  "ledger_sha256_after": "26745b805f7fca86b1d154e7f3f42a7004e3aec6a32c5001fa7abb505aadea04",
+  "test_or_sample_submission_opened": false,
+  "kaggle_accessed": false
+}
