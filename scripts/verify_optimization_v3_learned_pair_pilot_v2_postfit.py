@@ -205,6 +205,11 @@ def verify_export(run_root: Path) -> dict[str, Any]:
         raise VerificationError("Original freeze/readiness/blocker preservation check failed")
     if _sha256_file(pilot.TRAIN) != receipt.get("input_sha256"):
         raise VerificationError("Official Train input hash changed")
+    current_saved_inputs = offset_inputs.verify_saved_inputs(include_current_code=True)
+    if (current_saved_inputs.get("input_sha256") != receipt.get("input_sha256")
+            or _canonical_sha256(current_saved_inputs) != receipt.get("current_saved_inputs_validation_sha256")
+            or current_saved_inputs != receipt.get("current_saved_inputs_validation")):
+        raise VerificationError("Current positional/A02 saved-input validation differs from amendment receipt")
     for rel, expected in frozen["source_hashes"].items():
         blob = _git_blob(frozen["source_commit"], rel)
         if (_sha256_file(ROOT / rel) != expected

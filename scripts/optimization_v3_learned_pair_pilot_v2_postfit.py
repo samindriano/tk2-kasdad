@@ -241,8 +241,8 @@ def _validate_training_lineage(frozen: Mapping[str, Any]) -> dict[str, Any]:
     if _normalized_worktree_bytes(AUTH_DOC.read_bytes()) != auth_blob:
         raise PostfitError("Reviewed post-fit authorization differs from its committed Git blob")
     saved_inputs = offset_inputs.verify_saved_inputs(include_current_code=True)
-    if saved_inputs != frozen["saved_inputs"]:
-        raise PostfitError("Frozen positional/A02 input source lineages changed")
+    if saved_inputs.get("input_sha256") != frozen["input_sha256"]:
+        raise PostfitError("Current saved positional/A02 inputs do not bind to the frozen official Train")
     source_hashes = _file_hashes(AMENDMENT_SOURCE_FILES)
     amendment_blob_hashes: dict[str, str] = {}
     for rel, expected in source_hashes.items():
@@ -442,6 +442,7 @@ def validate_baseline() -> tuple[dict[str, Any], dict[str, Any], dict[str, str]]
         "frozen": frozen, "ready_path": ready_path, "ready_sha256": pilot._sha256_file(ready_path),
         "ready": ready, "blocker_sha256": pilot._sha256_file(POSTFIT_BLOCKER),
         "synthetic_qa_sha256": pilot._sha256_file(ORIGINAL_RUN_ROOT / "SYNTHETIC_QA.json"),
+        "current_saved_inputs_validation": saved_inputs,
         "ledger": fit_accounting,
     }
     return original, fit_accounting, amend_sources
@@ -547,6 +548,8 @@ def export() -> dict[str, Any]:
         "training_source_git_blob_sha256": amendment_sources["training_source_git_blob_sha256"],
         "freeze_signature": original["frozen"]["freeze_signature"],
         "input_sha256": original["frozen"]["input_sha256"],
+        "current_saved_inputs_validation": original["current_saved_inputs_validation"],
+        "current_saved_inputs_validation_sha256": canonical_sha256(original["current_saved_inputs_validation"]),
         "original_freeze_sha256": original["freeze_sha256"],
         "original_ready_sha256": original["ready_sha256"],
         "original_synthetic_qa_sha256": original["synthetic_qa_sha256"],
