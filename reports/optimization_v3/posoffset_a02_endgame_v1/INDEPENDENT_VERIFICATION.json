@@ -1,0 +1,52 @@
+{
+  "status": "PASS",
+  "freeze_file": "reports/optimization_v3/posoffset_a02_endgame_v1/FREEZE_SUCCESSOR_01.json",
+  "freeze_signature": "a669b815657357cd3c31b34c95e664cf472442926d8b7e42561ee971a483e8fe",
+  "verification_invocation": "python -c \"import scripts.verify_optimization_v3_posoffset_a02_endgame_v1 as v; v.FREEZE=v.REPORT/'FREEZE_SUCCESSOR_01.json'; print(v.verify())\"",
+  "verifier_source_sha256": "798a34aaa2e3eccb24f0cedf4f1652add3b078a2bd334d23589caae00b734e1b",
+  "result": {
+    "status": "PASS",
+    "independent_checks": 195,
+    "origins": {
+      "67": {
+        "rows": 20903,
+        "formula_checks": 2,
+        "id_cycle_mask_target_join": true
+      },
+      "75": {
+        "rows": 8491,
+        "formula_checks": 2,
+        "id_cycle_mask_target_join": true
+      }
+    },
+    "policies": {
+      "MIX50": {
+        "qualifies": true,
+        "required_gains": {
+          "E67_H12": 0.005679224986976816,
+          "E75_W6": 0.0046565800418713055
+        },
+        "window_harms": {
+          "E67_W4": -0.006220028339623429,
+          "E67_W5": -0.007666371128950966,
+          "E67_W6": -0.0035953326736135605
+        }
+      },
+      "ADD_RESIDUAL": {
+        "qualifies": true,
+        "required_gains": {
+          "E67_H12": 0.0017983998950712454,
+          "E75_W6": 0.001416324074081321
+        },
+        "window_harms": {
+          "E67_W4": -0.0032694501726954206,
+          "E67_W5": -0.003468500331579527,
+          "E67_W6": 0.0006959749487491784
+        }
+      }
+    },
+    "selected_policy": "MIX50",
+    "test_accessed": false,
+    "fits": 0
+  }
+}
