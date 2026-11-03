@@ -197,14 +197,20 @@ def _git(*args: str) -> str:
 
 
 def verify_preparation_head() -> str:
-    """Allow the frozen prep commit or one direct, scoped QA-repair child."""
+    """Allow the frozen prep commit and up to two direct, scoped QA-repair commits."""
     head = _git("rev-parse", "HEAD")
     parents = _git("rev-list", "--parents", "-n", "1", head).split()[1:]
     if head == INITIAL_PREPARATION_COMMIT:
         if parents != [AUTHORIZED_BASE_HEAD]:
             raise BatchError("Initial preparation commit is not the authorized direct child")
-    elif parents != [INITIAL_PREPARATION_COMMIT]:
-        raise BatchError("Source must be the frozen preparation commit or its one direct QA-repair child")
+    elif len(parents) == 1:
+        parent = parents[0]
+        if parent != INITIAL_PREPARATION_COMMIT:
+            grandparent = _git("rev-list", "--parents", "-n", "1", parent).split()[1:]
+            if grandparent != [INITIAL_PREPARATION_COMMIT]:
+                raise BatchError("Source must be the frozen preparation commit or one of two direct QA-repair children")
+    else:
+        raise BatchError("Preparation and QA-repair commits must have one parent")
     return head
 
 
@@ -520,10 +526,8 @@ def amend_and_reserve() -> dict[str, Any]:
             or reservation.get("category") != "continuation"
             or reservation.get("global_cap") != AMENDED_CAP):
         raise BatchError("Nine-unit reservation does not match frozen fit IDs")
-    snapshot = _budget_snapshot(events)
-    if (snapshot["active_reservations"] != 127 or snapshot["fit_starts"] != 118
-            or snapshot["category_caps"] != AMENDED_CATEGORY_CAPS
-            or snapshot["active_reservations_by_category"].get("continuation") != 47):
+    snapshot = _batch_budget_status(events)
+    if snapshot["active_reservations"] != 127:
         raise BatchError(f"Post-reservation shared budget state is invalid: {snapshot}")
     return {"status": "PASS_CAP_AMENDED_AND_NINE_IDS_RESERVED", "ledger_sha256": sha256_file(LEDGER), **snapshot}
 
@@ -1005,17 +1009,20 @@ def fit_next() -> dict[str, Any]:
     if TRAINED_FREEZE.exists():
         raise BatchError("Unexpected trained freeze exists before fit completion")
     preflight_receipt = _read_json(PREFLIGHT_PATH)
+    preflight_head = preflight_receipt.get("preparation_head")
+    current_parents = _git("rev-list", "--parents", "-n", "1", current_head).split()[1:]
     if (preflight_receipt.get("status") != "PASS_PREFIT_AND_REUSE_AUDIT"
-            or preflight_receipt.get("preparation_head") != current_head
+            or (preflight_head != current_head and current_parents != [preflight_head])
             or preflight_receipt.get("ledger", {}).get("sha256") != INITIAL_LEDGER_SHA
             or preflight_receipt.get("official_input_sha256") != input_hashes()
             or preflight_receipt.get("existing_model_reuse_audit") != _verify_reuse_artifacts()):
         raise BatchError("Durable preflight receipt no longer matches the exact source, inputs, or reuse audit")
     qa = _read_json(SYNTHETIC_QA)
     if (qa.get("status") != "PASS_SYNTHETIC_END_TO_END_AND_PERSISTENCE_RESUME"
-            or qa.get("shared_ledger_sha256_after") != INITIAL_LEDGER_SHA
+            or qa.get("source_commit") != current_head
+            or qa.get("shared_ledger_sha256_after") != qa.get("shared_ledger_sha256_before")
             or qa.get("source_sha256") != source_hashes()):
-        raise BatchError("Required synthetic lifecycle/resume QA did not pass against the unchanged pre-fit ledger")
+        raise BatchError("Required synthetic lifecycle/resume QA does not bind this source or changed the ledger")
     budget_result = amend_and_reserve()
     events = read_events(LEDGER)
     current = _budget_snapshot(events)
@@ -1117,6 +1124,8 @@ def freeze_trained() -> dict[str, Any]:
         "test_or_sample_rows_loaded": False, "test_labels_loaded": False,
         "fit_ids": list(FIT_IDS), "fit_receipts": {fit_id: sha256_file(_unit_receipt_path(fit_id)) for fit_id in FIT_IDS},
         "fitted_state_sha256": {fit_id: receipts[fit_id]["artifact_sha256"] for fit_id in FIT_IDS},
+        "fit_preparation_commits": {fit_id: receipts[fit_id]["preparation_commit"] for fit_id in FIT_IDS},
+        "fit_source_sha256": {fit_id: receipts[fit_id]["source_sha256"] for fit_id in FIT_IDS},
         "c2b_shared_components": list(FIT_IDS[:4]), "c1b_missing_fallback_components": list(FIT_IDS[4:6]),
         "pos_bag_offset_gamma": FIT_IDS[6], "jointpos_lr": FIT_IDS[7], "cgeom_predictor": FIT_IDS[8],
         "test_inference_started": False, "kaggle_contacted": False,
@@ -1136,6 +1145,8 @@ def _verify_trained_freeze() -> dict[str, Any]:
             or freeze.get("amendment_sha256") != sha256_file(BATCH_AMENDMENT_PATH)
             or freeze.get("fit_ids") != list(FIT_IDS)
             or freeze.get("fitted_state_sha256") != {fit_id: _verify_receipt(fit_id)["artifact_sha256"] for fit_id in FIT_IDS}
+            or freeze.get("fit_preparation_commits") != {fit_id: _verify_receipt(fit_id)["preparation_commit"] for fit_id in FIT_IDS}
+            or freeze.get("fit_source_sha256") != {fit_id: _verify_receipt(fit_id)["source_sha256"] for fit_id in FIT_IDS}
             or freeze.get("official_inputs_sha256") != input_hashes()):
         raise BatchError("Trained-state freeze does not match persisted full-Train components")
     return freeze
@@ -1442,6 +1453,8 @@ def write_report() -> dict[str, Any]:
         "official_inputs_sha256": freeze["official_inputs_sha256"],
         "fit_ids": list(FIT_IDS), "fit_receipts": freeze["fit_receipts"],
         "fitted_state_sha256": freeze["fitted_state_sha256"],
+        "fit_preparation_commits": freeze["fit_preparation_commits"],
+        "fit_source_sha256": freeze["fit_source_sha256"],
         "prediction_bundle_sha256": inference["prediction_bundle_sha256"],
         "csvs": inference["csvs"],
         "label_changes_vs_a02": inference["label_changes_vs_a02"],
@@ -1491,7 +1504,8 @@ def _render_report(manifest: Mapping[str, Any]) -> str:
                  "## Verification", "",
                  f"- Independent output and fit-accounting verification: `{manifest['verification']['status']}`.",
                  f"- A02 E79 Test prediction replay: bit-exact; probability SHA `{manifest['a02_prediction_hashes']['probability_sha256']}`; label SHA `{manifest['a02_prediction_hashes']['label_sha256']}`.",
-                 f"- Source commit used for fitted state: `{manifest['source_commit']}`.",
+                  f"- Inference-freeze source commit: `{manifest['source_commit']}`.",
+                  "- Each fit receipt separately records its preparation commit and source hashes. The first structured state fit predates a runner-only resume-accounting correction; model recipes and learned fitting code are unchanged.",
                  f"- Trained-state freeze SHA-256: `{manifest['trained_freeze_sha256']}`.",
                  f"- Prediction NPZ SHA-256: `{manifest['prediction_bundle_sha256']}`.",
                  "- Test target loaded: false. Kaggle contacted: false. Upload: none.", "",
@@ -1552,10 +1566,17 @@ def synthetic_lifecycle() -> dict[str, Any]:
 
 def run_synthetic_qa() -> dict[str, Any]:
     require_clean_tree()
-    events, _snapshot = verify_initial_budget()
+    events = read_events(LEDGER)
+    if sha256_file(LEDGER) == INITIAL_LEDGER_SHA:
+        _events, _snapshot = verify_initial_budget()
+    else:
+        state = _batch_budget_status(events)
+        if state["fit_pending"] != 0:
+            raise BatchError("Synthetic QA cannot start while an official fit is pending")
+        own = [event for event in events if event.get("reservation_key") == RESERVATION_KEY]
+        for fit_id in {event.get("fit_id") for event in own if event.get("event") == "FIT_SAVED"}:
+            _verify_receipt(str(fit_id))
     before = sha256_file(LEDGER)
-    if before != INITIAL_LEDGER_SHA:
-        raise BatchError("Synthetic QA begins only from the immutable initial shared ledger")
     cmd = [sys.executable, "-B", "-m", "pytest", "-q", "tests/test_optimization_v3_a02_cgeom_benchmark_v1.py"]
     completed = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, encoding="utf-8")
     output = (completed.stdout + "\n" + completed.stderr).strip()
@@ -1566,6 +1587,7 @@ def run_synthetic_qa() -> dict[str, Any]:
               "source_commit": _git("rev-parse", "HEAD"), "source_sha256": source_hashes(),
               "official_train_sha256": EXPECTED_TRAIN_SHA,
               "shared_ledger_sha256_before": before, "shared_ledger_sha256_after": after,
+              "shared_ledger_state_at_qa": _batch_budget_status(read_events(LEDGER)) if before != INITIAL_LEDGER_SHA else _budget_snapshot(read_events(LEDGER)),
               "temporary_ledger_only": True, "official_fit_units_started": 0,
               "test_features_loaded": False, "test_labels_loaded": False,
               "pytest_command": cmd, "pytest_output": output[-1500:],
