@@ -71,7 +71,7 @@ def _git_blob(commit: str, rel: str) -> bytes:
     return proc.stdout
 
 
-def _member_header(raw: bytes) -> tuple[tuple[int, ...], np.dtype[Any]]:
+def _member_header(raw: bytes) -> tuple[tuple[int, ...], bool, np.dtype[Any]]:
     from numpy.lib.format import read_magic, read_array_header_1_0, read_array_header_2_0
     with io.BytesIO(raw) as stream:
         version = read_magic(stream)
@@ -81,7 +81,7 @@ def _member_header(raw: bytes) -> tuple[tuple[int, ...], np.dtype[Any]]:
             shape, fortran_order, dtype = read_array_header_2_0(stream)
         else:
             raise VerificationError(f"Unsupported NPY version: {version}")
-    return tuple(shape), np.dtype(dtype)
+    return tuple(shape), bool(fortran_order), np.dtype(dtype)
 
 
 def _archive_members(path: Path) -> dict[str, bytes]:
@@ -102,18 +102,18 @@ def _safe_member(path: Path, name: str) -> np.ndarray:
 def _member_records(members: dict[str, bytes], *, allow_object_id: bool) -> dict[str, dict[str, Any]]:
     records: dict[str, dict[str, Any]] = {}
     for name, raw in members.items():
-        shape, dtype = _member_header(raw)
+        shape, fortran_order, dtype = _member_header(raw)
         if dtype.hasobject:
             if not (allow_object_id and name == "score_record_ids.npy"):
                 raise VerificationError(f"Unexpected object dtype member: {name}")
             records[name] = {"raw_npy_sha256": _sha256_bytes(raw), "shape": list(shape),
-                             "dtype": dtype.str, "values_read": False}
+                             "dtype": dtype.str, "fortran_order": fortran_order, "values_read": False}
             continue
         array = np.asarray(np.load(io.BytesIO(raw), allow_pickle=False)).copy()
         if tuple(array.shape) != shape or array.dtype != dtype:
             raise VerificationError(f"NPY header/data mismatch: {name}")
         records[name] = {"raw_npy_sha256": _sha256_bytes(raw), "shape": list(shape),
-                         "dtype": dtype.str, "values_read": True,
+                         "dtype": dtype.str, "fortran_order": fortran_order, "values_read": True,
                          "value_sha256": offset_inputs.sha256_array(array)}
     return records
 
@@ -133,10 +133,12 @@ def _verify_member_pair(original: dict[str, bytes], derived: dict[str, bytes]) -
     new_records = _member_records(derived, allow_object_id=False)
     if any(original[name] != derived[name] for name in original if name != "score_record_ids.npy"):
         raise VerificationError("Safe member NPY bytes changed during serialization amendment")
-    old_shape, old_dtype = _member_header(original["score_record_ids.npy"])
-    new_shape, new_dtype = _member_header(derived["score_record_ids.npy"])
+    old_shape, old_fortran, old_dtype = _member_header(original["score_record_ids.npy"])
+    new_shape, new_fortran, new_dtype = _member_header(derived["score_record_ids.npy"])
     if not old_dtype.hasobject or new_dtype.kind != "U" or old_shape != new_shape:
         raise VerificationError("score_record_ids was not converted from object to same-shape Unicode")
+    if old_fortran != new_fortran:
+        raise VerificationError("score_record_ids array order changed")
     return old_records, new_records
 
 
@@ -153,18 +155,32 @@ def _verify_identity_vectors(rows: np.ndarray, ids: np.ndarray, cycles: np.ndarr
         raise VerificationError("Postfit score row/ID/cycle identity mismatch")
 
 
-def _validate_source_commit(commit: str, expected_hashes: dict[str, str],
-                            expected_blob_hashes: dict[str, str], source_files: tuple[str, ...]) -> None:
+def _validate_committed_source_version(commit: str, expected_hashes: dict[str, str],
+                                       expected_blob_hashes: dict[str, str], source_files: tuple[str, ...]) -> None:
     if set(expected_hashes) != set(source_files):
         raise VerificationError("Committed amendment source list differs from its receipt")
     for rel, expected in expected_hashes.items():
-        path = ROOT / rel
-        if not path.is_file() or _sha256_file(path) != expected:
-            raise VerificationError(f"Amendment source changed: {rel}")
         blob = _git_blob(commit, rel)
-        if (_sha256_bytes(blob) != expected_blob_hashes.get(rel)
-                or _normalized_worktree_bytes(path.read_bytes()) != blob):
+        checkout_hashes = {_sha256_bytes(blob), _sha256_bytes(blob.replace(b"\n", b"\r\n"))}
+        if (_sha256_bytes(blob) != expected_blob_hashes.get(rel) or expected not in checkout_hashes):
             raise VerificationError(f"Amendment source commit blob changed: {rel}")
+
+
+def _validate_current_verification_source() -> dict[str, Any]:
+    source_commit = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "HEAD"],
+                                   check=True, capture_output=True, text=True).stdout.strip()
+    hashes: dict[str, str] = {}
+    blob_hashes: dict[str, str] = {}
+    for rel in SOURCE_FILES:
+        path = ROOT / rel
+        raw = path.read_bytes()
+        blob = _git_blob(source_commit, rel)
+        if _normalized_worktree_bytes(raw) != blob:
+            raise VerificationError(f"Current amendment verifier source is not committed: {rel}")
+        hashes[rel] = _sha256_bytes(raw)
+        blob_hashes[rel] = _sha256_bytes(blob)
+    return {"source_commit": source_commit, "source_hashes": hashes,
+            "source_git_blob_sha256": blob_hashes}
 
 
 def verify_export(run_root: Path) -> dict[str, Any]:
@@ -216,8 +232,9 @@ def verify_export(run_root: Path) -> dict[str, Any]:
                 or _sha256_bytes(blob) != receipt.get("training_source_git_blob_sha256", {}).get(rel)
                 or _normalized_worktree_bytes((ROOT / rel).read_bytes()) != blob):
             raise VerificationError(f"Frozen training source current file/Git blob mismatch: {rel}")
-    _validate_source_commit(receipt["amendment_source_commit"], receipt["amendment_source_hashes"],
-                            receipt["amendment_source_git_blob_sha256"], SOURCE_FILES)
+    _validate_committed_source_version(receipt["amendment_source_commit"], receipt["amendment_source_hashes"],
+                                       receipt["amendment_source_git_blob_sha256"], SOURCE_FILES)
+    verification_source = _validate_current_verification_source()
     if original_ready.get("freeze_signature") != freeze_sig or original_ready.get("query_labels_opened") is not False:
         raise VerificationError("Original prediction readiness is not the frozen closed-label object")
     if ((run_root / "FREEZE.json").read_bytes() != freeze_raw
@@ -279,10 +296,10 @@ def verify_export(run_root: Path) -> dict[str, Any]:
             raise VerificationError(f"E{origin} safe raw member bytes changed during ID repair")
         if _sha256_bytes(old_members["score_record_ids.npy"]) != origin_receipt["member_audit"]["original_members"]["score_record_ids.npy"]["raw_npy_sha256"]:
             raise VerificationError(f"E{origin} old object-ID member hash changed")
-        old_id_shape, old_id_dtype = _member_header(old_members["score_record_ids.npy"])
-        new_id_shape, new_id_dtype = _member_header(new_members["score_record_ids.npy"])
+        old_id_shape, old_id_order, old_id_dtype = _member_header(old_members["score_record_ids.npy"])
+        new_id_shape, new_id_order, new_id_dtype = _member_header(new_members["score_record_ids.npy"])
         if (not old_id_dtype.hasobject or old_id_shape != new_id_shape
-                or new_id_dtype.kind != "U" or new_id_shape != old_id_shape):
+                or new_id_dtype.kind != "U" or new_id_shape != old_id_shape or old_id_order != new_id_order):
             raise VerificationError(f"E{origin} object-to-Unicode ID member conversion is invalid")
         rows = _safe_member(new_path, "score_rows").astype(np.int64)
         ids = _safe_member(new_path, "score_record_ids").astype(str)
@@ -328,6 +345,7 @@ def verify_export(run_root: Path) -> dict[str, Any]:
     return {
         "status": "PASS_IDENTITY_AMENDMENT", "amendment_id": AMENDMENT_ID,
         "amendment_receipt_sha256": _sha256_file(receipt_path),
+        "verification_source": verification_source,
         "identity_verification": origins_out,
         "original_freeze_ready_blocker_and_outputs_preserved": True,
         "query_labels_opened": False, "ledger_sha256_unchanged": EXPECTED_LEDGER_SHA256,
