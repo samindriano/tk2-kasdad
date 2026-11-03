@@ -4,7 +4,7 @@
 
 ## Ringkasan
 
-Pemeriksaan label-free pada 50.608 baris official Classification Train menemukan variasi kosakata menurut sepertiga posisi teks dan pergeseran kosakata antarperiode. Shuffle deterministik mengubah deskriptor posisi, sementara bag token, panjang teks, dan ukuran ketiga segmen tetap persis sama. Ini membuat pertanyaan positional-text layak diajukan sebagai pilot terkontrol; hasil ini belum menunjukkan bahwa posisi membantu prediksi.
+Pemeriksaan label-free pada 50.608 baris official Classification Train menemukan variasi deskriptor posisi serta overlap kosakata prefix/scored yang terbatas. Ukuran dan komposisi temporal cohort dapat memengaruhi overlap ini. Shuffle deterministik mengubah deskriptor posisi, sementara bag token, panjang teks, dan ukuran ketiga segmen tetap persis sama. Ini memberi alasan untuk menguji positional-text dengan kontrol, tetapi belum menunjukkan efek posisi terpisah atau manfaat prediktif.
 
 File statistik lengkap, hash sumber, dan batas akses ada di [`profiling.json`](profiling.json). Grafik memvisualisasikan dua pemeriksaan utama.
 
@@ -25,7 +25,7 @@ Normalisasi missing/blank memakai `_text_values`; tokenizer adalah word analyzer
 | E75 fit, cycle 47–75 | 42.117 | 39.239 | 34 | 79 | 80,5% |
 | E75 scored, cycle 76–79 | 8.491 | 7.965 | 32 | 74 | 79,4% |
 
-Vocabulary Jaccard prefix-versus-scored untuk token pada bagian pertama/tengah/akhir adalah **0,177/0,165/0,156 pada E67** dan **0,132/0,132/0,121 pada E75**. Angka ini menunjukkan pergeseran leksikal temporal yang nyata. Ia tidak memisahkan efek waktu dari efek posisi, dan tidak boleh dibaca sebagai bukti kinerja.
+Vocabulary Jaccard prefix-versus-scored untuk token pada bagian pertama/tengah/akhir adalah **0,177/0,165/0,156 pada E67** dan **0,132/0,132/0,121 pada E75**. Ini adalah overlap deskriptif yang dipengaruhi ukuran serta komposisi cohort; angka ini sendiri bukan bukti pergeseran temporal, efek posisi, atau kinerja.
 
 Dengan seed 42, bag dan panjang teks terjaga pada seluruh **47.204** stream terisi. Ukuran tiga segmen juga terjaga pada semua baris; deskriptor hitungan token per-segmen berubah pada 100% baris, dan rata-rata **66,5–66,6%** kemunculan token berpindah sepertiga. Shuffle mengubah posisi sambil mempertahankan informasi bag-of-token.
 

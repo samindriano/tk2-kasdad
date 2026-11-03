@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "pilot_id": "POSITIONAL_TEXT_PILOT_V1",
+  "scope": "Classification temporal diagnostic; no full-six qualification or champion replacement",
+  "input": {
+    "path": "data/raw/classification/Train.csv",
+    "sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "rows": 50608,
+    "target": "artifact_signal",
+    "feature_allowlist": [
+      "impact_load", "entry_friction", "cycle_code", "scope_pressure", "text_load",
+      "scope_trace", "org_spread", "module_spread", "telemetry_flag", "org_code",
+      "module_code", "pattern_code", "signal_stream"
+    ],
+    "record_id": "identity and row-alignment checks only; never a feature"
+  },
+  "folds": [
+    {"origin": 67, "fit_cycles": [47, 67], "score_cycles": [68, 79], "fit_rows": 29705, "score_rows": 20903, "score_present_rows": 19528, "views": ["W4:68-71", "W5:72-75", "W6:76-79", "H12_E67:68-79"]},
+    {"origin": 75, "fit_cycles": [47, 75], "score_cycles": [76, 79], "fit_rows": 42117, "score_rows": 8491, "score_present_rows": 7965, "views": ["W6:76-79"]}
+  ],
+  "target_protocol": {
+    "fit_prefix_labels_only": true,
+    "score_labels_opened_only_after_both_origin_predictions_are_durable_and_verified": true,
+    "threshold": 0.5,
+    "prediction_label_rule": "probability >= 0.5",
+    "metric": "Macro F1 primary; precision, recall, confusion matrix, ROC AUC, average precision, log loss, and Brier descriptive"
+  },
+  "arms": {
+    "bag": "Existing C2_B LogisticRegression with unordered unigram/bigram TF-IDF and expanded structured features",
+    "position": "Same C2_B matrix plus three third-position unigram blocks",
+    "shuffled_position": "Same C2_B matrix plus position blocks after deterministic seed-42 within-document shuffle; shuffle affects only positional input",
+    "missing_hgb": "Existing C1_B structured HistGradientBoosting expert for stream-missing rows, shared identically across routes"
+  },
+  "position_block": {
+    "tokenization": "Existing C2_B word analyzer; _text_values; lowercase; Unicode accent stripping; default sklearn word token pattern",
+    "segment_rule": "third(i)=floor(3*i/n), zero-based; empty streams have zero block",
+    "vocabulary": "Only unigram entries in the shared fit-prefix C2_B mixed unigram/bigram vocabulary",
+    "value": "(1 + ln(count)) * shared C2_B IDF",
+    "normalization": "Concatenate all three blocks then one per-row L2 normalization; preserve zero rows; no further global scaling",
+    "shuffle": "Existing deterministic_order_shuffle(seed=42, stable normalized-text digest), no record_id/target input, preserving bag, token length, and exact segment sizes"
+  },
+  "c2b": {
+    "logistic_regression": {"C": 1.0, "solver": "liblinear", "max_iter": 2000, "tol": 0.0001, "class_weight": null, "random_state": 42},
+    "tfidf": {"ngram_range": [1, 2], "min_df": 3, "max_df": 0.995, "max_features": 20000, "sublinear_tf": true, "lowercase": true, "strip_accents": "unicode", "dtype": "float64"},
+    "structured": "EXPANDED_FEATURES; existing fit-only HGBPreprocessor state; StandardScaler on numeric positions; OneHotEncoder(min_frequency=30,max_categories=254,handle_unknown=infrequent_if_exist); missing-stream indicator"
+  },
+  "c1b": {
+    "hist_gradient_boosting": {"loss": "log_loss", "learning_rate": 0.05, "max_iter": 200, "max_leaf_nodes": 15, "min_samples_leaf": 30, "l2_regularization": 1.0, "max_bins": 255, "early_stopping": false, "random_state": 42},
+    "structured": "EXPANDED_FEATURES; existing fit-only native-categorical HGBPreprocessor"
+  },
+  "shared_preprocessing": {
+    "c2b_structured_state": 1,
+    "c2b_scaler": 1,
+    "c2b_ohe": 1,
+    "c2b_tfidf": 1,
+    "c1b_structured_state": 1,
+    "per_origin_preprocessing_fit_units": 5,
+    "per_origin_predictor_fits": 4,
+    "total_fit_units": 18,
+    "total_preprocessing_fit_units": 10,
+    "total_predictor_fits": 8
+  },
+  "gates": {
+    "E67_H12_E67_macro_f1_gain_vs_bag_min": 0.003,
+    "E67_H12_E67_macro_f1_gain_vs_shuffle_min": 0.003,
+    "E75_W6_macro_f1_gain_vs_bag_min": 0.0,
+    "E75_W6_macro_f1_gain_vs_shuffle_min": 0.0,
+    "E67_each_W4_W5_W6_macro_f1_harm_max": 0.005,
+    "supported_text_load_Q4_min_n": 200,
+    "supported_text_load_Q4_min_each_class": 30,
+    "text_load_Q4_macro_f1_harm_max": 0.01,
+    "text_load_Q4_positive_recall_harm_max": 0.02,
+    "subgroups": ["fit-defined text_load Q4", "entry_friction", "stream availability"],
+    "pass_interpretation": "Mechanism advances for review only; not full-six qualified, not champion replacement, and not A02 replacement",
+    "failure_interpretation": "Retire exact three-third recipe; no bin/seed/C/vocabulary/block-weight sweeps"
+  },
+  "resource_policy": {"jobs": 1, "threads": 2, "rss_ceiling_bytes": 6442450944, "initial_available_ram_min_bytes": 4294967296, "available_ram_reserve_bytes": 2147483648, "retries": 0},
+  "budget": {
+    "global_cap_before": 87,
+    "global_cap_after": 105,
+    "pilot_cap_before": 46,
+    "pilot_cap_after": 64,
+    "continuation": 38,
+    "control_replay": 2,
+    "technical_retry": 1,
+    "fit_ids": [
+      "POSITIONAL_TEXT_PILOT_V1_E67_C2B_STRUCTURED",
+      "POSITIONAL_TEXT_PILOT_V1_E67_C2B_SCALER",
+      "POSITIONAL_TEXT_PILOT_V1_E67_C2B_OHE",
+      "POSITIONAL_TEXT_PILOT_V1_E67_C2B_TFIDF",
+      "POSITIONAL_TEXT_PILOT_V1_E67_C1B_STRUCTURED",
+      "POSITIONAL_TEXT_PILOT_V1_E67_BAG_LR",
+      "POSITIONAL_TEXT_PILOT_V1_E67_POSITION_LR",
+      "POSITIONAL_TEXT_PILOT_V1_E67_SHUFFLED_POSITION_LR",
+      "POSITIONAL_TEXT_PILOT_V1_E67_MISSING_HGB",
+      "POSITIONAL_TEXT_PILOT_V1_E75_C2B_STRUCTURED",
+      "POSITIONAL_TEXT_PILOT_V1_E75_C2B_SCALER",
+      "POSITIONAL_TEXT_PILOT_V1_E75_C2B_OHE",
+      "POSITIONAL_TEXT_PILOT_V1_E75_C2B_TFIDF",
+      "POSITIONAL_TEXT_PILOT_V1_E75_C1B_STRUCTURED",
+      "POSITIONAL_TEXT_PILOT_V1_E75_BAG_LR",
+      "POSITIONAL_TEXT_PILOT_V1_E75_POSITION_LR",
+      "POSITIONAL_TEXT_PILOT_V1_E75_SHUFFLED_POSITION_LR",
+      "POSITIONAL_TEXT_PILOT_V1_E75_MISSING_HGB"
+    ]
+  }
+}
