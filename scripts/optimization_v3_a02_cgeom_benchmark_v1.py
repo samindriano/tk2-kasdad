@@ -40,6 +40,7 @@ from scripts import optimization_v3_a02_continuation as a02_runner  # noqa: E402
 from scripts import optimization_v3_c19_benchmark as c19  # noqa: E402
 from scripts import optimization_v3_positional_text_pilot_v1 as positional  # noqa: E402
 from src.models import classification_a02_neighbors as a02  # noqa: E402
+from src.models import optimization_v3_positional_text_pilot_v1 as positional_core  # noqa: E402
 from src.models.a02_coefficient_geometry_v1 import CoefficientGeometryPredictor  # noqa: E402
 from src.models.classification_models import EXPANDED_FEATURES, _TFIDF_PARAMS  # noqa: E402
 from src.models.research_next_budget import read_events  # noqa: E402
@@ -1184,7 +1185,7 @@ def _c2b_matrices(frame: pd.DataFrame, *, vectorizer: Any | None = None,
     if vectorizer is None:
         vectorizer, _ = _c2b_vectorizer()
     selected = _features(frame)
-    structured = positional.transform_c2b_structured(state, scaler, encoder, selected)
+    structured = positional_core.transform_c2b_structured(state, scaler, encoder, selected)
     text, missing = positional.transform_c2b_text(vectorizer, selected)
     base = sparse.hstack((structured, text, sparse.csr_matrix(missing.astype(np.float64).reshape(-1, 1))),
                          format="csr", dtype=np.float64)
@@ -1193,7 +1194,7 @@ def _c2b_matrices(frame: pd.DataFrame, *, vectorizer: Any | None = None,
     position = None
     if train_side:
         docs, _ = positional._text_values(selected.signal_stream)
-        position, _audit = positional.build_position_block(docs, vectorizer, shuffled=False)
+        position, _audit = positional_core.build_position_block(docs, vectorizer, shuffled=False)
     return base, position, {"missing": missing, "structured_width": int(structured.shape[1]),
                             "text_width": int(text.shape[1]), "base_width": int(base.shape[1]),
                             "base_sha256": positional.sha256_csr(base),
