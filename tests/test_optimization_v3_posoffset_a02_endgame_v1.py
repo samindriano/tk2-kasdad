@@ -15,6 +15,7 @@ if str(ROOT) not in sys.path:
 from scripts.optimization_v3_posoffset_a02_endgame_v1 import (
     build_submission,
     combine,
+    _present_donor_subset,
     _write_json_once,
     _write_npz_once,
 )
@@ -89,6 +90,31 @@ def test_json_persistence_is_idempotent_and_detects_tampering(tmp_path) -> None:
         _write_json_once(path, {**receipt, "value": [1, 3]})
     path.write_text(path.read_text(encoding="utf-8").replace("β", "δ"), encoding="utf-8")
     assert hashlib.sha256(path.read_bytes()).hexdigest() != original
+
+
+def test_a02_full_oof_bank_then_present_stream_filter_preserves_exact_ids() -> None:
+    full_bank = {
+        "rows": np.asarray([4, 9, 14, 18], dtype=np.int64),
+        "ids": np.asarray(["r-α", "r-β", "r-γ", "r-δ"]),
+        "cycles": np.asarray([56, 57, 58, 59], dtype=np.int64),
+        "baseline": np.asarray([0.11, 0.22, 0.33, 0.44]),
+        "missing": np.asarray([False, True, False, True]),
+    }
+    present = _present_donor_subset(full_bank)
+    np.testing.assert_array_equal(present["rows"], [4, 14])
+    np.testing.assert_array_equal(present["ids"], ["r-α", "r-γ"])
+    np.testing.assert_array_equal(present["cycles"], [56, 58])
+    np.testing.assert_array_equal(present["baseline"], [0.11, 0.33])
+    np.testing.assert_array_equal(present["missing"], [False, False])
+    assert len(full_bank["rows"]) == 4  # full aligned OOF denominator retained
+
+
+def test_a02_present_stream_filter_rejects_misaligned_bank_fields() -> None:
+    full_bank = {"rows": np.asarray([4, 9]), "ids": np.asarray(["r-α"]),
+                 "cycles": np.asarray([56, 57]), "baseline": np.asarray([0.11, 0.22]),
+                 "missing": np.asarray([False, True])}
+    with pytest.raises(ValueError):
+        _present_donor_subset(full_bank)
 
 
 def test_csv_writer_roundtrip_and_integer_target(tmp_path) -> None:

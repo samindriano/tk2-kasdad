@@ -24,8 +24,8 @@ REPORT = ROOT / "reports/optimization_v3/posoffset_a02_endgame_v1"
 RUN = ROOT / "experiments/runs/optimization_v3_posoffset_a02_endgame_v1"
 TRAIN = ROOT / "data/raw/classification/Train.csv"
 RECIPE = REPORT / "RECIPE.json"
-PREFLIGHT = REPORT / "PREFLIGHT.json"
-FREEZE = REPORT / "FREEZE.json"
+PREFLIGHT = REPORT / "PREFLIGHT_SUCCESSOR_01.json"
+FREEZE = REPORT / "FREEZE_SUCCESSOR_01.json"
 AUDIT = REPORT / "PREMETRIC_AUDIT.json"
 METRICS = REPORT / "POLICY_METRICS.json"
 PREDICTIONS = RUN / "policy_predictions.npz"
@@ -78,6 +78,7 @@ ENDGAME_SOURCES = (
     "tests/test_optimization_v3_posoffset_a02_endgame_v1.py",
     "reports/optimization_v3/posoffset_a02_endgame_v1/RECIPE.json",
     "reports/optimization_v3/posoffset_a02_endgame_v1/BASELINE_CLARIFICATION_CORRECTION_20261104.md",
+    "reports/optimization_v3/posoffset_a02_endgame_v1/FREEZE_SUPERSESSION_20261104.md",
 )
 VIEWS = {
     "E67_H12": (67, 68, 79),
@@ -413,13 +414,39 @@ def _bank_for_origin(origin: int, caches: dict[int, dict[str, np.ndarray]], trai
     result = {key: np.concatenate([part[key] for part in parts])[order]
               for key in ("rows", "ids", "cycles", "baseline", "missing")}
     expected = np.flatnonzero(train.cycle_code.between(56, origin).to_numpy())
-    if not np.array_equal(result["rows"], expected) or np.any(result["missing"]):
-        raise RuntimeError(f"A02 E{origin} donor row universe mismatch or missing-stream donor")
-    result["present_rows"] = result["rows"].astype(np.int64)
-    result["present_ids"] = result["ids"].astype(str)
-    result["present_cycles"] = result["cycles"].astype(np.int64)
-    result["present_baseline"] = result["baseline"].astype(np.float64)
-    return result
+    expected_ids = train.record_id.to_numpy(dtype=str)[expected]
+    expected_cycles = train.cycle_code.to_numpy(dtype=np.int64)[expected]
+    if (not np.array_equal(result["rows"], expected)
+            or not np.array_equal(result["ids"].astype(str), expected_ids)
+            or not np.array_equal(result["cycles"].astype(np.int64), expected_cycles)):
+        raise RuntimeError(f"A02 E{origin} donor row universe mismatch")
+    selected = _present_donor_subset(result)
+    selected["present_rows"] = selected["rows"].astype(np.int64)
+    selected["present_ids"] = selected["ids"].astype(str)
+    selected["present_cycles"] = selected["cycles"].astype(np.int64)
+    selected["present_baseline"] = selected["baseline"].astype(np.float64)
+    if origin == 67 and (len(result["rows"]) != 17_685 or len(selected["rows"]) != 16_482):
+        raise RuntimeError("A02 E67 all-row/present-stream donor support differs from frozen counts")
+    if origin == 75 and (len(result["rows"]) != 30_097 or len(selected["rows"]) != 28_045):
+        raise RuntimeError("A02 E75 all-row/present-stream donor support differs from frozen counts")
+    return selected
+
+
+def _present_donor_subset(bank: dict[str, np.ndarray]) -> dict[str, np.ndarray]:
+    """Apply the original A02 present-stream donor predicate after full-bank alignment."""
+    required = ("rows", "ids", "cycles", "baseline", "missing")
+    arrays = {key: np.asarray(bank[key]) for key in required}
+    n = len(arrays["rows"])
+    if any(arr.ndim != 1 or len(arr) != n for arr in arrays.values()):
+        raise ValueError("Full OOF donor bank fields must be aligned vectors")
+    rows = arrays["rows"].astype(np.int64)
+    missing = arrays["missing"].astype(bool)
+    if np.any(np.diff(rows) <= 0) or len(np.unique(rows)) != n:
+        raise ValueError("Full OOF donor rows must be unique and ordered")
+    if not np.isfinite(arrays["baseline"].astype(np.float64)).all():
+        raise ValueError("Full OOF baseline probabilities must be finite")
+    present = ~missing
+    return {key: arrays[key][present].copy() for key in required}
 
 
 def _verify_saved_a02(origin: int, train: pd.DataFrame, cache: dict[str, np.ndarray],
