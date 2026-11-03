@@ -3,7 +3,12 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import sys
 from typing import Any, Mapping
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from scripts import optimization_v3_rnbr_impact_match_v2 as runner
 from scripts import optimization_v3_rnbr_impact_match_verify_v2 as verifier
