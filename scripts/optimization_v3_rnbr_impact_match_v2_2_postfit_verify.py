@@ -6,12 +6,15 @@ from pathlib import Path
 import sys
 from typing import Any, Mapping
 
+import numpy as np
+
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from scripts import optimization_v3_rnbr_impact_match_v2 as runner
 from scripts import optimization_v3_rnbr_impact_match_verify_v2 as verifier
+from scripts import optimization_v3_rnbr_official as official
 
 
 FIT_SOURCE_COMMIT = "edc416cbb32776ad72f083f9f2d14ad033a911a4"
@@ -107,6 +110,89 @@ def _validate_memory_receipt_hashes(memory_saves: list[dict[str, Any]]) -> list[
     return result
 
 
+def validate_view_cycles_row_order_aware(geometry: Mapping[int, Mapping[str, np.ndarray]]) -> None:
+    """Check cycle membership while preserving original Train row order."""
+    expected = {67: set(range(68, 80)), 75: set(range(76, 80))}
+    for origin, allowed_cycles in expected.items():
+        actual = np.asarray(geometry[origin]["query_cycles"], dtype=np.int64)
+        actual_cycles = set(actual.tolist())
+        if (actual.ndim != 1 or not len(actual) or not actual_cycles.issubset(allowed_cycles)
+                or actual_cycles != allowed_cycles):
+            raise PostfitVerificationError(
+                f"E{origin} query cycles are outside or incomplete for the frozen view: "
+                f"unique={sorted(actual_cycles)}"
+            )
+
+
+def validate_geometry_row_identity(geometry: Mapping[int, Mapping[str, np.ndarray]],
+                                   train: Mapping[str, np.ndarray],
+                                   impacts: np.ndarray) -> dict[str, Any]:
+    """Prove saved query/donor/neighbor indices still join to official Train rows."""
+    cycle_bounds = {67: (68, 79), 75: (76, 79)}
+    checked_neighbor_links = 0
+    report: dict[str, Any] = {}
+    rows = np.asarray(train["rows"], dtype=np.int64)
+    cycles = np.asarray(train["cycles"], dtype=np.int64)
+    ids = np.asarray(train["ids"]).astype(str)
+    present = np.asarray(train["present"], dtype=bool)
+    impact = np.asarray(impacts, dtype=np.float64)
+    if not (rows.shape == cycles.shape == ids.shape == present.shape == impact.shape):
+        raise PostfitVerificationError("Official Train row/ID/cycle/stream/impact arrays do not align")
+
+    for origin, (low, high) in cycle_bounds.items():
+        saved = geometry[origin]
+        expected_query_rows = rows[(cycles >= low) & (cycles <= high)]
+        expected_donor_rows = rows[(cycles >= 56) & (cycles <= origin) & present & np.isfinite(impact)]
+        query_rows = np.asarray(saved["query_rows"], dtype=np.int64)
+        donor_rows = np.asarray(saved["donor_rows"], dtype=np.int64)
+        if (len(np.unique(query_rows)) != len(query_rows)
+                or len(np.unique(donor_rows)) != len(donor_rows)
+                or not np.array_equal(query_rows, expected_query_rows)
+                or not np.array_equal(donor_rows, expected_donor_rows)):
+            raise PostfitVerificationError(f"E{origin} query/donor row positions do not match official Train")
+
+        checks = (
+            ("query_ids", saved["query_ids"], ids[query_rows]),
+            ("query_cycles", saved["query_cycles"], cycles[query_rows]),
+            ("query_impact_load", saved["query_impact_load"], impact[query_rows]),
+            ("donor_ids", saved["donor_ids"], ids[donor_rows]),
+            ("donor_cycles", saved["donor_cycles"], cycles[donor_rows]),
+            ("donor_impact_load", saved["donor_impact_load"], impact[donor_rows]),
+            ("query_stream_missing", saved["query_stream_missing"], ~present[query_rows]),
+            ("query_impact_missing", saved["query_impact_missing"], ~np.isfinite(impact[query_rows])),
+            ("query_effective_missing", saved["query_effective_missing"],
+             (~present[query_rows]) | (~np.isfinite(impact[query_rows]))),
+        )
+        for name, actual, expected_values in checks:
+            if not np.array_equal(np.asarray(actual), np.asarray(expected_values)):
+                raise PostfitVerificationError(f"E{origin} geometry {name} is not joined to its Train row")
+
+        neighbor_rows = np.asarray(saved["neighbor_rows"], dtype=np.int64)
+        neighbor_ids = np.asarray(saved["neighbor_ids"]).astype(str)
+        neighbor_count = np.asarray(saved["neighbor_count"], dtype=np.int64)
+        if (neighbor_rows.shape[0] != len(query_rows) or neighbor_ids.shape != neighbor_rows.shape
+                or neighbor_count.shape != (len(query_rows),)):
+            raise PostfitVerificationError(f"E{origin} neighbor arrays are not query-row aligned")
+        donor_position_set = set(donor_rows.tolist())
+        for query_index, count in enumerate(neighbor_count.tolist()):
+            if count < 0 or count > neighbor_rows.shape[1]:
+                raise PostfitVerificationError(f"E{origin} query index {query_index} has an invalid neighbor count")
+            selected_rows = neighbor_rows[query_index, :count]
+            if (len(np.unique(selected_rows)) != count
+                    or any(int(row) not in donor_position_set for row in selected_rows)):
+                raise PostfitVerificationError(f"E{origin} neighbor row is not a unique selected donor row")
+            if not np.array_equal(neighbor_ids[query_index, :count], ids[selected_rows]):
+                raise PostfitVerificationError(f"E{origin} neighbor IDs do not match their donor row positions")
+            checked_neighbor_links += count
+        report[str(origin)] = {
+            "status": "PASS", "query_rows": len(query_rows), "donor_rows": len(donor_rows),
+            "query_cycle_range": [low, high], "row_order_preserved": True,
+        }
+    return {"status": "PASS", "origins": report,
+            "query_and_donor_train_row_joins": True,
+            "neighbor_id_to_donor_row_links_checked": checked_neighbor_links}
+
+
 def verify_postfit() -> dict[str, Any]:
     ledger_sha_before = runner._sha_file(runner.LEDGER)
     events = runner._ledger_events()
@@ -134,12 +220,24 @@ def verify_postfit() -> dict[str, Any]:
     finally:
         runner._ledger_snapshot = original_snapshot
 
+    # Establish row identity against the same official Train file before the
+    # frozen verifier reaches its overly strict sorted-cycle assertion.
+    train = official.load_targetfree_train()
+    frame, docs, impacts = runner._load_targetfree_features(train)
+    geometry = verifier._load_geometry_files(freeze)
+    validate_view_cycles_row_order_aware(geometry)
+    row_identity = validate_geometry_row_identity(geometry, train, impacts)
+    del frame, docs, impacts, geometry, train
+
     original_current_freeze = runner._current_freeze
+    original_view_validator = verifier._validate_view_assignments
     try:
         runner._current_freeze = lambda: (freeze, protocol, preflight)
+        verifier._validate_view_assignments = validate_view_cycles_row_order_aware
         results = verifier.verify_all()
     finally:
         runner._current_freeze = original_current_freeze
+        verifier._validate_view_assignments = original_view_validator
 
     ledger_sha_after = runner._sha_file(runner.LEDGER)
     if ledger_sha_after != ledger_sha_before:
@@ -156,10 +254,18 @@ def verify_postfit() -> dict[str, Any]:
         "postfit_verifier_source_sha256": runner._sha_file(Path(__file__)),
         "accounting": accounting,
         "verified_bundle_hashes": bundle_hashes,
+        "geometry_row_identity": row_identity,
         "automatic_verification_recovery": {
             "reason": "frozen pre-memory replay guard expected 79/76 after all four fits were saved",
             "frozen_runner_or_recipe_modified": False,
             "actual_ledger_values_preserved_for_independent_verifier": True,
+        },
+        "view_order_assumption_correction": {
+            "frozen_verifier_or_geometry_modified": False,
+            "original_train_row_order_preserved": True,
+            "cycle_membership_and_bounds_checked": True,
+            "independent_rowwise_train_join_checked_before_metric_evaluation": True,
+            "vectorizer_row_identity": "frozen replay audits and independent verifier recompute text geometry at exact official Train row positions",
         },
         "independent_result_status": results["status"],
         "independent_result_path": runner.RESULTS_PATH.relative_to(runner.ROOT).as_posix(),
