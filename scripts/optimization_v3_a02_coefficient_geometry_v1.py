@@ -702,6 +702,7 @@ def sparse_linalg_normalize(matrix: sparse.spmatrix) -> sparse.spmatrix:
 
 def create_target_free_preflight() -> dict[str, Any]:
     require_clean_tree()
+    resource_at_preflight_start = resource_snapshot(require_initial_free=True)
     if sha_file(TRAIN) != TRAIN_SHA256:
         raise CGeomError("Official Classification Train hash differs from the frozen source")
     ledger = _ledger_events()
@@ -753,7 +754,10 @@ def create_target_free_preflight() -> dict[str, Any]:
         "origins": folds, "source_files": known_sources,
         "fit_plan": {"predictor_fits": 4, "classifier_fits": 0, "vectorizer_fits": 0,
                      "preprocessing_fits": 0, "fit_ids": list(FIT_IDS)},
-        "resource_preflight": resource_snapshot(require_initial_free=True),
+        "resource_preflight": {
+            "before_target_free_preflight": resource_at_preflight_start,
+            "after_target_free_preflight": resource_snapshot(require_initial_free=False),
+        },
         "memory_policy": {"max_rss_bytes": RSS_LIMIT, "initial_available_min_bytes": INITIAL_FREE_MIN,
                           "reserve_available_bytes": FREE_RESERVE, "threads": THREAD_LIMIT, "jobs": 1},
     }
