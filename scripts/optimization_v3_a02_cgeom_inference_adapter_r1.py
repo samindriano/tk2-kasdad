@@ -11,6 +11,7 @@ import hashlib
 import inspect
 import json
 import sys
+import subprocess
 import textwrap
 from datetime import datetime, timezone
 from pathlib import Path
@@ -31,6 +32,8 @@ EXPECTED_FROZEN_RUNNER_SHA256 = "d6af3f3e18787c9cd1e5c52b1463fb30e18398cee6e3dc8
 EXPECTED_FROZEN_HELPER_SHA256 = "2c7a41f577e87d358337c8cabfb74e130793782661da760d15c60d3b511205d5"
 EXPECTED_A02_TYPE = "src.models.classification_a02_neighbors.ResidualNeighborPredictor"
 EXPECTED_CGEOM_TYPE = "src.models.a02_coefficient_geometry_v1.CoefficientGeometryPredictor"
+INFERENCE_ADAPTER_COMMIT = "8f6a43010160f0bc2b9adfa714712cf9788690a3"
+INFERENCE_ADAPTER_SHA256 = "582dc5bba30e0a15f9654ed64281df7b1950212334ec806f53fc80b6c9200488"
 OLD_EXPRESSION = 'result["correction_raw"]'
 NEW_EXPRESSION = 'result["correction_unclipped"]'
 
@@ -180,8 +183,12 @@ def run_inference() -> dict[str, Any]:
 def write_adapter_receipt(verification: dict[str, Any]) -> dict[str, Any]:
     if ADAPTER_RECEIPT.exists():
         raise batch.BatchError("Refusing to overwrite the adapter receipt")
-    adapter_commit = batch._git("log", "-1", "--format=%H", "--", ADAPTER_RELPATH)
-    adapter_sha = batch.sha256_file(ADAPTER_PATH)
+    adapter_blob = subprocess.check_output(
+        ["git", "show", f"{INFERENCE_ADAPTER_COMMIT}:{ADAPTER_RELPATH}"], cwd=ROOT
+    )
+    if _sha256(adapter_blob) != INFERENCE_ADAPTER_SHA256:
+        raise batch.BatchError("Committed inference adapter source differs from the version used for inference")
+    helper_identity = _derive_verified_helper()[1]
     inference_receipt_path = batch.RUN_ROOT / "inference_receipt.json"
     manifest_path = batch.MANIFEST_PATH
     report_path = batch.REPORT_PATH
@@ -191,13 +198,13 @@ def write_adapter_receipt(verification: dict[str, Any]) -> dict[str, Any]:
         "schema_version": 1,
         "status": "PASS_INFERENCE_ADAPTER_AND_OUTPUTS_BOUND",
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
-        "adapter_commit": adapter_commit,
+        "adapter_commit": INFERENCE_ADAPTER_COMMIT,
         "adapter_path": ADAPTER_RELPATH,
-        "adapter_sha256": adapter_sha,
+        "adapter_sha256": INFERENCE_ADAPTER_SHA256,
+        "receipt_writer_commit": batch._git("rev-parse", "HEAD"),
+        "receipt_writer_sha256": batch.sha256_file(ADAPTER_PATH),
         "frozen_source_commit": batch._read_json(batch.TRAINED_FREEZE)["source_commit"],
-        "frozen_runner_sha256": verification["frozen_runner_sha256"],
-        "frozen_helper_sha256": verification["frozen_helper_sha256"],
-        "derived_helper_sha256": verification["derived_helper_sha256"],
+        **helper_identity,
         "approved_single_expression_change": {
             "old_consumer_expression": OLD_EXPRESSION,
             "new_consumer_expression": NEW_EXPRESSION,
