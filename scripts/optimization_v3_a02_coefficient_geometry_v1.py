@@ -99,6 +99,9 @@ SOURCE_PATHS = (
 )
 
 A02_RUN = ROOT / "experiments/runs/optimization_v3_a02_neighbors_v1"
+A02_FREEZE_DIR = ROOT / "experiments/optimization_v3/c19_a02_v2/A02"
+A02_FREEZE_PATH = A02_FREEZE_DIR / "freeze.json"
+A02_PROTOCOL_PATH = A02_FREEZE_DIR / "protocol.json"
 C2B_RUN = ROOT / "experiments/runs/optimization_v3_research_next_v1/POSITIONAL_TEXT_PILOT_V1"
 
 
@@ -342,6 +345,31 @@ def _npz_selected(path: Path, keys: tuple[str, ...]) -> dict[str, np.ndarray]:
     return result
 
 
+def _verify_a02_freeze(receipt_freeze_signature: str) -> dict[str, dict[str, Any]]:
+    """Verify original A02's signed protocol and every pinned source/input hash."""
+    if not A02_FREEZE_PATH.is_file() or not A02_PROTOCOL_PATH.is_file():
+        raise CGeomError("Original A02 protocol/freeze artifact is missing")
+    freeze = json.loads(A02_FREEZE_PATH.read_text(encoding="utf-8"))
+    protocol = json.loads(A02_PROTOCOL_PATH.read_text(encoding="utf-8"))
+    if (canonical_sha256(protocol) != freeze.get("protocol_sha256")
+            or canonical_sha256(freeze.get("identity")) != freeze.get("freeze_signature")
+            or freeze.get("freeze_signature") != receipt_freeze_signature
+            or freeze.get("input_sha256", {}).get("data/raw/classification/Train.csv") != TRAIN_SHA256):
+        raise CGeomError("A02 receipt does not bind the signed original protocol/freeze and official Train")
+    for collection_name in ("source_sha256", "input_sha256"):
+        collection = freeze.get(collection_name)
+        if not isinstance(collection, dict) or not collection:
+            raise CGeomError(f"A02 freeze is missing its {collection_name} map")
+        for relative, expected in collection.items():
+            path = ROOT / relative
+            if not path.is_file() or sha_file(path) != expected:
+                raise CGeomError(f"A02 freeze {collection_name} hash mismatch: {relative}")
+    return {
+        relpath(A02_FREEZE_PATH): {"sha256": sha_file(A02_FREEZE_PATH), "size_bytes": A02_FREEZE_PATH.stat().st_size},
+        relpath(A02_PROTOCOL_PATH): {"sha256": sha_file(A02_PROTOCOL_PATH), "size_bytes": A02_PROTOCOL_PATH.stat().st_size},
+    }
+
+
 def _verify_a02_cache(frame: pd.DataFrame, origin: int, fit_rows: np.ndarray,
                       score_rows: np.ndarray, score_low: int, score_high: int) -> dict[str, Any]:
     folder = A02_RUN / f"E{origin}" / "observed"
@@ -368,9 +396,10 @@ def _verify_a02_cache(frame: pd.DataFrame, origin: int, fit_rows: np.ndarray,
     # Compare using that producer contract, not the nested state_sha256 field.
     if model.audit_state() != state or canonical_sha256(state) != receipt.get("state_sha256"):
         raise CGeomError(f"A02 E{origin} model/state/receipt identity mismatch")
+    freeze_artifacts = _verify_a02_freeze(str(receipt.get("freeze_signature", "")))
     if (receipt.get("fit_id") != f"A02_E{origin}_OBSERVED"
             or receipt.get("origin_cycle") != origin or receipt.get("residual_arm") != "observed"
-            or receipt.get("input_sha256") != TRAIN_SHA256 or receipt.get("query_labels_passed_to_fit") is not False
+            or receipt.get("query_labels_passed_to_fit") is not False
             or receipt.get("test_data_used") is not False or receipt.get("task_estimator_fit_count") != 1):
         raise CGeomError(f"A02 E{origin} fit receipt source-boundary mismatch")
     if (model.origin_cycle != origin or model.text_space.origin_cycle != origin
@@ -480,7 +509,7 @@ def _verify_a02_cache(frame: pd.DataFrame, origin: int, fit_rows: np.ndarray,
         "a02_artifacts": {
             relpath(path): {"sha256": sha_file(path), "size_bytes": path.stat().st_size}
             for path in required
-        },
+        } | freeze_artifacts,
         "a02_fit_receipt_sha256": receipt_signature,
         "a02_freeze_signature": receipt["freeze_signature"],
         "a02_state_sha256": state["state_sha256"],
