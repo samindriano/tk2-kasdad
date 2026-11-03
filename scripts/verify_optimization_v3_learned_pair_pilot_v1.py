@@ -177,6 +177,20 @@ def _verify_bundle(matrix_path: Path, manifest_path: Path, prediction_path: Path
     expected_route[~present] = fallback[~present]
     if not np.array_equal(routed[~present], fallback[~present]) or not np.array_equal(routed, expected_route):
         raise VerificationError("missing-stream fallback is not exact")
+    if "prob_bag_raw" in prediction or "prob_bag" in prediction:
+        if "prob_bag_raw" not in prediction or "prob_bag" not in prediction:
+            raise VerificationError("synthetic cached bag route lacks raw or routed probabilities")
+        bag_raw = np.asarray(prediction["prob_bag_raw"], dtype=np.float64)
+        bag_routed = np.asarray(prediction["prob_bag"], dtype=np.float64)
+        if (bag_raw.shape != present.shape or bag_routed.shape != present.shape
+                or not np.isfinite(bag_raw).all() or not np.isfinite(bag_routed).all()
+                or (bag_raw < 0).any() or (bag_raw > 1).any()
+                or (bag_routed < 0).any() or (bag_routed > 1).any()):
+            raise VerificationError("synthetic cached bag probabilities are invalid")
+        expected_bag = bag_raw.copy()
+        expected_bag[~present] = fallback[~present]
+        if not np.array_equal(bag_routed, expected_bag):
+            raise VerificationError("cached bag raw/routed availability mapping is invalid")
     if not np.isfinite(routed).all() or (routed < 0).any() or (routed > 1).any():
         raise VerificationError("routed probabilities are invalid")
     if list(np.asarray(prediction["class_order"]).astype(int)) != [0, 1]:
@@ -313,10 +327,18 @@ def verify_official(run_root: Path) -> dict[str, Any]:
             raise VerificationError(f"E{origin} official prediction row order/identity mismatch")
         present = np.asarray(source["present_mask"], dtype=bool)
         fallback = np.asarray(source["prob_missing_hgb"], dtype=np.float64)
+        bag_raw = np.asarray(source["prob_bag"], dtype=np.float64)
+        bag_route = np.asarray(source["prob_route_bag"], dtype=np.float64)
+        if (present.shape != rows.shape or fallback.shape != rows.shape
+                or bag_raw.shape != rows.shape or bag_route.shape != rows.shape):
+            raise VerificationError(f"E{origin} official stream availability arrays are misaligned")
+        expected_bag_route = bag_raw.copy()
+        expected_bag_route[~present] = fallback[~present]
         if (not np.array_equal(output["present_mask"], present)
                 or not np.array_equal(output["prob_missing_hgb"], fallback)
-                or not np.array_equal(output["prob_bag"], source["prob_bag"])
-                or not np.array_equal(output["prob_bag"][~present], fallback[~present])):
+                or not np.array_equal(bag_route, expected_bag_route)
+                or not np.array_equal(output["prob_bag"], bag_route)
+                or not np.array_equal(output["prob_bag_raw"], bag_raw)):
             raise VerificationError(f"E{origin} official stream availability/fallback source mismatch")
         a02_reference = frozen["saved_inputs"]["origins"][f"E{origin}"]["a02_current_references"]
         if a02_reference["status"] == "ALIGNED_REFERENCE_ONLY":

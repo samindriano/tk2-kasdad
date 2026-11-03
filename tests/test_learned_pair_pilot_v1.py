@@ -144,6 +144,8 @@ def test_synthetic_lifecycle_persistence_independent_verifier_and_resume(tmp_pat
     assert report["optimizer_reruns_on_resume"] == 0
     assert report["tampered_matrix_rejected"] is True
     assert report["production_writer_blocked"] is True
+    assert report["cached_bag_route_formula_pass"] is True
+    assert report["raw_routed_bag_swap_rejected"] is True
     assert report["live_budget_ledger_sha256_before"] == report["live_budget_ledger_sha256_after"]
     assert report["independent_verification"]["status"] == "PASS"
 
@@ -223,3 +225,19 @@ def test_audit_receipt_is_create_once_and_rejects_identity_drift(tmp_path) -> No
     assert resumed["created"] == "t1"
     with pytest.raises(LearnedPairPilotError):
         _create_once_receipt(path, {"created": "t3", "input": "changed"}, ("input",))
+
+
+def test_cached_bag_baseline_preserves_raw_present_and_hgb_missing_route() -> None:
+    from scripts.optimization_v3_learned_pair_pilot_v1 import (
+        LearnedPairPilotError, _validate_cached_bag_route,
+    )
+
+    present = np.array([True, False, True, False])
+    raw = np.array([0.2, 0.1, 0.8, 0.9])
+    fallback = np.array([0.6, 0.7, 0.4, 0.3])
+    routed = np.array([0.2, 0.7, 0.8, 0.3])
+    validated = _validate_cached_bag_route(raw, routed, present, fallback)
+    assert np.array_equal(validated, routed)
+    assert not np.array_equal(raw[~present], fallback[~present])
+    with pytest.raises(LearnedPairPilotError):
+        _validate_cached_bag_route(routed, raw, present, fallback)

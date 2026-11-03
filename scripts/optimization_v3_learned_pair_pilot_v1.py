@@ -315,13 +315,11 @@ def _verify_saved_inputs() -> dict[str, Any]:
             raise LearnedPairPilotError(f"E{origin} C2_B matrices are not row/column aligned")
         present = np.asarray(pred["present_mask"], dtype=bool)
         fallback = np.asarray(pred["prob_missing_hgb"], dtype=np.float64)
-        bag = np.asarray(pred["prob_bag"], dtype=np.float64)
-        if (present.shape != (len(score_rows),) or fallback.shape != present.shape or bag.shape != present.shape
-                or not np.isfinite(fallback).all() or not np.isfinite(bag).all()
-                or not np.array_equal(bag[~present], fallback[~present])):
-            raise LearnedPairPilotError(f"E{origin} saved missing fallback or bag route is not exact")
-        if ((fallback < 0).any() or (fallback > 1).any() or (bag < 0).any() or (bag > 1).any()):
-            raise LearnedPairPilotError(f"E{origin} saved baseline probability out of range")
+        bag_raw = np.asarray(pred["prob_bag"], dtype=np.float64)
+        bag_route = np.asarray(pred["prob_route_bag"], dtype=np.float64)
+        if present.shape != (len(score_rows),) or fallback.shape != present.shape:
+            raise LearnedPairPilotError(f"E{origin} saved availability/fallback arrays are misaligned")
+        _validate_cached_bag_route(bag_raw, bag_route, present, fallback)
         a02_path = A02_REFERENCE_ROOT / f"E{origin}" / "observed" / "predictions.npz"
         if a02_path.is_file():
             with np.load(a02_path, allow_pickle=False) as a02_archive:
@@ -333,7 +331,7 @@ def _verify_saved_inputs() -> dict[str, Any]:
             if (not np.array_equal(a02_rows, score_rows)
                     or not np.array_equal(a02_ids, pred["score_record_ids"].astype(str))
                     or not np.array_equal(a02_cycles, pred["score_cycles"].astype(np.int64))
-                    or a02_current.shape != bag.shape or a02_observed.shape != bag.shape
+                    or a02_current.shape != bag_route.shape or a02_observed.shape != bag_route.shape
                     or not np.isfinite(a02_current).all() or not np.isfinite(a02_observed).all()
                     or (a02_current < 0).any() or (a02_current > 1).any()
                     or (a02_observed < 0).any() or (a02_observed > 1).any()):
@@ -363,7 +361,8 @@ def _verify_saved_inputs() -> dict[str, Any]:
             "score_cycles_sha256": offset_inputs.sha256_array(pred["score_cycles"].astype(np.int64)),
             "fit_matrix": matrix_meta["fit_base"], "score_matrix": matrix_meta["score_base"],
             "fallback_probability_sha256": offset_inputs.sha256_array(fallback),
-            "baseline_probability_sha256": offset_inputs.sha256_array(bag),
+            "baseline_probability_sha256": offset_inputs.sha256_array(bag_route),
+            "bag_raw_probability_sha256": offset_inputs.sha256_array(bag_raw),
             "present_rows": int(present.sum()), "missing_rows": int((~present).sum()),
             "text_load_q75_fit_only": manifest.get("text_load_q75_fit_only"),
             "a02_current_references": a02_meta,
@@ -1095,9 +1094,9 @@ def build_predictions() -> dict[str, Any]:
         pred = data["prediction"]
         present = np.asarray(pred["present_mask"], dtype=bool)
         fallback = np.asarray(pred["prob_missing_hgb"], dtype=np.float64)
-        bag = np.asarray(pred["prob_bag"], dtype=np.float64)
-        if not np.array_equal(bag[~present], fallback[~present]):
-            raise LearnedPairPilotError(f"E{origin} cached missing fallback changed")
+        bag_raw = np.asarray(pred["prob_bag"], dtype=np.float64)
+        bag = _validate_cached_bag_route(
+            bag_raw, np.asarray(pred["prob_route_bag"], dtype=np.float64), present, fallback)
         probabilities: dict[str, np.ndarray] = {"bag": bag.copy()}
         a02_ref_meta = frozen["saved_inputs"]["origins"][f"E{origin}"]["a02_current_references"]
         if a02_ref_meta["status"] == "ALIGNED_REFERENCE_ONLY":
@@ -1125,10 +1124,7 @@ def build_predictions() -> dict[str, Any]:
             probability_direct = expit(raw)
             if probability_direct.shape != present.shape or not np.isfinite(probability_direct).all():
                 raise LearnedPairPilotError(f"{fit_id} produced invalid score probabilities")
-            routed = probability_direct.copy()
-            routed[~present] = fallback[~present]
-            if not np.array_equal(routed[~present], fallback[~present]):
-                raise LearnedPairPilotError(f"{fit_id} missing fallback is not bit-exact")
+            routed = _route_candidate_probabilities(probability_direct, present, fallback)
             key = "fm" if with_factors else "nopair"
             probabilities[key] = routed
             raw_scores[key] = raw
@@ -1144,6 +1140,7 @@ def build_predictions() -> dict[str, Any]:
             "score_cycles": data["score_cycles"], "present_mask": present,
             "prob_bag": probabilities["bag"], "prob_fm": probabilities["fm"],
             "prob_nopair": probabilities["nopair"],
+            "prob_bag_raw": bag_raw,
             "prob_missing_hgb": fallback,
             "raw_score_fm": raw_scores["fm"], "raw_score_nopair": raw_scores["nopair"],
             "pair_score_fm": pair_scores["fm"],
@@ -1255,6 +1252,43 @@ def _view_masks(origin: int, cycles: np.ndarray) -> dict[str, np.ndarray]:
 
 def _supported(metric: Mapping[str, Any]) -> bool:
     return metric["n"] >= 200 and metric["positive"] >= 30 and metric["negative"] >= 30
+
+
+def _validate_cached_bag_route(raw: np.ndarray, routed: np.ndarray,
+                               present: np.ndarray, fallback: np.ndarray) -> np.ndarray:
+    raw = np.asarray(raw, dtype=np.float64)
+    routed = np.asarray(routed, dtype=np.float64)
+    present = np.asarray(present, dtype=bool)
+    fallback = np.asarray(fallback, dtype=np.float64)
+    if (raw.ndim != 1 or routed.shape != raw.shape or present.shape != raw.shape
+            or fallback.shape != raw.shape or not np.isfinite(raw).all()
+            or not np.isfinite(routed).all() or not np.isfinite(fallback).all()
+            or (raw < 0).any() or (raw > 1).any()
+            or (routed < 0).any() or (routed > 1).any()
+            or (fallback < 0).any() or (fallback > 1).any()):
+        raise LearnedPairPilotError("Cached bag route inputs are invalid or misaligned")
+    expected = raw.copy()
+    expected[~present] = fallback[~present]
+    if not np.array_equal(routed, expected):
+        raise LearnedPairPilotError("Cached routed C2_B bag does not match raw-present/HGB-missing recipe")
+    return routed.copy()
+
+
+def _route_candidate_probabilities(direct: np.ndarray, present: np.ndarray,
+                                  fallback: np.ndarray) -> np.ndarray:
+    direct = np.asarray(direct, dtype=np.float64)
+    present = np.asarray(present, dtype=bool)
+    fallback = np.asarray(fallback, dtype=np.float64)
+    if (direct.ndim != 1 or present.shape != direct.shape or fallback.shape != direct.shape
+            or not np.isfinite(direct).all() or not np.isfinite(fallback).all()
+            or (direct < 0).any() or (direct > 1).any()
+            or (fallback < 0).any() or (fallback > 1).any()):
+        raise LearnedPairPilotError("Candidate routing inputs are invalid or misaligned")
+    routed = direct.copy()
+    routed[~present] = fallback[~present]
+    if not np.array_equal(routed[~present], fallback[~present]):
+        raise LearnedPairPilotError("Candidate missing-stream fallback is not exact")
+    return routed
 
 
 def _meets_gate(value: float, threshold: float) -> bool:
@@ -1574,6 +1608,17 @@ def run_synthetic_lifecycle(temp_root: Path) -> dict[str, Any]:
         fallback = np.array([0.31, 0.62, 0.21, 0.49, 0.7, 0.12, 0.88])
         routed = direct.copy()
         routed[~present] = fallback[~present]
+        bag_raw = np.array([0.22, 0.11, 0.78, 0.91, 0.65, 0.43, 0.36], dtype=np.float64)
+        bag_route = bag_raw.copy()
+        bag_route[~present] = fallback[~present]
+        bag_route = _validate_cached_bag_route(bag_raw, bag_route, present, fallback)
+        raw_routed_swap_rejected = False
+        try:
+            _validate_cached_bag_route(bag_route, bag_raw, present, fallback)
+        except LearnedPairPilotError:
+            raw_routed_swap_rejected = True
+        if not raw_routed_swap_rejected or np.array_equal(bag_raw[~present], fallback[~present]):
+            raise LearnedPairPilotError("Synthetic raw/routed bag swap guard did not exercise distinct missing predictions")
         record_ids = np.array(["id-z", "id-a", "id-m", "id-b", "id-y", "id-c", "id-x"])
         cycles = np.array([79, 68, 76, 71, 75, 69, 78], dtype=np.int64)
         score_matrix_path = temp_root / "matrix.npz"
@@ -1590,7 +1635,8 @@ def run_synthetic_lifecycle(temp_root: Path) -> dict[str, Any]:
         prediction_path = temp_root / "prediction.npz"
         _atomic_npz(prediction_path, raw_score=raw, probability_direct=direct,
                     probability_routed=routed, present_mask=present,
-                    fallback_probability=fallback, record_ids=record_ids,
+                    fallback_probability=fallback, prob_bag_raw=bag_raw, prob_bag=bag_route,
+                    record_ids=record_ids,
                     cycles=cycles, class_order=np.array([0, 1], dtype=np.int8))
         with_factors = True
         matrix_logical = offset_inputs.sha256_csr(score_x)
@@ -1685,6 +1731,8 @@ def run_synthetic_lifecycle(temp_root: Path) -> dict[str, Any]:
             "independent_verification": verified,
             "tampered_matrix_rejected": tamper_rejected,
             "production_writer_blocked": production_writer_blocked,
+            "cached_bag_route_formula_pass": True,
+            "raw_routed_bag_swap_rejected": raw_routed_swap_rejected,
             "temporary_ledger_events_before_card_complete": [event["event"] for event in temp_events],
             "temporary_ledger_events_final": [event["event"] for event in _ledger_events(ledger_path)],
             "report_path": report_path.as_posix(),

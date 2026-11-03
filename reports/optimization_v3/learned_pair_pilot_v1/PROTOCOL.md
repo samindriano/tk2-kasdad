@@ -18,7 +18,7 @@ The result is adaptive development evidence for mechanism review. A gate pass do
 
 ## Comparisons and views
 
-The frozen C2_B bag route is the primary cached baseline. The same-solver no-pair fit is the matched mechanism control. Cached C16 Sparse25 and A02 observed probabilities are aligned by exact score row, record ID, and cycle and reported as separately labeled references only; they are never fit inputs and do not define gates. Their bundle hashes are frozen with the preflight. A missing optional reference is recorded as UNKNOWN.
+The frozen C2_B bag route is the primary cached baseline. Its source package retains both `prob_bag` (raw expert output) and `prob_route_bag` (the availability-routed baseline). Verify the latter exactly equals raw C2_B on present-stream rows and the saved C1_B HGB fallback on missing/blank rows; gate comparisons use this routed baseline, and the raw array is retained separately for lineage. The learned FM and no-pair experts use the same exact HGB fallback on missing/blank rows. Cached C16 Sparse25 and A02 observed probabilities are aligned by exact score row, record ID, and cycle and reported as separately labeled references only; they are never fit inputs and do not define gates. Their bundle hashes are frozen with the preflight. A missing optional reference is recorded as UNKNOWN.
 
 E67 contains W4, W5, W6, and H12_E67. E75 contains W6. E75 W6 overlaps the E67 W6 rows and is history sensitivity, not independent replication. Full-six primary is not computed.
 
