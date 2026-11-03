@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "batch_id": "A02_CGEOM_BENCHMARK_V1",
+  "status": "PRE_FIT_RECIPE_FREEZE",
+  "authorized_base_head": "f3baa4014378a9fcb1a58e898d1b4c9a87679728",
+  "scope": "Prepare exactly three full-Train Classification CSVs; no Kaggle upload, no Test labels, no candidate selection by Test outputs.",
+  "data": {
+    "train_path": "data/raw/classification/Train.csv",
+    "train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "train_rows": 50608,
+    "train_cycles": [47, 79],
+    "test_path": "data/raw/classification/Test.csv",
+    "sample_path": "data/raw/classification/SampleSubmission.csv",
+    "test_use": "features and ordered record IDs for inference only after trained-state freeze",
+    "target": "artifact_signal",
+    "threshold": 0.5
+  },
+  "shared_components": {
+    "c2b": {
+      "structured": "EXPANDED_FEATURES from the original ClassificationModel C2_B recipe",
+      "preprocessor": "POSITIONAL_TEXT_PILOT_V1 fit_c2b_structured_state",
+      "scaler": "StandardScaler fit on C2_B numeric structured output",
+      "one_hot_encoder": {"min_frequency": 30, "max_categories": 254, "handle_unknown": "infrequent_if_exist", "sparse_output": true, "dtype": "float64"},
+      "tfidf": "Reuse A02 E79 fitted vectorizer after full vocabulary, parameters, train-document hash, row population, and IDF verification; do not fit TF-IDF",
+      "logistic_regression": {"C": 1.0, "solver": "liblinear", "max_iter": 2000, "tol": 0.0001, "class_weight": null, "random_state": 42},
+      "feature_order": ["expanded_structured", "shared_tfidf", "stream_missing_indicator"],
+      "fit_population": "all 50,608 official Train rows"
+    },
+    "c1b_missing_fallback": {
+      "preprocessor": "POSITIONAL_TEXT_PILOT_V1 fit_c1b_structured_state",
+      "hist_gradient_boosting": {"loss": "log_loss", "learning_rate": 0.05, "max_iter": 200, "max_leaf_nodes": 15, "min_samples_leaf": 30, "l2_regularization": 1.0, "max_bins": 255, "early_stopping": false, "random_state": 42},
+      "route": "exact C1_B HGB probability for stream-missing rows in POS_BAG_OFFSET and JOINTPOS",
+      "fit_population": "all 50,608 official Train rows"
+    },
+    "position_block": "POSITIONAL_TEXT_PILOT_V1 build_position_block; shared C2_B analyzer and IDF; only shared-vocabulary unigram entries; thirds floor(3*i/n); (1+ln(count))*IDF; one row-wise L2 normalization; real ordering; no shuffle"
+  },
+  "candidates": {
+    "CGEOM_ALIGNED": {
+      "csv": "classification_cgeom_aligned_e79.csv",
+      "source_recipe": "reports/optimization_v3/a02_coefficient_geometry_v1/RECIPE.json",
+      "model": "exact CoefficientGeometryPredictor aligned arm at origin 79",
+      "coefficient_map": "same full-Train C2_B coefficient mapped by exact shared vocabulary token identity into A02 column order",
+      "prediction": "original Sparse25 baseline + mass-matched A02 residual memory correction; original clipping, threshold, and fallback",
+      "historic_verdict_preserved": "CLOSED_GATE_FAIL"
+    },
+    "POS_BAG_OFFSET": {
+      "csv": "classification_posoffset_e79.csv",
+      "source_recipe": "reports/optimization_v3/positional_bag_offset_v1/RECIPE.json",
+      "model": "C2_B logit as fixed offset plus real-position gamma only",
+      "objective": "sum(logaddexp(0, -(2*y-1)*(z0 + X_position@gamma))) + dot(gamma,gamma)/(2*C)",
+      "optimizer": "L-BFGS-B, zero initialization, C=1, maxiter=2000, ftol=1e-12, gtol=1e-6, maxls=50; no retries",
+      "missing_route": "shared full-Train C1_B HGB",
+      "historical_gate_or_verdict_changes": false
+    },
+    "JOINTPOS": {
+      "csv": "classification_jointpos_e79.csv",
+      "source_recipe": "reports/optimization_v3/positional_text_pilot_v1/RECIPE.json",
+      "model": "joint C2_B bag + real-position blocks LogisticRegression with original C2_B settings",
+      "missing_route": "shared full-Train C1_B HGB",
+      "historical_gate_or_verdict_changes": false
+    }
+  },
+  "fit_budget": {
+    "maximum_new_units": 9,
+    "unit_ids": [
+      "A02_CGEOM_BENCHMARK_V1_E79_C2B_STRUCTURED",
+      "A02_CGEOM_BENCHMARK_V1_E79_C2B_SCALER",
+      "A02_CGEOM_BENCHMARK_V1_E79_C2B_OHE",
+      "A02_CGEOM_BENCHMARK_V1_E79_C2B_LR",
+      "A02_CGEOM_BENCHMARK_V1_E79_C1B_STRUCTURED",
+      "A02_CGEOM_BENCHMARK_V1_E79_C1B_HGB",
+      "A02_CGEOM_BENCHMARK_V1_E79_POS_BAG_OFFSET_GAMMA",
+      "A02_CGEOM_BENCHMARK_V1_E79_JOINTPOS_LR",
+      "A02_CGEOM_BENCHMARK_V1_E79_CGEOM_ALIGNED_PREDICTOR"
+    ],
+    "global_cap": {"before": 121, "after": 130},
+    "continuation_cap": {"before": 38, "after": 47},
+    "unchanged_category_caps": {"pilot": 80, "control_replay": 2, "technical_retry": 1},
+    "maximum_total_starts": 127,
+    "retry_or_refund": false,
+    "reservation_key": "A02_CGEOM_BENCHMARK_V1:THREE_CSV_E79_FULLTRAIN"
+  },
+  "resources": {"jobs": 1, "threads": 2, "initial_free_ram_min_bytes": 4294967296, "free_ram_reserve_bytes": 2147483648, "process_rss_ceiling_bytes": 6442450944},
+  "output": {
+    "csv_schema": ["record_id", "artifact_signal"],
+    "rows": 29421,
+    "id_order": "official Test order, matching SampleSubmission exactly",
+    "labels": "integer 0/1, threshold >=0.50",
+    "submission_status": "PREPARED_FOR_BATCH_REVIEW_NOT_SUBMITTED",
+    "kaggle_attempts": 0
+  }
+}
