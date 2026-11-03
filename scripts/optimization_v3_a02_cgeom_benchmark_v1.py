@@ -55,6 +55,7 @@ INITIAL_PREPARATION_COMMIT = "cc8e406a13fdea09c01b0f2356d1b7c8b822a470"
 AUTHORIZED_HASHFIX_HEAD = "6cffd8044b164fe9167ea2d76b8e727357cdfd98"
 HASHFIX_AUTH_PARENT = "4480f74ac909da4641fb9278dd9b536f66d8889d"
 HASHFIX_IMPLEMENTATION_HEAD = "cf44d3a0dcc431d1d4697325b620d229f24c4833"
+HASHFIX_VERIFIER_FIX_HEAD = "ee0287140049d6ba2c639b40c579a9b2b4939b76"
 EXPECTED_TRAIN_SHA = "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c"
 EXPECTED_TEST_SHA = "4e6c381d582ed24f92d17f620f4f0ad25e2e0def29eb57a91a5482867f6afe3c"
 EXPECTED_SAMPLE_SHA = "889f97d69659a64945421d841dcf96e5813020606f29b2992d4b9560cecdcba7"
@@ -100,8 +101,8 @@ LEDGER = ROOT / "experiments/runs/optimization_v3_research_next_v1/budget.jsonl"
 RUN_ROOT = ROOT / "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1"
 UNIT_ROOT = RUN_ROOT / "units"
 OUTPUT_NPZ = RUN_ROOT / "test_predictions.npz"
-PREFLIGHT_PATH = RUN_ROOT / "HASHFIX_PREFLIGHT.json"
-SYNTHETIC_QA = RUN_ROOT / "HASHFIX_SYNTHETIC_QA.json"
+PREFLIGHT_PATH = RUN_ROOT / "HASHFIX_PREFLIGHT_R2.json"
+SYNTHETIC_QA = RUN_ROOT / "HASHFIX_SYNTHETIC_QA_R2.json"
 TRAINED_FREEZE = ROOT / "reports/optimization_v3/a02_cgeom_benchmark_v1/E79_TRAINED_FREEZE.json"
 REPORT_ROOT = ROOT / "reports/optimization_v3/a02_cgeom_benchmark_v1"
 RECIPE_PATH = REPORT_ROOT / "FROZEN_RECIPES.json"
@@ -236,8 +237,8 @@ def verify_preparation_head() -> str:
     elif head == HASHFIX_IMPLEMENTATION_HEAD:
         if parents != [AUTHORIZED_HASHFIX_HEAD]:
             raise BatchError("Hash-fix implementation commit is not a direct child of Sol's authorization")
-    elif parents != [HASHFIX_IMPLEMENTATION_HEAD]:
-        raise BatchError("Hash-fix source must be Sol's authorization, the fixed implementation, or its one review-fix child")
+    elif parents not in ([HASHFIX_IMPLEMENTATION_HEAD], [HASHFIX_VERIFIER_FIX_HEAD]):
+        raise BatchError("Hash-fix source must follow the authorization through the two fixed review commits")
     return head
 
 
@@ -585,7 +586,10 @@ def preflight() -> dict[str, Any]:
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "authorized_hashfix_head": AUTHORIZED_HASHFIX_HEAD,
         "preparation_head": head,
-        "preparation_commit_is_direct_child_of_authorization": True,
+        "preparation_commit_is_authorized_descendant": True,
+        "preparation_commits_after_authorization": _git(
+            "rev-list", "--reverse", f"{AUTHORIZED_HASHFIX_HEAD}..{head}"
+        ).splitlines(),
         "working_tree_clean": True,
         "ledger": {"sha256": sha256_file(LEDGER), **budget},
         "official_input_sha256": inputs,

@@ -274,3 +274,7 @@ def test_resume_checkpoint_verifies_mapping_and_saved_artifacts_without_mutation
     assert snapshot["fit_failed"] == runner.RESUME_FAILED
     assert set(snapshot["prior_saved_units"]) == set(runner.FIT_IDS[:3])
     assert runner.sha256_file(runner.LEDGER) == before
+
+
+def test_preparation_head_is_authorized_single_parent_descendant() -> None:
+    assert runner.verify_preparation_head() == runner._git("rev-parse", "HEAD")
