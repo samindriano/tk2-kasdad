@@ -363,7 +363,10 @@ def _verify_a02_cache(frame: pd.DataFrame, origin: int, fit_rows: np.ndarray,
         raise CGeomError(f"A02 E{origin} model hash differs from receipt")
     model = joblib.load(model_path)
     state = json.loads(state_path.read_text(encoding="utf-8"))
-    if model.audit_state() != state or state.get("state_sha256") != receipt.get("state_sha256"):
+    # The original A02 receipt stores a canonical digest of the complete
+    # fit_state.json document (including its embedded model-state digest).
+    # Compare using that producer contract, not the nested state_sha256 field.
+    if model.audit_state() != state or canonical_sha256(state) != receipt.get("state_sha256"):
         raise CGeomError(f"A02 E{origin} model/state/receipt identity mismatch")
     if (receipt.get("fit_id") != f"A02_E{origin}_OBSERVED"
             or receipt.get("origin_cycle") != origin or receipt.get("residual_arm") != "observed"
