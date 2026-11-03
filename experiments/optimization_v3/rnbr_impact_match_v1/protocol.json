@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "protocol_id": "RNBR_IMPACT_MATCH_V1",
+  "status": "FROZEN_BEFORE_TASK_FITS",
+  "authorized_base_head": "ccc787cfe1538d7426cb952d6334892b9d818e31",
+  "origins": [
+    67,
+    75
+  ],
+  "fit_ids": [
+    "RNBR_IMPACT_MATCH_E67_OBSERVED",
+    "RNBR_IMPACT_MATCH_E67_SHUFFLED",
+    "RNBR_IMPACT_MATCH_E75_OBSERVED",
+    "RNBR_IMPACT_MATCH_E75_SHUFFLED"
+  ],
+  "fit_count": 4,
+  "fit_semantics": "one residual-memory construction for each origin x observed/shuffled arm; no estimator refit",
+  "target_source": "official Regression Train only",
+  "donors": "present-stream rows, cycles 56 through origin, finite exact float64 impact_load",
+  "queries": {
+    "E67_H12": [
+      68,
+      79
+    ],
+    "E67_W4": [
+      68,
+      71
+    ],
+    "E75_W6": [
+      76,
+      79
+    ]
+  },
+  "retrieval": {
+    "text": "reuse frozen A02 target-free TF-IDF vectorizer at the same origin; extract vectorizer state only",
+    "matching": "exact equality of parsed float64 impact_load; no binning, rounding, or quantile edges",
+    "geometry": "search all same-impact donors for positive cosine top32, stable descending cosine then source row",
+    "minimum_neighbors": 5,
+    "maximum_neighbors": 32
+  },
+  "residual": "threat_rank minus final-mapped R06 OOF prediction using the frozen strictly-earlier source cutoff",
+  "shuffle": {
+    "strata": "exact donor cycle x exact impact_load x fixed R06 OOF prediction decile",
+    "seed": 42,
+    "rng_reset_each_origin": true,
+    "traversal": "ascending cycle, impact_load, decile, and source row"
+  },
+  "formula": "clip(R06_origin + clip(0.25 * cosine_squared_weighted_median(residual), -5, +5), 0, 100)",
+  "fallback": "exact R06 for missing stream, missing impact, or fewer than five positive-cosine same-impact neighbors",
+  "preflight": {
+    "positive_cosine_support_coverage_minimum": 0.95,
+    "coverage_denominator": "present-stream queries in each declared W4, W6, and E67 H12 view",
+    "shuffle_source_position_movement_minimum": 0.8
+  },
+  "gates": {
+    "W4_gain_vs_R06_min": 0.0,
+    "W6_gain_vs_R06_min": 0.0,
+    "pooled_gain_vs_R06_min": 0.03,
+    "H12_gain_vs_R06_min": 0.0,
+    "pooled_gain_vs_matched_shuffle_min": 0.01,
+    "H12_gain_vs_matched_shuffle_min": 0.0,
+    "pooled_gain_vs_original_RNBR_min": 0.03,
+    "H12_gain_vs_original_RNBR_min": 0.0,
+    "tail_subgroup_harm_vs_R06_max_if_n_ge_100": 0.25
+  },
+  "source_boundaries": {
+    "classification_labels_or_probabilities": "never read",
+    "official Test or SampleSubmission": "never read",
+    "query targets": "read only after all four durable bundles and independent integrity checks",
+    "full_Train_refit": false,
+    "Kaggle": "not accessed"
+  },
+  "execution": {
+    "jobs": 1,
+    "threads": 2,
+    "max_rss_bytes": 6442450944,
+    "minimum_free_ram_bytes": 2147483648
+  },
+  "no_rescue": "preflight failure skips all task fits; no threshold, bin, seed, or recipe search"
+}
