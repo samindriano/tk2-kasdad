@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "protocol_id": "RNBR_IMPACT_MATCH_V2_1",
+  "status": "FROZEN_BEFORE_REPLAY_AND_TASK_FITS",
+  "authorized_base_head": "ccc787cfe1538d7426cb952d6334892b9d818e31",
+  "origins": [
+    67,
+    75
+  ],
+  "replay_fit_ids": [
+    "RNBR_IMPACT_MATCH_REPLAY_V21_E67_TFIDF",
+    "RNBR_IMPACT_MATCH_REPLAY_V21_E75_TFIDF"
+  ],
+  "replay_fit_count": 2,
+  "replay_fit_kind": "TARGET_FREE_TFIDF_REPLAY",
+  "replay_fit_semantics": "one fit_text_space/fit_transform per official Regression Train prefix, text/row/cycle inputs only",
+  "fit_ids": [
+    "RNBR_IMPACT_MATCH_V2_1_E67_OBSERVED",
+    "RNBR_IMPACT_MATCH_V2_1_E67_SHUFFLED",
+    "RNBR_IMPACT_MATCH_V2_1_E75_OBSERVED",
+    "RNBR_IMPACT_MATCH_V2_1_E75_SHUFFLED"
+  ],
+  "fit_count": 4,
+  "fit_semantics": "one residual-memory construction for each origin x observed/shuffled arm; no estimator refit",
+  "target_source": "official Regression Train only",
+  "donors": "present-stream rows, cycles 56 through origin, finite exact float64 impact_load",
+  "queries": {
+    "E67_H12": [
+      68,
+      79
+    ],
+    "E67_W4": [
+      68,
+      71
+    ],
+    "E75_W6": [
+      76,
+      79
+    ]
+  },
+  "retrieval": {
+    "text": "replay the original A02 TF-IDF recipe from official Regression Train text prefixes only; persist/load standalone vectorizers, never load A02 predictor models",
+    "tfidf_parameters": {
+      "ngram_range": [
+        1,
+        2
+      ],
+      "min_df": 3,
+      "max_df": 0.995,
+      "max_features": 20000,
+      "sublinear_tf": true,
+      "lowercase": true,
+      "strip_accents": "unicode",
+      "dtype": "float64"
+    },
+    "normalization": "l2",
+    "tokenization_and_missing_text": "exact original A02 _documents/_text_values implementation; missing/blank rows become empty strings and remain in the fit population",
+    "prefix_population": "ascending source rows with cycle_code 47 through origin; includes missing/blank stream rows as empty documents exactly as A02",
+    "expected_text_audits": {
+      "67": {
+        "fit_rows": 29705,
+        "fit_row_positions_sha256": "21df8b3baa7004c330d6ac403ed42e8cbd9de99081d048a15cd8b4332257108d",
+        "fit_documents_sha256": "4f67c935c6a82af0b3cf7451aec60474959fca2fe0c6f83ee764be3da8d17240",
+        "vocabulary_sha256": "109dbecffbacc91513f78723319cd6f03a7ae46db0a80cefab23989c8f5c1d5d",
+        "idf_sha256": "76c658982e37a33b6ef2080745487689948d57c5ff7a71c04167755f050ec8d6"
+      },
+      "75": {
+        "fit_rows": 42117,
+        "fit_row_positions_sha256": "e733031bb45eac2f1f55b94e45bc7161c1e80801f85564a25a289758100e2bc9",
+        "fit_documents_sha256": "e4537b03354f313cdd6440f86555530e18617fc89cda2e8509cea0aeffb0d554",
+        "vocabulary_sha256": "2603bf8ba90f509ccc81a4155159e7683b0a3660d7c2c0602ba49ee291266083",
+        "idf_sha256": "68fc4caea39a15a0ce7e79869ddab4ae6c239b4ae86ba10c3c01dfa1770980b5"
+      }
+    },
+    "matching": "exact equality of parsed float64 impact_load; no binning, rounding, or quantile edges",
+    "geometry": "search all same-impact donors for positive cosine top32, stable descending cosine then source row",
+    "minimum_neighbors": 5,
+    "maximum_neighbors": 32
+  },
+  "residual": "threat_rank minus final-mapped R06 OOF prediction using the frozen strictly-earlier source cutoff",
+  "shuffle": {
+    "strata": "exact donor cycle x exact impact_load x fixed R06 OOF prediction decile",
+    "seed": 42,
+    "rng_reset_each_origin": true,
+    "traversal": "ascending cycle, impact_load, decile, and source row"
+  },
+  "formula": "clip(R06_origin + clip(0.25 * cosine_squared_weighted_median(residual), -5, +5), 0, 100)",
+  "fallback": "exact R06 for missing stream, missing impact, or fewer than five positive-cosine same-impact neighbors",
+  "preflight": {
+    "positive_cosine_support_coverage_minimum": 0.95,
+    "coverage_denominator": "present-stream queries in each declared W4, W6, and E67 H12 view",
+    "shuffle_source_position_movement_minimum": 0.8
+  },
+  "gates": {
+    "W4_gain_vs_R06_min": 0.0,
+    "W6_gain_vs_R06_min": 0.0,
+    "pooled_gain_vs_R06_min": 0.03,
+    "H12_gain_vs_R06_min": 0.0,
+    "pooled_gain_vs_matched_shuffle_min": 0.01,
+    "H12_gain_vs_matched_shuffle_min": 0.0,
+    "pooled_gain_vs_original_RNBR_min": 0.03,
+    "H12_gain_vs_original_RNBR_min": 0.0,
+    "tail_subgroup_harm_vs_R06_max_if_n_ge_100": 0.25
+  },
+  "source_boundaries": {
+    "classification_labels_or_probabilities_or_model_pickles": "never read or deserialized in this versioned run",
+    "official Test or SampleSubmission": "never read",
+    "query targets": "read only after all four durable bundles and independent integrity checks",
+    "Regression threat_rank during text replay": "not parsed or read; target values used only for post-start donor residuals and post-integrity query evaluation",
+    "full_Train_refit": false,
+    "Kaggle": "not accessed"
+  },
+  "amendment_context": {
+    "domain_auc_was_seen_before_amendment": true,
+    "outcome_blind": false,
+    "research_question": "Does density weighting retain predictive benefit when domain AUC is slightly below 0.55 but ESS and clipping pass?",
+    "origins": "two fixed origins only; descriptive contrast, not evidence of a general AUC-to-task-gain relationship",
+    "status": "diagnostic-only; original N04 remains SKIPPED_SCIENTIFIC_PREFLIGHT"
+  },
+  "execution": {
+    "jobs": 1,
+    "threads": 2,
+    "max_rss_bytes": 6442450944,
+    "minimum_free_ram_bytes": 2147483648
+  },
+  "no_rescue": "preflight failure skips all task fits; no threshold, bin, seed, or recipe search"
+}

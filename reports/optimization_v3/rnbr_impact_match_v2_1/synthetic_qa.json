@@ -1,0 +1,40 @@
+{
+  "status": "PASS",
+  "fit_type": "SYNTHETIC_ONLY",
+  "actual_same_impact_builder": true,
+  "same_impact_full_bank_search": true,
+  "strict_time_and_geometry_validation": true,
+  "weighted_median_formula_observed_and_control": true,
+  "missing_stream_and_missing_impact_exact_R06_fallback": true,
+  "pickle_free_unicode_persistence_readback": true,
+  "idempotent_resume": true,
+  "changed_output_rejected": true,
+  "target_free_text_replay_synthetic": {
+    "fit_transform_calls": 1,
+    "rows": 12,
+    "standalone_persistence_readback": true,
+    "durable_resume_without_refit": true,
+    "missing_state_rejected": true,
+    "vectorizer_tamper_rejected": true,
+    "nested_recovery_path": [
+      "nested/recovered.npz",
+      "nested/recovered.json"
+    ],
+    "swapped_views_rejected": true,
+    "comparator_alignment_assertion": true,
+    "comparator_swapped_ids_rejected": true,
+    "independent_synthetic_verifier": {
+      "status": "PASS",
+      "synthetic_only": true,
+      "independent_top32_recomputed": 5,
+      "independent_weighted_median_and_fallback": true,
+      "matched_shuffle_source_movement_rate": 0.3333333333333333,
+      "observed_prediction_sha256": "4cc94b6020af7e4fe6fdb116ff5a9811a15f6540583475cb2a05254c71411ded",
+      "shuffled_prediction_sha256": "4f9ee42de38b2b66dfb2c8047981a18962958ea2670accf7fa875a702118a37b",
+      "official_sources_or_targets_accessed": false
+    },
+    "verifier_and_diagnostic_report_persistence": true
+  },
+  "synthetic_donor_rows": 6,
+  "synthetic_query_rows": 4
+}
