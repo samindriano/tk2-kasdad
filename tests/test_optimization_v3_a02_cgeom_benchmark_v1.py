@@ -2,8 +2,11 @@ from __future__ import annotations
 
 import tempfile
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
 import numpy as np
+import pandas as pd
 import pytest
 from scipy import sparse
 from sklearn.ensemble import HistGradientBoostingClassifier
@@ -157,25 +160,163 @@ def test_synthetic_transaction_resumes_durable_fit_without_second_callback() -> 
     assert result["unicode_ids_npz_sha256"]
 
 
+def _integration_synthetic_frame() -> tuple[pd.DataFrame, np.ndarray]:
+    n = 8
+    rows = np.arange(n, dtype=np.float64)
+    frame = pd.DataFrame({
+        "record_id": [f"integration-synthetic-{i}" for i in range(n)],
+        "impact_load": rows + 1.0,
+        "entry_friction": rows[::-1] + 0.5,
+        "cycle_code": np.arange(47, 55, dtype=np.int64),
+        "scope_pressure": (rows % 3) + 0.25,
+        "text_load": rows * 1.5 + 2.0,
+        "scope_trace": ["1", "2 nodes", "~3", "4", "1 nodes", "2", "~3 nodes", "4"],
+        "org_spread": ["1", "2", "3", "4", "1", "2", "3", "4"],
+        "module_spread": ["4", "3", "2", "1", "4", "3", "2", "1"],
+        "telemetry_flag": ["active", "inactive"] * 4,
+        "org_code": ["org-a", "org-b"] * 4,
+        "module_code": ["mod-a", "mod-b", "mod-c", "mod-d"] * 2,
+        "pattern_code": ["pat-a", "pat-b", "pat-c", "pat-d"] * 2,
+        "signal_stream": ["alpha beta", "beta gamma", "alpha delta", "gamma delta",
+                          "", "beta delta", "alpha gamma", "alpha beta delta"],
+    })
+    target = np.asarray([0, 1, 1, 0, 1, 0, 0, 1], dtype=np.int8)
+    return frame, target
+
+
+def test_synthetic_actual_integration_payloads_persist_and_resume_without_live_ledger(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    frame, target = _integration_synthetic_frame()
+    docs = frame.signal_stream.astype(str).tolist()
+    rows = np.arange(len(frame), dtype=np.int64)
+    cycles = frame.cycle_code.to_numpy(dtype=np.int64)
+    space, bank_matrix, missing = a02.fit_text_space(docs, rows, cycles, origin_cycle=79)
+    synthetic_model = SimpleNamespace(
+        text_space=space,
+        bank_matrix=bank_matrix,
+        bank_ids=frame.record_id.to_numpy(dtype=str),
+        bank_row_positions=rows,
+        bank_cycles=cycles,
+        bank_oof_probabilities=np.linspace(0.2, 0.8, len(frame), dtype=np.float64),
+        bank_residuals=target.astype(np.float64) - np.linspace(0.2, 0.8, len(frame), dtype=np.float64),
+    )
+    c2b_state = runner.positional.fit_c2b_structured_state(frame)
+    c2b_scaler = runner.positional.fit_c2b_scaler(c2b_state, frame)
+    c2b_encoder = runner.positional.fit_c2b_ohe(c2b_state, frame)
+    reused = {
+        runner.FIT_IDS[0]: c2b_state,
+        runner.FIT_IDS[1]: c2b_scaler,
+        runner.FIT_IDS[2]: c2b_encoder,
+    }
+    payloads: dict[str, object] = {}
+    callbacks = {fit_id: 0 for fit_id in runner.INTEGRATION_FIT_IDS}
+    temp_a02 = tmp_path / "synthetic_a02_model.bin"
+    temp_a02.write_bytes(b"synthetic-only-a02-boundary")
+    monkeypatch.setattr(runner, "A02_MODEL", temp_a02)
+    monkeypatch.setattr(runner, "_c2b_vectorizer", lambda: (space.vectorizer, synthetic_model))
+
+    def load_unit(fit_id: str):
+        if fit_id in reused:
+            return reused[fit_id]
+        if fit_id in payloads:
+            return payloads[fit_id]
+        raise AssertionError(f"Unexpected synthetic state request: {fit_id}")
+
+    def load_active_c2b_lr():
+        return payloads[runner.INTEGRATION_ACTIVE_ID_BY_SLOT[3]]
+
+    monkeypatch.setattr(runner, "_load_unit", load_unit)
+    monkeypatch.setattr(runner, "_load_active_c2b_lr", load_active_c2b_lr)
+    ledger = tmp_path / "synthetic_budget.jsonl"
+    artifact_root = tmp_path / "synthetic_units"
+    runner._append_event({
+        "event": "CARD_FITS_RESERVED", "reservation_key": runner.INTEGRATION_RESERVATION_KEY,
+        "card_id": runner.CARD_ID, "stage": runner.INTEGRATION_STAGE,
+        "category": "continuation", "fits": 6, "fit_ids": list(runner.INTEGRATION_FIT_IDS),
+        "synthetic": True,
+    }, ledger_path=ledger, synthetic=True)
+
+    for index, fit_id in enumerate(runner.INTEGRATION_FIT_IDS):
+        slot = runner.INTEGRATION_FIT_SLOT_BY_ID[fit_id]
+
+        def callback(fit_id: str = fit_id) -> object:
+            callbacks[fit_id] += 1
+            fit_target = None if slot in {4, 8} else target
+            payload = runner._make_fit_payload(fit_id, frame, fit_target)
+            payloads[fit_id] = payload
+            return payload
+
+        if index == 0:
+            with pytest.raises(RuntimeError, match="synthetic interruption"):
+                runner.execute_fit_unit(
+                    fit_id, runner.UNIT_COMPONENTS[slot], callback, synthetic=True,
+                    ledger_path=ledger, interrupt_after_receipt=True, artifact_root=artifact_root,
+                )
+            recovered = runner.execute_fit_unit(
+                fit_id, runner.UNIT_COMPONENTS[slot], callback, synthetic=True,
+                ledger_path=ledger, artifact_root=artifact_root,
+            )
+            assert recovered["status"] == "RECOVERED_DURABLE_RECEIPT"
+        else:
+            saved = runner.execute_fit_unit(
+                fit_id, runner.UNIT_COMPONENTS[slot], callback, synthetic=True,
+                ledger_path=ledger, artifact_root=artifact_root,
+            )
+            assert saved["status"] == "FIT_SAVED"
+    assert callbacks == {fit_id: 1 for fit_id in runner.INTEGRATION_FIT_IDS}
+    events = runner.read_events(ledger)
+    assert sum(event["event"] == "FIT_STARTED" for event in events) == 6
+    assert sum(event["event"] == "FIT_SAVED" for event in events) == 6
+    assert not any(event["event"] == "FIT_FAILED" for event in events)
+    for fit_id in runner.INTEGRATION_FIT_IDS:
+        receipt = runner._verify_receipt(fit_id, artifact_root=artifact_root)
+        assert receipt["synthetic"] is True
+        assert receipt["fit_population_rows"] == 8
+        assert receipt["test_data_used_for_fit"] is False
+
+
+def test_production_prediction_assembly_and_csv_serialization_are_synthetic(tmp_path: Path) -> None:
+    baseline = np.asarray([0.2, 0.4, 0.7, 0.6], dtype=np.float64)
+    missing = np.asarray([True, False, False, True])
+    fallback = np.asarray([0.8, 0.8, 0.8, 0.65], dtype=np.float64)
+    offset = np.asarray([0.1, 0.3, 0.7, 0.4], dtype=np.float64)
+    joint = np.asarray([0.25, 0.5, 0.8, 0.2], dtype=np.float64)
+    correction = np.asarray([0.0, 0.05, 0.0, 0.0], dtype=np.float64)
+    cgeom = np.clip(baseline + correction, 0.0, 1.0)
+    assembled = runner.assemble_candidate_predictions(
+        baseline=baseline, missing=missing, fallback=fallback,
+        offset_direct=offset, offset_formula=offset.copy(),
+        joint_direct=joint, joint_formula=joint.copy(),
+        cgeom_probability=cgeom, cgeom_correction=correction,
+        cgeom_neighbor_count=np.asarray([2, 3, 0, 1]),
+    )
+    assert assembled["formula_audit"]["status"] == "PASS"
+    assert assembled["probabilities"]["POS_BAG_OFFSET"][0] == fallback[0]
+    assert assembled["probabilities"]["JOINTPOS"][3] == fallback[3]
+    for candidate, probabilities in assembled["probabilities"].items():
+        assert np.array_equal(assembled["labels"][candidate], (probabilities >= runner.THRESHOLD).astype(np.int8))
+    ids = np.asarray(["synthetic-λ", "synthetic-短", "synthetic-🌱", "synthetic-" + "長" * 150])
+    frames = runner.build_submission_frames(ids, assembled["labels"], columns=["record_id", "artifact_signal"])
+    for candidate, frame in frames.items():
+        path = tmp_path / f"{candidate}.csv"
+        runner.write_once(path, frame.to_csv(index=False, lineterminator="\n").encode("utf-8"))
+        reread = pd.read_csv(path, dtype={"record_id": str})
+        assert reread.columns.tolist() == ["record_id", "artifact_signal"]
+        assert np.array_equal(reread.record_id.to_numpy(dtype=str), ids)
+        assert reread.artifact_signal.dtype.kind in "iu"
+        assert np.isin(reread.artifact_signal.to_numpy(), [0, 1]).all()
+
+
 def test_initial_budget_contract_and_recipe_freeze_are_exact() -> None:
-    if runner.sha256_file(runner.LEDGER) == runner.INITIAL_LEDGER_SHA:
-        events, snapshot = runner.verify_initial_budget()
-        assert snapshot["global_cap"] == 121
-        assert snapshot["fit_starts"] == 118
-        assert snapshot["fit_saved"] == 114
-        assert snapshot["fit_failed"] == 4
-        assert snapshot["fit_pending"] == 0
-        assert len(events) == 303
-    else:
-        # Hash-fix QA validates the exact Sol checkpoint without rewriting/resetting history.
-        events = runner.read_events(runner.LEDGER)
-        snapshot = runner._batch_budget_status(events)
-        assert runner.sha256_file(runner.LEDGER) == runner.RESUME_LEDGER_SHA
-        assert snapshot["global_cap"] == runner.HASHFIX_BASE_CAP
-        assert snapshot["fit_starts"] == runner.RESUME_STARTS
-        assert snapshot["fit_saved"] == runner.RESUME_SAVED
-        assert snapshot["fit_failed"] == runner.RESUME_FAILED
-        assert snapshot["fit_pending"] == 0
+    assert runner.sha256_file(runner.LEDGER) == runner.INTEGRATION_BASE_LEDGER_SHA
+    events, checkpoint = runner.verify_integration_checkpoint()
+    assert len(events) == runner.INTEGRATION_BASE_LEDGER_ROWS
+    assert checkpoint["active_reservations"] == 123
+    assert checkpoint["fit_starts"] == 123
+    assert checkpoint["fit_saved"] == 117
+    assert checkpoint["fit_failed"] == 6
+    assert checkpoint["fit_pending"] == 0
     recipe = runner._read_json(runner.RECIPE_PATH)
     assert recipe["fit_budget"]["maximum_new_units"] == 9
     assert recipe["fit_budget"]["global_cap"] == {"before": 121, "after": 130}
@@ -225,53 +366,101 @@ def test_independent_prediction_formula_and_availability_route_audit() -> None:
     assert bad_route["status"] == "FAIL"
 
 
-def test_hashfix_budget_adds_only_one_id_and_preserves_original_checkpoint() -> None:
+def test_integration_budget_adds_exactly_six_new_ids_without_reusing_released_slots() -> None:
     events = runner.read_events(runner.LEDGER)
+    old_to_new = {
+        runner.FAILED_ORIGINAL_LR_ID: runner.INTEGRATION_FIT_IDS[0],
+        runner.HASHFIX_REPLACEMENT_ID: runner.INTEGRATION_FIT_IDS[0],
+        **{runner.FIT_IDS[slot]: runner.INTEGRATION_FIT_IDS[slot - 3] for slot in range(4, 9)},
+    }
     events.extend([
         {
             "event": "BUDGET_CAP_AMENDMENT",
-            "amendment_id": runner.HASHFIX_AMENDMENT_ID,
-            "prior_global_cap": runner.HASHFIX_BASE_CAP,
-            "global_cap": runner.HASHFIX_AMENDED_CAP,
-            "prior_effective_caps": runner.HASHFIX_BASE_CATEGORY_CAPS,
-            "effective_caps": runner.HASHFIX_AMENDED_CATEGORY_CAPS,
-            "pre_amendment_ledger_sha256": runner.RESUME_LEDGER_SHA,
-            "maximum_replacement_fit_units": 1,
+            "amendment_id": runner.INTEGRATION_AMENDMENT_ID,
+            "prior_global_cap": runner.INTEGRATION_BASE_CAP,
+            "global_cap": runner.INTEGRATION_AMENDED_CAP,
+            "prior_effective_caps": runner.INTEGRATION_BASE_CATEGORY_CAPS,
+            "effective_caps": runner.INTEGRATION_AMENDED_CATEGORY_CAPS,
+            "pre_amendment_ledger_sha256": runner.INTEGRATION_BASE_LEDGER_SHA,
+            "pre_amendment_event_rows": runner.INTEGRATION_BASE_LEDGER_ROWS,
+            "maximum_replacement_fit_units": runner.INTEGRATION_MAX_FITS,
             "maximum_total_starts": runner.MAX_BATCH_STARTS,
-            "replaces_failed_fit_id": runner.FAILED_ORIGINAL_LR_ID,
-            "replacement_fit_id": runner.HASHFIX_REPLACEMENT_ID,
-            "original_failure_and_consumed_slot_preserved": True,
+            "batch_consumed_units_maximum": runner.MAX_BATCH_CONSUMED_UNITS,
+            "failed_fit_ids_preserved_and_consumed": sorted(runner.INTEGRATION_FAILED_FIT_IDS),
+            "old_to_new_fit_ids": old_to_new,
+            "active_fit_ids_by_component": runner.INTEGRATION_ACTIVE_ID_BY_COMPONENT,
+            "old_unstarted_fit_ids_remain_released": True,
+            "additional_retry_authorized": False,
+            "mapping_sha256": runner.sha256_file(runner.ROOT / runner.INTEGRATION_MAPPING_PATH),
         },
         {
             "event": "CARD_FITS_RESERVED",
-            "reservation_key": runner.HASHFIX_RESERVATION_KEY,
+            "reservation_key": runner.INTEGRATION_RESERVATION_KEY,
             "card_id": runner.CARD_ID,
-            "stage": runner.HASHFIX_REPLACEMENT_STAGE,
+            "stage": runner.INTEGRATION_STAGE,
             "category": "continuation",
-            "fits": 1,
-            "fit_ids": [runner.HASHFIX_REPLACEMENT_ID],
+            "fits": 6,
+            "fit_ids": list(runner.INTEGRATION_FIT_IDS),
+            "global_cap": runner.INTEGRATION_AMENDED_CAP,
+            "effective_category_cap": runner.INTEGRATION_AMENDED_CATEGORY_CAPS["continuation"],
+            "amendment_id": runner.INTEGRATION_AMENDMENT_ID,
         },
     ])
     status = runner._batch_budget_status(events)
-    assert status["global_cap"] == 131
-    assert status["active_reservations"] == 128
-    assert status["active_reservations_by_category"]["continuation"] == 48
-    assert status["fit_starts"] == 122
+    assert status["global_cap"] == 132
+    assert status["active_reservations"] == 129
+    assert status["active_reservations_by_category"]["continuation"] == 49
+    assert status["fit_starts"] == 123
     assert status["fit_saved"] == 117
-    assert status["fit_failed"] == 5
-    assert len(status["not_started_original_ids"]) == 5
-    assert status["not_started_replacement_id"] == [runner.HASHFIX_REPLACEMENT_ID]
+    assert status["fit_failed"] == 6
+    assert status["integration_started"] == 0
+    assert status["integration_unstarted_ids"] == sorted(runner.INTEGRATION_FIT_IDS)
+
+    early_failure = [dict(event) for event in events]
+    first_id = runner.INTEGRATION_FIT_IDS[0]
+    early_failure.extend([
+        {"event": "FIT_STARTED", "reservation_key": runner.INTEGRATION_RESERVATION_KEY, "fit_id": first_id},
+        {"event": "FIT_FAILED", "reservation_key": runner.INTEGRATION_RESERVATION_KEY, "fit_id": first_id},
+        {"event": "RESERVATION_UNUSED_RELEASED", "reservation_key": runner.INTEGRATION_RESERVATION_KEY,
+         "unused_fits": 5, "unstarted_fit_ids": list(runner.INTEGRATION_FIT_IDS[1:])},
+    ])
+    failed_status = runner._batch_budget_status(early_failure)
+    assert failed_status["fit_starts"] == 124
+    assert failed_status["fit_saved"] == 117
+    assert failed_status["fit_failed"] == 7
+    assert failed_status["active_reservations"] == 124
+    assert failed_status["active_reservations_by_category"]["continuation"] == 44
+    assert failed_status["integration_released_ids"] == sorted(runner.INTEGRATION_FIT_IDS[1:])
+
+    sixth_failure = [dict(event) for event in events]
+    for fit_id in runner.INTEGRATION_FIT_IDS[:-1]:
+        sixth_failure.extend([
+            {"event": "FIT_STARTED", "reservation_key": runner.INTEGRATION_RESERVATION_KEY, "fit_id": fit_id},
+            {"event": "FIT_SAVED", "reservation_key": runner.INTEGRATION_RESERVATION_KEY, "fit_id": fit_id},
+        ])
+    sixth_failure.extend([
+        {"event": "FIT_STARTED", "reservation_key": runner.INTEGRATION_RESERVATION_KEY,
+         "fit_id": runner.INTEGRATION_FIT_IDS[-1]},
+        {"event": "FIT_FAILED", "reservation_key": runner.INTEGRATION_RESERVATION_KEY,
+         "fit_id": runner.INTEGRATION_FIT_IDS[-1]},
+    ])
+    sixth_status = runner._batch_budget_status(sixth_failure)
+    assert sixth_status["fit_starts"] == 129
+    assert sixth_status["fit_saved"] == 122
+    assert sixth_status["fit_failed"] == 7
+    assert sixth_status["fit_pending"] == 0
+    assert sixth_status["integration_unstarted_ids"] == []
 
 
-def test_resume_checkpoint_verifies_mapping_and_saved_artifacts_without_mutation() -> None:
-    if runner.sha256_file(runner.LEDGER) != runner.RESUME_LEDGER_SHA:
-        pytest.skip("Exact Sol checkpoint was already advanced by an authorized batch run")
+def test_integration_checkpoint_verifies_mapping_and_saved_artifacts_without_mutation() -> None:
+    if runner.sha256_file(runner.LEDGER) != runner.INTEGRATION_BASE_LEDGER_SHA:
+        pytest.skip("Exact Sol integration checkpoint was already advanced by an authorized batch run")
     before = runner.sha256_file(runner.LEDGER)
-    events, snapshot = runner.verify_resume_checkpoint()
-    assert len(events) == runner.RESUME_LEDGER_ROWS
-    assert snapshot["fit_starts"] == runner.RESUME_STARTS
-    assert snapshot["fit_saved"] == runner.RESUME_SAVED
-    assert snapshot["fit_failed"] == runner.RESUME_FAILED
+    events, snapshot = runner.verify_integration_checkpoint()
+    assert len(events) == runner.INTEGRATION_BASE_LEDGER_ROWS
+    assert snapshot["fit_starts"] == runner.INTEGRATION_BASE_STARTS
+    assert snapshot["fit_saved"] == runner.INTEGRATION_BASE_SAVED
+    assert snapshot["fit_failed"] == runner.INTEGRATION_BASE_FAILED
     assert set(snapshot["prior_saved_units"]) == set(runner.FIT_IDS[:3])
     assert runner.sha256_file(runner.LEDGER) == before
 
