@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "reviewer": "Sol",
+  "candidate": "MIX50",
+  "csv_sha256": "48dcbd3f51fa4567e8f3f3a6838efdfaa50f4c2129e628e1b597436918c46ce7",
+  "rows": 29421,
+  "positives": 6800,
+  "missing_rows": 1062,
+  "hard_label_changes": {
+    "versus_POS": 352,
+    "versus_A02": 484
+  },
+  "formula": "missing=pP; present=0.5*pP+0.5*pA; threshold>=0.50",
+  "checks": [
+    "prior_manifest_source_hashes",
+    "official_ID_order_and_cycles",
+    "official_stream_mask",
+    "probability_finiteness_bounds",
+    "independent_formula_and_hard_labels",
+    "old_POS_and_A02_labels",
+    "schema_and_unique_IDs"
+  ],
+  "fits": 0,
+  "test_labels_accessed": false,
+  "upload_decision": "GO_ONE_FROZEN_MIX50_UPLOAD",
+  "final_slot_selection_changed": false
+}
