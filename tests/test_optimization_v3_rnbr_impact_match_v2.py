@@ -40,8 +40,35 @@ def test_replay_function_is_target_free():
     assert runner._protocol()["fit_count"] == 4
 
 
-def test_synthetic_executor_persistence_resume_and_verifier_guards_do_not_mutate_ledger():
+def test_completed_replays_cannot_be_run_again():
     before = runner._sha_file(runner.LEDGER)
+    try:
+        runner.run_replays()
+    except runner.ImpactMatchRunError as exc:
+        assert "already saved" in str(exc)
+        assert "prohibited" in str(exc)
+    else:
+        raise AssertionError("completed replay fits must never be refit")
+    assert before == runner._sha_file(runner.LEDGER)
+
+
+def test_v22_comparator_receipt_synthetic_distinguishes_raw_and_internal_hashes():
+    before = runner._sha_file(runner.LEDGER)
+    result = runner._comparator_repair_synthetic_qa()
+    after = runner._sha_file(runner.LEDGER)
+    assert result["status"] == "PASS"
+    assert result["replay_synthetic_sha256"] == runner._sha_file(runner.REPLAY_SYNTHETIC_PATH)
+    assert result["receipt_internal_integrity_verified"]
+    assert result["raw_receipt_file_sha_recorded_separately"]
+    assert result["incorrect_raw_vs_internal_hash_comparison_rejected"]
+    assert before == after
+
+
+def test_synthetic_executor_persistence_resume_and_verifier_guards_do_not_mutate_ledger(
+    tmp_path, monkeypatch,
+):
+    before = runner._sha_file(runner.LEDGER)
+    monkeypatch.setattr(runner, "_replay_receipt_path", lambda origin: tmp_path / f"E{origin}_receipt.json")
     result = runner.synthetic_qa()
     after = runner._sha_file(runner.LEDGER)
     assert result["status"] == "PASS"

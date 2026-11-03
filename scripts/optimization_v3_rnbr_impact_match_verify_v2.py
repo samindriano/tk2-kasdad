@@ -231,7 +231,7 @@ def _load_fit_bundle(fit_id: str, freeze: Mapping[str, Any]) -> tuple[dict[str, 
             or starts[0].get("fit_kind") != "TARGET_MEMORY_CONSTRUCTION"
             or saved[0].get("fit_kind") != "TARGET_MEMORY_CONSTRUCTION"
             or starts[0].get("source_commit") != receipt["metadata"].get("source_commit")
-            or receipt["metadata"].get("fit_recipe") != "RNBR_IMPACT_MATCH_V2_1 frozen protocol"
+            or receipt["metadata"].get("fit_recipe") != "RNBR_IMPACT_MATCH_V2_2 frozen protocol"
             or receipt["metadata"].get("query_targets_read") is not False
             or receipt["metadata"].get("classification_labels_or_probabilities_read") is not False
             or receipt["metadata"].get("full_a02_model_or_pickle_loaded") is not False
@@ -430,7 +430,7 @@ def verify_all() -> dict[str, Any]:
                 if not np.array_equal(arm_data[key], expected, equal_nan=True):
                     raise ImpactMatchVerificationError(f"E{origin} arm geometry/prefix differs for {key}")
         # Read only donor targets after all four bundle receipts are verified.
-        donor_targets = official.read_regression_targets(expected_rows, purpose=f"RNBR_IMPACT_MATCH_V2_1_E{origin}_INDEPENDENT_DONOR_AUDIT")
+        donor_targets = official.read_regression_targets(expected_rows, purpose=f"RNBR_IMPACT_MATCH_V2_2_E{origin}_INDEPENDENT_DONOR_AUDIT")
         if (not np.array_equal(donor_targets["ids"].astype(str), geo["donor_ids"].astype(str))
                 or not np.array_equal(donor_targets["cycles"].astype(np.int64), expected_cycles)):
             raise ImpactMatchVerificationError(f"E{origin} donor target row/ID/cycle join differs")
@@ -489,7 +489,7 @@ def verify_all() -> dict[str, Any]:
     # identities, target-free geometry, donor boundaries, shuffles and formulas
     # pass independent verification.
     query_rows = np.unique(np.concatenate([geometry[67]["query_rows"], geometry[75]["query_rows"]])).astype(np.int64)
-    query_truth = official.read_regression_targets(query_rows, purpose="RNBR_IMPACT_MATCH_V2_1_POST_BUNDLE_EVALUATION")
+    query_truth = official.read_regression_targets(query_rows, purpose="RNBR_IMPACT_MATCH_V2_2_POST_BUNDLE_EVALUATION")
     if (not np.array_equal(query_truth["ids"].astype(str), train["ids"][query_rows])
             or not np.array_equal(query_truth["cycles"].astype(np.int64), train["cycles"][query_rows])):
         raise ImpactMatchVerificationError("Query evaluation target rows/IDs/cycles differ")
@@ -630,7 +630,7 @@ def verify_all() -> dict[str, Any]:
     decision = "DIAGNOSTIC_ONLY_GATES_PASS" if gates_pass else "DIAGNOSTIC_ONLY_GATES_FAIL"
     results = {
         "status": decision,
-        "pilot_id": "RNBR_IMPACT_MATCH_V2_1_DIAGNOSTIC_ONLY",
+        "pilot_id": "RNBR_IMPACT_MATCH_V2_2_DIAGNOSTIC_ONLY",
         "qualification": "diagnostic-only; this amendment is never eligible for continuation and cannot clear the historical N04 verdict",
         "user_reported_public_context": {
             "R_NBR_public_MAE": 11.19115,

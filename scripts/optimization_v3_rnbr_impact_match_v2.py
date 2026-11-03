@@ -77,16 +77,27 @@ MIN_SHUFFLE_MOVEMENT = 0.80
 MAX_RSS_BYTES = 6 * 1024**3
 MIN_FREE_RAM_BYTES = 2 * 1024**3
 
-PROTOCOL_PATH = ROOT / "experiments/optimization_v3/rnbr_impact_match_v2_1/protocol.json"
+REPLAY_PROTOCOL_PATH = ROOT / "experiments/optimization_v3/rnbr_impact_match_v2_1/protocol.json"
 REPLAY_PREFLIGHT_PATH = ROOT / "reports/optimization_v3/rnbr_impact_match_v2_1/replay_preflight.json"
 REPLAY_FREEZE_PATH = ROOT / "experiments/optimization_v3/rnbr_impact_match_v2_1/replay_freeze.json"
-PREFLIGHT_PATH = ROOT / "reports/optimization_v3/rnbr_impact_match_v2_1/targetfree_preflight.json"
-SYNTHETIC_PATH = ROOT / "reports/optimization_v3/rnbr_impact_match_v2_1/synthetic_qa.json"
-FREEZE_PATH = ROOT / "experiments/optimization_v3/rnbr_impact_match_v2_1/freeze.json"
-REPORT_DIR = ROOT / "reports/optimization_v3/rnbr_impact_match_v2_1"
-RUN_ROOT = ROOT / "experiments/runs/optimization_v3_research_next_v1/RNBR_IMPACT_MATCH_V2_1"
-TEXT_STATE_DIR = RUN_ROOT / "text_space_replays"
+REPLAY_SYNTHETIC_PATH = ROOT / "reports/optimization_v3/rnbr_impact_match_v2_1/synthetic_qa.json"
+REPLAY_REPORT_DIR = ROOT / "reports/optimization_v3/rnbr_impact_match_v2_1"
+REPLAY_RUN_ROOT = ROOT / "experiments/runs/optimization_v3_research_next_v1/RNBR_IMPACT_MATCH_V2_1"
+
+PROTOCOL_PATH = ROOT / "experiments/optimization_v3/rnbr_impact_match_v2_2/protocol.json"
+PREFLIGHT_PATH = ROOT / "reports/optimization_v3/rnbr_impact_match_v2_2/targetfree_preflight.json"
+SYNTHETIC_PATH = ROOT / "reports/optimization_v3/rnbr_impact_match_v2_2/synthetic_qa.json"
+FREEZE_PATH = ROOT / "experiments/optimization_v3/rnbr_impact_match_v2_2/freeze.json"
+REPORT_DIR = ROOT / "reports/optimization_v3/rnbr_impact_match_v2_2"
+RUN_ROOT = ROOT / "experiments/runs/optimization_v3_research_next_v1/RNBR_IMPACT_MATCH_V2_2"
+TEXT_STATE_DIR = REPLAY_RUN_ROOT / "text_space_replays"
 GEOMETRY_DIR = RUN_ROOT / "targetfree_geometry"
+
+REPLAY_SOURCE_COMMIT = "62c3f6b51e962e3be0be80b23e53600ec511343b"
+REPLAY_FREEZE_SIGNATURE = "1e2cb020de626e5ebf3be2aba542e4815769e4c0a2d11ace9746335ca3ad5b29"
+REPLAY_PROTOCOL_SHA256 = "93eefe2a91c61ce0cab160646ce2d6cc0b03a119609d843009224fe0788dc07c"
+REPLAY_PREFLIGHT_SHA256 = "e7947b974848324498ae1519cffded289c7f17d8008b5670ea1dba8801103aba"
+REPLAY_SYNTHETIC_SHA256 = "b1038f4405b69896818b81f21551f8c36b45e39b8a61a38b8b9e3f197daaad17"
 
 REPLAY_EXPECTED_AUDITS = {
     67: {
@@ -183,14 +194,15 @@ def _source_paths() -> tuple[str, ...]:
 def _protocol() -> dict[str, Any]:
     return {
         "schema_version": 1,
-        "protocol_id": "RNBR_IMPACT_MATCH_V2_1",
-        "status": "FROZEN_BEFORE_REPLAY_AND_TASK_FITS",
+        "protocol_id": "RNBR_IMPACT_MATCH_V2_2",
+        "status": "FROZEN_BEFORE_MEMORY_TASK_FITS",
         "authorized_base_head": BASE_HEAD,
         "origins": [67, 75],
         "replay_fit_ids": list(REPLAY_FIT_IDS),
         "replay_fit_count": 2,
         "replay_fit_kind": "TARGET_FREE_TFIDF_REPLAY",
-        "replay_fit_semantics": "one fit_text_space/fit_transform per official Regression Train prefix, text/row/cycle inputs only",
+        "replay_fit_semantics": "already completed under immutable v2.1 freeze; reuse only the standalone vectorizers and receipts",
+        "additional_replay_fit_count": 0,
         "fit_ids": list(FIT_IDS),
         "fit_count": 4,
         "fit_semantics": "one residual-memory construction for each origin x observed/shuffled arm; no estimator refit",
@@ -251,7 +263,7 @@ def _protocol() -> dict[str, Any]:
         },
         "execution": {"jobs": 1, "threads": 2, "max_rss_bytes": MAX_RSS_BYTES,
                       "minimum_free_ram_bytes": MIN_FREE_RAM_BYTES},
-        "no_rescue": "preflight failure skips all task fits; no threshold, bin, seed, or recipe search",
+        "no_rescue": "preflight failure skips all task fits; no threshold, bin, seed, or recipe search; v2.1 replays are never repeated",
     }
 
 
@@ -424,6 +436,24 @@ def _original_rnbr_paths(origin: int, recovery: Mapping[str, Any]) -> tuple[str,
             folder.relative_to(ROOT).as_posix() + "/receipt.json")
 
 
+def _validate_original_bundle_integrity(npz_path: Path, receipt_path: Path,
+                                        receipt: Mapping[str, Any],
+                                        fit_record: Mapping[str, Any]) -> str:
+    """Validate the NPZ digest and the receipt's internal integrity signature.
+
+    The recovery manifest stores the receipt's internal integrity SHA, not the
+    SHA of the serialized JSON bytes. Return the latter separately for lineage.
+    """
+    receipt_body = {key: value for key, value in receipt.items() if key != "integrity_sha256"}
+    receipt_integrity = official.sha256_bytes(official.canonical_bytes(receipt_body))
+    if (_sha_file(npz_path) != fit_record.get("bundle_npz_sha256")
+            or receipt.get("npz_sha256") != fit_record.get("bundle_npz_sha256")
+            or receipt.get("integrity_sha256") != fit_record.get("receipt_sha256")
+            or receipt.get("integrity_sha256") != receipt_integrity):
+        raise ImpactMatchRunError("Historical original RNBR bundle or internal receipt signature differs")
+    return _sha_file(receipt_path)
+
+
 def _validate_comparator_alignment(origin: int, geometry: Mapping[str, np.ndarray],
                                    comparator: Mapping[str, Any]) -> None:
     if (not np.array_equal(comparator["rows"], geometry["query_rows"])
@@ -451,11 +481,8 @@ def _load_original_rnbr_predictions(origin: int, base_freeze: Mapping[str, Any],
     bundle_rel, receipt_rel = _original_rnbr_paths(origin, recovery)
     npz_path, receipt_path = ROOT / bundle_rel, ROOT / receipt_rel
     receipt = _read_json(receipt_path)
-    receipt_body = {key: value for key, value in receipt.items() if key != "integrity_sha256"}
-    if (_sha_file(npz_path) != fit_record["bundle_npz_sha256"]
-            or _sha_file(receipt_path) != fit_record["receipt_sha256"]
-            or receipt.get("integrity_sha256") != official.sha256_bytes(official.canonical_bytes(receipt_body))
-            or receipt.get("npz_sha256") != fit_record["bundle_npz_sha256"]
+    raw_receipt_sha256 = _validate_original_bundle_integrity(npz_path, receipt_path, receipt, fit_record)
+    if (receipt.get("npz_sha256") != fit_record["bundle_npz_sha256"]
             or receipt.get("identity", {}).get("fit_id") != fit_id
             or receipt.get("identity", {}).get("freeze_signature") != base_freeze["freeze_signature"]
             or receipt.get("identity", {}).get("query_labels_read") is not False
@@ -481,6 +508,7 @@ def _load_original_rnbr_predictions(origin: int, base_freeze: Mapping[str, Any],
             "prediction": prediction, "baseline": baseline,
             "npz_sha256": fit_record["bundle_npz_sha256"],
             "receipt_sha256": fit_record["receipt_sha256"],
+            "receipt_file_sha256": raw_receipt_sha256,
             "bundle_path": bundle_rel, "receipt_path": receipt_rel}
 
 
@@ -1011,54 +1039,92 @@ def _build_replay_freeze_body(protocol: Mapping[str, Any], preflight: Mapping[st
     }
 
 
+def _verify_completed_replay_checkpoint() -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+    """Verify immutable v2.1 replay fits without executing fit_transform again."""
+    freeze = _read_json(REPLAY_FREEZE_PATH)
+    body = {key: value for key, value in freeze.items() if key != "freeze_signature"}
+    protocol = _read_json(REPLAY_PROTOCOL_PATH)
+    preflight = _read_json(REPLAY_PREFLIGHT_PATH)
+    synthetic = _read_json(REPLAY_SYNTHETIC_PATH)
+    if (freeze.get("freeze_signature") != REPLAY_FREEZE_SIGNATURE
+            or freeze.get("freeze_signature") != _sha256(_canonical(body))
+            or freeze.get("protocol_id") != "RNBR_IMPACT_MATCH_V2_1_TEXT_REPLAY"
+            or _sha_file(REPLAY_PROTOCOL_PATH) != REPLAY_PROTOCOL_SHA256
+            or _sha_file(REPLAY_PREFLIGHT_PATH) != REPLAY_PREFLIGHT_SHA256
+            or _sha_file(REPLAY_SYNTHETIC_PATH) != REPLAY_SYNTHETIC_SHA256
+            or protocol.get("protocol_id") != "RNBR_IMPACT_MATCH_V2_1"
+            or preflight.get("status") != "READY_FOR_TWO_REPLAYS"
+            or synthetic.get("status") != "PASS"):
+        raise ImpactMatchRunError("Immutable completed replay checkpoint hashes/status do not verify")
+    if _sha_file(TRAIN) != freeze.get("input_sha256", {}).get("official_train_file_identity"):
+        raise ImpactMatchRunError("Official Regression Train changed since the saved v2.1 replay")
+    if _git("merge-base", "--is-ancestor", REPLAY_SOURCE_COMMIT, "HEAD") is None:
+        raise ImpactMatchRunError("Replay source commit is not in the current history")
+    frozen_source = freeze.get("source_sha256", {})
+    for rel, expected in frozen_source.items():
+        if rel in {"scripts/optimization_v3_rnbr_impact_match_v2.py",
+                   "scripts/optimization_v3_rnbr_impact_match_verify_v2.py"}:
+            blob = subprocess.check_output(["git", "show", f"{REPLAY_SOURCE_COMMIT}:{rel}"], cwd=ROOT)
+            actual = hashlib.sha256(blob).hexdigest()
+        else:
+            actual = _sha_file(ROOT / rel)
+        if actual != expected:
+            raise ImpactMatchRunError(f"Saved replay source/input identity changed: {rel}")
+
+    events = _ledger_events()
+    replay_starts = [event for event in events if event.get("event") == "FIT_STARTED"
+                     and event.get("reservation_key") == REPLAY_RESERVATION_KEY]
+    replay_saves = [event for event in events if event.get("event") == "FIT_SAVED"
+                    and event.get("reservation_key") == REPLAY_RESERVATION_KEY]
+    replay_failures = [event for event in events if event.get("event") == "FIT_FAILED"
+                       and event.get("reservation_key") == REPLAY_RESERVATION_KEY]
+    if (len(replay_starts) != 2 or len(replay_saves) != 2 or replay_failures
+            or {event.get("fit_id") for event in replay_starts} != set(REPLAY_FIT_IDS)
+            or {event.get("fit_id") for event in replay_saves} != set(REPLAY_FIT_IDS)
+            or any(event.get("fit_kind") != "TARGET_FREE_TFIDF_REPLAY" for event in replay_starts + replay_saves)):
+        raise ImpactMatchRunError("Saved replay fit ledger events do not reconcile exactly")
+    for origin in ORIGINS:
+        vectorizer, audit = _load_standalone_text_state(origin)
+        del vectorizer
+        receipt = _read_json(_replay_receipt_path(origin))
+        fit_id = REPLAY_FIT_IDS[ORIGINS.index(origin)]
+        expected_prefix = preflight["prefixes"][str(origin)]
+        start = next(event for event in replay_starts if event.get("fit_id") == fit_id)
+        saved = next(event for event in replay_saves if event.get("fit_id") == fit_id)
+        if (receipt.get("fit_id") != fit_id or receipt.get("source_commit") != REPLAY_SOURCE_COMMIT
+                or receipt.get("replay_freeze_signature") != REPLAY_FREEZE_SIGNATURE
+                or receipt.get("text_audit") != audit
+                or saved.get("receipt_sha256") != _sha_file(_replay_receipt_path(origin))
+                or start.get("source_commit") != REPLAY_SOURCE_COMMIT
+                or start.get("freeze_signature") != REPLAY_FREEZE_SIGNATURE
+                or audit.get("fit_row_positions_sha256") != expected_prefix["row_positions_sha256"]
+                or audit.get("fit_documents_sha256") != expected_prefix["documents_sha256"]):
+            raise ImpactMatchRunError(f"Saved E{origin} replay receipt/ledger/source identity differs")
+    reservation_specs = ((REPLAY_RESERVATION_KEY, REPLAY_FIT_IDS, 2),
+                         (RESERVATION_KEY, FIT_IDS, 4))
+    for key, fit_ids, count in reservation_specs:
+        matches = [event for event in events if event.get("event") == "CARD_FITS_RESERVED"
+                   and event.get("reservation_key") == key]
+        if len(matches) != 1 or matches[0].get("fit_ids") != list(fit_ids) or matches[0].get("fits") != count:
+            raise ImpactMatchRunError(f"Completed replay reservation is missing or differs: {key}")
+        if matches[0].get("freeze_signature") != REPLAY_FREEZE_SIGNATURE:
+            raise ImpactMatchRunError(f"Reservation is not linked to immutable replay freeze: {key}")
+    snapshot = _ledger_snapshot(events)
+    if (snapshot["global_cap"] != 83 or snapshot["caps"] != {
+            "pilot": 42, "continuation": 38, "control_replay": 2, "technical_retry": 1}
+            or snapshot["started"] != 79 or snapshot["saved"] != 76
+            or snapshot["failed"] != 3 or snapshot["pending"] != 0
+            or snapshot["active_reserved"] not in (79, 83)):
+        raise ImpactMatchRunError(f"Research Next ledger no longer matches the exact replay checkpoint: {snapshot}")
+    return freeze, protocol, preflight
+
+
 def prepare_replay() -> dict[str, Any]:
-    """Freeze source, exact target-free replay inputs, and synthetic checks before TF-IDF fits."""
-    protocol = _protocol()
-    _write_once(PROTOCOL_PATH, protocol)
-    synthetic = synthetic_qa()
-    _write_once(SYNTHETIC_PATH, synthetic)
-    frame, train, docs = _read_replay_inputs()
-    base = _check_base_freeze(train=train)
-    prefixes = _replay_prefix_report(train, docs, base["a02_metadata"])
-    preflight = {
-        "status": "READY_FOR_TWO_REPLAYS",
-        "classification_data_read": False,
-        "full_a02_model_or_pickle_loaded": False,
-        "train_columns_parsed": ["record_id", "cycle_code", "signal_stream"],
-        "regression_target_values_parsed_or_used": False,
-        "official_test_or_sample_submission_opened": False,
-        "query_targets_read": False,
-        "kaggle_accessed": False,
-        "train_rows": len(frame),
-        "train_file_sha256": _sha_file(TRAIN),
-        "prefixes": prefixes,
-        "historical_preflight_used_as": "expected A02 text audit digests only; old status/clearance flags are ignored",
-        "historical_blocker_path": OLD_BLOCKER.relative_to(ROOT).as_posix(),
-        "a02_text_metadata_verified": True,
-        "source_identity_sha256": _replay_input_source_hashes(),
-    }
-    _write_once(REPLAY_PREFLIGHT_PATH, preflight)
-    freeze_body = _build_replay_freeze_body(protocol, preflight, synthetic)
-    freeze = {**freeze_body, "freeze_signature": _sha256(_canonical(freeze_body))}
-    _write_once(REPLAY_FREEZE_PATH, freeze)
-    return {"status": preflight["status"], "freeze_signature": freeze["freeze_signature"],
-            "preflight": preflight, "freeze_path": REPLAY_FREEZE_PATH.relative_to(ROOT).as_posix()}
+    raise ImpactMatchRunError("The two authorized v2.1 replays are already saved; refit is prohibited")
 
 
 def _current_replay_freeze(*, require_clean: bool = True) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
-    freeze = _read_json(REPLAY_FREEZE_PATH)
-    body = {key: value for key, value in freeze.items() if key != "freeze_signature"}
-    protocol = _read_json(PROTOCOL_PATH)
-    preflight = _read_json(REPLAY_PREFLIGHT_PATH)
-    synthetic = _read_json(SYNTHETIC_PATH)
-    if (freeze.get("freeze_signature") != _sha256(_canonical(body))
-            or body != _build_replay_freeze_body(protocol, preflight, synthetic)):
-        raise ImpactMatchRunError("Replay source/input/parameter freeze no longer matches current artifacts")
-    if require_clean and _git("status", "--porcelain", "--untracked-files=all"):
-        raise ImpactMatchRunError("Replay fit requires the committed clean pre-replay checkpoint")
-    if _git("merge-base", "--is-ancestor", BASE_HEAD, "HEAD") is None:
-        raise ImpactMatchRunError("Cannot confirm authorized base commit ancestry")
-    return freeze, protocol, preflight
+    raise ImpactMatchRunError("The v2.1 replay checkpoint is immutable; use _verify_completed_replay_checkpoint")
 
 
 def _append_budget_event(event: Mapping[str, Any]) -> dict[str, Any]:
@@ -1133,7 +1199,7 @@ def amend_and_reserve_all(replay_freeze: Mapping[str, Any], source_commit: str) 
 
 
 def _replay_receipt_path(origin: int) -> Path:
-    return REPORT_DIR / "replays" / f"E{origin}_receipt.json"
+    return REPLAY_REPORT_DIR / "replays" / f"E{origin}_receipt.json"
 
 
 def _persist_vectorizer(origin: int, vectorizer: TfidfVectorizer, audit: Mapping[str, Any],
@@ -1218,103 +1284,53 @@ def _replay_saved(origin: int, freeze: Mapping[str, Any], events: list[dict[str,
 
 
 def run_replays() -> dict[str, Any]:
-    freeze, protocol, preflight = _current_replay_freeze(require_clean=True)
-    source_commit = _git("rev-parse", "HEAD")
-    if protocol.get("protocol_id") != "RNBR_IMPACT_MATCH_V2_1" or preflight.get("status") != "READY_FOR_TWO_REPLAYS":
-        raise ImpactMatchRunError("Clean target-free replay preflight is not ready")
-    resources = _resource_check()
-    budget = amend_and_reserve_all(freeze, source_commit)
-    frame, train, docs = _read_replay_inputs()
-    receipts = []
-    for origin in ORIGINS:
-        fit_id = REPLAY_FIT_IDS[ORIGINS.index(origin)]
-        events = _ledger_events()
-        if _replay_saved(origin, freeze, events):
-            receipts.append(_read_json(_replay_receipt_path(origin)))
-            continue
-        reservation = [event for event in events if event.get("event") == "CARD_FITS_RESERVED"
-                       and event.get("reservation_key") == REPLAY_RESERVATION_KEY]
-        if len(reservation) != 1 or fit_id not in reservation[0].get("fit_ids", []):
-            raise ImpactMatchRunError(f"Replay fit {fit_id} is not uniquely reserved")
-        if _ledger_snapshot(events)["pending"]:
-            raise ImpactMatchRunError("Another Research Next fit is already pending")
-        _resource_check()
-        _append_budget_event({
-            "event": "FIT_STARTED", "batch_id": "optimization_v3_research_next_v1",
-            "reservation_key": REPLAY_RESERVATION_KEY, "card_id": REPLAY_CARD_ID,
-            "stage": REPLAY_STAGE, "fit_id": fit_id, "cutoff": origin,
-            "component": "original_A02_word_TFIDF_text_space_replay",
-            "fit_kind": "TARGET_FREE_TFIDF_REPLAY", "fit_consumed_at_start": True,
-            "amendment_id": AMENDMENT_ID, "freeze_signature": freeze["freeze_signature"],
-            "source_commit": source_commit, "resource_snapshot": _resource_check(),
-            "classification_data_read": False, "regression_target_values_read": False,
-        })
+    raise ImpactMatchRunError("Both authorized v2.1 replay fits are already saved; replay refits are prohibited")
+
+
+def _comparator_repair_synthetic_qa() -> dict[str, Any]:
+    replay_synthetic = _read_json(REPLAY_SYNTHETIC_PATH)
+    if replay_synthetic.get("status") != "PASS":
+        raise ImpactMatchRunError("Immutable v2.1 synthetic replay/verifier QA is not PASS")
+    with tempfile.TemporaryDirectory(prefix="rnbr-comparator-receipt-synthetic-") as temp:
+        folder = Path(temp)
+        npz_path, receipt_path = folder / "arrays.npz", folder / "receipt.json"
+        npz_path.write_bytes(b"synthetic-safe-npz-digest-only")
+        npz_sha = _sha_file(npz_path)
+        body = {"fit_id": "SYNTHETIC", "npz_sha256": npz_sha, "identity": {"query_labels_read": False}}
+        integrity = official.sha256_bytes(official.canonical_bytes(body))
+        receipt = {**body, "integrity_sha256": integrity}
+        receipt_path.write_text(json.dumps(receipt, separators=(",", ":"), ensure_ascii=False) + "\n", encoding="utf-8")
+        fit_record = {"bundle_npz_sha256": npz_sha, "receipt_sha256": integrity}
+        raw_receipt_sha = _validate_original_bundle_integrity(npz_path, receipt_path, receipt, fit_record)
+        if raw_receipt_sha == integrity:
+            raise ImpactMatchRunError("Synthetic fixture failed to distinguish raw receipt bytes from internal integrity SHA")
+        tampered_record = {**fit_record, "receipt_sha256": "0" * 64}
         try:
-            mask = (train["cycles"] >= 47) & (train["cycles"] <= origin)
-            prefix_rows = train["rows"][mask].astype(np.int64)
-            prefix_cycles = train["cycles"][mask].astype(np.int64)
-            prefix_docs = docs[mask].tolist()
-            text_space, fit_matrix, missing = fit_text_space(
-                prefix_docs, prefix_rows, prefix_cycles, origin_cycle=origin,
-            )
-            audit = text_space.audit_state()
-            expected = {**REPLAY_EXPECTED_AUDITS[origin],
-                        "origin_cycle": origin, "fit_rows": int(len(prefix_rows)),
-                        "fit_row_positions_sha256": official.sha256_array(prefix_rows, "<i8"),
-                        "fit_documents_sha256": official.sha256_bytes(official.canonical_bytes(prefix_docs)),
-                        "tfidf_parameters": _jsonable(TFIDF_PARAMETERS), "tfidf_norm": "l2",
-                        "text_only_cosine": True}
-            if any(audit.get(key) != value for key, value in expected.items()):
-                raise ImpactMatchRunError(f"E{origin} replay digest/parameter mismatch; no retry is permitted")
-            if fit_matrix.shape[0] != len(prefix_rows) or len(missing) != len(prefix_rows):
-                raise ImpactMatchRunError(f"E{origin} replay fit output row count differs")
-            receipt = _persist_vectorizer(origin, text_space.vectorizer, audit, freeze, source_commit,
-                                          expected_audit=REPLAY_EXPECTED_AUDITS[origin])
-            receipt_hash = _sha_file(_replay_fit_dir(origin) / "receipt.json")
-            _append_budget_event({
-                "event": "FIT_SAVED", "batch_id": "optimization_v3_research_next_v1",
-                "reservation_key": REPLAY_RESERVATION_KEY, "card_id": REPLAY_CARD_ID,
-                "stage": REPLAY_STAGE, "fit_id": fit_id, "cutoff": origin,
-                "receipt_sha256": receipt_hash, "fit_kind": "TARGET_FREE_TFIDF_REPLAY",
-            })
-            _write_once(_replay_receipt_path(origin), receipt)
-            receipts.append(receipt)
-            del text_space, fit_matrix, prefix_docs, prefix_rows, prefix_cycles
-        except Exception as exc:
-            current = _ledger_events()
-            if not any(event.get("fit_id") == fit_id and event.get("event") in {"FIT_SAVED", "FIT_FAILED"}
-                       for event in current):
-                _append_budget_event({
-                    "event": "FIT_FAILED", "batch_id": "optimization_v3_research_next_v1",
-                    "reservation_key": REPLAY_RESERVATION_KEY, "card_id": REPLAY_CARD_ID,
-                    "stage": REPLAY_STAGE, "fit_id": fit_id, "cutoff": origin,
-                    "receipt_sha256": None, "fit_kind": "TARGET_FREE_TFIDF_REPLAY",
-                    "error": f"{type(exc).__name__}: {exc}",
-                })
-            # Replay failure is terminal and consumes its slot. Release only the
-            # four unstarted task-memory slots; never retry or refund the replay.
-            try:
-                research_next_budget.release_unused(LEDGER, card_id=CARD_ID, stage=STAGE)
-            except Exception as release_exc:
-                raise ImpactMatchRunError(
-                    f"Replay failed ({type(exc).__name__}: {exc}); memory reservation release is unresolved: {release_exc}"
-                ) from release_exc
-            raise
-    snapshot = _ledger_snapshot(_ledger_events())
-    if (len(receipts) != 2 or snapshot["started"] != 79 or snapshot["saved"] != 76
-            or snapshot["failed"] != 3 or snapshot["pending"] != 0):
-        raise ImpactMatchRunError(f"Replay fit accounting did not reconcile exactly: {snapshot}")
-    return {"status": "TWO_REPLAYS_SAVED", "fit_kind": "TARGET_FREE_TFIDF_REPLAY",
-            "source_commit": source_commit, "resource_snapshot": resources,
-            "fit_receipts": [{"fit_id": receipt["fit_id"], "receipt_sha256": receipt["receipt_sha256"],
-                              "vectorizer_sha256": receipt["vectorizer_sha256"]} for receipt in receipts],
-            "budget": snapshot, "ledger_sha256": _sha_file(LEDGER)}
+            _validate_original_bundle_integrity(npz_path, receipt_path, receipt, tampered_record)
+        except ImpactMatchRunError:
+            tamper_rejected = True
+        else:
+            tamper_rejected = False
+        if not tamper_rejected:
+            raise ImpactMatchRunError("Synthetic comparator receipt tamper was not rejected")
+    return {
+        "status": "PASS", "fit_type": "SYNTHETIC_ONLY",
+        "reused_v2_1_replay_synthetic_status": replay_synthetic["status"],
+        "replay_synthetic_sha256": _sha_file(REPLAY_SYNTHETIC_PATH),
+        "receipt_internal_integrity_verified": True,
+        "raw_receipt_file_sha_recorded_separately": True,
+        "incorrect_raw_vs_internal_hash_comparison_rejected": tamper_rejected,
+        "official_npz_or_targets_opened": False,
+    }
 
 
 def prepare_geometry() -> dict[str, Any]:
     """Rebuild target-free geometry from receipt-bound standalone TF-IDF states."""
-    replay_freeze, protocol, replay_preflight = _current_replay_freeze(require_clean=False)
-    synthetic = _read_json(SYNTHETIC_PATH)
+    replay_freeze, replay_protocol, replay_preflight = _verify_completed_replay_checkpoint()
+    protocol = _protocol()
+    _write_once(PROTOCOL_PATH, protocol)
+    synthetic = _comparator_repair_synthetic_qa()
+    _write_once(SYNTHETIC_PATH, synthetic)
     events = _ledger_events()
     replay_results = []
     for origin in ORIGINS:
@@ -1399,7 +1415,7 @@ def prepare_geometry() -> dict[str, Any]:
         raise ImpactMatchRunError("Inherited R06 W1 missing-stream guard differs from its verified historical evidence")
     report = {
         "status": status,
-        "pilot_id": "RNBR_IMPACT_MATCH_V2_1",
+        "pilot_id": "RNBR_IMPACT_MATCH_V2_2",
         "official_task_fit_started": False,
         "query_targets_read": False,
         "classification_labels_or_probabilities_read": False,
@@ -1412,6 +1428,8 @@ def prepare_geometry() -> dict[str, Any]:
         "impact_load_finite_unique_values": int(len(np.unique(impacts[np.isfinite(impacts)]))),
         "replay_lineage": {
             "replay_freeze_signature": replay_freeze["freeze_signature"],
+            "replay_source_commit": REPLAY_SOURCE_COMMIT,
+            "replay_namespace": "rnbr_impact_match_v2_1",
             "replay_fit_ids": list(REPLAY_FIT_IDS),
             "replay_receipts": [{"fit_id": item["fit_id"], "receipt_sha256": item["receipt_sha256"],
                                  "vectorizer_sha256": item["vectorizer_sha256"]} for item in replay_results],
@@ -1445,7 +1463,7 @@ def _build_freeze_body(base_freeze: Mapping[str, Any], preflight: Mapping[str, A
         raise ImpactMatchRunError("Impact-match protocol differs from its fixed recipe")
     if _read_json(SYNTHETIC_PATH).get("status") != "PASS":
         raise ImpactMatchRunError("Synthetic end-to-end QA is not PASS")
-    replay_freeze, _, replay_preflight = _current_replay_freeze(require_clean=False)
+    replay_freeze, _, replay_preflight = _verify_completed_replay_checkpoint()
     if (replay_preflight.get("status") != "READY_FOR_TWO_REPLAYS"
             or preflight.get("replay_lineage", {}).get("replay_freeze_signature") != replay_freeze["freeze_signature"]):
         raise ImpactMatchRunError("Geometry preflight is not bound to the validated target-free replay")
@@ -1458,7 +1476,7 @@ def _build_freeze_body(base_freeze: Mapping[str, Any], preflight: Mapping[str, A
         geometry_hashes[str(origin)] = _sha_file(path)
     return {
         "schema_version": 1,
-        "protocol_id": "RNBR_IMPACT_MATCH_V2_1",
+        "protocol_id": "RNBR_IMPACT_MATCH_V2_2",
         "authorized_base_head": BASE_HEAD,
         "base_rnbr_freeze_signature": base_freeze["freeze_signature"],
         "replay_freeze_signature": replay_freeze["freeze_signature"],
@@ -1521,7 +1539,7 @@ def _current_freeze() -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
             or _sha_file(SYNTHETIC_PATH) != freeze["synthetic_qa_sha256"]
             or _build_freeze_body(_read_json(BASE_FREEZE_PATH), preflight) != body):
         raise ImpactMatchRunError("Impact-match protocol, preflight, geometry, or freeze content changed")
-    replay_freeze, _, replay_preflight = _current_replay_freeze(require_clean=False)
+    replay_freeze, _, replay_preflight = _verify_completed_replay_checkpoint()
     events = _ledger_events()
     replay_starts = [event for event in events if event.get("event") == "FIT_STARTED"
                      and event.get("reservation_key") == REPLAY_RESERVATION_KEY]
@@ -1690,7 +1708,7 @@ def _fit_arrays(origin: int, arm: str, geometry: Mapping[str, np.ndarray],
         "query_targets_read": False,
         "classification_labels_or_probabilities_read": False,
         "test_or_sample_submission_opened": False,
-        "fit_recipe": "RNBR_IMPACT_MATCH_V2_1 frozen protocol",
+        "fit_recipe": "RNBR_IMPACT_MATCH_V2_2 frozen protocol",
         "new_estimator_fit_count": 0,
         "memory_construction_fit_count": 1,
     }
@@ -1753,7 +1771,7 @@ def _commit_fit_saved(fit_id: str, origin: int, receipt: Mapping[str, Any]) -> N
 
 def execute() -> dict[str, Any]:
     freeze, protocol, preflight = _current_freeze()
-    if protocol.get("protocol_id") != "RNBR_IMPACT_MATCH_V2_1" or preflight.get("status") != "PASS":
+    if protocol.get("protocol_id") != "RNBR_IMPACT_MATCH_V2_2" or preflight.get("status") != "PASS":
         raise ImpactMatchRunError("V2 scientific preflight did not pass; memory fits are blocked")
     source_commit = _git("rev-parse", "HEAD")
     resources = _resource_check()
@@ -1810,7 +1828,7 @@ def execute() -> dict[str, Any]:
                 )
             arrays, metadata = _fit_arrays(origin, arm, geometries[origin], donor_cache[origin], source_commit)
             metadata.update({
-                "fit_recipe": "RNBR_IMPACT_MATCH_V2_1 frozen protocol",
+                "fit_recipe": "RNBR_IMPACT_MATCH_V2_2 frozen protocol",
                 "resource_snapshot": _resource_check(),
                 "preflight_coverage": preflight["origin_support"][str(origin)]["views"],
                 "full_a02_model_or_pickle_loaded": False,
@@ -1851,21 +1869,15 @@ def execute() -> dict[str, Any]:
 
 def main() -> None:
     import argparse
-    parser = argparse.ArgumentParser(description="RNBR impact-match v2 target-free replay and diagnostic pilot")
+    parser = argparse.ArgumentParser(description="RNBR impact-match v2.2 diagnostic pilot")
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("--prepare-replay", action="store_true", help="Freeze target-free replay inputs and synthetic QA")
-    group.add_argument("--run-replays", action="store_true", help="Run/resume the exactly two authorized text-only TF-IDF replays")
     group.add_argument("--prepare-geometry", action="store_true", help="Rebuild clean preflight geometry from replay vectorizers")
     group.add_argument("--run", action="store_true", help="Run/resume exactly four authorized memory fits")
     group.add_argument("--verify", action="store_true", help="Independently verify completed diagnostic outputs")
     group.add_argument("--synthetic", action="store_true", help="Run only isolated synthetic end-to-end QA")
     args = parser.parse_args()
     if args.synthetic:
-        result = synthetic_qa()
-    elif args.prepare_replay:
-        result = prepare_replay()
-    elif args.run_replays:
-        result = run_replays()
+        result = _comparator_repair_synthetic_qa()
     elif args.prepare_geometry:
         result = prepare_geometry()
     elif args.verify:
