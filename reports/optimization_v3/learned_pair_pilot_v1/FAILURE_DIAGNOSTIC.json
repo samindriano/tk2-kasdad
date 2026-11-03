@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "card_id": "LEARNED_PAIR_PILOT_V1",
+  "status": "FAIL_OPTIMIZER_INCONCLUSIVE",
+  "source_commit": "5758c1402daaada936a2a8196ddab7f3c15358eb",
+  "freeze_signature": "d92c6cfe57b2562a629e562efdd38edac5951bc93e0f51c85061740b75561c1a",
+  "recipe_sha256": "4e48277d9f80b633689120a4d96cc564a337831d5ea8e5ae1cb4f0c1d301916f",
+  "authorization_sha256": "f09818090e0ff9df871e722aadbb7accf433f7e83b72208fd7d9f649a11e4bb7",
+  "input_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+  "preflight": {
+    "status": "PASS_READY_TO_FREEZE",
+    "ledger_sha256_before_amendment": "e6bf5051d4f45c3654ae6ce21f31437f30662db03e9c26e63f1051b2c7b4dc2b",
+    "cached_bag_binding": "prob_route_bag exactly equals raw prob_bag on present rows and prob_missing_hgb on missing rows for E67 and E75",
+    "a02_c16_references_aligned": true,
+    "input_rows": 50608
+  },
+  "fit_ids": [
+    {
+      "fit_id": "LEARNED_PAIR_PILOT_V1_E67_FM",
+      "status": "FIT_FAILED",
+      "started": true,
+      "retried": false,
+      "rows": 29705,
+      "receipt_sha256": "f0cc4a6bfb2ffd716939c0b305b88d6ab0f8ee9e364be912e895f43fcb278384",
+      "artifact_sha256": "718cf4b4c6f47b12bb3262333c47027080d2810d83498fdacb2e7fe189b6ac82",
+      "optimizer": {
+        "method": "L-BFGS-B",
+        "status_code": 1,
+        "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "success": false,
+        "nit": 1000,
+        "nfev": 1044,
+        "initial_loss_sum": 20606.106148940537,
+        "final_loss_sum": 6677.625305454964,
+        "final_gradient_inf_norm_sum": 1.3455633344948739,
+        "final_gradient_inf_norm_mean": 0.00004529753692963723,
+        "factor_change_norm": 74.09163167277802,
+        "elapsed_seconds": 367.8129046000013
+      },
+      "independent_fit_prefix_verification": {
+        "status": "PASS_INDEPENDENT_FAILED_FIT_DIAGNOSTIC",
+        "fit_logits_max_abs_difference": 0.0,
+        "objective_sum": 6677.625305454964,
+        "gradient_inf_norm_sum": 1.3455633344948739,
+        "query_targets_opened": false
+      },
+      "resource_samples": {
+        "peak_rss_bytes_sample": 357326848,
+        "minimum_available_ram_bytes_sample": 12607963136,
+        "sample_count": 723,
+        "note": "Sampled values, not an OS peak counter"
+      }
+    },
+    {
+      "fit_id": "LEARNED_PAIR_PILOT_V1_E67_NOPAIR",
+      "status": "UNSTARTED_RELEASED",
+      "started": false
+    },
+    {
+      "fit_id": "LEARNED_PAIR_PILOT_V1_E75_FM",
+      "status": "UNSTARTED_RELEASED",
+      "started": false
+    },
+    {
+      "fit_id": "LEARNED_PAIR_PILOT_V1_E75_NOPAIR",
+      "status": "UNSTARTED_RELEASED",
+      "started": false
+    }
+  ],
+  "outer_evaluation": {
+    "query_labels_opened": false,
+    "predictions_built": false,
+    "prelabel_verification_run": false,
+    "predictive_gates_evaluated": false
+  },
+  "budget": {
+    "global_cap": 113,
+    "active_reservations": 110,
+    "active_reservations_by_category": {
+      "continuation": 38,
+      "control_replay": 2,
+      "pilot": 69,
+      "technical_retry": 1
+    },
+    "fit_starts": 110,
+    "fit_saved": 106,
+    "fit_failed": 4,
+    "fit_pending": 0,
+    "unused_fit_ids_released": 3,
+    "final_ledger_event_rows": 281,
+    "final_ledger_sha256": "125446878a69bdecf2d658daf259622e568147642a072d2aaf2d8e21a8f47008",
+    "completion_receipt_sha256": "5feab4a3f039e16c3657fda40883a314d321a1696bd89b84f1a880da690c1b05"
+  },
+  "interpretation": "Optimizer nonconvergence makes this mechanism pilot inconclusive. No predictive outcome was evaluated, no champion changed, and no continuation or upload is authorized."
+}
