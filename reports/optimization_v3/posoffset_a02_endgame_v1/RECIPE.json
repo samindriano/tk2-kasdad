@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "campaign": "POSOFFSET_A02_ZERO_FIT_ENDGAME_V1",
+  "status": "FROZEN_TWO_POLICY_COMPARISON_PENDING_SOURCE_COMMIT",
+  "question": "Do the already-fitted positional and lexical-neighbor residual routes provide complementary predictive information when combined on the exact same query rows?",
+  "selection_disclosure": "Adaptive post-public selection: POS public score 0.83123 was observed above A02 0.82930 before this comparison. E67 and E75 overlap and are not independent holdouts.",
+  "policies": [
+    {
+      "id": "MIX50",
+      "priority": 1,
+      "present": "0.5*pP + 0.5*pA",
+      "missing": "pP exactly",
+      "threshold": ">= 0.50"
+    },
+    {
+      "id": "ADD_RESIDUAL",
+      "priority": 2,
+      "present": "clip(pP + (pA - b), 0, 1)",
+      "missing": "pP exactly",
+      "baseline_b": "A02 prediction bundle baseline_prediction, bit-exact same-origin C16 baseline_prediction; effective post-A02-clipping correction",
+      "threshold": ">= 0.50"
+    }
+  ],
+  "sources": {
+    "pP": "POS_BAG_OFFSET_V1 prob_offset_real on present rows; prob_missing_hgb on missing rows",
+    "pA": "original A02 observed prediction bundle prediction",
+    "b": "original A02 observed prediction bundle baseline_prediction; must equal same-origin C16 baseline_prediction bit-exactly",
+    "missing": "official Train signal_stream normalized by strip-empty rule"
+  },
+  "origins_and_views": {
+    "E67": {"query_cycles": [68, 79], "views": {"H12": [68, 79], "W4": [68, 71], "W5": [72, 75], "W6": [76, 79]}},
+    "E75": {"query_cycles": [76, 79], "views": {"W6": [76, 79]}},
+    "overlap": true,
+    "interpretation": "sensitivity views, not replication"
+  },
+  "gates": {
+    "macro_f1_gain_vs_pP_min": 0.0005,
+    "required_views": ["E67_H12", "E75_W6"],
+    "E67_W4_W5_W6_macro_f1_harm_max": 0.003,
+    "supported_subgroup_min_rows": 200,
+    "supported_subgroup_min_each_class": 30,
+    "supported_subgroup_macro_f1_harm_max": 0.01,
+    "supported_subgroup_positive_recall_harm_max": 0.02,
+    "numeric_tolerance": 1e-12,
+    "unsupported_subgroups": "UNKNOWN; do not impute estimates"
+  },
+  "comparators": ["pP", "pA", "b (A02 input / routed Sparse25 baseline)"],
+  "candidate_priority_if_both_qualify": "MIX50",
+  "new_fit_count": 0,
+  "test_access": "prohibited until one policy qualifies; E79 inputs are not part of the initial freeze",
+  "upload": "not authorized for Luna; prepare at most one selected E79 CSV for independent Sol review; do not upload",
+  "ledger": "read-only; no RESERVE/FIT events"
+}
