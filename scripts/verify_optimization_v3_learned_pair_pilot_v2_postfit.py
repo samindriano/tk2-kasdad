@@ -31,6 +31,7 @@ SOURCE_FILES = (
     "tests/test_learned_pair_pilot_v2_postfit.py",
 )
 EXPECTED_TRAINING_COMMIT = "2e5418c5181e08c77c6c4c0e135835d5f4fc84a2"
+EXPECTED_AUTHORIZATION_COMMIT = "626eb4298021f6f2cbd262241ec85bf4faa9cdd7"
 EXPECTED_LEDGER_SHA256 = "ccf18357d2d7fcb513e9f36b8fb2ec39688d28ab3d43471b5db345c35fce6b14"
 EXPECTED_BLOCKER_SHA256 = "561dda827f000bf7e681026e1504731249fa339db08689e5f1e1e95a6483f323"
 
@@ -54,6 +55,10 @@ def _canonical(value: Any) -> bytes:
 
 def _canonical_sha256(value: Any) -> str:
     return _sha256_bytes(_canonical(value))
+
+
+def _normalized_worktree_bytes(raw: bytes) -> bytes:
+    return raw.replace(b"\r\n", b"\n")
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -148,14 +153,17 @@ def _verify_identity_vectors(rows: np.ndarray, ids: np.ndarray, cycles: np.ndarr
         raise VerificationError("Postfit score row/ID/cycle identity mismatch")
 
 
-def _validate_source_commit(commit: str, expected_hashes: dict[str, str], source_files: tuple[str, ...]) -> None:
+def _validate_source_commit(commit: str, expected_hashes: dict[str, str],
+                            expected_blob_hashes: dict[str, str], source_files: tuple[str, ...]) -> None:
     if set(expected_hashes) != set(source_files):
         raise VerificationError("Committed amendment source list differs from its receipt")
     for rel, expected in expected_hashes.items():
         path = ROOT / rel
         if not path.is_file() or _sha256_file(path) != expected:
             raise VerificationError(f"Amendment source changed: {rel}")
-        if _sha256_bytes(_git_blob(commit, rel)) != expected:
+        blob = _git_blob(commit, rel)
+        if (_sha256_bytes(blob) != expected_blob_hashes.get(rel)
+                or _normalized_worktree_bytes(path.read_bytes()) != blob):
             raise VerificationError(f"Amendment source commit blob changed: {rel}")
 
 
@@ -172,6 +180,11 @@ def verify_export(run_root: Path) -> dict[str, Any]:
             or receipt.get("original_ledger_sha256") != EXPECTED_LEDGER_SHA256
             or receipt.get("authorization_sha256") != _sha256_file(AUTH_DOC)):
         raise VerificationError("Postfit amendment authorization/lineage binding mismatch")
+    auth_blob = _git_blob(EXPECTED_AUTHORIZATION_COMMIT,
+                          "reports/optimization_v3/learned_pair_pilot_v2/POSTFIT_SERIALIZATION_AUTHORIZATION.md")
+    if (_sha256_bytes(auth_blob) != receipt.get("authorization_git_blob_sha256")
+            or _normalized_worktree_bytes(AUTH_DOC.read_bytes()) != auth_blob):
+        raise VerificationError("Reviewed postfit authorization does not match its committed Git blob")
     training_freeze_path = pilot.RUN_ROOT / "FREEZE.json"
     original_ready_path = pilot.RUN_ROOT / "PREDICTIONS_READY.json"
     original_blocker_path = BLOCKER
@@ -193,9 +206,13 @@ def verify_export(run_root: Path) -> dict[str, Any]:
     if _sha256_file(pilot.TRAIN) != receipt.get("input_sha256"):
         raise VerificationError("Official Train input hash changed")
     for rel, expected in frozen["source_hashes"].items():
-        if _sha256_file(ROOT / rel) != expected or _sha256_bytes(_git_blob(frozen["source_commit"], rel)) != expected:
+        blob = _git_blob(frozen["source_commit"], rel)
+        if (_sha256_file(ROOT / rel) != expected
+                or _sha256_bytes(blob) != receipt.get("training_source_git_blob_sha256", {}).get(rel)
+                or _normalized_worktree_bytes((ROOT / rel).read_bytes()) != blob):
             raise VerificationError(f"Frozen training source current file/Git blob mismatch: {rel}")
-    _validate_source_commit(receipt["amendment_source_commit"], receipt["amendment_source_hashes"], SOURCE_FILES)
+    _validate_source_commit(receipt["amendment_source_commit"], receipt["amendment_source_hashes"],
+                            receipt["amendment_source_git_blob_sha256"], SOURCE_FILES)
     if original_ready.get("freeze_signature") != freeze_sig or original_ready.get("query_labels_opened") is not False:
         raise VerificationError("Original prediction readiness is not the frozen closed-label object")
     if ((run_root / "FREEZE.json").read_bytes() != freeze_raw

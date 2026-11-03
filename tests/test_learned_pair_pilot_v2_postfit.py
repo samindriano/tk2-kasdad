@@ -146,5 +146,3 @@ def test_synthetic_amendment_lifecycle_has_no_fit_or_live_ledger_write(tmp_path:
     assert result["production_ledger_writer_blocked"] is True
     assert result["production_ledger_sha256_before"] == result["production_ledger_sha256_after"] == before == after
     assert result["frozen_gate_parity_counts"] == {"E67": 40, "E75": 10}
-
-\n

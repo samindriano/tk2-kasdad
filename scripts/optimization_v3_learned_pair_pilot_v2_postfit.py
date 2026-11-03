@@ -208,40 +208,56 @@ def _git_output(*args: str) -> bytes:
     return process.stdout
 
 
+def _normalized_worktree_bytes(raw: bytes) -> bytes:
+    return raw.replace(b"\r\n", b"\n")
+
+
 def _file_hashes(paths: tuple[str, ...]) -> dict[str, str]:
     return {rel: pilot._sha256_file(ROOT / rel) for rel in paths}
 
 
-def _validate_training_lineage(frozen: Mapping[str, Any]) -> dict[str, str]:
+def _validate_training_lineage(frozen: Mapping[str, Any]) -> dict[str, Any]:
     if frozen.get("source_commit") != EXPECTED_TRAINING_COMMIT:
         raise PostfitError("Frozen training commit differs from the reviewed V2 source commit")
+    training_blob_hashes: dict[str, str] = {}
     for rel, expected in frozen["source_hashes"].items():
         path = ROOT / rel
         if not path.is_file() or pilot._sha256_file(path) != expected:
             raise PostfitError(f"Frozen training source hash changed: {rel}")
         blob = _git_output("show", f"{frozen['source_commit']}:{rel}")
-        if sha256_bytes(blob) != expected:
-            raise PostfitError(f"Original training Git blob differs from frozen source hash: {rel}")
+        if _normalized_worktree_bytes(path.read_bytes()) != blob:
+            raise PostfitError(f"Original training checkout is not an EOL-only conversion of its Git blob: {rel}")
+        training_blob_hashes[rel] = sha256_bytes(blob)
     if pilot._sha256_file(pilot.TRAIN) != frozen["input_sha256"]:
         raise PostfitError("Official Classification Train hash changed")
     if pilot._sha256_file(ORIGINAL_RUN_ROOT / "SYNTHETIC_QA.json") != frozen["synthetic_qa_sha256"]:
         raise PostfitError("Original source-bound synthetic QA receipt changed")
     if pilot._sha256_file(POSTFIT_BLOCKER) != EXPECTED_BLOCKER_SHA256:
         raise PostfitError("Original post-fit failure diagnostic changed")
-    if not AUTH_DOC.is_file() or sha256_bytes(_git_output(
-            "show", f"{EXPECTED_AUTHORIZATION_COMMIT}:reports/optimization_v3/learned_pair_pilot_v2/POSTFIT_SERIALIZATION_AUTHORIZATION.md")) != pilot._sha256_file(AUTH_DOC):
+    if not AUTH_DOC.is_file():
         raise PostfitError("Reviewed post-fit authorization document is missing")
+    auth_blob = _git_output(
+        "show", f"{EXPECTED_AUTHORIZATION_COMMIT}:reports/optimization_v3/learned_pair_pilot_v2/POSTFIT_SERIALIZATION_AUTHORIZATION.md")
+    if _normalized_worktree_bytes(AUTH_DOC.read_bytes()) != auth_blob:
+        raise PostfitError("Reviewed post-fit authorization differs from its committed Git blob")
     saved_inputs = offset_inputs.verify_saved_inputs(include_current_code=True)
     if saved_inputs != frozen["saved_inputs"]:
         raise PostfitError("Frozen positional/A02 input source lineages changed")
     source_hashes = _file_hashes(AMENDMENT_SOURCE_FILES)
+    amendment_blob_hashes: dict[str, str] = {}
     for rel, expected in source_hashes.items():
         blob = _git_output("show", f"HEAD:{rel}")
-        if sha256_bytes(blob) != expected:
-            raise PostfitError(f"Amendment source is not committed at current HEAD: {rel}")
+        if _normalized_worktree_bytes((ROOT / rel).read_bytes()) != blob:
+            raise PostfitError(f"Amendment source checkout differs from its committed Git blob: {rel}")
+        amendment_blob_hashes[rel] = sha256_bytes(blob)
     if pilot._git("status", "--porcelain"):
         raise PostfitError("Amendment export requires committed clean adapter/verifier/tests")
-    return source_hashes
+    return {
+        "amendment_source_hashes": source_hashes,
+        "amendment_source_git_blob_sha256": amendment_blob_hashes,
+        "training_source_git_blob_sha256": training_blob_hashes,
+        "authorization_git_blob_sha256": sha256_bytes(auth_blob),
+    }
 
 
 def _ensure_copy(source: Path, destination: Path) -> None:
@@ -524,9 +540,11 @@ def export() -> dict[str, Any]:
         "amendment_id": AMENDMENT_ID, "card_id": CARD_ID,
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "authorization_sha256": pilot._sha256_file(AUTH_DOC),
+        "authorization_git_blob_sha256": amendment_sources["authorization_git_blob_sha256"],
         "original_blocker_sha256": original["blocker_sha256"],
         "training_source_commit": original["frozen"]["source_commit"],
         "training_source_hashes": original["frozen"]["source_hashes"],
+        "training_source_git_blob_sha256": amendment_sources["training_source_git_blob_sha256"],
         "freeze_signature": original["frozen"]["freeze_signature"],
         "input_sha256": original["frozen"]["input_sha256"],
         "original_freeze_sha256": original["freeze_sha256"],
@@ -536,7 +554,8 @@ def export() -> dict[str, Any]:
         "original_ledger_snapshot": fit_accounting["snapshot"],
         "fit_receipts": fit_accounting["fit_receipts"],
         "amendment_source_commit": pilot._git("rev-parse", "HEAD"),
-        "amendment_source_hashes": amendment_sources,
+        "amendment_source_hashes": amendment_sources["amendment_source_hashes"],
+        "amendment_source_git_blob_sha256": amendment_sources["amendment_source_git_blob_sha256"],
         "origins": origins,
         "preservation": {
             "original_run_root_unchanged": True,
