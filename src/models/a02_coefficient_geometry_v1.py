@@ -139,7 +139,7 @@ class CoefficientGeometryPredictor:
         # A02 persists typed IDs such as ``str:record-id``.  Keep that exact
         # representation; raw synthetic IDs are normalized by the same helper.
         raw_bank_ids = tuple(bank_ids)
-        if raw_bank_ids and all(isinstance(value, str) and value.startswith(("str:", "int:"))
+        if raw_bank_ids and all(isinstance(value, str) and value.startswith(("str:", "str_:", "int:"))
                                 for value in raw_bank_ids):
             ids = tuple(str(value) for value in raw_bank_ids)
             if len(set(ids)) != len(ids) or any(value.endswith(":None") or value.endswith(":<NA>") for value in ids):

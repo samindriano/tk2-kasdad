@@ -121,6 +121,35 @@ def test_all_one_weights_recover_a02_and_fixed_mass():
     assert len(result["query_record_ids"][0]) > 64
 
 
+def test_preserves_a02_numpy_unicode_ids_without_double_prefixing():
+    fixture = _small_predictor_fixture()
+    typed_ids = np.asarray([f"str_:{value}" for value in fixture["bank_ids"]], dtype=str)
+    predictor = CoefficientGeometryPredictor(origin_cycle=48, arm="aligned").fit(
+        text_space=fixture["text_space"], bank_matrix=fixture["bank_matrix"],
+        bank_ids=typed_ids, bank_row_positions=fixture["bank_rows"],
+        bank_cycles=fixture["bank_cycles"], bank_oof_probabilities=fixture["probabilities"],
+        bank_residuals=fixture["residuals"],
+        beta_in_a02_column_order=np.zeros(len(fixture["text_space"].vectorizer.vocabulary_)),
+    )
+    common = {
+        "query_texts": fixture["query_texts"][:1],
+        "query_row_positions": fixture["query_rows"][:1],
+        "query_cycles": fixture["query_cycles"][:1],
+        "baseline_probabilities": fixture["baseline"][:1],
+        "original_a02_probabilities": fixture["original_prediction"][:1],
+        "original_a02_neighbor_source_rows": fixture["original_rows"][:1],
+        "original_a02_neighbor_similarities": fixture["original_sims"][:1],
+        "missing_mask": fixture["missing"][:1],
+    }
+    result = predictor.predict(query_record_ids=fixture["query_ids"][:1], **common)
+    count = int(result["neighbor_count"][0])
+    assert count > 0
+    assert result["neighbor_ids"][0, 0] == "str_:bank-0"
+    assert all(value.startswith("str_:") for value in result["neighbor_ids"][0, :count])
+    with pytest.raises(ValueError, match="overlap"):
+        predictor.predict(query_record_ids=np.asarray(["bank-0"], dtype=str), **common)
+
+
 def test_full_bank_search_can_select_donor_outside_original_top32():
     vectorizer = TfidfVectorizer(use_idf=False, norm="l2", lowercase=False,
                                  token_pattern=r"(?u)\b\w+\b")

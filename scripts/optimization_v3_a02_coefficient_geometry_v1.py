@@ -413,9 +413,12 @@ def _verify_a02_cache(frame: pd.DataFrame, origin: int, fit_rows: np.ndarray,
     if (model.bank_row_positions.min() < 0 or model.bank_row_positions.max() >= len(frame)
             or len(np.unique(model.bank_row_positions)) != len(model.bank_row_positions)):
         raise CGeomError(f"A02 E{origin} residual bank row positions are invalid")
-    expected_bank_ids = frame.iloc[model.bank_row_positions]["record_id"].astype(str).to_numpy()
+    expected_bank_id_values = np.asarray(
+        frame.iloc[model.bank_row_positions]["record_id"].astype(str).tolist(), dtype=str
+    )
+    expected_bank_ids = a02._ids(expected_bank_id_values, "expected_bank_ids")
     expected_bank_cycles = frame.iloc[model.bank_row_positions]["cycle_code"].to_numpy(dtype=np.int64)
-    if (tuple(f"str:{value}" for value in expected_bank_ids) != tuple(model.bank_ids)
+    if (expected_bank_ids != tuple(model.bank_ids)
             or not np.array_equal(expected_bank_cycles, model.bank_cycles)
             or np.any(expected_bank_cycles > origin)
             or int(model.audit_state()["bank_rows"]) != len(expected_bank_ids)):
