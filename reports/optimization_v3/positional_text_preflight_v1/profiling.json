@@ -1,0 +1,308 @@
+{
+  "status": "PASS_LABEL_FREE_POSITIONAL_PREFLIGHT",
+  "objective": "Describe absolute token-third structure and its deterministic within-document order-shuffle control; no predictive claim.",
+  "source": {
+    "path": "data/raw/classification/Train.csv",
+    "sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "rows": 50608,
+    "columns_read": [
+      "record_id",
+      "cycle_code",
+      "signal_stream"
+    ],
+    "columns_not_read": [
+      "artifact_signal",
+      "threat_rank",
+      "all other targets"
+    ],
+    "record_id_used_only_for_row_identity_validation": true,
+    "cycle_min_max": [
+      47,
+      79
+    ],
+    "present_stream_rows": 47204,
+    "missing_or_blank_stream_rows": 3404
+  },
+  "tokenization": {
+    "normalizer": "src.models.classification_models._text_values",
+    "analyzer": "sklearn TfidfVectorizer word analyzer; exact existing C2_B lowercase/Unicode accent-strip/default token rule",
+    "existing_c2b_parameters": {
+      "ngram_range": [
+        1,
+        2
+      ],
+      "min_df": 3,
+      "max_df": 0.995,
+      "max_features": 20000,
+      "sublinear_tf": true,
+      "lowercase": true,
+      "strip_accents": "unicode",
+      "dtype": "float64"
+    },
+    "preflight_analyzer_ngram_range": [
+      1,
+      1
+    ],
+    "vectorizer_fit_or_fit_transform_calls": 0,
+    "position_rule": "third(i)=floor(3*i/n), i zero-based, n normalized unigram tokens; empty stream kept separate"
+  },
+  "cohorts": {
+    "E67_prefix_47_67": {
+      "cohort": "E67_prefix_47_67",
+      "rows": 29705,
+      "stream_present_rows": 27676,
+      "stream_missing_or_blank_rows": 2029,
+      "present_rows_with_zero_tokens": 0,
+      "token_count_present": {
+        "n": 27676,
+        "min": 9,
+        "p50": 34.0,
+        "p90": 79.0,
+        "p95": 102.0,
+        "max": 143,
+        "mean": 41.4264705882353
+      },
+      "all_unigram_token_occurrences": 1146519,
+      "absolute_third_token_occurrences": [
+        391334,
+        382184,
+        373001
+      ],
+      "absolute_third_vocabulary_sizes": [
+        28387,
+        24485,
+        24628
+      ],
+      "fraction_present_rows_with_token_repeated_across_thirds": 0.8077756901286313,
+      "cross_third_repeated_token_types_by_row_sum": 107604,
+      "token_occurrence_fraction_for_types_repeated_across_thirds": 0.2666323017760717,
+      "order_shuffle": {
+        "seed": 42,
+        "normalized_text_digest": "SHA-256 over normalized token sequence; per-row digests not persisted",
+        "token_bag_preserved_rows": 27676,
+        "segment_sizes_preserved_rows": 27676,
+        "rows_with_changed_segment_token_count_descriptor": 27676,
+        "fraction_rows_with_changed_descriptor": 1.0,
+        "mean_occurrence_movement_between_thirds": 0.6660204704335119,
+        "mean_normalized_segment_count_L1_change": 0.6144936875823729
+      }
+    },
+    "E67_scored_68_79": {
+      "cohort": "E67_scored_68_79",
+      "rows": 20903,
+      "stream_present_rows": 19528,
+      "stream_missing_or_blank_rows": 1375,
+      "present_rows_with_zero_tokens": 0,
+      "token_count_present": {
+        "n": 19528,
+        "min": 8,
+        "p50": 34.0,
+        "p90": 76.0,
+        "p95": 101.0,
+        "max": 145,
+        "mean": 41.81636624334289
+      },
+      "all_unigram_token_occurrences": 816590,
+      "absolute_third_token_occurrences": [
+        278657,
+        272253,
+        265680
+      ],
+      "absolute_third_vocabulary_sizes": [
+        21583,
+        19944,
+        19162
+      ],
+      "fraction_present_rows_with_token_repeated_across_thirds": 0.7967021712412945,
+      "cross_third_repeated_token_types_by_row_sum": 78613,
+      "token_occurrence_fraction_for_types_repeated_across_thirds": 0.2689452479212334,
+      "order_shuffle": {
+        "seed": 42,
+        "normalized_text_digest": "SHA-256 over normalized token sequence; per-row digests not persisted",
+        "token_bag_preserved_rows": 19528,
+        "segment_sizes_preserved_rows": 19528,
+        "rows_with_changed_segment_token_count_descriptor": 19528,
+        "fraction_rows_with_changed_descriptor": 1.0,
+        "mean_occurrence_movement_between_thirds": 0.6654585354224747,
+        "mean_normalized_segment_count_L1_change": 0.6128274715149383
+      }
+    },
+    "E75_prefix_47_75": {
+      "cohort": "E75_prefix_47_75",
+      "rows": 42117,
+      "stream_present_rows": 39239,
+      "stream_missing_or_blank_rows": 2878,
+      "present_rows_with_zero_tokens": 0,
+      "token_count_present": {
+        "n": 39239,
+        "min": 9,
+        "p50": 34.0,
+        "p90": 79.0,
+        "p95": 103.0,
+        "max": 145,
+        "mean": 41.94597211957491
+      },
+      "all_unigram_token_occurrences": 1645918,
+      "absolute_third_token_occurrences": [
+        561623,
+        548697,
+        535598
+      ],
+      "absolute_third_vocabulary_sizes": [
+        37119,
+        32764,
+        32905
+      ],
+      "fraction_present_rows_with_token_repeated_across_thirds": 0.8050918728815719,
+      "cross_third_repeated_token_types_by_row_sum": 155496,
+      "token_occurrence_fraction_for_types_repeated_across_thirds": 0.26781893144129904,
+      "order_shuffle": {
+        "seed": 42,
+        "normalized_text_digest": "SHA-256 over normalized token sequence; per-row digests not persisted",
+        "token_bag_preserved_rows": 39239,
+        "segment_sizes_preserved_rows": 39239,
+        "rows_with_changed_segment_token_count_descriptor": 39239,
+        "fraction_rows_with_changed_descriptor": 1.0,
+        "mean_occurrence_movement_between_thirds": 0.665890414492179,
+        "mean_normalized_segment_count_L1_change": 0.6139814831986213
+      }
+    },
+    "E75_scored_76_79": {
+      "cohort": "E75_scored_76_79",
+      "rows": 8491,
+      "stream_present_rows": 7965,
+      "stream_missing_or_blank_rows": 526,
+      "present_rows_with_zero_tokens": 0,
+      "token_count_present": {
+        "n": 7965,
+        "min": 8,
+        "p50": 32.0,
+        "p90": 74.0,
+        "p95": 97.0,
+        "max": 141,
+        "mean": 39.823101067168864
+      },
+      "all_unigram_token_occurrences": 317191,
+      "absolute_third_token_occurrences": [
+        108368,
+        105740,
+        103083
+      ],
+      "absolute_third_vocabulary_sizes": [
+        10963,
+        10433,
+        9552
+      ],
+      "fraction_present_rows_with_token_repeated_across_thirds": 0.7938480853735091,
+      "cross_third_repeated_token_types_by_row_sum": 30721,
+      "token_occurrence_fraction_for_types_repeated_across_thirds": 0.26642937536058714,
+      "order_shuffle": {
+        "seed": 42,
+        "normalized_text_digest": "SHA-256 over normalized token sequence; per-row digests not persisted",
+        "token_bag_preserved_rows": 7965,
+        "segment_sizes_preserved_rows": 7965,
+        "rows_with_changed_segment_token_count_descriptor": 7965,
+        "fraction_rows_with_changed_descriptor": 1.0,
+        "mean_occurrence_movement_between_thirds": 0.6652834708335656,
+        "mean_normalized_segment_count_L1_change": 0.6129319199049299
+      }
+    }
+  },
+  "vocabulary_comparison": {
+    "E67": {
+      "prefix_rows": 29705,
+      "scored_rows": 20903,
+      "prefix_to_scored_vocab_jaccard_by_third": [
+        0.17695550792566597,
+        0.1646482122260669,
+        0.15595797476374004
+      ],
+      "prefix_only_vocab_types_by_third": [
+        20874,
+        18204,
+        18720
+      ],
+      "scored_only_vocab_types_by_third": [
+        14070,
+        13663,
+        13254
+      ],
+      "prefix_vocabulary_sizes_by_third": [
+        28387,
+        24485,
+        24628
+      ],
+      "scored_vocabulary_sizes_by_third": [
+        21583,
+        19944,
+        19162
+      ],
+      "prefix_within_third_vocab_jaccard_1_2_3": [
+        0.19468546637744036,
+        0.1684519086661377,
+        0.19177384130065517
+      ],
+      "scored_within_third_vocab_jaccard_1_2_3": [
+        0.20002889755815634,
+        0.17852081103751483,
+        0.20385420514714936
+      ]
+    },
+    "E75": {
+      "prefix_rows": 42117,
+      "scored_rows": 8491,
+      "prefix_to_scored_vocab_jaccard_by_third": [
+        0.13248698683373766,
+        0.1323529411764706,
+        0.12076975872446016
+      ],
+      "prefix_only_vocab_types_by_third": [
+        31494,
+        27715,
+        28330
+      ],
+      "scored_only_vocab_types_by_third": [
+        5338,
+        5384,
+        4977
+      ],
+      "prefix_vocabulary_sizes_by_third": [
+        37119,
+        32764,
+        32905
+      ],
+      "scored_vocabulary_sizes_by_third": [
+        10963,
+        10433,
+        9552
+      ],
+      "prefix_within_third_vocab_jaccard_1_2_3": [
+        0.17934048872687997,
+        0.1532849119686414,
+        0.1729120525826963
+      ],
+      "scored_within_third_vocab_jaccard_1_2_3": [
+        0.23355433842605938,
+        0.21491176122231434,
+        0.25707636180651655
+      ]
+    }
+  },
+  "source_hashes": {
+    "src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+    "src/models/classification_a02_neighbors.py": "817263092683779f5f6f3a437ffc2c470dfec16d3b32c67802952b731cc6efaa",
+    "src/models/positional_text_features.py": "d4ef29f5b8942e04f221cdad5e9d93f7a96f76f485cae8bdc80fbbc8557cb24e",
+    "scripts/positional_text_preflight_v1.py": "c8ad999a499ee049f40b0804c57c2fa44f4ebdff910b6ffbad4433ef414345f7"
+  },
+  "plots": {
+    "position_vocab_overlap.png": "0b794bd78e1fdecb1c757cc20d7a7b499f7ed1a58c685efaaaef9ad900138cf1",
+    "order_shuffle_descriptor_change.png": "c4c9e8be1b8b1954f2100418484e22a58f38ae99cb57049b9b35279d069ef795"
+  },
+  "boundaries": {
+    "target_or_query_labels_read": false,
+    "test_or_sample_submission_opened": false,
+    "kaggle_accessed": false,
+    "model_or_vectorizer_fit": false,
+    "raw_text_or_token_strings_persisted": false
+  }
+}
