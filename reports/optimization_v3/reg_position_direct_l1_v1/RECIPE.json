@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "card_id": "REG_POSITION_DIRECT_L1_V1",
+  "status": "FROZEN_BY_PROTOCOL",
+  "question": "Does three-third token position add transferable value to direct threat_rank regression beyond a matched unigram bag and shuffled-position control?",
+  "selection_disclosure": "Adaptive development pilot. E67 and E75 query views overlap and are not untouched validation.",
+  "origins": {
+    "E67": {
+      "fit_cycle_bounds": [47, 67],
+      "fit_rows": 29705,
+      "query_cycle_bounds": [68, 79],
+      "query_rows": 20903
+    },
+    "E75": {
+      "fit_cycle_bounds": [47, 75],
+      "fit_rows": 42117,
+      "query_cycle_bounds": [76, 79],
+      "query_rows": 8491
+    }
+  },
+  "target": "Official threat_rank in [0,100]; direct fit on every same-prefix row, including missing-text rows. Query labels are excluded from each origin's fit.",
+  "features": {
+    "structured": "Original RegressionTextModel._structured_fit semantics on HYBRID_FEATURES structured columns, including cycle_code; processor, StandardScaler and OneHotEncoder each fit once per origin and are shared across all three arms.",
+    "bag": "Transform-only unigram columns from the standalone target-free E67/E75 word TF-IDF vectorizers, normalized with sklearn L2; no vocabulary or IDF fit.",
+    "real": "[structured, unigram bag, existing original three-third REAL suffix, missing_text_indicator].",
+    "shuffled": "[structured, unigram bag, existing original deterministic seed42 shuffled-position suffix, missing_text_indicator].",
+    "position_source": "POSITIONAL_TEXT_PILOT_V1 fit_position/score_position and fit_shuffled_position/score_shuffled_position, sliced after the exact corresponding base width. Require numeric vectorizer state, vocabulary, parameters, rows, IDs, cycles, missing mask, physical/logical matrix hashes, and sampled REAL/SHUFFLED reconstruction to pass before freeze.",
+    "feature_exclusions": ["threat_rank", "R06 predictions", "target bins", "Test/Sample/Kaggle data", "classification labels or predictions", "R-NBR candidate predictions"]
+  },
+  "estimator": {
+    "class": "lightgbm.LGBMRegressor",
+    "objective": "regression_l1",
+    "parameter_source": "src/models/regression_research_tabular.py: COMMON_PARAMETERS plus PARAMETER_SETS['regularized']",
+    "resolved_parameters": "Captured completely in the immutable FREEZE.json before production fit.",
+    "n_estimators": 400,
+    "learning_rate": 0.05,
+    "num_leaves": 15,
+    "min_child_samples": 80,
+    "reg_lambda": 3.0,
+    "random_state": 42,
+    "n_jobs": 2,
+    "fit_policy": "No validation set, evaluation set, early stopping, weights, recency adjustment, grid search, retry, or extra fit."
+  },
+  "fixed_competition_policy": {
+    "baseline": "Final mapped current R06 OOF prediction loaded from the E67/E75 R06 fit caches and identity-checked against Regression Train.",
+    "rank_mapping": "For each complete origin query cycle, rank raw auxiliary scores with average ties; percentile=100*rank/n; mapped=0.5*raw+0.5*percentile.",
+    "blend": "clip(0.75*cached_current_R06 + 0.25*mapped_auxiliary, 0, 100).",
+    "missing_text": "Calculate full-cycle rank mapping and blend before the missing mask; then replace missing-text candidate scores with the exact cached_current_R06 values. Do not re-rank after blending."
+  },
+  "fit_order": [
+    "REG_POSITION_DIRECT_L1_V1_E67_STRUCTURED",
+    "REG_POSITION_DIRECT_L1_V1_E67_SCALER",
+    "REG_POSITION_DIRECT_L1_V1_E67_OHE",
+    "REG_POSITION_DIRECT_L1_V1_E67_BAG",
+    "REG_POSITION_DIRECT_L1_V1_E67_REAL",
+    "REG_POSITION_DIRECT_L1_V1_E67_SHUFFLED",
+    "REG_POSITION_DIRECT_L1_V1_E75_STRUCTURED",
+    "REG_POSITION_DIRECT_L1_V1_E75_SCALER",
+    "REG_POSITION_DIRECT_L1_V1_E75_OHE",
+    "REG_POSITION_DIRECT_L1_V1_E75_BAG",
+    "REG_POSITION_DIRECT_L1_V1_E75_REAL",
+    "REG_POSITION_DIRECT_L1_V1_E75_SHUFFLED"
+  ],
+  "accounting": {
+    "ledger": "experiments/runs/reg_position_direct_l1_v1/fit_ledger.jsonl",
+    "cap": 12,
+    "learned_units": "Per origin: one structured processor, one numeric scaler, one categorical OHE, and three direct LGBM estimators.",
+    "starts": 12,
+    "saved": 12,
+    "retries": 0,
+    "shared_ledger_write": false,
+    "resume": "A durable, hash-verified unit is loaded without refit. A consumed but non-durable start cannot be retried."
+  },
+  "resources": {
+    "jobs": 1,
+    "threads_per_fit": 2,
+    "minimum_available_ram_before_each_fit_bytes": 4294967296,
+    "minimum_free_ram_reserve_bytes": 2147483648,
+    "maximum_process_rss_bytes": 6442450944
+  },
+  "gates": {
+    "comparison_tolerance": 1e-10,
+    "REAL_gain_vs_R06": {"E67_H12_min": 0.03, "E75_W6_min": 0.03},
+    "REAL_gain_vs_controls": {
+      "E67_H12_vs_BAG_min": 0.01,
+      "E67_H12_vs_SHUFFLED_min": 0.01,
+      "E75_W6_vs_BAG_min": 0.01,
+      "E75_W6_vs_SHUFFLED_min": 0.01
+    },
+    "E67_window_harm_vs_R06_max": {"W4": 0.1, "W5": 0.1, "W6": 0.1},
+    "protected_groups": {
+      "minimum_n": 100,
+      "maximum_mae_harm_vs_R06": 0.25,
+      "unsupported": "UNKNOWN",
+      "groups": ["missing", "target_lt5", "target_ge95", "EF0", "EF1", "impact_load_Q1_Q4", "text_load_Q1_Q4"],
+      "quartiles": "Fit-prefix 0.25/0.5/0.75 linear quantiles; duplicate edges collapsed; query bins use np.digitize(..., right=False)."
+    },
+    "missing_route": "Bit-exact R06 fallback for every missing-text query row.",
+    "prediction_range": [0, 100],
+    "eligibility": "No automatic promotion or submission. Preserve failures and UNKNOWN groups for a separate Sol decision."
+  },
+  "views": ["E67_H12", "E67_W4", "E67_W5", "E67_W6", "E75_W6", "LATE_UNIQUE_E67_W4_PLUS_E75_W6"],
+  "late_view_definition": "Use E67 predictions only on cycles 68-71 (W4), and E75 predictions on cycles 76-79 (W6). This union has each record once; E75_W6 rows overlap E67_W6 fully, so do not add the E67_W6 copy.",
+  "boundaries": {
+    "test": "not accessed",
+    "sample_submission": "not accessed",
+    "kaggle": "not accessed",
+    "R06_refit": false,
+    "source_or_cache_mutation": false,
+    "notebook_or_EDA_change": false
+  }
+}
