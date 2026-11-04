@@ -38,18 +38,19 @@ def _read_json(path: Path) -> dict[str, Any]:
 def verify_schema_successor_cache(root: Path, run_root: Path,
                                   archive_root: Path,
                                   old_freeze: Mapping[str, Any]) -> dict[str, Any]:
-    """Independently verify the prefit Unicode-ID cache against its old freeze.
+    """Independently verify and byte-reconstruct the prefit cache migration.
 
-    The original row NPZ bytes may be unavailable after the earlier failed
-    prefit invocation. This verifier keeps that distinction explicit: it
-    validates the migrated values against official Train identity, the old
-    per-array logical hashes, the old sparse-matrix hashes, and a byte-preserved
-    archive of the current migrated cache. It never opens target columns.
+    The initial row NPZ file instance was overwritten after the failed prefit
+    invocation. Reconstruct its original object-string serialization and
+    require an exact match to the frozen NPZ SHA-256. Also check official Train
+    identity, frozen logical hashes, sparse-matrix hashes, and a byte-preserved
+    archive of the migrated cache. Never open target columns.
     """
     root, run_root, archive_root = map(Path, (root, run_root, archive_root))
     identity = offset._read_identity_frame()
     origin_checks: dict[str, Any] = {}
     failures: list[str] = []
+    recovered_root = run_root / "PREFIT_SCHEMA_V1_RECOVERED_PARENT_BYTES"
     for origin in (67, 75):
         key = f"E{origin}"
         expected = old_freeze["origins"][key]
@@ -103,6 +104,17 @@ def verify_schema_successor_cache(root: Path, run_root: Path,
             if not passed:
                 failures.append(f"{key} old-freeze row check failed: {check}")
 
+        legacy_arrays = {name: value.copy() for name, value in arrays.items()}
+        legacy_arrays["fit_record_ids"] = arrays["fit_record_ids"].astype(object)
+        legacy_arrays["score_record_ids"] = arrays["score_record_ids"].astype(object)
+        recovered_path = recovered_root / key / "frozen_rows.npz"
+        offset._atomic_npz(recovered_path, **legacy_arrays)
+        recovered_sha = offset.sha256_file(recovered_path)
+        expected_metadata_sha = expected_row_hashes["metadata_file"]
+        recovered_bytes_match = recovered_sha == expected_metadata_sha
+        if not recovered_bytes_match:
+            failures.append(f"{key} reconstructed original row-NPZ bytes do not match parent freeze")
+
         matrix_checks: dict[str, Any] = {}
         for name, item in expected["matrix_hashes"].items():
             path = current_dir / f"{name}.npz"
@@ -124,9 +136,11 @@ def verify_schema_successor_cache(root: Path, run_root: Path,
         origin_checks[key] = {
             "current_row_file_sha256": current_rows_sha,
             "archived_row_file_sha256": archived_rows_sha,
-            "old_frozen_row_file_sha256": expected_row_hashes["metadata_file"],
-            "old_frozen_row_bytes_recovered": current_rows_sha == expected_row_hashes["metadata_file"],
-            "old_frozen_row_bytes_available": False,
+            "old_frozen_row_file_sha256": expected_metadata_sha,
+            "reconstructed_old_row_file_sha256": recovered_sha,
+            "reconstructed_old_row_bytes_match_freeze": recovered_bytes_match,
+            "reconstructed_old_row_file_path": recovered_path.relative_to(root).as_posix(),
+            "original_file_instance_available": False,
             "row_arrays": array_checks,
             "old_freeze_row_checks": row_hash_checks,
             "matrix_checks": matrix_checks,
@@ -136,8 +150,10 @@ def verify_schema_successor_cache(root: Path, run_root: Path,
         "schema_version": 1,
         "status": "PASS" if not failures else "FAIL",
         "target_columns_read": [], "labels_opened": False, "test_opened": False,
-        "old_row_metadata_bytes_recovered": False,
-        "scope_note": "Old row NPZ byte hashes remain preserved in the parent freeze; old bytes were not recovered. Current Unicode cache values are verified against official identity, original object-array logical hashes, old row/logit checks, old sparse-matrix hashes, and an archived current copy.",
+        "old_row_metadata_bytes_recovered": all(
+            item.get("reconstructed_old_row_bytes_match_freeze", False)
+            for item in origin_checks.values()),
+        "scope_note": "The original file instance was unavailable. Its exact byte sequence was reconstructed by restoring the original object-string ID arrays and verified against the parent freeze SHA-256; the current Unicode cache remains separately archived.",
         "origins": origin_checks,
         "failures": failures,
     }

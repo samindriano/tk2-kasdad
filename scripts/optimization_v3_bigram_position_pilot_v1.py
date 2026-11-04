@@ -743,7 +743,7 @@ def freeze_successor() -> dict[str, Any]:
             or preflight_result.get("preflight_mode") != "PREFIT_SCHEMA_SUCCESSOR_NO_FITS_STARTED"
             or preflight_result.get("parent_freeze_signature") != old.get("freeze_signature")
             or preflight_result.get("cache_migration_verification", {}).get("status") != "PASS"
-            or preflight_result.get("cache_migration_verification", {}).get("old_row_metadata_bytes_recovered") is not False
+            or preflight_result.get("cache_migration_verification", {}).get("old_row_metadata_bytes_recovered") is not True
             or synthetic.get("status") != "PASS"):
         raise PilotError("Successor preflight/synthetic evidence does not match the preserved initial freeze")
     if _git("status", "--porcelain"):
@@ -760,7 +760,7 @@ def freeze_successor() -> dict[str, Any]:
     value = {
         "schema_version": 1, "card_id": CARD_ID, "stage": STAGE,
         "status": "SUCCESSOR_FREEZE_BEFORE_FIT",
-        "successor_reason": "prefit ID arrays were reserialized from object to Unicode before any fit; original row-NPZ bytes unavailable, migrated values independently reconciled",
+        "successor_reason": "prefit ID arrays were reserialized from object to Unicode before any fit; original row-NPZ byte sequence reconstructed and matched to frozen SHA-256",
         "parent_freeze_signature": old["freeze_signature"],
         "parent_source_commit": old["source_commit"],
         "source_commit": _git("rev-parse", "HEAD"), "branch": _git("branch", "--show-current"),
@@ -777,7 +777,8 @@ def freeze_successor() -> dict[str, Any]:
         "authorized_fit_ids": list(FIT_IDS),
         "origins": preflight_result["origins"],
         "cache_migration_verification": preflight_result["cache_migration_verification"],
-        "original_row_metadata_bytes_recovered": False,
+        "original_row_metadata_bytes_recovered": True,
+        "original_row_metadata_file_instance_available": False,
         "original_row_metadata_sha256_by_origin": {
             key: old["origins"][key]["row_arrays_sha256"]["metadata_file"]
             for key in ("E67", "E75")

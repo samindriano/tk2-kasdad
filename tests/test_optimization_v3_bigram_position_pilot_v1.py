@@ -48,8 +48,13 @@ def _write_migration_fixture(root, monkeypatch):
         "score_record_ids": offset.sha256_array(rows["score_record_ids"].astype(object)),
         "score_cycles": offset.sha256_array(rows["score_cycles"]),
         "present_mask": offset.sha256_array(rows["present_mask"]),
-        "metadata_file": "original-row-npz-bytes-not-recovered",
     }
+    legacy_rows = dict(rows)
+    legacy_rows["fit_record_ids"] = rows["fit_record_ids"].astype(object)
+    legacy_rows["score_record_ids"] = rows["score_record_ids"].astype(object)
+    old_rows_path = root / "original-frozen-rows.npz"
+    offset._atomic_npz(old_rows_path, **legacy_rows)
+    expected_rows["metadata_file"] = offset.sha256_file(old_rows_path)
     old_matrices = {}
     for name, matrix in {"fit_bag": sparse.csr_matrix([[1.0], [0.0]]),
                          "query_bag": sparse.csr_matrix([[2.0]])}.items():
@@ -86,8 +91,11 @@ def test_successor_cache_reconciles_unicode_ids_and_original_hash_contract(tmp_p
     run_root, archive_root, _, old = _write_migration_fixture(tmp_path, monkeypatch)
     result = verifier.verify_schema_successor_cache(tmp_path, run_root, archive_root, old)
     assert result["status"] == "PASS"
-    assert result["old_row_metadata_bytes_recovered"] is False
-    assert result["origins"]["E67"]["old_frozen_row_bytes_available"] is False
+    assert result["old_row_metadata_bytes_recovered"] is True
+    origin = result["origins"]["E67"]
+    assert origin["original_file_instance_available"] is False
+    assert origin["reconstructed_old_row_bytes_match_freeze"] is True
+    assert origin["reconstructed_old_row_file_sha256"] == origin["old_frozen_row_file_sha256"]
 
 
 def test_successor_cache_rejects_row_reordering(tmp_path, monkeypatch):
