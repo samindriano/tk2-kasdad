@@ -35,6 +35,115 @@ def _read_json(path: Path) -> dict[str, Any]:
     return value
 
 
+def verify_schema_successor_cache(root: Path, run_root: Path,
+                                  archive_root: Path,
+                                  old_freeze: Mapping[str, Any]) -> dict[str, Any]:
+    """Independently verify the prefit Unicode-ID cache against its old freeze.
+
+    The original row NPZ bytes may be unavailable after the earlier failed
+    prefit invocation. This verifier keeps that distinction explicit: it
+    validates the migrated values against official Train identity, the old
+    per-array logical hashes, the old sparse-matrix hashes, and a byte-preserved
+    archive of the current migrated cache. It never opens target columns.
+    """
+    root, run_root, archive_root = map(Path, (root, run_root, archive_root))
+    identity = offset._read_identity_frame()
+    origin_checks: dict[str, Any] = {}
+    failures: list[str] = []
+    for origin in (67, 75):
+        key = f"E{origin}"
+        expected = old_freeze["origins"][key]
+        current_dir = run_root / key
+        archive_dir = archive_root / key
+        current_rows_path = current_dir / "frozen_rows.npz"
+        archived_rows_path = archive_dir / "frozen_rows.npz"
+        current_rows_sha = offset.sha256_file(current_rows_path)
+        archived_rows_sha = offset.sha256_file(archived_rows_path)
+        with np.load(current_rows_path, allow_pickle=False) as cur, np.load(
+                archived_rows_path, allow_pickle=False) as saved:
+            if set(cur.files) != set(saved.files):
+                raise AssertionError(f"{key} migrated row-cache fields differ from archived fields")
+            arrays = {name: cur[name].copy() for name in cur.files}
+            archived = {name: saved[name].copy() for name in saved.files}
+        array_checks: dict[str, Any] = {}
+        for name, value in arrays.items():
+            same_dtype = value.dtype == archived[name].dtype
+            same_values = bool(np.array_equal(value, archived[name]))
+            array_checks[name] = {"dtype": value.dtype.str,
+                                  "archive_dtype": archived[name].dtype.str,
+                                  "dtype_match": bool(same_dtype),
+                                  "value_match": same_values,
+                                  "sha256": offset.sha256_array(value)}
+            if not same_dtype or not same_values:
+                failures.append(f"{key} archived/current array differs: {name}")
+
+        fit_rows = np.asarray(arrays["fit_rows"], dtype=np.int64)
+        score_rows = np.asarray(arrays["score_rows"], dtype=np.int64)
+        expected_row_hashes = expected["row_arrays_sha256"]
+        identity_fit_ids = identity.iloc[fit_rows]["record_id"].astype(str).to_numpy(dtype=str)
+        identity_score_ids = identity.iloc[score_rows]["record_id"].astype(str).to_numpy(dtype=str)
+        identity_score_cycles = identity.iloc[score_rows]["cycle_code"].to_numpy(dtype=np.int64)
+        ids_align = (np.array_equal(arrays["fit_record_ids"].astype(str), identity_fit_ids)
+                     and np.array_equal(arrays["score_record_ids"].astype(str), identity_score_ids)
+                     and np.array_equal(arrays["score_cycles"], identity_score_cycles))
+        row_hash_checks = {
+            "fit_rows": offset.sha256_array(fit_rows) == expected_row_hashes["fit_rows"],
+            "fit_record_ids_original_object_contract": offset.sha256_array(
+                arrays["fit_record_ids"].astype(object)) == expected_row_hashes["fit_record_ids"],
+            "score_rows": offset.sha256_array(score_rows) == expected_row_hashes["score_rows"],
+            "score_record_ids_original_object_contract": offset.sha256_array(
+                arrays["score_record_ids"].astype(object)) == expected_row_hashes["score_record_ids"],
+            "score_cycles": offset.sha256_array(identity_score_cycles) == expected_row_hashes["score_cycles"],
+            "present_mask": offset.sha256_array(arrays["present_mask"]) == expected_row_hashes["present_mask"],
+            "official_identity_alignment": bool(ids_align),
+            "original_z_fit": offset.sha256_array(arrays["z_fit_original"]) == expected["original_z_fit_sha256"],
+            "original_z_query": offset.sha256_array(arrays["z_query_original"]) == expected["original_z_query_sha256"],
+        }
+        for check, passed in row_hash_checks.items():
+            if not passed:
+                failures.append(f"{key} old-freeze row check failed: {check}")
+
+        matrix_checks: dict[str, Any] = {}
+        for name, item in expected["matrix_hashes"].items():
+            path = current_dir / f"{name}.npz"
+            archived_path = archive_dir / f"{name}.npz"
+            current_sha, archived_sha = offset.sha256_file(path), offset.sha256_file(archived_path)
+            logical_sha = offset.sha256_csr(sparse.load_npz(path).tocsr())
+            archived_logical_sha = offset.sha256_csr(sparse.load_npz(archived_path).tocsr())
+            check = {"current_file_matches_old_freeze": current_sha == item["file_sha256"],
+                     "archived_file_matches_old_freeze": archived_sha == item["file_sha256"],
+                     "current_logical_matches_old_freeze": logical_sha == item["logical_sha256"],
+                     "archive_logical_matches_old_freeze": archived_logical_sha == item["logical_sha256"],
+                     "current_equals_archive_file": current_sha == archived_sha}
+            matrix_checks[name] = check
+            if not all(check.values()):
+                failures.append(f"{key} sparse matrix migration check failed: {name}")
+
+        migrated_cache_matches_archive = all(
+            check["dtype_match"] and check["value_match"] for name, check in array_checks.items())
+        origin_checks[key] = {
+            "current_row_file_sha256": current_rows_sha,
+            "archived_row_file_sha256": archived_rows_sha,
+            "old_frozen_row_file_sha256": expected_row_hashes["metadata_file"],
+            "old_frozen_row_bytes_recovered": current_rows_sha == expected_row_hashes["metadata_file"],
+            "old_frozen_row_bytes_available": False,
+            "row_arrays": array_checks,
+            "old_freeze_row_checks": row_hash_checks,
+            "matrix_checks": matrix_checks,
+            "migrated_values_match_archive": migrated_cache_matches_archive,
+        }
+    result = {
+        "schema_version": 1,
+        "status": "PASS" if not failures else "FAIL",
+        "target_columns_read": [], "labels_opened": False, "test_opened": False,
+        "old_row_metadata_bytes_recovered": False,
+        "scope_note": "Old row NPZ byte hashes remain preserved in the parent freeze; old bytes were not recovered. Current Unicode cache values are verified against official identity, original object-array logical hashes, old row/logit checks, old sparse-matrix hashes, and an archived current copy.",
+        "origins": origin_checks,
+        "failures": failures,
+    }
+    return result
+
+
 def verify_prelabel_outputs(root: Path, run_root: Path,
                             freeze: Mapping[str, Any]) -> dict[str, Any]:
     root = Path(root)
@@ -45,7 +154,8 @@ def verify_prelabel_outputs(root: Path, run_root: Path,
         train_path = root / TRAIN
         if offset.sha256_file(train_path) != freeze["input_sha256"]:
             raise AssertionError("official Train file hash differs from freeze")
-        preflight_path = root / "reports/optimization_v3/bigram_position_pilot_v1/PREFLIGHT.json"
+        preflight_path = root / freeze.get(
+            "preflight_path", "reports/optimization_v3/bigram_position_pilot_v1/PREFLIGHT.json")
         preflight = _read_json(preflight_path)
         if (offset.sha256_file(preflight_path) != freeze.get("preflight_sha256")
                 or preflight.get("status") != "PREFIT_PASS"

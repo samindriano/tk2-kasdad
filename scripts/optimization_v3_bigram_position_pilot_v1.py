@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
+import shutil
 import sys
 import tempfile
 import uuid
@@ -37,6 +38,7 @@ from src.models.optimization_v3_bigram_position_readiness_v1 import build_bigram
 from src.models.positional_bag_offset_v1 import fit_offset_coefficients
 from scripts import optimization_v3_positional_bag_offset_v1 as offset
 from scripts import optimization_v3_positional_contrast_v1 as contrast
+from scripts.verify_optimization_v3_bigram_position_pilot_v1 import verify_schema_successor_cache
 
 
 CARD_ID = "CLS_BIGRAM_POSITION_PILOT_V1"
@@ -53,6 +55,7 @@ TRAIN = ROOT / "data/raw/classification/Train.csv"
 LEDGER = ROOT / "experiments/runs/optimization_v3_research_next_v1/budget.jsonl"
 RUN_ROOT = ROOT / "experiments/runs/optimization_v3_research_next_v1/BIGRAM_POSITION_PILOT_V1"
 REPORT_ROOT = ROOT / "reports/optimization_v3/bigram_position_pilot_v1"
+ACTIVE_FREEZE = RUN_ROOT / "FREEZE_ACTIVE.json"
 PREVIOUS_BAG_ROOT = offset.RUN_ROOT
 PREVIOUS_CONTRAST_ROOT = contrast.RUN_ROOT
 PREVIOUS_BAG_FREEZE = PREVIOUS_BAG_ROOT / "FREEZE.json"
@@ -65,6 +68,15 @@ PRE_FIT_SNAPSHOT = {
     "active_reservations_by_category": {"continuation": 50, "control_replay": 2,
                                         "pilot": 85, "technical_retry": 1},
     "active_reservations": 138, "fit_starts": 138, "fit_saved": 132,
+    "fit_failed": 6, "fit_pending": 0,
+}
+POST_RESERVE_SNAPSHOT = {
+    "event_rows": 363, "global_cap": 149,
+    "effective_category_caps": {"continuation": 52, "control_replay": 2,
+                                 "pilot": 94, "technical_retry": 1},
+    "active_reservations_by_category": {"continuation": 50, "control_replay": 2,
+                                        "pilot": 91, "technical_retry": 1},
+    "active_reservations": 144, "fit_starts": 138, "fit_saved": 132,
     "fit_failed": 6, "fit_pending": 0,
 }
 POST_RESERVE_CAPS = {"continuation": 52, "control_replay": 2, "pilot": 94,
@@ -86,6 +98,7 @@ SOURCE_PATHS = (
     "tests/test_optimization_v3_bigram_position_pilot_v1.py",
     "reports/optimization_v3/bigram_position_pilot_v1/RECIPE.json",
     "reports/optimization_v3/bigram_position_pilot_v1/PROPOSED_CARD.md",
+    "reports/optimization_v3/bigram_position_pilot_v1/PREFIT_SCHEMA_REPAIR.md",
     "reports/optimization_v3/bigram_position_readiness_v1/SOL_PILOT_AUTHORIZATION.md",
 )
 
@@ -303,8 +316,8 @@ def _cache_origin(origin: int, documents: list[str], identity: pd.DataFrame,
                                           "logical_sha256": offset.sha256_csr(fit), "shape": list(fit.shape)}
         matrix_hashes[f"query_{name}"] = {"file_sha256": _sha_file(cache_dir / f"query_{name}.npz"),
                                             "logical_sha256": offset.sha256_csr(query), "shape": list(query.shape)}
-    fit_ids = identity.iloc[rows_fit]["record_id"].astype(str).to_numpy()
-    score_ids = identity.iloc[rows_query]["record_id"].astype(str).to_numpy()
+    fit_ids = identity.iloc[rows_fit]["record_id"].astype(str).to_numpy(dtype=str)
+    score_ids = identity.iloc[rows_query]["record_id"].astype(str).to_numpy(dtype=str)
     score_cycles = identity.iloc[rows_query]["cycle_code"].to_numpy(dtype=np.int64)
     metadata_npz = cache_dir / "frozen_rows.npz"
     offset._atomic_npz(
@@ -346,6 +359,76 @@ def _cache_origin(origin: int, documents: list[str], identity: pd.DataFrame,
     return record
 
 
+def _preserve_current_successor_cache(old_freeze: Mapping[str, Any],
+                                      identity: pd.DataFrame) -> dict[str, Any]:
+    """Archive migrated cache bytes; never describe them as recovered original bytes."""
+    preserved = {}
+    for origin in ORIGINS:
+        suffix = f"E{origin}"
+        source_dir = RUN_ROOT / suffix
+        target_dir = RUN_ROOT / "PREFIT_SCHEMA_V1_CURRENT_ARCHIVE" / suffix
+        target_dir.mkdir(parents=True, exist_ok=True)
+        expected = old_freeze["origins"][suffix]
+        names = ["frozen_rows.npz"] + [f"{split}_{arm.lower()}.npz"
+                                      for split in ("fit", "query") for arm in ARMS]
+        hashes = {}
+        for name in names:
+            source = source_dir / name
+            if not source.is_file():
+                raise PilotError(f"Current prefit cache needed for preservation is missing: {source}")
+            if name == "frozen_rows.npz":
+                expected_sha = expected["row_arrays_sha256"]["metadata_file"]
+            else:
+                item = expected["matrix_hashes"][name.removesuffix(".npz")]
+                expected_sha = item["file_sha256"]
+            actual_sha = _sha_file(source)
+            target = target_dir / name
+            if target.exists():
+                if _sha_file(target) != actual_sha:
+                    raise PilotError(f"Current migrated cache archive has conflicting bytes: {target}")
+            else:
+                shutil.copy2(source, target)
+            if _sha_file(target) != actual_sha:
+                raise PilotError(f"Current migrated cache archive verification failed: {target}")
+            hashes[name] = {
+                "path": target.relative_to(ROOT).as_posix(),
+                "current_source_sha256": actual_sha,
+                "archived_sha256": _sha_file(target),
+                "old_freeze_expected_sha256": expected_sha,
+                "current_bytes_match_old_freeze": actual_sha == expected_sha,
+            }
+        with np.load(target_dir / "frozen_rows.npz", allow_pickle=False) as rows:
+            fit_rows = np.asarray(rows["fit_rows"], dtype=np.int64)
+            score_rows = np.asarray(rows["score_rows"], dtype=np.int64)
+            expected_rows = expected["row_arrays_sha256"]
+            fit_ids = rows["fit_record_ids"].astype(str)
+            score_ids = rows["score_record_ids"].astype(str)
+            identity_fit_ids = identity.iloc[fit_rows]["record_id"].astype(str).to_numpy(dtype=str)
+            identity_score_ids = identity.iloc[score_rows]["record_id"].astype(str).to_numpy(dtype=str)
+            identity_cycles = identity.iloc[score_rows]["cycle_code"].to_numpy(dtype=np.int64)
+            checks = {
+                "fit_rows": offset.sha256_array(fit_rows) == expected_rows["fit_rows"],
+                "fit_record_ids_original_object_hash": offset.sha256_array(fit_ids.astype(object)) == expected_rows["fit_record_ids"],
+                "score_rows": offset.sha256_array(score_rows) == expected_rows["score_rows"],
+                "score_record_ids_original_object_hash": offset.sha256_array(score_ids.astype(object)) == expected_rows["score_record_ids"],
+                "score_cycles": offset.sha256_array(identity_cycles) == expected_rows["score_cycles"],
+                "identity_alignment": np.array_equal(fit_ids, identity_fit_ids)
+                and np.array_equal(score_ids, identity_score_ids)
+                and np.array_equal(rows["score_cycles"], identity_cycles),
+                "present_mask": offset.sha256_array(rows["present_mask"]) == expected_rows["present_mask"],
+                "z_fit_original": offset.sha256_array(rows["z_fit_original"]) == expected["original_z_fit_sha256"],
+                "z_query_original": offset.sha256_array(rows["z_query_original"]) == expected["original_z_query_sha256"],
+            }
+        if not all(checks.values()):
+            raise PilotError(f"Current migrated E{origin} row cache fails old-freeze/official-identity checks: {checks}")
+        if any(not hashes[name]["current_bytes_match_old_freeze"] for name in names if name != "frozen_rows.npz"):
+            raise PilotError(f"Current migrated E{origin} matrix bytes differ from old freeze")
+        hashes["row_array_checks_against_old_freeze"] = checks
+        hashes["old_row_metadata_bytes_recovered"] = False
+        preserved[suffix] = hashes
+    return preserved
+
+
 def preflight() -> dict[str, Any]:
     if not TRAIN.is_file() or not LEDGER.is_file():
         raise PilotError("Official Classification Train or live Research Next ledger is missing")
@@ -385,22 +468,72 @@ def preflight() -> dict[str, Any]:
         REPORT_ROOT.mkdir(parents=True, exist_ok=True)
         _write_json(REPORT_ROOT / "PREFLIGHT_BLOCKER.json", blocked)
         raise PilotError(f"Fit-only CSV skiprows is unsafe: {embedded_linebreak_rows} signal_stream rows contain CR/LF")
-    origins = {}
-    for origin in ORIGINS:
-        origins[f"E{origin}"] = _cache_origin(origin, documents, identity, present, train_sha)
     events, snapshot, ledger_sha = _current_ledger()
-    if snapshot != PRE_FIT_SNAPSHOT:
-        raise PilotError(f"Live ledger snapshot differs from authorized prefit state: {snapshot}")
-    if any(e.get("reservation_key") == RESERVATION_KEY for e in events):
-        raise PilotError("Unique six-fit reservation key already appears in live ledger")
+    reservation_events = [e for e in events if e.get("event") == "CARD_FITS_RESERVED"
+                          and e.get("reservation_key") == RESERVATION_KEY]
+    own_starts = [e for e in events if e.get("event") == "FIT_STARTED" and e.get("fit_id") in FIT_IDS]
+    parent_freeze_signature = None
+    preserved_initial_cache = None
+    prior_freeze = None
+    if snapshot == PRE_FIT_SNAPSHOT:
+        if reservation_events:
+            raise PilotError("Six-fit reservation exists while ledger still reports pre-reservation caps")
+        preflight_mode = "INITIAL_PREFIT"
+        output_path = REPORT_ROOT / "PREFLIGHT.json"
+    elif snapshot == POST_RESERVE_SNAPSHOT:
+        prior = _json(RUN_ROOT / "FREEZE.json")
+        if (len(reservation_events) != 1 or reservation_events[0].get("fit_ids") != list(FIT_IDS)
+                or reservation_events[0].get("freeze_signature") != prior.get("freeze_signature")
+                or reservation_events[0].get("source_commit") != prior.get("source_commit")
+                or own_starts):
+            raise PilotError("Post-reservation prefit repair requires the unique untouched reservation and zero starts")
+        preflight_mode = "PREFIT_SCHEMA_SUCCESSOR_NO_FITS_STARTED"
+        parent_freeze_signature = prior["freeze_signature"]
+        prior_freeze = prior
+        preserved_initial_cache = _preserve_current_successor_cache(prior, identity)
+        output_path = REPORT_ROOT / "PREFLIGHT_SUCCESSOR.json"
+    else:
+        raise PilotError(f"Live ledger differs from initial or reserved untouched state: {snapshot}")
     try:
         source_commit = _git("rev-parse", "HEAD")
     except Exception as exc:
         raise PilotError(f"Cannot identify source commit: {exc}") from exc
+    origins = {}
+    for origin in ORIGINS:
+        origins[f"E{origin}"] = _cache_origin(origin, documents, identity, present, train_sha)
+    cache_migration = None
+    if prior_freeze is not None:
+        cache_migration = verify_schema_successor_cache(
+            ROOT, RUN_ROOT, RUN_ROOT / "PREFIT_SCHEMA_V1_CURRENT_ARCHIVE", prior_freeze)
+        if cache_migration.get("status") != "PASS":
+            raise PilotError(f"Independent target-free successor-cache verification failed: {cache_migration.get('failures')}")
+        for origin in ORIGINS:
+            suffix = f"E{origin}"
+            rebuilt = origins[suffix]
+            old = prior_freeze["origins"][suffix]
+            if (rebuilt["anchor_bundle"] != old["anchor_bundle"]
+                    or rebuilt["parent_pos_gamma"] != old["parent_pos_gamma"]
+                    or rebuilt["parent_manifest_sha256"] != old["parent_manifest_sha256"]
+                    or rebuilt["parent_prediction_sha256"] != old["parent_prediction_sha256"]
+                    or rebuilt["original_z_fit_sha256"] != old["original_z_fit_sha256"]
+                    or rebuilt["original_z_query_sha256"] != old["original_z_query_sha256"]):
+                raise PilotError(f"Rebuilt E{origin} parent anchor/logit lineage differs from original freeze")
+            for name, matrix in old["matrix_hashes"].items():
+                if (rebuilt["matrix_hashes"][name]["file_sha256"] != matrix["file_sha256"]
+                        or rebuilt["matrix_hashes"][name]["logical_sha256"] != matrix["logical_sha256"]):
+                    raise PilotError(f"Rebuilt E{origin} {name} matrix differs from original freeze")
+    events_after, snapshot_after, ledger_sha_after = _current_ledger()
+    if snapshot_after != snapshot or ledger_sha_after != ledger_sha:
+        raise PilotError("Live ledger changed during target-free preflight/cache reconstruction")
+    if any(e.get("event") == "FIT_STARTED" and e.get("fit_id") in FIT_IDS for e in events_after):
+        raise PilotError("An authorized fit started concurrently during target-free preflight")
     result = {
         "schema_version": 1, "card_id": CARD_ID, "status": "PREFIT_PASS",
+        "preflight_mode": preflight_mode, "parent_freeze_signature": parent_freeze_signature,
         "source_commit": source_commit, "input_sha256": train_sha, "input_rows": 50608,
         "parent_audit": parent_audit, "parent_prelabel": parent_prelabel,
+        "preserved_initial_cache": preserved_initial_cache,
+        "cache_migration_verification": cache_migration,
         "live_ledger_sha256": ledger_sha, "live_ledger_snapshot": snapshot,
         "origins": origins,
         "fit_label_reader": {"method": "pandas read_csv skiprows over non-prefix physical records, after FIT_STARTED",
@@ -410,7 +543,7 @@ def preflight() -> dict[str, Any]:
         "sample_submission_opened": False, "kaggle_accessed": False,
     }
     REPORT_ROOT.mkdir(parents=True, exist_ok=True)
-    _write_json(REPORT_ROOT / "PREFLIGHT.json", result)
+    _write_json(output_path, result)
     return result
 
 
@@ -598,8 +731,69 @@ def freeze() -> dict[str, Any]:
     return value
 
 
+def freeze_successor() -> dict[str, Any]:
+    """Bind a prefit-only schema correction without changing or re-reserving slots."""
+    old = _json(RUN_ROOT / "FREEZE.json")
+    preflight_path = REPORT_ROOT / "PREFLIGHT_SUCCESSOR.json"
+    synthetic_path = REPORT_ROOT / "SYNTHETIC_QA_SUCCESSOR.json"
+    preflight_result = _json(preflight_path)
+    synthetic = _json(synthetic_path)
+    if (old.get("status") != "FROZEN_BEFORE_FIT"
+            or preflight_result.get("status") != "PREFIT_PASS"
+            or preflight_result.get("preflight_mode") != "PREFIT_SCHEMA_SUCCESSOR_NO_FITS_STARTED"
+            or preflight_result.get("parent_freeze_signature") != old.get("freeze_signature")
+            or preflight_result.get("cache_migration_verification", {}).get("status") != "PASS"
+            or preflight_result.get("cache_migration_verification", {}).get("old_row_metadata_bytes_recovered") is not False
+            or synthetic.get("status") != "PASS"):
+        raise PilotError("Successor preflight/synthetic evidence does not match the preserved initial freeze")
+    if _git("status", "--porcelain"):
+        raise PilotError("Commit successor code and QA evidence before creating the successor freeze")
+    events, snapshot, ledger_sha = _current_ledger()
+    reservations = [e for e in events if e.get("event") == "CARD_FITS_RESERVED"
+                    and e.get("reservation_key") == RESERVATION_KEY]
+    own_starts = [e for e in events if e.get("event") == "FIT_STARTED" and e.get("fit_id") in FIT_IDS]
+    _assert_successor_reservation_untouched(
+        snapshot=snapshot, expected_snapshot=POST_RESERVE_SNAPSHOT,
+        ledger_sha=ledger_sha, expected_ledger_sha=preflight_result.get("live_ledger_sha256"),
+        reservations=reservations, expected_parent_signature=old["freeze_signature"],
+        expected_parent_source=old["source_commit"], own_starts=own_starts)
+    value = {
+        "schema_version": 1, "card_id": CARD_ID, "stage": STAGE,
+        "status": "SUCCESSOR_FREEZE_BEFORE_FIT",
+        "successor_reason": "prefit ID arrays were reserialized from object to Unicode before any fit; original row-NPZ bytes unavailable, migrated values independently reconciled",
+        "parent_freeze_signature": old["freeze_signature"],
+        "parent_source_commit": old["source_commit"],
+        "source_commit": _git("rev-parse", "HEAD"), "branch": _git("branch", "--show-current"),
+        "source_hashes": _source_hashes(),
+        "recipe_sha256": _sha_file(REPORT_ROOT / "RECIPE.json"),
+        "preflight_path": preflight_path.relative_to(ROOT).as_posix(),
+        "preflight_sha256": _sha_file(preflight_path),
+        "synthetic_qa_path": synthetic_path.relative_to(ROOT).as_posix(),
+        "synthetic_qa_sha256": _sha_file(synthetic_path),
+        "input_sha256": preflight_result["input_sha256"],
+        "live_ledger_sha256_before_rebind": ledger_sha,
+        "live_ledger_snapshot_before_rebind": snapshot,
+        "authorized_amendment_id": AMENDMENT_ID,
+        "authorized_fit_ids": list(FIT_IDS),
+        "origins": preflight_result["origins"],
+        "cache_migration_verification": preflight_result["cache_migration_verification"],
+        "original_row_metadata_bytes_recovered": False,
+        "original_row_metadata_sha256_by_origin": {
+            key: old["origins"][key]["row_arrays_sha256"]["metadata_file"]
+            for key in ("E67", "E75")
+        },
+        "target_columns_read": [], "query_labels_read": False,
+        "test_opened": False, "sample_submission_opened": False, "kaggle_accessed": False,
+    }
+    value["freeze_signature"] = offset.canonical_sha256(value)
+    _write_json(REPORT_ROOT / "FREEZE_SUCCESSOR.json", value)
+    _write_json(ACTIVE_FREEZE, value)
+    return value
+
+
 def load_freeze() -> dict[str, Any]:
-    freeze_data = _json(RUN_ROOT / "FREEZE.json")
+    freeze_path = ACTIVE_FREEZE if ACTIVE_FREEZE.is_file() else RUN_ROOT / "FREEZE.json"
+    freeze_data = _json(freeze_path)
     body = dict(freeze_data)
     signature = body.pop("freeze_signature", None)
     if signature != offset.canonical_sha256(body):
@@ -608,6 +802,63 @@ def load_freeze() -> dict[str, Any]:
     if freeze_data.get("authorized_fit_ids") != list(FIT_IDS):
         raise PilotError("Pilot freeze fit ID order does not match authorization")
     return freeze_data
+
+
+def _assert_successor_reservation_untouched(*, snapshot: Mapping[str, Any],
+                                            expected_snapshot: Mapping[str, Any],
+                                            ledger_sha: str, expected_ledger_sha: str,
+                                            reservations: list[Mapping[str, Any]],
+                                            expected_parent_signature: str,
+                                            expected_parent_source: str,
+                                            own_starts: list[Mapping[str, Any]]) -> None:
+    if (dict(snapshot) != dict(expected_snapshot) or ledger_sha != expected_ledger_sha
+            or len(reservations) != 1
+            or reservations[0].get("fit_ids") != list(FIT_IDS)
+            or reservations[0].get("freeze_signature") != expected_parent_signature
+            or reservations[0].get("source_commit") != expected_parent_source
+            or own_starts):
+        raise PilotError("Successor freeze requires the unchanged unique reservation and zero fit starts")
+
+
+def bind_successor_freeze() -> dict[str, Any]:
+    freeze_data = load_freeze()
+    parent_signature = freeze_data.get("parent_freeze_signature")
+    if not parent_signature:
+        raise PilotError("Active freeze is not a successor freeze")
+    events, snapshot, ledger_sha = _current_ledger()
+    reservations = [e for e in events if e.get("event") == "CARD_FITS_RESERVED"
+                    and e.get("reservation_key") == RESERVATION_KEY]
+    own_starts = [e for e in events if e.get("event") == "FIT_STARTED" and e.get("fit_id") in FIT_IDS]
+    _assert_successor_reservation_untouched(
+        snapshot=snapshot, expected_snapshot=freeze_data["live_ledger_snapshot_before_rebind"],
+        ledger_sha=ledger_sha, expected_ledger_sha=freeze_data["live_ledger_sha256_before_rebind"],
+        reservations=reservations, expected_parent_signature=parent_signature,
+        expected_parent_source=freeze_data["parent_source_commit"], own_starts=own_starts)
+    existing = [e for e in events if e.get("event") == "PREFIT_FREEZE_SUCCESSOR_BOUND"
+                and e.get("reservation_key") == RESERVATION_KEY]
+    expected_event = {"event": "PREFIT_FREEZE_SUCCESSOR_BOUND", "reservation_key": RESERVATION_KEY,
+                      "card_id": CARD_ID, "stage": STAGE, "fit_ids": list(FIT_IDS),
+                      "parent_freeze_signature": parent_signature,
+                      "freeze_signature": freeze_data["freeze_signature"],
+                      "source_commit": freeze_data["source_commit"],
+                      "reason": freeze_data["successor_reason"]}
+    if existing:
+        if len(existing) != 1 or any(existing[0].get(k) != v for k, v in expected_event.items()):
+            raise PilotError("Conflicting successor binding event already exists")
+        event = existing[0]
+        idempotent = True
+    else:
+        event = offset._append_ledger(expected_event, path=LEDGER, official=True)
+        idempotent = False
+    after_events, after_snapshot, after_sha = _current_ledger()
+    result = {"status": "BOUND", "idempotent_replay": idempotent,
+              "event": event, "ledger_sha256": after_sha,
+              "ledger_snapshot": after_snapshot,
+              "no_fit_started": not any(e.get("event") == "FIT_STARTED" and e.get("fit_id") in FIT_IDS
+                                         for e in after_events)}
+    _write_json(REPORT_ROOT / "RESERVATION_REBIND.json", result)
+    _write_json(RUN_ROOT / "RESERVATION_REBIND.json", result)
+    return result
 
 
 def reserve() -> dict[str, Any]:
@@ -666,8 +917,17 @@ def _live_budget_for_fits(freeze_data: Mapping[str, Any]) -> tuple[list[dict[str
     reservations = [e for e in events if e.get("event") == "CARD_FITS_RESERVED" and e.get("reservation_key") == RESERVATION_KEY]
     if len(reservations) != 1 or reservations[0].get("fit_ids") != list(FIT_IDS):
         raise PilotError("Unique authorized six-fit reservation missing or malformed")
-    if (reservations[0].get("freeze_signature") != freeze_data["freeze_signature"]
-            or reservations[0].get("source_commit") != freeze_data["source_commit"]):
+    parent_signature = freeze_data.get("parent_freeze_signature")
+    if parent_signature:
+        bound = [e for e in events if e.get("event") == "PREFIT_FREEZE_SUCCESSOR_BOUND"
+                 and e.get("reservation_key") == RESERVATION_KEY]
+        if (reservations[0].get("freeze_signature") != parent_signature
+                or reservations[0].get("source_commit") != freeze_data.get("parent_source_commit")
+                or len(bound) != 1 or bound[0].get("freeze_signature") != freeze_data["freeze_signature"]
+                or bound[0].get("source_commit") != freeze_data["source_commit"]):
+            raise PilotError("Successor freeze has not been bound to the original six-slot reservation")
+    elif (reservations[0].get("freeze_signature") != freeze_data["freeze_signature"]
+          or reservations[0].get("source_commit") != freeze_data["source_commit"]):
         raise PilotError("Reservation does not bind to current pilot freeze/source")
     if snapshot["global_cap"] != 149 or snapshot["effective_category_caps"] != POST_RESERVE_CAPS:
         raise PilotError("Live cap changed after pilot reservation")
@@ -1134,6 +1394,7 @@ def _write_report(result: Mapping[str, Any], plots: list[str]) -> None:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=("preflight", "synthetic", "freeze", "reserve",
+                                             "freeze-successor", "bind-successor",
                                              "run-all", "predictions", "verify-prelabel", "score"))
     parser.add_argument("--temp-root", type=Path)
     args = parser.parse_args(argv)
@@ -1143,9 +1404,14 @@ def main(argv: list[str] | None = None) -> int:
             if args.temp_root is None:
                 raise PilotError("synthetic requires --temp-root under system temporary storage")
             result = run_synthetic_lifecycle(args.temp_root)
-            _write_json(REPORT_ROOT / "SYNTHETIC_QA.json", result)
+            target = (REPORT_ROOT / "SYNTHETIC_QA_SUCCESSOR.json"
+                      if (REPORT_ROOT / "PREFLIGHT_SUCCESSOR.json").is_file()
+                      else REPORT_ROOT / "SYNTHETIC_QA.json")
+            _write_json(target, result)
         elif args.command == "freeze": result = freeze()
         elif args.command == "reserve": result = reserve()
+        elif args.command == "freeze-successor": result = freeze_successor()
+        elif args.command == "bind-successor": result = bind_successor_freeze()
         elif args.command == "run-all": result = run_all_fits()
         elif args.command == "predictions": result = build_predictions()
         elif args.command == "verify-prelabel": result = verify_prelabel()
