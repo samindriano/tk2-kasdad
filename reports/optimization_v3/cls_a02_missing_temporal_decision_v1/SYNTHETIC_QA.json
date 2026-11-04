@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "policy_id": "CLS_A02_MISSING_TEMPORAL_DECISION_V1",
+  "status": "PASS_SYNTHETIC_PREFIT_QA",
+  "run": {
+    "command": "python -m pytest -q tests/test_optimization_v3_cls_a02_missing_temporal_decision_v1.py",
+    "result": "5 passed",
+    "official_train_or_oof_loaded": false,
+    "e79_probability_bundle_opened": false,
+    "official_test_opened": false,
+    "selector_results_scored": false,
+    "model_or_preprocessing_fits": 0,
+    "test_environment": "temporary synthetic arrays and temporary receipt directories"
+  },
+  "checks": {
+    "threshold_solver_matches_brute_force_over_candidate_allocations": "PASS",
+    "inclusive_greater_equal_and_tie_rule": "PASS",
+    "minimum_support_and_fixed_threshold_fallback": "PASS",
+    "present_stream_decisions_unchanged_when_missing_threshold_varies": "PASS",
+    "frozen_protocol_matches_code_constants_and_input_hashes": "PASS",
+    "D1_D2_final_selector_pipeline_end_to_end_on_synthetic_origins": "PASS",
+    "evaluation_receipt_persisted_before_resume_and_replayed_identically": "PASS",
+    "source_commit_and_selector_probability_context_change_rejected_on_resume": "PASS",
+    "three_selector_cap_and_duplicate_retry_rejected": "PASS",
+    "evaluation_event_requires_prior_persisted_selector": "PASS"
+  },
+  "evidence": {
+    "test_file": "tests/test_optimization_v3_cls_a02_missing_temporal_decision_v1.py",
+    "protocol_file": "experiments/optimization_v3/cls_a02_missing_temporal_decision_v1/protocol.json",
+    "synthetic_pipeline_receipts": "created only inside pytest temporary directory; no official receipt or ledger created"
+  }
+}

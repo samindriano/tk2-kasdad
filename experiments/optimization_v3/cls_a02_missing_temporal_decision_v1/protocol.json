@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "policy_id": "CLS_A02_MISSING_TEMPORAL_DECISION_V1",
+  "status": "FROZEN_BEFORE_OFFICIAL_SELECTORS",
+  "question": "Can one global threshold selected on past missing-stream rows improve overall Macro F1 when only missing-stream A02 decisions vary and all present-stream decisions stay fixed?",
+  "decision_rule": {
+    "objective": "overall full-row Macro F1, with present-stream confusion fixed",
+    "present": "frozen current-best MIX50 probability >= 0.50",
+    "missing": "original A02 probability >= selected threshold",
+    "threshold_operator": ">=",
+    "candidate_thresholds": "0, 0.50, nextafter(1,+infinity), and safe midpoints between distinct missing-row scores",
+    "tie_rule": "scores within 1e-12 of the maximum are tied; choose closest to 0.50, then lower threshold",
+    "allowed_adaptation": "one global missing-stream threshold per declared stage only",
+    "prohibited_adaptation": ["row weights", "recency weights", "threshold grids beyond attainable allocations", "shrinkage", "subgroup thresholds", "public leaderboard tuning"]
+  },
+  "support_gate": {
+    "full_selection_rows_min": 1000,
+    "full_selection_each_class_min": 100,
+    "varying_missing_rows_min": 200,
+    "varying_missing_each_class_min": 30,
+    "fallback": "retain threshold 0.50 and consume zero selector slots if any support condition fails",
+    "support_is_not_evidence_of_threshold_benefit": true
+  },
+  "planned_support_before_new_outcomes": {
+    "D1_E67_W4_TO_W5": {"selection_origin": "E67", "selection_cycles": [68, 71], "rows": 4950, "class_0": 3097, "class_1": 1853, "missing_rows": 342, "missing_class_0": 202, "missing_class_1": 140, "evaluation_origin": "E67", "evaluation_cycles": [72, 75], "evaluation_rows": 7462},
+    "D2_E67_W4W5_TO_E75_W6": {"selection_origin": "E67", "selection_cycles": [68, 75], "rows": 12412, "class_0": 8185, "class_1": 4227, "missing_rows": 849, "missing_class_0": 533, "missing_class_1": 316, "evaluation_origin": "E75", "evaluation_cycles": [76, 79], "evaluation_rows": 8491},
+    "FINAL_STITCHED_E79": {"selection_parts": [{"origin": "E67", "cycles": [68, 75]}, {"origin": "E75", "cycles": [76, 79]}], "rows": 20903, "class_0": 14176, "class_1": 6727, "missing_rows": 1375, "missing_class_0": 888, "missing_class_1": 487}
+  },
+  "stage_order": ["D1_E67_W4_TO_W5", "D2_E67_W4W5_TO_E75_W6", "FINAL_STITCHED_E79"],
+  "interpretation_limits": {
+    "development_views_adaptive_not_fresh_holdouts": true,
+    "threshold_receipt_must_be_durable_before_evaluation_labels_are_loaded": true,
+    "probabilities_unchanged_no_proper_score_improvement_claim": true,
+    "report_current_best_and_old_mix50_pP_missing_comparator": true,
+    "report_all_negative_results_and_protected_subgroup_guards": true,
+    "pooled_W5_W6_is_unique_15953_rows_from_confusion_counts": true,
+    "two_origins_do_not_establish_general_domain_auc_threshold_relationship": true
+  },
+  "resource_and_source_boundaries": {
+    "max_decision_selectors": 3,
+    "new_estimator_fits": 0,
+    "new_preprocessing_fits": 0,
+    "new_model_inference": 0,
+    "official_label_source": "classification Train.csv only, restricted by exact record_id and cycle from verified OOF bundle",
+    "E79_bundle_access": "prohibited until committed E79_APPLICATION_FREEZE binds the final selector receipt and frozen E79/Test/current-best hashes",
+    "test_fields_after_freeze": ["record_id", "signal_stream"],
+    "test_labels_read": false,
+    "SampleSubmission_read": false,
+    "Kaggle_contacted": false,
+    "maximum_candidate_CSVs": 1,
+    "upload": "not performed by this task; exact duplicate full-label vector requires SKIP_UPLOAD"
+  },
+  "frozen_inputs": {
+    "train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "oof_bundle_sha256": "25d1d2b91348a57d33b3b0e5ce78da29840d115b75e24f9502cc83c1b63ef351",
+    "e79_probability_bundle_expected_sha256_after_application_freeze": "ffc55aa2d18b75438257f3cf0aa205baa3f4c2922180e2b3688b36c352c00271",
+    "official_test_expected_sha256_after_application_freeze": "4e6c381d582ed24f92d17f620f4f0ad25e2e0def29eb57a91a5482867f6afe3c",
+    "current_best_csv_sha256": "3d970fa208d094e1e01c462671eeff327e05125bfacde2bacf36259b29fdf0bc",
+    "current_best_manifest_sha256": "c0ef8ce6b3116b765072fd2fe9e6dfb37dbc1577ee456ac84e8ec8f93498cfca",
+    "current_best_qa_sha256": "36db9799ccf10a6d5dbd9842b3c10fc28780683c4171ee2aeaa01cfe2d3493ce"
+  }
+}
