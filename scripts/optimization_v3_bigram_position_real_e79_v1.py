@@ -417,11 +417,12 @@ def _verify_position_offset(frame: pd.DataFrame, vectorizer: Any) -> tuple[np.nd
     z0 = np.asarray(bag.decision_function(base), dtype=np.float64).reshape(-1)
     base_sha = offset.sha256_csr(base)
     position_sha = offset.sha256_csr(unigram_position)
-    if (base_sha != c2b_receipt.get("fit_matrix_sha256")
-            or base_sha != pos_receipt.get("base_matrix_sha256")
-            or position_sha != pos_receipt.get("fit_matrix_sha256")
-            or offset.sha256_array(z0) != pos_receipt.get("z0_sha256")
-            or offset.sha256_array(bag.coef_) != pos_receipt.get("bag_lr_coefficient_sha256")
+    if (base_sha != c2b_state.get("fit_matrix_sha256")
+            or base_sha != pos_state.get("base_matrix_sha256")
+            or position_sha != pos_state.get("fit_matrix_sha256")
+            or offset.sha256_array(z0) != pos_state.get("z0_sha256")
+            or offset.sha256_array(bag.coef_) != pos_state.get("bag_lr_coefficient_sha256")
+            or cgeom.canonical_sha(cgeom._state_summary(c2b_state)) != c2b_receipt.get("state_sha256")
             or cgeom.canonical_sha(cgeom._state_summary(pos_state)) != pos_receipt.get("state_sha256")):
         raise BenchmarkError("Recomputed full-Train C2_B/original POS feature lineage differs from its fitted receipts")
     _z_bag, z_original = reconstruct_original_pos_logit(
