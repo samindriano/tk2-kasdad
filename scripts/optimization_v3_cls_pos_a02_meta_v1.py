@@ -48,9 +48,12 @@ PROTOCOL = ROOT / "experiments/optimization_v3/cls_pos_a02_meta_v1/protocol.json
 SCRIPT = Path(__file__).resolve()
 TESTS = ROOT / "tests/test_optimization_v3_cls_pos_a02_meta_v1.py"
 REPORT_DIR = ROOT / "reports/optimization_v3/cls_pos_a02_meta_v1"
-PREFIT_QA = REPORT_DIR / "PREFIT_SYNTHETIC_QA.json"
-PREFIT_FREEZE = REPORT_DIR / "PREFIT_FREEZE.json"
-ROOT_APPROVAL = REPORT_DIR / "ROOT_PREFIT_PASS.json"
+PREFIT_QA_R1 = REPORT_DIR / "PREFIT_SYNTHETIC_QA.json"
+PREFIT_FREEZE_R1 = REPORT_DIR / "PREFIT_FREEZE.json"
+PREFIT_QA = REPORT_DIR / "PREFIT_SYNTHETIC_QA_R2.json"
+PREFIT_FREEZE = REPORT_DIR / "PREFIT_FREEZE_R2.json"
+PREFIT_GATE_CHECK = REPORT_DIR / "PREFIT_GATE_CHECK_R2.json"
+ROOT_APPROVAL = REPORT_DIR / "ROOT_PREFIT_PASS_R2.json"
 RUN_DIR = ROOT / "experiments/runs/optimization_v3_cls_pos_a02_meta_v1"
 FIT_ROOT = RUN_DIR / "fits"
 TRAIN_CSV = ROOT / "data/raw/classification/Train.csv"
@@ -529,6 +532,188 @@ def _fit_paths(fit_id: str) -> tuple[Path, Path, Path]:
     return folder / "model_state.npz", folder / "fit_receipt.json", folder / "failure.json"
 
 
+def _array_sha256(values: np.ndarray, dtype: str | None = None) -> str:
+    array = np.asarray(values, dtype=dtype) if dtype else np.asarray(values)
+    array = np.ascontiguousarray(array)
+    h = hashlib.sha256()
+    h.update(array.dtype.str.encode("ascii"))
+    h.update(json.dumps(list(array.shape), separators=(",", ":")).encode("ascii"))
+    h.update(memoryview(array).cast("B"))
+    return h.hexdigest()
+
+
+def _fit_signature(fit_id: str, arm: str, x: np.ndarray, y: np.ndarray,
+                   ids: np.ndarray, cycles: np.ndarray,
+                   approval_sha256: str) -> dict[str, Any]:
+    yy = validate_labels(y)
+    xx = np.asarray(x, dtype=np.float64)
+    row_ids = np.asarray(ids, dtype=str)
+    cyc = np.asarray(cycles, dtype=np.int64)
+    if fit_id not in FIT_IDS or arm not in {"PAIR", "SCALAR"}:
+        raise MetaError("Fit signature ID/arm is outside the frozen allowlist")
+    if xx.ndim != 2 or xx.shape[0] != len(yy) or len(row_ids) != len(yy) or len(cyc) != len(yy):
+        raise MetaError("Fit signature row counts differ")
+    if not np.isfinite(xx).all() or len(np.unique(row_ids)) != len(row_ids):
+        raise MetaError("Fit signature contains invalid features or duplicate IDs")
+    counts = np.bincount(yy, minlength=2)
+    return {
+        "fit_id": fit_id,
+        "arm": arm,
+        "approval_sha256": approval_sha256,
+        "source_hashes": _source_hashes(),
+        "input_hashes": _input_hashes(),
+        "fit_population": "present-stream selection rows only",
+        "rows": int(len(yy)),
+        "class_0": int(counts[0]),
+        "class_1": int(counts[1]),
+        "selection_ids_sha256": _digest_ids(row_ids),
+        "selection_cycles_sha256": _array_sha256(cyc, "<i8"),
+        "selection_cycle_range": [int(cyc.min()), int(cyc.max())],
+        "features_sha256": _array_sha256(xx, "<f8"),
+        "labels_sha256": _array_sha256(yy, "|i1"),
+        "feature_width": int(xx.shape[1]),
+        "feature_names": ["logit(pP)", "logit(pA)"] if arm == "PAIR" else ["logit(MIX50)"],
+        "estimator": dict(MODEL_PARAMS),
+        "threadpool_limit": MAX_THREADS,
+    }
+
+
+def _validate_fit_ledger(events: list[dict[str, Any]]) -> dict[str, dict[str, dict[str, Any]]]:
+    """Validate raw event multiplicity, order, cap, and reservation identity."""
+    grouped: dict[str, dict[str, dict[str, Any]]] = {}
+    reservation_ids: set[str] = set()
+    allowed_events = {"RESERVE", "FIT_START", "FIT_COMPLETE", "FIT_FAILED"}
+    for index, event in enumerate(events):
+        fit_id = event.get("fit_id")
+        kind = event.get("event")
+        if fit_id not in FIT_IDS or kind not in allowed_events or event.get("experiment_id") != EXPERIMENT:
+            raise MetaError("Official-fit ledger contains an unknown fit or event")
+        per_fit = grouped.setdefault(fit_id, {})
+        if kind in per_fit:
+            raise MetaError(f"Duplicate {kind} event for {fit_id}; no retry is permitted")
+        event = dict(event)
+        event["_ledger_index"] = index
+        per_fit[kind] = event
+        if kind == "RESERVE":
+            rid = str(event.get("reservation_id", ""))
+            try:
+                parsed = uuid.UUID(rid)
+            except (ValueError, AttributeError) as exc:
+                raise MetaError("Reservation ID is invalid") from exc
+            if parsed.hex != rid.replace("-", "").lower() or rid in reservation_ids:
+                raise MetaError("Reservation ID is noncanonical or reused")
+            reservation_ids.add(rid)
+            if event.get("cap") != MAX_OFFICIAL_FITS or event.get("fit_ids_allowlist") != list(FIT_IDS):
+                raise MetaError("Reservation cap/fit allowlist differs from frozen protocol")
+            signature = event.get("fit_signature")
+            if (not isinstance(signature, dict)
+                    or canonical_sha256(signature) != event.get("fit_signature_sha256")
+                    or signature.get("fit_id") != fit_id
+                    or signature.get("arm") != event.get("arm")
+                    or signature.get("approval_sha256") != event.get("approval_sha256")):
+                raise MetaError(f"Reservation lacks an internally consistent fit signature for {fit_id}")
+    reserve_count = sum(e.get("event") == "RESERVE" for e in events)
+    start_count = sum(e.get("event") == "FIT_START" for e in events)
+    if reserve_count > MAX_OFFICIAL_FITS or start_count > MAX_OFFICIAL_FITS:
+        raise MetaError("Raw reservation/start event count exceeds the six-fit cap")
+    for fit_id, rows in grouped.items():
+        reserve = rows.get("RESERVE")
+        start = rows.get("FIT_START")
+        complete = rows.get("FIT_COMPLETE")
+        failed = rows.get("FIT_FAILED")
+        if reserve is None:
+            raise MetaError(f"Ledger fit {fit_id} has no reservation")
+        if start is None:
+            raise MetaError(f"Dangling reservation for {fit_id}; it cannot be retried")
+        if start["_ledger_index"] <= reserve["_ledger_index"]:
+            raise MetaError(f"FIT_START order is invalid for {fit_id}")
+        reservation_id = reserve["reservation_id"]
+        signature_sha = reserve.get("fit_signature_sha256")
+        for item in (complete, failed):
+            if item is None:
+                continue
+            if (item.get("reservation_id") != reservation_id
+                    or item.get("fit_signature_sha256") != signature_sha
+                    or item.get("approval_sha256") != reserve.get("approval_sha256")):
+                raise MetaError(f"Reservation/signature binding mismatch for {fit_id}")
+            if item["_ledger_index"] <= start["_ledger_index"]:
+                raise MetaError(f"Terminal ledger event precedes FIT_START for {fit_id}")
+        if complete is not None and failed is not None:
+            raise MetaError(f"Fit {fit_id} is both completed and failed")
+        if complete is not None:
+            _, receipt_path, _ = _fit_paths(fit_id)
+            if not receipt_path.is_file():
+                raise MetaError(f"FIT_COMPLETE has no durable receipt for {fit_id}")
+            receipt = _receipt(receipt_path)
+            if complete.get("receipt_sha256") != receipt.get("receipt_sha256"):
+                raise MetaError(f"FIT_COMPLETE receipt digest mismatch for {fit_id}")
+        if failed is not None:
+            _, _, failure_path = _fit_paths(fit_id)
+            if not failure_path.is_file() or failed.get("failure_sha256") != file_sha256(failure_path):
+                raise MetaError(f"FIT_FAILED failure digest mismatch for {fit_id}")
+        if complete is None and failed is None:
+            _, receipt_path, _ = _fit_paths(fit_id)
+            if not receipt_path.is_file():
+                raise MetaError(f"Started fit {fit_id} has no durable receipt; retry prohibited")
+    return grouped
+
+
+def _validate_fit_binding(fit_id: str, expected_signature: Mapping[str, Any],
+                          receipt: Mapping[str, Any],
+                          events: Mapping[str, Mapping[str, Any]]) -> str:
+    """Validate exact fit data/recipe/approval bindings; return terminal/recovery state."""
+    expected = dict(expected_signature)
+    signature_sha = canonical_sha256(expected)
+    if receipt.get("fit_signature") != expected or receipt.get("fit_signature_sha256") != signature_sha:
+        raise MetaError(f"Resume receipt does not match current fit inputs for {fit_id}")
+    if receipt.get("fit_id") != fit_id or receipt.get("arm") != expected.get("arm"):
+        raise MetaError(f"Resume receipt identity/arm mismatch for {fit_id}")
+    if receipt.get("approval_sha256") != expected.get("approval_sha256"):
+        raise MetaError(f"Resume approval binding mismatch for {fit_id}")
+    if receipt.get("source_hashes") != expected.get("source_hashes"):
+        raise MetaError(f"Resume source hashes mismatch for {fit_id}")
+    if receipt.get("input_hashes") != expected.get("input_hashes"):
+        raise MetaError(f"Resume input hashes mismatch for {fit_id}")
+    receipt_expected = {
+        "fit_population": expected["fit_population"],
+        "fit_rows": expected["rows"],
+        "class_0": expected["class_0"],
+        "class_1": expected["class_1"],
+        "selection_ids_sha256": expected["selection_ids_sha256"],
+        "selection_cycle_range": expected["selection_cycle_range"],
+        "feature_width": expected["feature_width"],
+        "feature_names": expected["feature_names"],
+        "estimator": expected["estimator"],
+        "threadpool_limit": expected["threadpool_limit"],
+    }
+    for key, value in receipt_expected.items():
+        if receipt.get(key) != value:
+            raise MetaError(f"Resume receipt field mismatch for {fit_id}: {key}")
+    reserve = events.get("RESERVE")
+    start = events.get("FIT_START")
+    complete = events.get("FIT_COMPLETE")
+    if reserve is None or start is None:
+        raise MetaError(f"Resume receipt lacks a unique reservation and start for {fit_id}")
+    reservation_id = reserve.get("reservation_id")
+    if (reserve.get("fit_signature") != expected
+            or reserve.get("arm") != expected.get("arm")
+            or reserve.get("approval_sha256") != expected.get("approval_sha256")):
+        raise MetaError(f"Resume reservation payload mismatch for {fit_id}")
+    for event in (reserve, start):
+        if event.get("fit_signature_sha256") != signature_sha:
+            raise MetaError(f"Resume ledger fit signature mismatch for {fit_id}")
+        if event.get("approval_sha256") != expected.get("approval_sha256"):
+            raise MetaError(f"Resume ledger approval mismatch for {fit_id}")
+    if receipt.get("reservation_id") != reservation_id or start.get("reservation_id") != reservation_id:
+        raise MetaError(f"Resume reservation ID mismatch for {fit_id}")
+    if complete is not None:
+        if (complete.get("receipt_sha256") != receipt.get("receipt_sha256")
+                or complete.get("reservation_id") != reservation_id):
+            raise MetaError(f"FIT_COMPLETE does not bind the exact receipt for {fit_id}")
+        return "COMPLETE"
+    return "RECOVER_COMPLETION_EVENT"
+
+
 def _read_model_state(path: Path, receipt: Mapping[str, Any]) -> dict[str, np.ndarray]:
     if file_sha256(path) != receipt.get("model_state_file_sha256"):
         raise MetaError("Model state file hash differs from fit receipt")
@@ -536,31 +721,45 @@ def _read_model_state(path: Path, receipt: Mapping[str, Any]) -> dict[str, np.nd
         state = {key: np.asarray(saved[key]).copy() for key in ("coef", "intercept", "classes", "n_iter")}
     if not all(np.isfinite(np.asarray(state[k], dtype=np.float64)).all() for k in ("coef", "intercept")):
         raise MetaError("Saved model state contains nonfinite parameters")
-    if state["coef"].shape != (1, int(receipt["feature_width"])):
+    if (state["coef"].shape != (1, int(receipt["feature_width"]))
+            or state["intercept"].shape != (1,)
+            or state["classes"].shape != (2,)):
         raise MetaError("Saved model coefficient shape is invalid")
     if not np.array_equal(state["classes"], np.asarray([0, 1], dtype=state["classes"].dtype)):
         raise MetaError("Saved model class order is not [0,1]")
+    n_iter = np.asarray(state["n_iter"])
+    if n_iter.shape != (1,) or int(n_iter[0]) < 0 or int(n_iter[0]) >= MAX_ITER:
+        raise MetaError("Saved model iteration count is invalid or did not converge")
+    if (receipt.get("n_iter") != [int(n_iter[0])]
+            or receipt.get("convergence_warnings") != []):
+        raise MetaError("Saved model convergence metadata does not match its receipt")
     return state
 
 
-def _existing_fit(fit_id: str) -> dict[str, np.ndarray] | None:
+def _existing_fit(fit_id: str, expected_signature: Mapping[str, Any]) -> dict[str, np.ndarray] | None:
     state_path, receipt_path, failure_path = _fit_paths(fit_id)
-    events = [event for event in _ledger() if event.get("fit_id") == fit_id]
-    if failure_path.exists() or any(e.get("event") == "FIT_FAILED" for e in events):
+    grouped = _validate_fit_ledger(_ledger())
+    events = grouped.get(fit_id, {})
+    if failure_path.exists() or "FIT_FAILED" in events:
         raise MetaError(f"Fit {fit_id} has a terminal failure; automatic retry is prohibited")
     if receipt_path.exists() and state_path.exists():
         receipt = _receipt(receipt_path)
         if receipt.get("fit_id") != fit_id or receipt.get("status") != "FIT_SAVED":
             raise MetaError(f"Fit receipt identity/status mismatch for {fit_id}")
+        ledger_status = _validate_fit_binding(fit_id, expected_signature, receipt, events)
+        if receipt.get("model_state_path") != state_path.relative_to(ROOT).as_posix():
+            raise MetaError(f"Resume model state path binding mismatch for {fit_id}")
         state = _read_model_state(state_path, receipt)
-        if not any(e.get("event") == "RESERVE" for e in events):
-            raise MetaError(f"Saved fit {fit_id} has no durable reservation")
-        if not any(e.get("event") == "FIT_START" for e in events):
-            raise MetaError(f"Saved fit {fit_id} has no durable FIT_START")
-        if not any(e.get("event") == "FIT_COMPLETE" for e in events):
-            _append_ledger({"event": "FIT_COMPLETE", "fit_id": fit_id,
+        if ledger_status == "RECOVER_COMPLETION_EVENT":
+            reserve = events["RESERVE"]
+            _append_ledger({"event": "FIT_COMPLETE", "experiment_id": EXPERIMENT,
+                            "fit_id": fit_id,
+                            "reservation_id": reserve["reservation_id"],
+                            "approval_sha256": expected_signature["approval_sha256"],
+                            "fit_signature_sha256": canonical_sha256(dict(expected_signature)),
                             "receipt_sha256": receipt["receipt_sha256"],
-                            "recovered_from_exact_persisted_state": True})
+                            "recovered_from_exact_persisted_state": True,
+                            "at_utc": _utc_now()})
         return state
     if state_path.exists() or receipt_path.exists() or events:
         raise MetaError(f"Fit {fit_id} is partial or interrupted; no retry is allowed")
@@ -572,9 +771,14 @@ def _fit_one(fit_id: str, arm: str, x: np.ndarray, y: np.ndarray,
              approval_sha256: str) -> dict[str, np.ndarray]:
     if fit_id not in FIT_IDS or fit_id.endswith("_" + arm) is False:
         raise MetaError("Fit ID does not match the frozen arm allowlist")
-    existing = _existing_fit(fit_id)
-    if existing is not None:
-        return existing
+    x = np.asarray(x, dtype=np.float64)
+    y = validate_labels(y)
+    ids = np.asarray(ids, dtype=str)
+    cycles = np.asarray(cycles, dtype=np.int64)
+    if x.shape != (len(y), 2 if arm == "PAIR" else 1) or len(ids) != len(y) or len(cycles) != len(y):
+        raise MetaError("Fit matrices, labels, IDs, and cycles have different shapes")
+    if len(np.unique(ids)) != len(ids) or not np.isfinite(x).all():
+        raise MetaError("Fit input IDs/features are invalid")
     support = fit_support(y)
     if support["status"] != "PASS":
         _write_json_once(_fit_paths(fit_id)[2], {
@@ -583,13 +787,15 @@ def _fit_one(fit_id: str, arm: str, x: np.ndarray, y: np.ndarray,
             "fit_started": False, "retry_allowed": False,
         })
         raise MetaError(f"Fit {fit_id} lacks frozen selection support")
-    if x.shape != (len(y), 2 if arm == "PAIR" else 1) or len(ids) != len(y) or len(cycles) != len(y):
-        raise MetaError("Fit matrices, labels, IDs, and cycles have different shapes")
-    if len(np.unique(ids)) != len(ids) or not np.isfinite(x).all():
-        raise MetaError("Fit input IDs/features are invalid")
+    signature = _fit_signature(fit_id, arm, x, y, ids, cycles, approval_sha256)
+    signature_sha = canonical_sha256(signature)
+    existing = _existing_fit(fit_id, signature)
+    if existing is not None:
+        return existing
     events = _ledger()
-    reserved = {e.get("fit_id") for e in events if e.get("event") == "RESERVE"}
-    if fit_id in reserved or len(reserved) >= MAX_OFFICIAL_FITS:
+    _validate_fit_ledger(events)
+    reserved = [e for e in events if e.get("event") == "RESERVE"]
+    if any(e.get("fit_id") == fit_id for e in reserved) or len(reserved) >= MAX_OFFICIAL_FITS:
         raise MetaError("Official six-fit cap is exhausted or fit ID was previously reserved")
     resource = resource_gate()
     reservation_id = str(uuid.uuid4())
@@ -598,12 +804,14 @@ def _fit_one(fit_id: str, arm: str, x: np.ndarray, y: np.ndarray,
         "reservation_id": reservation_id, "cap": MAX_OFFICIAL_FITS,
         "fit_ids_allowlist": list(FIT_IDS), "resource_gate": resource,
         "source_commit": _git_head(), "approval_sha256": approval_sha256,
-        "selection_ids_sha256": _digest_ids(ids), "selection_cycles": [int(cycles.min()), int(cycles.max())],
-        "support": support,
+        "arm": arm, "fit_signature_sha256": signature_sha,
+        "fit_signature": signature, "support": support,
     }
     _append_ledger(reservation)
     _append_ledger({"event": "FIT_START", "experiment_id": EXPERIMENT,
                     "fit_id": fit_id, "reservation_id": reservation_id,
+                    "approval_sha256": approval_sha256,
+                    "fit_signature_sha256": signature_sha,
                     "at_utc": _utc_now(), "retry_allowed": False})
     state_path, receipt_path, failure_path = _fit_paths(fit_id)
     state_path.parent.mkdir(parents=True, exist_ok=True)
@@ -633,7 +841,8 @@ def _fit_one(fit_id: str, arm: str, x: np.ndarray, y: np.ndarray,
             "schema_version": 1, "experiment_id": EXPERIMENT,
             "fit_id": fit_id, "arm": arm, "status": "FIT_SAVED",
             "reservation_id": reservation_id, "approval_sha256": approval_sha256,
-            "source_hashes": _source_hashes(), "input_hashes": _input_hashes(),
+            "source_hashes": signature["source_hashes"], "input_hashes": signature["input_hashes"],
+            "fit_signature": signature, "fit_signature_sha256": signature_sha,
             "fit_population": "present-stream selection rows only",
             "fit_rows": int(len(y)), "class_0": int(np.sum(y == 0)), "class_1": int(np.sum(y == 1)),
             "selection_ids_sha256": _digest_ids(ids),
@@ -647,6 +856,8 @@ def _fit_one(fit_id: str, arm: str, x: np.ndarray, y: np.ndarray,
         receipt_sha = _write_json_once(receipt_path, receipt_body)
         _append_ledger({"event": "FIT_COMPLETE", "experiment_id": EXPERIMENT,
                         "fit_id": fit_id, "reservation_id": reservation_id,
+                        "approval_sha256": approval_sha256,
+                        "fit_signature_sha256": signature_sha,
                         "receipt_sha256": receipt_sha, "at_utc": _utc_now()})
         return _read_model_state(state_path, _receipt(receipt_path))
     except Exception as exc:
@@ -656,11 +867,14 @@ def _fit_one(fit_id: str, arm: str, x: np.ndarray, y: np.ndarray,
             raise
         failure = {"schema_version": 1, "experiment_id": EXPERIMENT,
                    "fit_id": fit_id, "reservation_id": reservation_id,
+                   "fit_signature_sha256": signature_sha,
                    "status": "FIT_FAILED_TERMINAL", "exception_type": type(exc).__name__,
                    "message": str(exc), "retry_allowed": False, "at_utc": _utc_now()}
         _write_json_once(failure_path, failure)
-        _append_ledger({"event": "FIT_FAILED", "fit_id": fit_id,
+        _append_ledger({"event": "FIT_FAILED", "experiment_id": EXPERIMENT, "fit_id": fit_id,
                         "reservation_id": reservation_id, "failure_sha256": file_sha256(failure_path),
+                        "approval_sha256": approval_sha256,
+                        "fit_signature_sha256": signature_sha,
                         "retry_allowed": False, "at_utc": _utc_now()})
         raise
 
@@ -785,9 +999,73 @@ def _make_synthetic_features(n: int = 1200) -> tuple[np.ndarray, np.ndarray, np.
     return p_pos, p_a02, mix, missing, y, cycles
 
 
+def synthetic_resume_binding_check() -> dict[str, Any]:
+    signature = {
+        "fit_id": "D1_PAIR", "arm": "PAIR", "approval_sha256": "approval-a",
+        "source_hashes": {"script": "source-a"}, "input_hashes": {"oof": "input-a"},
+        "fit_population": "present-stream selection rows only", "rows": 100,
+        "class_0": 50, "class_1": 50, "selection_cycle_range": [68, 71],
+        "selection_ids_sha256": "ids-a", "features_sha256": "features-a",
+        "labels_sha256": "labels-a", "selection_cycles_sha256": "cycles-a",
+        "feature_width": 2, "feature_names": ["logit(pP)", "logit(pA)"],
+        "estimator": dict(MODEL_PARAMS), "threadpool_limit": MAX_THREADS,
+    }
+    signature_sha = canonical_sha256(signature)
+    reservation_id = str(uuid.UUID("00000000-0000-4000-8000-000000000001"))
+    receipt = {
+        "fit_id": "D1_PAIR", "arm": "PAIR", "approval_sha256": "approval-a",
+        "source_hashes": signature["source_hashes"], "input_hashes": signature["input_hashes"],
+        "fit_signature": signature, "fit_signature_sha256": signature_sha,
+        "reservation_id": reservation_id, "receipt_sha256": "receipt-a",
+        "fit_population": signature["fit_population"], "fit_rows": signature["rows"],
+        "class_0": signature["class_0"], "class_1": signature["class_1"],
+        "selection_ids_sha256": signature["selection_ids_sha256"],
+        "selection_cycle_range": signature["selection_cycle_range"],
+        "feature_width": signature["feature_width"], "feature_names": signature["feature_names"],
+        "estimator": signature["estimator"], "threadpool_limit": signature["threadpool_limit"],
+    }
+    events = {
+        "RESERVE": {"reservation_id": reservation_id, "fit_signature_sha256": signature_sha,
+                    "approval_sha256": "approval-a", "fit_signature": signature, "arm": "PAIR"},
+        "FIT_START": {"reservation_id": reservation_id, "fit_signature_sha256": signature_sha,
+                      "approval_sha256": "approval-a"},
+        "FIT_COMPLETE": {"reservation_id": reservation_id, "fit_signature_sha256": signature_sha,
+                         "approval_sha256": "approval-a", "receipt_sha256": "receipt-a"},
+    }
+    if _validate_fit_binding("D1_PAIR", signature, receipt, events) != "COMPLETE":
+        raise MetaError("Synthetic exact receipt did not validate")
+    rejected = 0
+    for key, replacement in (("selection_ids_sha256", "ids-b"),
+                             ("features_sha256", "features-b"),
+                             ("source_hashes", {"script": "source-b"})):
+        altered = dict(signature)
+        altered[key] = replacement
+        try:
+            _validate_fit_binding("D1_PAIR", altered, receipt, events)
+        except MetaError:
+            rejected += 1
+        else:
+            raise MetaError(f"Synthetic resume failed to reject changed {key}")
+    bad_complete = dict(events)
+    bad_complete["FIT_COMPLETE"] = dict(events["FIT_COMPLETE"], receipt_sha256="receipt-b")
+    try:
+        _validate_fit_binding("D1_PAIR", signature, receipt, bad_complete)
+    except MetaError:
+        rejected += 1
+    else:
+        raise MetaError("Synthetic resume failed to reject mismatched FIT_COMPLETE digest")
+    recoverable = {key: value for key, value in events.items() if key != "FIT_COMPLETE"}
+    if _validate_fit_binding("D1_PAIR", signature, receipt, recoverable) != "RECOVER_COMPLETION_EVENT":
+        raise MetaError("Synthetic valid receipt without FIT_COMPLETE did not enter recovery mode")
+    return {"exact_resume": "PASS", "changed_id_feature_source_and_complete_hash_rejections": rejected,
+            "valid_persisted_receipt_missing_complete": "RECOVER_COMPLETION_EVENT",
+            "official_data_or_fits": False}
+
+
 def synthetic_lifecycle() -> dict[str, Any]:
     """Exercise fit, persistence, reload, scoring, routes and metric lifecycle on synthetic rows only."""
     p_pos, p_a02, mix, missing, y, cycles = _make_synthetic_features()
+    resume_check = synthetic_resume_binding_check()
     ids = np.asarray([f"SYN-{i:05d}" for i in range(len(y))], dtype="U9")
     select = cycles == 68
     evaluation = cycles == 72
@@ -815,7 +1093,8 @@ def synthetic_lifecycle() -> dict[str, Any]:
             path.write_bytes(_npz_bytes(**state))
             receipt = {"model_state_file_sha256": file_sha256(path),
                        "feature_width": x.shape[1], "fit_id": "SYNTHETIC_" + arm,
-                       "status": "FIT_SAVED"}
+                       "status": "FIT_SAVED", "n_iter": [int(state["n_iter"][0])],
+                       "convergence_warnings": []}
             reloaded = _read_model_state(path, receipt)
             x_eval = feature_matrix(p_pos[evaluation & ~missing], p_a02[evaluation & ~missing],
                                     mix[evaluation & ~missing], arm)
@@ -846,6 +1125,7 @@ def synthetic_lifecycle() -> dict[str, Any]:
             "selection_support": support,
             "persist_reload_bit_exact": True,
             "resume_reuses_saved_state_without_refit": True,
+            "resume_binding_check": resume_check,
             "missing_route_bit_exact": True,
             "threshold": THRESHOLD,
             "metrics_smoke": {arm: value["overall"] for arm, value in eval_metrics.items()},
@@ -859,6 +1139,21 @@ def write_prefit_freeze() -> dict[str, Any]:
         return _validate_prefit_freeze()
     if ROOT_APPROVAL.exists():
         raise MetaError("Unexpected root approval exists before this prefit freeze")
+    r1_raw = _strict_json(PREFIT_FREEZE_R1)
+    r1_receipt_sha = r1_raw.pop("receipt_sha256", None)
+    if r1_receipt_sha != canonical_sha256(r1_raw):
+        raise MetaError("Historical R1 prefit receipt is invalid; refusing to supersede it")
+    r1_qa_raw = _strict_json(PREFIT_QA_R1)
+    r1_qa_receipt = r1_qa_raw.pop("receipt_sha256", None)
+    if r1_qa_receipt != canonical_sha256(r1_qa_raw):
+        raise MetaError("Historical R1 synthetic QA receipt is invalid")
+    supersedes_r1 = {
+        "freeze_file_sha256": file_sha256(PREFIT_FREEZE_R1),
+        "freeze_receipt_sha256": r1_receipt_sha,
+        "synthetic_qa_file_sha256": file_sha256(PREFIT_QA_R1),
+        "synthetic_qa_receipt_sha256": r1_qa_receipt,
+        "reason": "Sol root review found a resume-state/ledger binding gap before any official fit; R1 is preserved unchanged and superseded before outcome access.",
+    }
     commit = _git_head()
     git_sources = {name: _git_source_provenance(path, commit) for name, path in SOURCE_FILES.items()
                    if name in {"script", "protocol", "tests", "research_next_contract", "r5_script"}}
@@ -871,7 +1166,13 @@ def write_prefit_freeze() -> dict[str, Any]:
     stitch = make_unique_stitch(oof)
     if len(stitch["ids"]) != 20903:
         raise MetaError("Synthetic-only prefit gate found an unexpected OOF stitch size")
+    test_command = [sys.executable, "-m", "pytest", TESTS.relative_to(ROOT).as_posix(), "-q"]
+    test_run = subprocess.run(test_command, cwd=ROOT, capture_output=True, text=True)
+    test_lines = (test_run.stdout + "\n" + test_run.stderr).strip().splitlines()
+    if test_run.returncode != 0:
+        raise MetaError("Prefit unit tests failed; refusing to freeze R2")
     qa = synthetic_lifecycle()
+    resume_check = qa["resume_binding_check"]
     qa["oof_source_audit"] = {
         "bundle_sha256": input_hashes["exact_mix50_train_oof_bundle"],
         "loaded_fields": list(OOF_FIELDS), "target_arrays_loaded": False,
@@ -883,13 +1184,24 @@ def write_prefit_freeze() -> dict[str, Any]:
     qa["e79_probability_values_loaded"] = False
     qa["sample_submission_loaded"] = False
     qa["kaggle_contacted"] = False
+    qa["unit_test_run"] = {
+        "status": "PASS",
+        "command": "python -m pytest tests/test_optimization_v3_cls_pos_a02_meta_v1.py -q",
+        "exit_code": int(test_run.returncode),
+        "summary": test_lines[-1] if test_lines else "no test summary returned",
+    }
+    qa["prefit_revision"] = "R2"
+    qa["supersedes_r1"] = supersedes_r1
+    qa["resume_binding_check"] = resume_check
     _write_json_once(PREFIT_QA, qa)
     source_hashes = {name: file_sha256(path) for name, path in SOURCE_FILES.items()}
     body = {
         "schema_version": 1,
         "experiment_id": EXPERIMENT,
+        "prefit_revision": "R2",
         "status": "PREFIT_FROZEN_WAIT_ROOT_APPROVAL",
         "prefit_commit": commit,
+        "supersedes_r1": supersedes_r1,
         "git_source_provenance": git_sources,
         "source_hashes": source_hashes,
         "input_hashes": input_hashes,
@@ -1280,6 +1592,7 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps(run_official(), indent=2))
         elif args.status:
             status = {"experiment_id": EXPERIMENT,
+                      "prefit_revision": "R2",
                       "prefit_freeze_exists": PREFIT_FREEZE.exists(),
                       "root_approval_exists": ROOT_APPROVAL.exists(),
                       "official_fit_starts": sum(e.get("event") == "FIT_START" for e in _ledger()),
