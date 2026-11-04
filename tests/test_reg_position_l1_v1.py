@@ -1,8 +1,12 @@
 import joblib
+import json
 import numpy as np
 import pytest
 from scipy import sparse
 from sklearn.feature_extraction.text import TfidfVectorizer
+import subprocess
+import sys
+from pathlib import Path
 
 from src.models.reg_position_l1_v1 import unigram_bag, head_design, compose_residual_prediction
 
@@ -60,3 +64,24 @@ def test_synthetic_l1_estimator_and_unicode_readback(tmp_path):
     np.savez(tmp_path/"arrays.npz",ids=np.array(["長い-id-α", "samuel"]),prediction=prediction,delta=delta)
     with np.load(tmp_path/"arrays.npz",allow_pickle=False) as z:
         assert z["ids"].tolist()==["長い-id-α", "samuel"]
+
+
+def test_actual_entrypoint_synthetic_lifecycle_verification_and_tamper_rejection(tmp_path):
+    runner = Path(__file__).resolve().parents[1] / "scripts" / "reg_position_l1_v1.py"
+    result = subprocess.run(
+        [sys.executable, str(runner), "synthetic-e2e", "--temp-root", str(tmp_path / "pilot-e2e")],
+        capture_output=True, text=True, encoding="utf-8", check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    report = json.loads(result.stdout)
+    assert report["status"] == "PASS_SYNTHETIC_ENTRYPOINT_E2E"
+    assert report["fit_starts"] == report["fit_saved"] == report["fit_invocations"] == 6
+    assert report["fit_failed"] == 0
+    assert report["resumed_from_durable_model_without_refit"] is True
+    assert report["source_root_write_guard"] == "PASS"
+    assert report["tampered_copy_rejected"] is True
+    assert all(report["guard_checks"].values())
+    independent = report["synthetic_independent_verification"]
+    assert independent["status"] == "PASS_SYNTHETIC_INDEPENDENT_METRICS"
+    assert independent["unsupported_groups_remain_unknown"] is True
+    assert independent["fit_invocations_reported"] == 6

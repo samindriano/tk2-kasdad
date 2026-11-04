@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "card_id": "REG_POSITION_L1_V1",
+  "status": "FROZEN_BY_PROTOCOL",
+  "question": "Does anonymous token placement explain final R06 OOF residuals beyond bag text and matched shuffled position, with transferable MAE benefit?",
+  "selection_disclosure": "Adaptive development experiment selected after previous Regression and Classification results; E67/E75 outcomes overlap and are not untouched validation.",
+  "origins": {
+    "E67": {"fit_cycle_bounds": [56, 67], "fit_rows": 16482, "query_cycle_bounds": [68, 79], "query_rows": 20903},
+    "E75": {"fit_cycle_bounds": [56, 75], "fit_rows": 28045, "query_cycle_bounds": [76, 79], "query_rows": 8491}
+  },
+  "target": "threat_rank - final mapped R06 OOF prediction from its strictly-past generating cutoff; no query target in features or fit",
+  "baseline": "R06 final mapped prediction: donor and query array member baseline_prediction; never raw_candidate or the RNBR candidate prediction",
+  "features": {
+    "BAG": "[L2-normalized unigram TF-IDF, baseline/100]",
+    "REAL": "[BAG, existing three-third position suffix, baseline/100]",
+    "SHUFFLED": "[BAG, existing deterministic seed42 shuffled-position suffix, baseline/100]",
+    "position_source": "POSITIONAL_TEXT_PILOT_V1 fit_position/score_position and fit_shuffled_position/score_shuffled_position, sliced after exact corresponding fit_base/score_base width",
+    "preprocessing": "reuse standalone target-free word TF-IDF state; no vocabulary, IDF, scaler, encoder, vectorizer or feature-selection fit",
+    "feature_exclusions": ["cycle_code", "actual target bins", "Classification labels/probabilities", "R-NBR candidate predictions"]
+  },
+  "estimator": {
+    "class": "lightgbm.LGBMRegressor",
+    "objective": "regression_l1",
+    "parameter_source": "src/models/regression_research_tabular.py: COMMON_PARAMETERS plus PARAMETER_SETS['regularized']",
+    "resolved_parameters": "captured completely in FREEZE.json before production fits",
+    "threads": 2,
+    "query_labels_or_early_stopping": false
+  },
+  "fixed_policy": {
+    "delta": "clip(0.25 * predicted residual, -5, +5)",
+    "prediction": "clip(final R06 query prediction + delta, 0, 100)",
+    "missing_text": "exact final R06 prediction; delta 0",
+    "additional_rank_mapping": false
+  },
+  "fits": [
+    "REG_POSITION_L1_V1_E67_BAG", "REG_POSITION_L1_V1_E67_REAL", "REG_POSITION_L1_V1_E67_SHUFFLED",
+    "REG_POSITION_L1_V1_E75_BAG", "REG_POSITION_L1_V1_E75_REAL", "REG_POSITION_L1_V1_E75_SHUFFLED"
+  ],
+  "gates": {
+    "competition_gain_vs_R06": {"E67_H12_min": 0.03, "E75_W6_min": 0.03},
+    "E67_window_harm_max": {"W4": 0.1, "W5": 0.1, "W6": 0.1},
+    "subgroups": {"minimum_n": 100, "maximum_MAE_harm": 0.25, "unsupported": "UNKNOWN"},
+    "REAL_mechanism_gain": {"vs_BAG_E67_H12_min": 0.01, "vs_BAG_E75_W6_min": 0.01,
+                            "vs_SHUFFLED_E67_H12_min": 0.01, "vs_SHUFFLED_E75_W6_min": 0.01},
+    "missing_route": "bit-exact R06",
+    "prediction_range": [0, 100],
+    "independent_verification": "required before query scoring and final eligibility"
+  },
+  "views": ["E67_H12", "E67_W4", "E67_W5", "E67_W6", "E75_W6", "LATE_UNIQUE_E67_W4_PLUS_E75_W6"],
+  "accounting": {"ledger": "experiments/runs/reg_position_l1_v1/fit_ledger.jsonl", "cap": 6,
+                 "starts": 6, "retries": 0, "shared_ledger_write": false},
+  "boundaries": {"test": "not accessed", "sample_submission": "not accessed", "kaggle": "not accessed",
+                 "R06_refit": false, "full_train_fit": false, "notebook_or_EDA_change": false}
+}
