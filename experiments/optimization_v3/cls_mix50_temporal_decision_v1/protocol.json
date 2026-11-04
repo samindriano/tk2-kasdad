@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "experiment_id": "CLS_MIX50_TEMPORAL_DECISION_V1",
+  "prefit_revision": "R4",
+  "status": "PREFIT_ONLY_PENDING_ROOT_REVIEW",
+  "superseded_unapproved_prefit_attempts": [
+    "reports/optimization_v3/cls_mix50_temporal_decision_v1/PREFIT_FREEZE_R1_SUPERSEDED.json",
+    "reports/optimization_v3/cls_mix50_temporal_decision_v1/PREFIT_SYNTHETIC_QA_R1_SUPERSEDED.json",
+    "reports/optimization_v3/cls_mix50_temporal_decision_v1/PREFIT_FREEZE_R2_SUPERSEDED.json",
+    "reports/optimization_v3/cls_mix50_temporal_decision_v1/PREFIT_SYNTHETIC_QA_R2_SUPERSEDED.json",
+    "reports/optimization_v3/cls_mix50_temporal_decision_v1/PREFIT_FREEZE_R3_SUPERSEDED.json",
+    "reports/optimization_v3/cls_mix50_temporal_decision_v1/PREFIT_SYNTHETIC_QA_R3_SUPERSEDED.json"
+  ],
+  "purpose": "Evaluate whether a past-only, per-recipe scalar decision threshold transfers on saved OOF predictions from the exact current MIX50 policy.",
+  "scope": {
+    "estimator_fits": 0,
+    "learned_decision_selections_max": 3,
+    "test_probability_access": "Only after the final OOF threshold receipt is durably created and source/input hashes match.",
+    "test_labels": false,
+    "kaggle_upload": false,
+    "model_or_preprocessing_fit": false,
+    "public_leaderboard_selection": false
+  },
+  "candidate": {
+    "id": "MIX50",
+    "train_oof_bundle": "experiments/runs/optimization_v3_posoffset_a02_endgame_v1/policy_predictions.npz",
+    "train_oof_expected_sha256": "25d1d2b91348a57d33b3b0e5ce78da29840d115b75e24f9502cc83c1b63ef351",
+    "test_bundle": "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/test_predictions.npz",
+    "test_bundle_expected_sha256_from_prior_manifest": "ffc55aa2d18b75438257f3cf0aa205baa3f4c2922180e2b3688b36c352c00271",
+    "test_manifest": "reports/optimization_v3/posoffset_a02_endgame_v1/E79_SELECTED_MANIFEST.json",
+    "current_submission": "submissions/optimization_v3/posoffset_a02_endgame_v1/classification_mix50_e79.csv",
+    "current_formula": {
+      "present_probability": "0.5*pP + 0.5*pA",
+      "missing_probability": "pP exactly",
+      "current_missing_decision": "existing MIX50 label, equivalent to pP >= 0.50",
+      "current_present_decision": "MIX50 probability >= 0.50"
+    },
+    "official_train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c"
+  },
+  "metric": {
+    "selection_objective": "overall binary Macro F1 on the complete selector rows, with missing outputs fixed to the existing MIX50 >= 0.50 decision",
+    "labels": [0, 1],
+    "zero_division": 0,
+    "decision_comparison": "selected threshold versus 0.50 on identical later rows",
+    "ties": "If objective values are within 1e-12 of the maximum, choose the candidate closest to 0.50, then the lower candidate threshold."
+  },
+  "threshold_candidates": {
+    "construction": "All positive/negative allocations reachable without splitting equal-probability ties: 0.0, the fixed 0.50, one safe cutpoint between every adjacent distinct present probability, and nextafter(1.0, +infinity) for all-negative allocation. If a midpoint is not strictly between adjacent float scores, use the upper distinct score.",
+    "comparison": "probability >= threshold",
+    "no_fixed_grid": true,
+    "no_subgroup_thresholds": true,
+    "probabilities_must_be_finite_in_0_1": true
+  },
+  "support": {
+    "minimum_total_selection_rows": 1000,
+    "minimum_examples_per_class": 100,
+    "fallback_if_unsupported": 0.5,
+    "fallback_status": "FIXED_0_50_INSUFFICIENT_SUPPORT; no learned decision selection counted"
+  },
+  "selection_stages": [
+    {
+      "selection_id": "D1_E67_W4_TO_W5",
+      "selection_origin": "E67 MIX50 predictions, cycles 68-71",
+      "evaluation_origin": "E67 MIX50 predictions, cycles 72-75",
+      "selection_cycles": [68, 71],
+      "evaluation_cycles": [72, 75],
+      "model_origin_note": "Same base model origin; E67 fit boundary is cycle 67.",
+      "label_ids_disjoint": true
+    },
+    {
+      "selection_id": "D2_E67_TO_E75_W6",
+      "selection_origin": "E67 MIX50 predictions, cycles 68-75",
+      "evaluation_origin": "E75 MIX50 predictions, cycles 76-79",
+      "selection_cycles": [68, 75],
+      "evaluation_cycles": [76, 79],
+      "model_origin_note": "Base model origin changes from fit-through-67 to fit-through-75; report as cross-origin transfer.",
+      "label_ids_disjoint": true
+    },
+    {
+      "selection_id": "FINAL_OOF_68_79",
+      "selection_origin": "E67 MIX50 OOF predictions for cycles 68-75 plus E75 MIX50 OOF predictions for cycles 76-79",
+      "evaluation_origin": null,
+      "selection_cycles": [68, 79],
+      "evaluation_cycles": null,
+      "model_origin_note": "Use E75 for cycles 76-79; do not include duplicate E67 W6 IDs.",
+      "expected_unique_rows": 20903,
+      "expected_unique_record_ids": 20903,
+      "final_use": "Freeze this threshold and all input/source hashes before reading the E79 probability bundle or constructing an E79 CSV."
+    }
+  ],
+  "reporting": {
+    "overall": ["row_count", "target_prevalence", "predicted_positive_rate", "confusion_matrix", "false_positives", "false_negatives", "precision_recall_per_class", "macro_f1"],
+    "slices": ["per_cycle", "availability", "entry_friction", "text_load"],
+    "minimum_group_support": {"rows": 200, "per_class": 30},
+    "unsupported_group_status": "UNKNOWN",
+    "pooled_w5_w6": "Use unique rows and pooled confusion counts; do not average the two window Macro F1 values.",
+    "secondary_comparators": "POS and A02 at 0.50 only when aligned in the exact saved bundle; descriptive, not threshold-selected.",
+    "probability_metrics": "Do not claim AUC, average precision, log loss, or Brier changes; probabilities are unchanged by thresholding."
+  },
+  "durability_and_resume": {
+    "prefit_freeze": "reports/optimization_v3/cls_mix50_temporal_decision_v1/PREFIT_FREEZE_R4.json",
+    "synthetic_qa": "reports/optimization_v3/cls_mix50_temporal_decision_v1/PREFIT_SYNTHETIC_QA_R4.json",
+    "root_approval_file": "reports/optimization_v3/cls_mix50_temporal_decision_v1/ROOT_PREFIT_PASS.json",
+    "approval_must_bind": ["prefit_commit", "prefit_freeze_sha256", "protocol_sha256", "script_sha256", "tests_sha256", "scope"],
+    "run_directory": "experiments/runs/optimization_v3_cls_mix50_temporal_decision_v1",
+    "immutable_receipts": "Create with O_EXCL, flush and fsync. Reuse only exact hash-bound receipts; never overwrite.",
+    "ledger": "Separate append-only stage ledger; max three learned selections. A reserved stage without its durable receipt blocks resume; do not repeat selection automatically.",
+    "record_ids": "Unicode arrays only; object arrays prohibited.",
+    "csv": "One versioned local candidate at most; duplicate label-vector scan required. No upload by this script."
+  },
+  "review_boundary": "Do not run official selector stages until the root creates a matching ROOT_PREFIT_PASS.json after independent code and metric-boundary review."
+}
