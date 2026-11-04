@@ -1,8 +1,10 @@
-# POS_MOMENTS_V1 — prelabel verification blocker
+# POS_MOMENTS_V1 — historical prelabel verification blocker
 
-**Status: BLOCKED before outcome metrics.** The four authorized gamma fits and
-both prediction bundles are durable. Query labels have not been read, and no
-metrics or gate verdicts have been computed.
+**Historical status at the time of this report: BLOCKED before outcome metrics.**
+This records the original prelabel failures. Those failures were subsequently
+resolved by the separately authorized zero-fit safe-export and scalar-replay
+amendments described at the end of this report. The original failure receipts
+remain preserved.
 
 ## Frozen experiment and accounting
 
@@ -67,7 +69,28 @@ The original failed attempt and adapter failure are also preserved in
   lifecycle suite.
 
 Sol authorized a narrow zero-fit serialization amendment. Signed safe exports
-are now present in `SAFE_EXPORT_MANIFEST_V1.json`; both origins were validated
-against Train identity rows and the parent outputs. The amended prelabel pass
-and metrics have not yet run. Keep the frozen verifier, freeze, gamma artifacts,
-receipts, original archives, and prediction values unchanged.
+are recorded in `SAFE_EXPORT_MANIFEST_V1.json`; both origins were validated
+against Train identity rows and parent outputs. The frozen verifier's
+vectorized reconstruction then differed from the cached CSR values only at
+floating-point summation precision, so a separate scalar-order replay was
+implemented and tested without changing the frozen formula or verifier.
+
+## Resolution and final outcome
+
+- The signed safe-export prelabel verification passed using the literal scalar
+  accumulation order, with source/Train hashes, parent lineage, named arrays,
+  IDs/cycles, fit receipts, independent matrix reconstruction, fixed routing,
+  and MIX50 all verified. The prelabel stage read no query labels and accessed
+  no Test or SampleSubmission data.
+- The authorized scoring pass then read only the frozen Train query labels.
+  Independent QA passed integrity/recomputation checks (`QA.json`), while the
+  scientific verdict remained `PILOT_GATE_FAILED`: 45 of 47 gates passed and
+  the two primary real-gain requirements failed. The full results and gate
+  deltas are in `RESULTS.md` and `RESULTS.json`.
+- Final accounting records exactly four saved pilot fits, zero failures or
+  retries for this card, no E79 reservation/start, and no Test/Sample access.
+  No champion change, full-Train refit, upload, or Kaggle submission occurred.
+- The frozen verifier, freeze, gamma artifacts, receipts, original prediction
+  archives, and prediction values remain unchanged. The schema/dtype readers,
+  scalar replay, receipts, and synthetic checks are separate amendments; the
+  two earlier prelabel failures remain preserved in their original receipts.
