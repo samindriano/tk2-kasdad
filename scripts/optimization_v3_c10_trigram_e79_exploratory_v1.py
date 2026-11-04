@@ -121,6 +121,32 @@ def canonical_sha(value: Any) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def _require_file_sha(path: Path, expected: str, description: str) -> str:
+    if not path.is_file():
+        raise BenchmarkError(f"Pinned {description} is missing: {path}")
+    actual = file_sha(path)
+    if actual != expected:
+        raise BenchmarkError(f"Pinned {description} hash mismatch: {actual}")
+    return actual
+
+
+def _verify_committed_artifact(path: Path, expected: str, description: str, commit: str) -> dict[str, str]:
+    """Verify historical artifact bytes against both working file and the pinned Git blob."""
+    actual = _require_file_sha(path, expected, description)
+    relative = path.relative_to(ROOT).as_posix()
+    blob = subprocess.run(["git", "-C", str(ROOT), "show", f"{commit}:{relative}"],
+                          capture_output=True, check=False)
+    if blob.returncode:
+        raise BenchmarkError(f"Pinned {description} is absent from commit {commit}")
+    blob_sha = hashlib.sha256(blob.stdout).hexdigest()
+    if blob_sha != expected:
+        raise BenchmarkError(f"Pinned {description} Git blob hash mismatch: {blob_sha}")
+    diff = subprocess.run(["git", "-C", str(ROOT), "diff", "--quiet", commit, "--", relative], check=False)
+    if diff.returncode:
+        raise BenchmarkError(f"Pinned {description} differs from its committed source blob")
+    return {"path": relative, "sha256": actual, "commit": commit, "commit_blob_sha256": blob_sha}
+
+
 def _read_json(path: Path) -> dict[str, Any]:
     value = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(value, dict):
@@ -331,14 +357,17 @@ def _target_free_train_metadata() -> dict[str, Any]:
 def run_prefit_audit() -> dict[str, Any]:
     if not REPORT.is_dir():
         raise BenchmarkError(f"Owned report namespace is missing: {REPORT}")
-    if file_sha(OLD_RECIPE) != EXPECTED_OLD_RECIPE_FILE_SHA:
-        raise BenchmarkError("Historical C10 recipe artifact changed")
-    if file_sha(OLD_FREEZE) != EXPECTED_OLD_FREEZE_FILE_SHA:
-        raise BenchmarkError("Historical C10 freeze artifact changed")
-    if file_sha(OLD_RESULTS) != EXPECTED_OLD_RESULTS_SHA:
-        raise BenchmarkError("Historical C10 result artifact changed")
-    if file_sha(OLD_VERIFICATION) != EXPECTED_OLD_VERIFICATION_SHA:
-        raise BenchmarkError("Historical C10 verifier artifact changed")
+    historical_commit = _git("rev-parse", "HEAD")
+    historical_artifacts = {
+        "recipe": _verify_committed_artifact(OLD_RECIPE, EXPECTED_OLD_RECIPE_FILE_SHA,
+                                             "historical C10 recipe", historical_commit),
+        "freeze": _verify_committed_artifact(OLD_FREEZE, EXPECTED_OLD_FREEZE_FILE_SHA,
+                                             "historical C10 freeze", historical_commit),
+        "results": _verify_committed_artifact(OLD_RESULTS, EXPECTED_OLD_RESULTS_SHA,
+                                              "historical C10 results", historical_commit),
+        "verification": _verify_committed_artifact(OLD_VERIFICATION, EXPECTED_OLD_VERIFICATION_SHA,
+                                                   "historical C10 verification", historical_commit),
+    }
     old_recipe = _read_json(OLD_RECIPE)
     old_freeze = _read_json(OLD_FREEZE)
     old_results = _read_json(OLD_RESULTS)
@@ -350,6 +379,10 @@ def run_prefit_audit() -> dict[str, Any]:
         raise BenchmarkError("Historical C10 recipe/result/verifier lineage does not reconcile")
     if old_freeze.get("status") != "FROZEN_BEFORE_C10_PILOT_FITS":
         raise BenchmarkError("Historical C10 pilot freeze status changed")
+    if (old_freeze.get("recipe_file_sha256") != historical_artifacts["recipe"]["sha256"]
+            or old_freeze.get("recipe_sha256") != old_recipe.get("recipe_sha256")
+            or old_freeze.get("signature") != old_results.get("freeze_signature")):
+        raise BenchmarkError("Historical C10 recipe/freeze/result receipts do not reconcile")
 
     manifest = _read_json(SPARSE25_MANIFEST)
     if file_sha(SPARSE25_MANIFEST) != EXPECTED_BASELINE_MANIFEST_SHA:
@@ -447,10 +480,12 @@ def run_prefit_audit() -> dict[str, Any]:
         "status": "PASS_TARGET_FREE_C10_E79_PREFIT_AUDIT",
         "head_at_audit": head,
         "old_c10": {
-            "recipe_sha256": file_sha(OLD_RECIPE),
-            "freeze_sha256": file_sha(OLD_FREEZE),
-            "results_sha256": file_sha(OLD_RESULTS),
-            "verification_sha256": file_sha(OLD_VERIFICATION),
+            "historical_artifact_commit": historical_commit,
+            "artifacts_verified_against_git_blobs": historical_artifacts,
+            "recipe_sha256": historical_artifacts["recipe"]["sha256"],
+            "freeze_sha256": historical_artifacts["freeze"]["sha256"],
+            "results_sha256": historical_artifacts["results"]["sha256"],
+            "verification_sha256": historical_artifacts["verification"]["sha256"],
             "freeze_signature": old_results["freeze_signature"],
             "status": old_results["status"],
             "pilot_fit_archives": sorted(old_run_names),
