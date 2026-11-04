@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "card_id": "POS_MOMENTS_V1",
+  "status": "DIAGNOSTIC_ONLY_NO_QUERY_LABELS",
+  "freeze_signature": "ea1b2ee797356ab5dd889f599ea60bfb63a2c5f19ddf52231364b818bb7f4ea3",
+  "frozen_verifier_source_sha256": "eb7d8ec4cc49c3f6663ba284bb67fa4a048456bb007b1e4d1e677cf5fc9da7c2",
+  "query_labels_read": false,
+  "test_or_sample_access": false,
+  "cached_matrix_receipt_checks": {
+    "all_four_score_cache_hashes_match_prefit_freeze": true,
+    "all_four_score_shapes_match_prefit_freeze": true,
+    "all_four_gamma_widths_match_score_widths": true,
+    "all_four_fit_matrix_hashes_match_prefit_freeze": true,
+    "all_four_fit_matrix_shapes_match_prefit_freeze": true,
+    "all_four_receipt_fit_matrix_hashes_and_shapes_match_prefit_freeze": true
+  },
+  "vectorized_independent_rebuild_comparison": {
+    "method": "frozen verifier _rebuild_moments using NumPy mean over per-token occurrence positions",
+    "interpretation": "Hash mismatch is limited to independent rebuilt matrices. Magnitudes and support changes are consistent with float64 reduction-order effects; exact scalar replay is tested separately and must still pass every real prelabel hash before scoring.",
+    "origins": {
+      "E67_REAL": {
+        "cached_hash": "c6406ee70ae4c0e4c9aa48d62b775ce61784f9c10f4da10aad0371942086294e",
+        "rebuild_hash": "e7685fddf8760cf9f52cca0f524e9f659b9d72961dbdd6f5f7a57ac9b6d8ed0b",
+        "shape": [20903, 17025],
+        "cached_nnz": 1755400,
+        "rebuild_nnz": 1755400,
+        "support_xor_coordinates": 2,
+        "numeric_diff_coordinates": 1927,
+        "differing_rows": 829,
+        "max_abs_feature_diff": 1.1102230246251565e-16,
+        "max_abs_logit_diff_saved_gamma": 1.3983272522281342e-16,
+        "max_abs_probability_diff": 1.1102230246251565e-16,
+        "saved_q_matches_cache_replay": true
+      },
+      "E67_SHUFFLED": {
+        "cached_hash": "6420c684d71dbc7655bc9d53d146a9cdfbf30e28bcf302c54d2b2272b4a6f3a8",
+        "rebuild_hash": "638462856f81ff98cbd5598d0e3fccf4309d381a00c3c3a1bc2cfe650673f059",
+        "shape": [20903, 17025],
+        "cached_nnz": 1755536,
+        "rebuild_nnz": 1755535,
+        "support_xor_coordinates": 3,
+        "numeric_diff_coordinates": 1693,
+        "differing_rows": 918,
+        "max_abs_feature_diff": 8.673617379884035e-17,
+        "max_abs_logit_diff_saved_gamma": 1.483129228521319e-16,
+        "max_abs_probability_diff": 5.551115123125783e-17,
+        "saved_q_matches_cache_replay": true
+      },
+      "E75_REAL": {
+        "cached_hash": "3ad17173079afb3959e9fc00981497b6fb94832668a297d5395260ccf276b46c",
+        "rebuild_hash": "f0708c10973a8827eb5522c516c204590757f6ad2e8c7193fd0024181748be82",
+        "shape": [8491, 17169],
+        "cached_nnz": 688026,
+        "rebuild_nnz": 688025,
+        "support_xor_coordinates": 1,
+        "numeric_diff_coordinates": 791,
+        "differing_rows": 308,
+        "max_abs_feature_diff": 7.112366251504909e-17,
+        "max_abs_logit_diff_saved_gamma": 9.37871920744783e-17,
+        "max_abs_probability_diff": 1.3877787807814457e-17,
+        "saved_q_matches_cache_replay": true
+      },
+      "E75_SHUFFLED": {
+        "cached_hash": "43c2e70423c315b38fdbf84e3ddef89f9dcd52d11d0004f0e30d1eaa2f1fa686",
+        "rebuild_hash": "f56eb2014b1cdc11ded7468d859b6881894de830e15a686f4c3c5b248fad6ae6",
+        "shape": [8491, 17169],
+        "cached_nnz": 687970,
+        "rebuild_nnz": 687971,
+        "support_xor_coordinates": 1,
+        "numeric_diff_coordinates": 538,
+        "differing_rows": 334,
+        "max_abs_feature_diff": 5.551115123125783e-17,
+        "max_abs_logit_diff_saved_gamma": 1.655907602954933e-17,
+        "max_abs_probability_diff": 6.071532165918825e-18,
+        "saved_q_matches_cache_replay": true
+      }
+    }
+  },
+  "next_check": "The V2 independent scalar replay must exactly reproduce every frozen score W hash inside the unchanged prelabel verifier. No gate or metric may be read before PASS."
+}
