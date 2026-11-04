@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "experiment_id": "CLS_POS_A02_META_V1",
+  "status": "FROZEN_RECIPE_PENDING_PREFIT_QA",
+  "question": "Can a small present-stream head learn a stable relative contribution from the original POS and A02 probabilities beyond fixed MIX50, when compared with a one-score calibration control?",
+  "estimand": "Temporal predictive comparison of two fixed-probability meta-heads against unchanged MIX50 on rows with exact saved Train OOF predictions; this is not a causal estimate.",
+  "sources": {
+    "official_train": "data/raw/classification/Train.csv",
+    "train_oof_bundle": "experiments/runs/optimization_v3_posoffset_a02_endgame_v1/policy_predictions.npz",
+    "e79_probability_bundle": "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/test_predictions.npz",
+    "baseline_candidate_csv": "submissions/optimization_v3/posoffset_a02_endgame_v1/classification_mix50_e79.csv"
+  },
+  "source_boundaries": {
+    "fit_and_evaluation_rows": "Saved official Train OOF predictions only; labels are read from official Train by exact record_id and validated cycle_code after ROOT_PREFIT_PASS.",
+    "test": "E79 probabilities and official Test IDs may be read only after both final OOF head states and their receipts are durable and the E79 application freeze is written.",
+    "sample_submission": "Never opened.",
+    "test_labels": "Never loaded.",
+    "oof_label_arrays": "Never loaded from the OOF NPZ; labels are obtained only by the approved ID-keyed Train reader."
+  },
+  "input_contract": {
+    "oof_probability_bundle_sha256": "25d1d2b91348a57d33b3b0e5ce78da29840d115b75e24f9502cc83c1b63ef351",
+    "e79_probability_bundle_sha256": "ffc55aa2d18b75438257f3cf0aa205baa3f4c2922180e2b3688b36c352c00271",
+    "official_train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "oof_origins": {
+      "E67": {
+        "cycles": [68, 79],
+        "rows": 20903
+      },
+      "E75": {
+        "cycles": [76, 79],
+        "rows": 8491
+      }
+    },
+    "final_unique_stitch": {
+      "definition": "E67 cycles 68-75 plus E75 cycles 76-79; exclude duplicate E67 W6 rows.",
+      "rows": 20903
+    }
+  },
+  "arms": {
+    "PAIR": {
+      "features": ["logit(pP)", "logit(pA)"],
+      "purpose": "Estimate relative contributions of the frozen POS and A02 probabilities."
+    },
+    "SCALAR": {
+      "features": ["logit(MIX50)"],
+      "purpose": "Control for a single-score calibration/intercept change without learning relative component contributions."
+    }
+  },
+  "feature_transform": {
+    "name": "deterministic_clipped_logit",
+    "epsilon": 1e-06,
+    "formula": "log(p_clip / (1-p_clip)); p_clip=clip(p, epsilon, 1-epsilon)",
+    "learned_preprocessing": "none"
+  },
+  "estimator": {
+    "class": "sklearn.linear_model.LogisticRegression",
+    "C": 1.0,
+    "solver": "liblinear",
+    "penalty": "l2",
+    "fit_intercept": true,
+    "max_iter": 2000,
+    "tol": 0.0001,
+    "random_state": 42,
+    "class_weight": null
+  },
+  "policy": {
+    "fit_population": "present-stream selection rows only",
+    "missing_stream_route": "exact pP >= 0.50, unchanged",
+    "threshold": 0.5,
+    "threshold_selection": "none",
+    "fit_support_min_rows": 500,
+    "fit_support_min_each_class": 100
+  },
+  "stages": [
+    {
+      "stage_id": "D1",
+      "fit_origin": "E67",
+      "fit_cycles": [68, 71],
+      "eval_origin": "E67",
+      "eval_cycles": [72, 75],
+      "role": "W5 forward evaluation"
+    },
+    {
+      "stage_id": "D2",
+      "fit_origin": "E67",
+      "fit_cycles": [68, 75],
+      "eval_origin": "E75",
+      "eval_cycles": [76, 79],
+      "role": "W6 cross-origin forward evaluation"
+    },
+    {
+      "stage_id": "FINAL",
+      "fit_origin": "UNIQUE_STITCH",
+      "fit_cycles": [68, 79],
+      "eval_origin": null,
+      "eval_cycles": null,
+      "role": "Final OOF-trained head for frozen E79 application; no in-sample score is used for selection"
+    }
+  ],
+  "fit_budget": {
+    "official_estimator_fit_cap": 6,
+    "official_fit_ids": [
+      "D1_PAIR",
+      "D1_SCALAR",
+      "D2_PAIR",
+      "D2_SCALAR",
+      "FINAL_PAIR",
+      "FINAL_SCALAR"
+    ],
+    "synthetic_fits_are_separately_accounted": true,
+    "retry_policy": "No retries. A started fit with no durable exact state/receipt is terminal failure; resume only from an exact persisted receipt without refitting."
+  },
+  "evaluation": {
+    "threshold_fixed": 0.5,
+    "metrics": ["macro_f1", "confusion_matrix", "precision", "recall", "average_precision", "roc_auc", "log_loss", "brier_score"],
+    "slices": ["overall", "per_cycle", "availability", "text_load", "entry_friction", "unique_pooled_W5_W6"],
+    "subgroup_support": {
+      "min_rows": 200,
+      "min_each_class": 30,
+      "unsupported_result": "UNKNOWN_UNSUPPORTED"
+    },
+    "pairwise_errors": "Report disagreement with MIX50 and correct/incorrect changes for PAIR and SCALAR."
+  },
+  "resource_contract": {
+    "project_fit_jobs": 1,
+    "threadpool_limit": 2,
+    "minimum_available_ram_bytes": 4294967296,
+    "documented_safety_reserve_bytes": 2147483648
+  },
+  "outputs": {
+    "result_bundle": "experiments/runs/optimization_v3_cls_pos_a02_meta_v1/",
+    "report_directory": "reports/optimization_v3/cls_pos_a02_meta_v1/",
+    "possible_pair_csv": "submissions/optimization_v3/cls_pos_a02_meta_v1/classification_pair_e79.csv",
+    "scalar_csv": "none",
+    "kaggle_upload": false
+  },
+  "contextual_counterevidence": {
+    "C15": {
+      "path": "reports/optimization_v3/batch1/C15/revision_05/summary.md",
+      "baseline": "row-matched accepted v3_cls_sparse25; not MIX50",
+      "result": "two-score C2_B plus sparse meta-head retired: primary gain -0.001339; H12_L gain +0.003281; two supported high-text-load positive-recall guard failures. Not a direct comparator to POS+A02."
+    },
+    "MIX50_temporal_decision": {
+      "path": "reports/optimization_v3/cls_mix50_temporal_decision_v1/SELECTOR_DIAGNOSTIC.md",
+      "baseline": "fixed MIX50 threshold 0.50; same unique W5/W6 rows",
+      "result": "past-only scalar threshold transfers slightly worse: pooled delta -0.000505. Counterevidence against assuming calibration alone helps; not a direct test of relative score weights."
+    },
+    "learned_pair_pilot_v2": {
+      "path": "reports/optimization_v3/learned_pair_pilot_v2/POSTFIT_RESULTS.md",
+      "baseline": "separate factorization-machine/no-pair and observed A02 controls; differs from this LR and same-baseline MIX50 comparisons",
+      "result": "rank-16 learned pair diagnostic-only with mechanism and competition gates failed. Context only; not a direct comparator."
+    }
+  },
+  "interpretation_limits": [
+    "OOF-head temporal gains are predictive associations, not causal effects.",
+    "A final fit on all OOF labels is not an independent validation result.",
+    "C15, V2 calibration, and factorization-machine results use different estimands/baselines and must not be pooled as if they were the same experiment.",
+    "A E79 candidate CSV is not a qualified champion and must not be submitted by this runner."
+  ]
+}
