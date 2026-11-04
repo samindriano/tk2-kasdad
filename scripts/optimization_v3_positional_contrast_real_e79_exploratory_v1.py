@@ -98,7 +98,7 @@ SOURCE_PATHS = (
     "reports/optimization_v3/a02_cgeom_benchmark_v1/E79_TRAINED_FREEZE.json",
     "reports/optimization_v3/a02_cgeom_benchmark_v1/FROZEN_RECIPES.json",
     "reports/optimization_v3/a02_cgeom_benchmark_v1/BATCH_MANIFEST.json",
-    "reports/optimization_v3/a02_cgeom_benchmark_v1/INTEGRATION_PREFLIGHT_R1.json",
+    "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/INTEGRATION_PREFLIGHT_R1.json",
     "reports/optimization_v3/a02_continuation_v1/submission_manifest.json",
     "reports/optimization_v3/positional_moments_real_e79_benchmark_v1/BENCHMARK_MANIFEST.json",
     "reports/optimization_v3/bigram_position_real_e79_v1/RECIPE.json",
