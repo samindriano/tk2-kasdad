@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "benchmark_id": "POS_MOMENTS_REAL_E79_EXPLORATORY_BENCHMARK",
+  "status": "AUTHORIZED_EXPLORATORY_BENCHMARK_ONLY",
+  "authorization": {
+    "user_thread_id": "01a19569-16e0-7253-aa14-57a0a3160e03",
+    "user_turn_id": "01a1a4a2-4710-7240-a357-359ffbde17b6",
+    "user_message_id": "01a1a4a2-53cc-7f63-8e82-b31875a51582",
+    "active_task_confirmation": "Ya, otorisasi satu benchmark E79",
+    "scope": "one local exploratory Classification E79 CSV for Sol review; no upload by Luna"
+  },
+  "historical_pilot": {
+    "card_id": "POS_MOMENTS_V1",
+    "status": "PILOT_GATE_FAILED",
+    "source_commit": "6a2baeb92406c38ca50b1b7a4e85a938e03cf1fa",
+    "freeze_signature": "ea1b2ee797356ab5dd889f599ea60bfb63a2c5f19ddf52231364b818bb7f4ea3",
+    "failed_primary_gates": [
+      "E67_H12_E67_real_gain_vs_MIX50_min_0.0005",
+      "E75_W6_real_gain_vs_MIX50_min_0.0005"
+    ],
+    "gate_verdict_is_immutable": true
+  },
+  "input": {
+    "path": "data/raw/classification/Train.csv",
+    "sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "rows": 50608,
+    "cycles": [47, 79],
+    "target": "artifact_signal",
+    "target_values_used_only_for_one_full_train_gamma_fit": true,
+    "record_id": "identity/alignment only; never a feature"
+  },
+  "reused_full_train_state": {
+    "trained_freeze": "reports/optimization_v3/a02_cgeom_benchmark_v1/E79_TRAINED_FREEZE.json",
+    "trained_freeze_sha256": "ab0307e6e1c9778ed0f091a3d6ed55e0ac8705ae31b9cb29b9f083e46b5c2b82",
+    "batch_manifest": "reports/optimization_v3/a02_cgeom_benchmark_v1/BATCH_MANIFEST.json",
+    "components": [
+      "A02_CGEOM_BENCHMARK_V1_E79_C2B_STRUCTURED",
+      "A02_CGEOM_BENCHMARK_V1_E79_C2B_SCALER",
+      "A02_CGEOM_BENCHMARK_V1_E79_C2B_OHE",
+      "A02_CGEOM_BENCHMARK_V1_E79_C2B_LR_INTEGRATION_R1",
+      "verified full-Train A02 E79 TF-IDF/vectorizer state"
+    ],
+    "fit_rows_each": 50608,
+    "no_component_refits": true
+  },
+  "test_probability_artifacts": {
+    "original_a02_predictions": {
+      "path": "experiments/runs/optimization_v3_a02_continuation_v1/E79/fulltrain_observed/test_predictions.npz",
+      "sha256": "c267a4b998aca64982b6f63b10bedb2f3b3061007166db7731d221788ac89e47",
+      "role": "identity check against the original A02 candidate probability after the trained-state freeze"
+    },
+    "verified_c2b_a02_candidate_bundle": {
+      "path": "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/test_predictions.npz",
+      "sha256": "ffc55aa2d18b75438257f3cf0aa205baa3f4c2922180e2b3688b36c352c00271",
+      "role": "p_A02, full-Train C1_B missing fallback pP, and integrity-only POS/MIX50 comparators; arrays are opened only after the new trained-state freeze is committed"
+    }
+  },
+  "features": {
+    "base_logit": "direct full-Train C2_B LogisticRegression decision_function; fixed offset; no new intercept",
+    "moment_representation": "W=[B, B*m1, B*m2], with exact POS_MOMENTS_V1 formula",
+    "tokenizer": "same verified full-Train C2_B word analyzer; token indices include OOV occurrences",
+    "accumulation": "canonical scalar token-occurrence order validated by POS_MOMENTS_V1 prelabel replay V2",
+    "fit_transform": "train-only features; no fit of preprocessing or vocabulary"
+  },
+  "fit": {
+    "fit_id": "POS_MOMENTS_REAL_E79_EXPLORATORY_BENCHMARK_GAMMA",
+    "count": 1,
+    "fit_population_rows": 50608,
+    "fit_population_cycles": [47, 79],
+    "learner": "existing src/models/positional_bag_offset_v1.py::fit_offset_coefficients",
+    "objective": "sum(logistic_loss(y, z0 + W @ gamma)) + ||gamma||^2 / 2",
+    "C": 1.0,
+    "initial_gamma": "all zeros",
+    "intercept": false,
+    "optimizer": "L-BFGS-B",
+    "options": {"maxiter": 2000, "ftol": 1e-12, "gtol": 1e-6, "maxls": 50},
+    "threads": 2,
+    "retry_count": 0
+  },
+  "prediction_policy": {
+    "threshold": 0.5,
+    "threshold_rule": "probability >= 0.50",
+    "present_stream": "0.5 * expit(C2B_full_train_logit + W_moments @ gamma) + 0.5 * original_A02_E79_probability",
+    "missing_stream": "original full-Train C1_B HGB pP probability bit-exact",
+    "existing_comparators_for_integrity_only": ["original A02", "POS_BAG_OFFSET", "MIX50"],
+    "test_derived_configuration_selection": false
+  },
+  "budget": {
+    "ledger_path": "experiments/runs/optimization_v3_research_next_v1/budget.jsonl",
+    "baseline_ledger_sha256": "6daf83a71de6b42f73e0ba25d9532a06250cd9738f0a23a55e78bd1b93d163bd",
+    "baseline_event_rows": 357,
+    "baseline_global_cap": 142,
+    "new_global_cap": 143,
+    "baseline_category_caps": {"pilot": 88, "continuation": 51, "control_replay": 2, "technical_retry": 1},
+    "new_category_caps": {"pilot": 88, "continuation": 52, "control_replay": 2, "technical_retry": 1},
+    "new_fit_slot_count": 1,
+    "prior_contrast_e79_slot": "released; never revive",
+    "idempotent_reservation_key": "POS_MOMENTS_REAL_E79_EXPLORATORY_BENCHMARK:REAL_GAMMA_FULLTRAIN"
+  },
+  "resource_policy": {
+    "production_jobs": 1,
+    "threads_max": 2,
+    "rss_ceiling_bytes": 6442450944,
+    "initial_available_ram_min_bytes": 4294967296,
+    "available_ram_reserve_bytes": 2147483648
+  },
+  "boundaries": {
+    "test_features": "must not be read before committed E79_TRAINED_STATE_FREEZE.json",
+    "test_labels": "never read",
+    "sample_submission": "never read",
+    "kaggle": "no upload or API call by Luna; Sol reviews candidate before any upload",
+    "historical_verdict": "never changes"
+  },
+  "output": {
+    "csv_path": "submissions/optimization_v3/positional_moments_real_e79_benchmark_v1/classification_pos_moments_real_e79_exploratory.csv",
+    "manifest_status": "SCIENTIFIC_GATE_FAILED_EXPLORATORY_BENCHMARK_PREPARED_NOT_SUBMITTED",
+    "kaggle_message_for_root_if_later_uploaded": "Samuel CLS Moments MIX50 Exploratory Benchmark"
+  }
+}
