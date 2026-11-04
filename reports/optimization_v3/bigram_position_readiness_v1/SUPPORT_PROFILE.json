@@ -1,0 +1,1155 @@
+{
+  "schema_version": 1,
+  "audit_id": "CLS_BIGRAM_POSITION_READINESS_V1",
+  "status": "SUPPORT_READY_FOR_REVIEW",
+  "source_commit_before_local_changes": "ce7e10df59b521882def282fef452aa87ab44d68",
+  "input": {
+    "relative_path": "data\\raw\\classification\\Train.csv",
+    "sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "rows": 50608,
+    "selected_columns_only": [
+      "cycle_code",
+      "signal_stream"
+    ],
+    "target_columns_read": [],
+    "test_or_sample_submission_opened": false,
+    "cycles": [
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79
+    ]
+  },
+  "source_files": {
+    "script_sha256": "837ac10b5974ae3f870a1217a5bbabe7fe4fa895a012b9f95d81b11898fa821c",
+    "builder_sha256": "0d2da1f92a924c2054e24e5eff726ab3e12cb6503b82df1ce0b6142a932c6901"
+  },
+  "profile_definition": {
+    "stream_present": "non-null signal_stream with at least one non-whitespace character",
+    "tokens": "frozen TfidfVectorizer Unicode strip_accents/lowercase/preprocessor/tokenizer",
+    "pair_sequence": "all adjacent normalized token pairs; pair count is n_token - 1",
+    "position_bin": "floor(3*j/n_pair), zero-based j, over every pair including OOV pairs",
+    "known_pair": "exact phrase exists in the frozen prefix bigram vocabulary",
+    "null": "deterministic_order_shuffle(pair-string sequence, seed=42); bag and bin sizes preserved",
+    "feature_values": "(1 + log(count)) * frozen IDF; whole block L2-normalized once per row"
+  },
+  "support_screen": {
+    "purpose": "target-free operational sufficiency screen for deciding whether one temporal pilot is feasible; not a power guarantee or outcome gate",
+    "thresholds": {
+      "min_fit_known_pair_documents": 2000,
+      "min_query_known_pair_documents": 1000,
+      "min_known_pair_documents_per_query_cycle": 100,
+      "min_query_known_pair_occurrence_coverage": 0.2,
+      "min_query_descriptor_change_rate_among_known_documents": 0.3
+    },
+    "both_origins_pass": true
+  },
+  "origins": [
+    {
+      "origin": 67,
+      "frozen_vectorizer": {
+        "origin": 67,
+        "artifact_relative_path": "experiments\\runs\\optimization_v3_research_next_v1\\POSITIONAL_TEXT_PILOT_V1\\units\\POSITIONAL_TEXT_PILOT_V1_E67_C2B_TFIDF.joblib",
+        "artifact_sha256": "33d1e5ab4b1970700a9bc5c0a54d2d3bb5928f12fb291bea050e07d3b6259489",
+        "receipt_sha256": "4a23b34eaa644c7a10803fda08e0f743c00cc82fc9ff002c076c61d85d19e73d",
+        "freeze_signature": "f310d0340ea4402677ca9e86aa29c43b1536ded902c0f6a6f52cb53bd333c292",
+        "source_commit": "3429fb93c2a579ca91f0dfe7fc1a67d06a1b8855",
+        "fit_population": {
+          "cycle_max": 67,
+          "cycle_min": 47,
+          "cycles_sha256": "6453bcabd10778409f7d1c763ec4e8f939f4350a413149356059ea4cf65fed96",
+          "record_ids_sha256": "497a2fd09f29ec672b5ba44496c233f5f77d380eded0dd754e78b87595961b9f",
+          "row_indices_sha256": "1dbe48ba148aab72fa8bc848af83d5ec7bf5c240396a28867b5fd4a2eeecddc5",
+          "rows": 29705
+        },
+        "vocabulary_size": 20000,
+        "bigram_vocabulary_size": 14325,
+        "idf_size": 20000,
+        "tfidf_parameters": {
+          "analyzer": "word",
+          "ngram_range": [
+            1,
+            2
+          ],
+          "strip_accents": "unicode",
+          "lowercase": true,
+          "token_pattern": "(?u)\\b\\w\\w+\\b",
+          "max_features": 20000
+        },
+        "receipt_fit_metadata": {
+          "feature_count": 20000,
+          "idf_sha256": "1939eb016eb7505e08e380a7043659a25e891336f11fb711ca6f6c498517d698",
+          "underlying_fit_calls": [
+            "TfidfVectorizer.fit x1"
+          ],
+          "vocabulary_sha256": "109dbecffbacc91513f78723319cd6f03a7ae46db0a80cefab23989c8f5c1d5d",
+          "vocabulary_size": 20000
+        }
+      },
+      "fit": {
+        "name": "fit",
+        "rows": 29705,
+        "stream_present_rows": 27676,
+        "stream_missing_rows": 2029,
+        "present_token_count_distribution": {
+          "min": 9,
+          "p50": 34.0,
+          "p90": 79.0,
+          "p95": 102.0,
+          "max": 143
+        },
+        "present_adjacent_pair_occurrences": 1118843,
+        "known_bigram_occurrences": 719075,
+        "known_occurrence_coverage": 0.6426951770713139,
+        "pair_bearing_present_documents": 27676,
+        "known_pair_present_documents": 27672,
+        "known_document_coverage_of_present": 0.9998554704437057,
+        "known_document_coverage_of_pair_bearing": 0.9998554704437057,
+        "positive_known_count_distribution": {
+          "min": 1,
+          "p50": 21.0,
+          "p90": 49.0,
+          "p95": 63.0,
+          "max": 132
+        },
+        "observed_known_bigram_types": 14325,
+        "frozen_bigram_vocabulary_size": 14325,
+        "observed_known_bigram_type_coverage": 1.0,
+        "positional_descriptor_changed_rows_under_pair_shuffle": 27650,
+        "descriptor_change_rate_among_known_documents": 0.9992049725354148,
+        "csr_blocks": {
+          "bag": {
+            "shape": [
+              29705,
+              14325
+            ],
+            "nnz": 679547,
+            "csr_bytes": 8273388
+          },
+          "real": {
+            "shape": [
+              29705,
+              42975
+            ],
+            "nnz": 699619,
+            "csr_bytes": 8514252
+          },
+          "shuffled": {
+            "shape": [
+              29705,
+              42975
+            ],
+            "nnz": 700937,
+            "csr_bytes": 8530068
+          }
+        },
+        "cycle_support": [
+          {
+            "cycle_code": 47,
+            "rows": 1342,
+            "stream_present_rows": 1241,
+            "pair_bearing_present_documents": 1241,
+            "known_pair_documents": 1241,
+            "known_bigram_occurrences": 40170,
+            "known_occurrence_coverage": 0.6550666971070741,
+            "observed_known_bigram_types": 6628,
+            "descriptor_changed_known_documents": 1241
+          },
+          {
+            "cycle_code": 48,
+            "rows": 977,
+            "stream_present_rows": 894,
+            "pair_bearing_present_documents": 894,
+            "known_pair_documents": 894,
+            "known_bigram_occurrences": 27044,
+            "known_occurrence_coverage": 0.6157278812440234,
+            "observed_known_bigram_types": 5568,
+            "descriptor_changed_known_documents": 894
+          },
+          {
+            "cycle_code": 49,
+            "rows": 1255,
+            "stream_present_rows": 1183,
+            "pair_bearing_present_documents": 1183,
+            "known_pair_documents": 1183,
+            "known_bigram_occurrences": 30286,
+            "known_occurrence_coverage": 0.6235536339304097,
+            "observed_known_bigram_types": 6214,
+            "descriptor_changed_known_documents": 1183
+          },
+          {
+            "cycle_code": 50,
+            "rows": 1111,
+            "stream_present_rows": 1021,
+            "pair_bearing_present_documents": 1021,
+            "known_pair_documents": 1021,
+            "known_bigram_occurrences": 30240,
+            "known_occurrence_coverage": 0.6445424899290236,
+            "observed_known_bigram_types": 6203,
+            "descriptor_changed_known_documents": 1020
+          },
+          {
+            "cycle_code": 51,
+            "rows": 1535,
+            "stream_present_rows": 1443,
+            "pair_bearing_present_documents": 1443,
+            "known_pair_documents": 1443,
+            "known_bigram_occurrences": 38291,
+            "known_occurrence_coverage": 0.6174075686483175,
+            "observed_known_bigram_types": 7076,
+            "descriptor_changed_known_documents": 1440
+          },
+          {
+            "cycle_code": 52,
+            "rows": 1565,
+            "stream_present_rows": 1452,
+            "pair_bearing_present_documents": 1452,
+            "known_pair_documents": 1452,
+            "known_bigram_occurrences": 36764,
+            "known_occurrence_coverage": 0.6616871546588434,
+            "observed_known_bigram_types": 6330,
+            "descriptor_changed_known_documents": 1452
+          },
+          {
+            "cycle_code": 53,
+            "rows": 1371,
+            "stream_present_rows": 1292,
+            "pair_bearing_present_documents": 1292,
+            "known_pair_documents": 1292,
+            "known_bigram_occurrences": 40048,
+            "known_occurrence_coverage": 0.6701248284863291,
+            "observed_known_bigram_types": 7048,
+            "descriptor_changed_known_documents": 1291
+          },
+          {
+            "cycle_code": 54,
+            "rows": 1256,
+            "stream_present_rows": 1175,
+            "pair_bearing_present_documents": 1175,
+            "known_pair_documents": 1175,
+            "known_bigram_occurrences": 29209,
+            "known_occurrence_coverage": 0.6098294256425246,
+            "observed_known_bigram_types": 6376,
+            "descriptor_changed_known_documents": 1174
+          },
+          {
+            "cycle_code": 55,
+            "rows": 1608,
+            "stream_present_rows": 1493,
+            "pair_bearing_present_documents": 1493,
+            "known_pair_documents": 1492,
+            "known_bigram_occurrences": 35613,
+            "known_occurrence_coverage": 0.6376544315129812,
+            "observed_known_bigram_types": 6460,
+            "descriptor_changed_known_documents": 1491
+          },
+          {
+            "cycle_code": 56,
+            "rows": 564,
+            "stream_present_rows": 479,
+            "pair_bearing_present_documents": 479,
+            "known_pair_documents": 479,
+            "known_bigram_occurrences": 17957,
+            "known_occurrence_coverage": 0.6763719914121059,
+            "observed_known_bigram_types": 4032,
+            "descriptor_changed_known_documents": 479
+          },
+          {
+            "cycle_code": 57,
+            "rows": 962,
+            "stream_present_rows": 864,
+            "pair_bearing_present_documents": 864,
+            "known_pair_documents": 863,
+            "known_bigram_occurrences": 21925,
+            "known_occurrence_coverage": 0.6239150849435132,
+            "observed_known_bigram_types": 5091,
+            "descriptor_changed_known_documents": 863
+          },
+          {
+            "cycle_code": 58,
+            "rows": 1205,
+            "stream_present_rows": 1105,
+            "pair_bearing_present_documents": 1105,
+            "known_pair_documents": 1104,
+            "known_bigram_occurrences": 23280,
+            "known_occurrence_coverage": 0.6157752737660689,
+            "observed_known_bigram_types": 5520,
+            "descriptor_changed_known_documents": 1103
+          },
+          {
+            "cycle_code": 59,
+            "rows": 1383,
+            "stream_present_rows": 1274,
+            "pair_bearing_present_documents": 1274,
+            "known_pair_documents": 1274,
+            "known_bigram_occurrences": 33501,
+            "known_occurrence_coverage": 0.6624154703998102,
+            "observed_known_bigram_types": 6594,
+            "descriptor_changed_known_documents": 1271
+          },
+          {
+            "cycle_code": 60,
+            "rows": 1478,
+            "stream_present_rows": 1393,
+            "pair_bearing_present_documents": 1393,
+            "known_pair_documents": 1393,
+            "known_bigram_occurrences": 33361,
+            "known_occurrence_coverage": 0.6461553360449351,
+            "observed_known_bigram_types": 6495,
+            "descriptor_changed_known_documents": 1393
+          },
+          {
+            "cycle_code": 61,
+            "rows": 1632,
+            "stream_present_rows": 1541,
+            "pair_bearing_present_documents": 1541,
+            "known_pair_documents": 1540,
+            "known_bigram_occurrences": 33572,
+            "known_occurrence_coverage": 0.6170075903769459,
+            "observed_known_bigram_types": 6645,
+            "descriptor_changed_known_documents": 1539
+          },
+          {
+            "cycle_code": 62,
+            "rows": 1500,
+            "stream_present_rows": 1412,
+            "pair_bearing_present_documents": 1412,
+            "known_pair_documents": 1412,
+            "known_bigram_occurrences": 36297,
+            "known_occurrence_coverage": 0.6476402890534392,
+            "observed_known_bigram_types": 6730,
+            "descriptor_changed_known_documents": 1410
+          },
+          {
+            "cycle_code": 63,
+            "rows": 1883,
+            "stream_present_rows": 1778,
+            "pair_bearing_present_documents": 1778,
+            "known_pair_documents": 1778,
+            "known_bigram_occurrences": 40548,
+            "known_occurrence_coverage": 0.651185199460397,
+            "observed_known_bigram_types": 6655,
+            "descriptor_changed_known_documents": 1775
+          },
+          {
+            "cycle_code": 64,
+            "rows": 1807,
+            "stream_present_rows": 1698,
+            "pair_bearing_present_documents": 1698,
+            "known_pair_documents": 1698,
+            "known_bigram_occurrences": 40658,
+            "known_occurrence_coverage": 0.6227484376914594,
+            "observed_known_bigram_types": 7339,
+            "descriptor_changed_known_documents": 1697
+          },
+          {
+            "cycle_code": 65,
+            "rows": 1567,
+            "stream_present_rows": 1480,
+            "pair_bearing_present_documents": 1480,
+            "known_pair_documents": 1480,
+            "known_bigram_occurrences": 42303,
+            "known_occurrence_coverage": 0.6749796563113303,
+            "observed_known_bigram_types": 6876,
+            "descriptor_changed_known_documents": 1479
+          },
+          {
+            "cycle_code": 66,
+            "rows": 1751,
+            "stream_present_rows": 1631,
+            "pair_bearing_present_documents": 1631,
+            "known_pair_documents": 1631,
+            "known_bigram_occurrences": 41477,
+            "known_occurrence_coverage": 0.6512325325796828,
+            "observed_known_bigram_types": 7074,
+            "descriptor_changed_known_documents": 1630
+          },
+          {
+            "cycle_code": 67,
+            "rows": 1953,
+            "stream_present_rows": 1827,
+            "pair_bearing_present_documents": 1827,
+            "known_pair_documents": 1827,
+            "known_bigram_occurrences": 46531,
+            "known_occurrence_coverage": 0.655846535490782,
+            "observed_known_bigram_types": 6897,
+            "descriptor_changed_known_documents": 1825
+          }
+        ]
+      },
+      "query": {
+        "name": "query",
+        "rows": 20903,
+        "stream_present_rows": 19528,
+        "stream_missing_rows": 1375,
+        "present_token_count_distribution": {
+          "min": 8,
+          "p50": 34.0,
+          "p90": 76.0,
+          "p95": 101.0,
+          "max": 145
+        },
+        "present_adjacent_pair_occurrences": 797062,
+        "known_bigram_occurrences": 480704,
+        "known_occurrence_coverage": 0.6030948658949994,
+        "pair_bearing_present_documents": 19528,
+        "known_pair_present_documents": 19525,
+        "known_document_coverage_of_present": 0.9998463744367063,
+        "known_document_coverage_of_pair_bearing": 0.9998463744367063,
+        "positive_known_count_distribution": {
+          "min": 1,
+          "p50": 20.0,
+          "p90": 49.0,
+          "p95": 56.0,
+          "max": 124
+        },
+        "observed_known_bigram_types": 12378,
+        "frozen_bigram_vocabulary_size": 14325,
+        "observed_known_bigram_type_coverage": 0.8640837696335079,
+        "positional_descriptor_changed_rows_under_pair_shuffle": 19506,
+        "descriptor_change_rate_among_known_documents": 0.9990268886043534,
+        "csr_blocks": {
+          "bag": {
+            "shape": [
+              20903,
+              14325
+            ],
+            "nnz": 459520,
+            "csr_bytes": 5597856
+          },
+          "real": {
+            "shape": [
+              20903,
+              42975
+            ],
+            "nnz": 471598,
+            "csr_bytes": 5742792
+          },
+          "shuffled": {
+            "shape": [
+              20903,
+              42975
+            ],
+            "nnz": 471780,
+            "csr_bytes": 5744976
+          }
+        },
+        "cycle_support": [
+          {
+            "cycle_code": 68,
+            "rows": 577,
+            "stream_present_rows": 525,
+            "pair_bearing_present_documents": 525,
+            "known_pair_documents": 525,
+            "known_bigram_occurrences": 18079,
+            "known_occurrence_coverage": 0.6335950094623958,
+            "observed_known_bigram_types": 4192,
+            "descriptor_changed_known_documents": 525
+          },
+          {
+            "cycle_code": 69,
+            "rows": 1079,
+            "stream_present_rows": 997,
+            "pair_bearing_present_documents": 997,
+            "known_pair_documents": 997,
+            "known_bigram_occurrences": 26656,
+            "known_occurrence_coverage": 0.6255661683602826,
+            "observed_known_bigram_types": 4999,
+            "descriptor_changed_known_documents": 997
+          },
+          {
+            "cycle_code": 70,
+            "rows": 1605,
+            "stream_present_rows": 1511,
+            "pair_bearing_present_documents": 1511,
+            "known_pair_documents": 1511,
+            "known_bigram_occurrences": 41902,
+            "known_occurrence_coverage": 0.6247968388876464,
+            "observed_known_bigram_types": 6170,
+            "descriptor_changed_known_documents": 1511
+          },
+          {
+            "cycle_code": 71,
+            "rows": 1689,
+            "stream_present_rows": 1575,
+            "pair_bearing_present_documents": 1575,
+            "known_pair_documents": 1575,
+            "known_bigram_occurrences": 46200,
+            "known_occurrence_coverage": 0.6343278458940316,
+            "observed_known_bigram_types": 6609,
+            "descriptor_changed_known_documents": 1573
+          },
+          {
+            "cycle_code": 72,
+            "rows": 1811,
+            "stream_present_rows": 1687,
+            "pair_bearing_present_documents": 1687,
+            "known_pair_documents": 1687,
+            "known_bigram_occurrences": 37440,
+            "known_occurrence_coverage": 0.5903593560289503,
+            "observed_known_bigram_types": 6265,
+            "descriptor_changed_known_documents": 1686
+          },
+          {
+            "cycle_code": 73,
+            "rows": 1880,
+            "stream_present_rows": 1738,
+            "pair_bearing_present_documents": 1738,
+            "known_pair_documents": 1737,
+            "known_bigram_occurrences": 42690,
+            "known_occurrence_coverage": 0.6040496370608295,
+            "observed_known_bigram_types": 6545,
+            "descriptor_changed_known_documents": 1734
+          },
+          {
+            "cycle_code": 74,
+            "rows": 1814,
+            "stream_present_rows": 1679,
+            "pair_bearing_present_documents": 1679,
+            "known_pair_documents": 1679,
+            "known_bigram_occurrences": 44532,
+            "known_occurrence_coverage": 0.616317209881669,
+            "observed_known_bigram_types": 6625,
+            "descriptor_changed_known_documents": 1677
+          },
+          {
+            "cycle_code": 75,
+            "rows": 1957,
+            "stream_present_rows": 1851,
+            "pair_bearing_present_documents": 1851,
+            "known_pair_documents": 1851,
+            "known_bigram_occurrences": 41242,
+            "known_occurrence_coverage": 0.5854413309485279,
+            "observed_known_bigram_types": 6525,
+            "descriptor_changed_known_documents": 1851
+          },
+          {
+            "cycle_code": 76,
+            "rows": 1822,
+            "stream_present_rows": 1704,
+            "pair_bearing_present_documents": 1704,
+            "known_pair_documents": 1704,
+            "known_bigram_occurrences": 40731,
+            "known_occurrence_coverage": 0.5899879774613613,
+            "observed_known_bigram_types": 6329,
+            "descriptor_changed_known_documents": 1703
+          },
+          {
+            "cycle_code": 77,
+            "rows": 2335,
+            "stream_present_rows": 2163,
+            "pair_bearing_present_documents": 2163,
+            "known_pair_documents": 2162,
+            "known_bigram_occurrences": 51970,
+            "known_occurrence_coverage": 0.6065451319997199,
+            "observed_known_bigram_types": 7132,
+            "descriptor_changed_known_documents": 2159
+          },
+          {
+            "cycle_code": 78,
+            "rows": 2146,
+            "stream_present_rows": 2015,
+            "pair_bearing_present_documents": 2015,
+            "known_pair_documents": 2015,
+            "known_bigram_occurrences": 43790,
+            "known_occurrence_coverage": 0.5796621836280843,
+            "observed_known_bigram_types": 6493,
+            "descriptor_changed_known_documents": 2010
+          },
+          {
+            "cycle_code": 79,
+            "rows": 2188,
+            "stream_present_rows": 2083,
+            "pair_bearing_present_documents": 2083,
+            "known_pair_documents": 2082,
+            "known_bigram_occurrences": 45472,
+            "known_occurrence_coverage": 0.5758646454668642,
+            "observed_known_bigram_types": 6365,
+            "descriptor_changed_known_documents": 2080
+          }
+        ]
+      },
+      "resident_sparse_block_bytes_for_all_train_rows": {
+        "bag": 13871240,
+        "real": 14257040,
+        "shuffled": 14275040
+      },
+      "support_screen": {
+        "fit_known_documents_pass": true,
+        "query_known_documents_pass": true,
+        "all_query_cycles_pass": true,
+        "query_occurrence_coverage_pass": true,
+        "query_descriptor_change_pass": true
+      }
+    },
+    {
+      "origin": 75,
+      "frozen_vectorizer": {
+        "origin": 75,
+        "artifact_relative_path": "experiments\\runs\\optimization_v3_research_next_v1\\POSITIONAL_TEXT_PILOT_V1\\units\\POSITIONAL_TEXT_PILOT_V1_E75_C2B_TFIDF.joblib",
+        "artifact_sha256": "0cb8376d881d417ff2623f29c0b725f8edc4a772ce23545717e4fbd58f5c85d1",
+        "receipt_sha256": "7fb724350285756886f20c1a953ce915a3c23f346d39ca74a9b47e22df3b00c7",
+        "freeze_signature": "f310d0340ea4402677ca9e86aa29c43b1536ded902c0f6a6f52cb53bd333c292",
+        "source_commit": "3429fb93c2a579ca91f0dfe7fc1a67d06a1b8855",
+        "fit_population": {
+          "cycle_max": 75,
+          "cycle_min": 47,
+          "cycles_sha256": "3dc7a728bff1a20a50997dffd2c3371027e362011c4dac37577e9558c26cdde2",
+          "record_ids_sha256": "c573647b5b58868ceda8fca90bbbf5b23e58e13a3085184e6a460a8340302f4f",
+          "row_indices_sha256": "5b635f19b9cc697616f37181e6cd0895adcddb6ef714c6b75955db844442ffbd",
+          "rows": 42117
+        },
+        "vocabulary_size": 20000,
+        "bigram_vocabulary_size": 14277,
+        "idf_size": 20000,
+        "tfidf_parameters": {
+          "analyzer": "word",
+          "ngram_range": [
+            1,
+            2
+          ],
+          "strip_accents": "unicode",
+          "lowercase": true,
+          "token_pattern": "(?u)\\b\\w\\w+\\b",
+          "max_features": 20000
+        },
+        "receipt_fit_metadata": {
+          "feature_count": 20000,
+          "idf_sha256": "3315b26c7a2c268eb7e17b1a5da21f4dbaf037e6cd0e43c5c540f1057bf396d2",
+          "underlying_fit_calls": [
+            "TfidfVectorizer.fit x1"
+          ],
+          "vocabulary_sha256": "2603bf8ba90f509ccc81a4155159e7683b0a3660d7c2c0602ba49ee291266083",
+          "vocabulary_size": 20000
+        }
+      },
+      "fit": {
+        "name": "fit",
+        "rows": 42117,
+        "stream_present_rows": 39239,
+        "stream_missing_rows": 2878,
+        "present_token_count_distribution": {
+          "min": 9,
+          "p50": 34.0,
+          "p90": 79.0,
+          "p95": 103.0,
+          "max": 145
+        },
+        "present_adjacent_pair_occurrences": 1606679,
+        "known_bigram_occurrences": 1029351,
+        "known_occurrence_coverage": 0.640669978259503,
+        "pair_bearing_present_documents": 39239,
+        "known_pair_present_documents": 39234,
+        "known_document_coverage_of_present": 0.9998725757537145,
+        "known_document_coverage_of_pair_bearing": 0.9998725757537145,
+        "positive_known_count_distribution": {
+          "min": 1,
+          "p50": 22.0,
+          "p90": 51.0,
+          "p95": 62.0,
+          "max": 131
+        },
+        "observed_known_bigram_types": 14277,
+        "frozen_bigram_vocabulary_size": 14277,
+        "observed_known_bigram_type_coverage": 1.0,
+        "positional_descriptor_changed_rows_under_pair_shuffle": 39208,
+        "descriptor_change_rate_among_known_documents": 0.9993373094764745,
+        "csr_blocks": {
+          "bag": {
+            "shape": [
+              42117,
+              14277
+            ],
+            "nnz": 975330,
+            "csr_bytes": 11872432
+          },
+          "real": {
+            "shape": [
+              42117,
+              42831
+            ],
+            "nnz": 1003321,
+            "csr_bytes": 12208324
+          },
+          "shuffled": {
+            "shape": [
+              42117,
+              42831
+            ],
+            "nnz": 1004926,
+            "csr_bytes": 12227584
+          }
+        },
+        "cycle_support": [
+          {
+            "cycle_code": 47,
+            "rows": 1342,
+            "stream_present_rows": 1241,
+            "pair_bearing_present_documents": 1241,
+            "known_pair_documents": 1241,
+            "known_bigram_occurrences": 39796,
+            "known_occurrence_coverage": 0.6489677440396595,
+            "observed_known_bigram_types": 6523,
+            "descriptor_changed_known_documents": 1241
+          },
+          {
+            "cycle_code": 48,
+            "rows": 977,
+            "stream_present_rows": 894,
+            "pair_bearing_present_documents": 894,
+            "known_pair_documents": 894,
+            "known_bigram_occurrences": 26741,
+            "known_occurrence_coverage": 0.6088292882837758,
+            "observed_known_bigram_types": 5497,
+            "descriptor_changed_known_documents": 894
+          },
+          {
+            "cycle_code": 49,
+            "rows": 1255,
+            "stream_present_rows": 1183,
+            "pair_bearing_present_documents": 1183,
+            "known_pair_documents": 1183,
+            "known_bigram_occurrences": 29916,
+            "known_occurrence_coverage": 0.6159357628165534,
+            "observed_known_bigram_types": 6127,
+            "descriptor_changed_known_documents": 1183
+          },
+          {
+            "cycle_code": 50,
+            "rows": 1111,
+            "stream_present_rows": 1021,
+            "pair_bearing_present_documents": 1021,
+            "known_pair_documents": 1021,
+            "known_bigram_occurrences": 29765,
+            "known_occurrence_coverage": 0.6344182279344374,
+            "observed_known_bigram_types": 6050,
+            "descriptor_changed_known_documents": 1021
+          },
+          {
+            "cycle_code": 51,
+            "rows": 1535,
+            "stream_present_rows": 1443,
+            "pair_bearing_present_documents": 1443,
+            "known_pair_documents": 1443,
+            "known_bigram_occurrences": 37649,
+            "known_occurrence_coverage": 0.6070559022235121,
+            "observed_known_bigram_types": 6881,
+            "descriptor_changed_known_documents": 1441
+          },
+          {
+            "cycle_code": 52,
+            "rows": 1565,
+            "stream_present_rows": 1452,
+            "pair_bearing_present_documents": 1452,
+            "known_pair_documents": 1452,
+            "known_bigram_occurrences": 36333,
+            "known_occurrence_coverage": 0.653929914868343,
+            "observed_known_bigram_types": 6218,
+            "descriptor_changed_known_documents": 1452
+          },
+          {
+            "cycle_code": 53,
+            "rows": 1371,
+            "stream_present_rows": 1292,
+            "pair_bearing_present_documents": 1292,
+            "known_pair_documents": 1292,
+            "known_bigram_occurrences": 39701,
+            "known_occurrence_coverage": 0.6643184632375088,
+            "observed_known_bigram_types": 6940,
+            "descriptor_changed_known_documents": 1291
+          },
+          {
+            "cycle_code": 54,
+            "rows": 1256,
+            "stream_present_rows": 1175,
+            "pair_bearing_present_documents": 1175,
+            "known_pair_documents": 1175,
+            "known_bigram_occurrences": 28761,
+            "known_occurrence_coverage": 0.600476021462722,
+            "observed_known_bigram_types": 6239,
+            "descriptor_changed_known_documents": 1174
+          },
+          {
+            "cycle_code": 55,
+            "rows": 1608,
+            "stream_present_rows": 1493,
+            "pair_bearing_present_documents": 1493,
+            "known_pair_documents": 1492,
+            "known_bigram_occurrences": 35021,
+            "known_occurrence_coverage": 0.6270546105640108,
+            "observed_known_bigram_types": 6361,
+            "descriptor_changed_known_documents": 1491
+          },
+          {
+            "cycle_code": 56,
+            "rows": 564,
+            "stream_present_rows": 479,
+            "pair_bearing_present_documents": 479,
+            "known_pair_documents": 479,
+            "known_bigram_occurrences": 17713,
+            "known_occurrence_coverage": 0.6671814380955968,
+            "observed_known_bigram_types": 3967,
+            "descriptor_changed_known_documents": 479
+          },
+          {
+            "cycle_code": 57,
+            "rows": 962,
+            "stream_present_rows": 864,
+            "pair_bearing_present_documents": 864,
+            "known_pair_documents": 863,
+            "known_bigram_occurrences": 21696,
+            "known_occurrence_coverage": 0.6173984804075012,
+            "observed_known_bigram_types": 5023,
+            "descriptor_changed_known_documents": 863
+          },
+          {
+            "cycle_code": 58,
+            "rows": 1205,
+            "stream_present_rows": 1105,
+            "pair_bearing_present_documents": 1105,
+            "known_pair_documents": 1104,
+            "known_bigram_occurrences": 22857,
+            "known_occurrence_coverage": 0.6045865735597524,
+            "observed_known_bigram_types": 5399,
+            "descriptor_changed_known_documents": 1103
+          },
+          {
+            "cycle_code": 59,
+            "rows": 1383,
+            "stream_present_rows": 1274,
+            "pair_bearing_present_documents": 1274,
+            "known_pair_documents": 1274,
+            "known_bigram_occurrences": 33145,
+            "known_occurrence_coverage": 0.6553762803021316,
+            "observed_known_bigram_types": 6483,
+            "descriptor_changed_known_documents": 1272
+          },
+          {
+            "cycle_code": 60,
+            "rows": 1478,
+            "stream_present_rows": 1393,
+            "pair_bearing_present_documents": 1393,
+            "known_pair_documents": 1393,
+            "known_bigram_occurrences": 33088,
+            "known_occurrence_coverage": 0.6408677125702111,
+            "observed_known_bigram_types": 6406,
+            "descriptor_changed_known_documents": 1393
+          },
+          {
+            "cycle_code": 61,
+            "rows": 1632,
+            "stream_present_rows": 1541,
+            "pair_bearing_present_documents": 1541,
+            "known_pair_documents": 1540,
+            "known_bigram_occurrences": 33220,
+            "known_occurrence_coverage": 0.6105383102681443,
+            "observed_known_bigram_types": 6585,
+            "descriptor_changed_known_documents": 1538
+          },
+          {
+            "cycle_code": 62,
+            "rows": 1500,
+            "stream_present_rows": 1412,
+            "pair_bearing_present_documents": 1412,
+            "known_pair_documents": 1412,
+            "known_bigram_occurrences": 36011,
+            "known_occurrence_coverage": 0.6425372468552056,
+            "observed_known_bigram_types": 6664,
+            "descriptor_changed_known_documents": 1411
+          },
+          {
+            "cycle_code": 63,
+            "rows": 1883,
+            "stream_present_rows": 1778,
+            "pair_bearing_present_documents": 1778,
+            "known_pair_documents": 1778,
+            "known_bigram_occurrences": 40165,
+            "known_occurrence_coverage": 0.6450343675724288,
+            "observed_known_bigram_types": 6601,
+            "descriptor_changed_known_documents": 1775
+          },
+          {
+            "cycle_code": 64,
+            "rows": 1807,
+            "stream_present_rows": 1698,
+            "pair_bearing_present_documents": 1698,
+            "known_pair_documents": 1698,
+            "known_bigram_occurrences": 40226,
+            "known_occurrence_coverage": 0.6161316015194216,
+            "observed_known_bigram_types": 7269,
+            "descriptor_changed_known_documents": 1697
+          },
+          {
+            "cycle_code": 65,
+            "rows": 1567,
+            "stream_present_rows": 1480,
+            "pair_bearing_present_documents": 1480,
+            "known_pair_documents": 1480,
+            "known_bigram_occurrences": 42067,
+            "known_occurrence_coverage": 0.6712140794281429,
+            "observed_known_bigram_types": 6853,
+            "descriptor_changed_known_documents": 1479
+          },
+          {
+            "cycle_code": 66,
+            "rows": 1751,
+            "stream_present_rows": 1631,
+            "pair_bearing_present_documents": 1631,
+            "known_pair_documents": 1631,
+            "known_bigram_occurrences": 41345,
+            "known_occurrence_coverage": 0.6491599937195792,
+            "observed_known_bigram_types": 7105,
+            "descriptor_changed_known_documents": 1630
+          },
+          {
+            "cycle_code": 67,
+            "rows": 1953,
+            "stream_present_rows": 1827,
+            "pair_bearing_present_documents": 1827,
+            "known_pair_documents": 1827,
+            "known_bigram_occurrences": 46357,
+            "known_occurrence_coverage": 0.653394035067937,
+            "observed_known_bigram_types": 6899,
+            "descriptor_changed_known_documents": 1825
+          },
+          {
+            "cycle_code": 68,
+            "rows": 577,
+            "stream_present_rows": 525,
+            "pair_bearing_present_documents": 525,
+            "known_pair_documents": 525,
+            "known_bigram_occurrences": 18607,
+            "known_occurrence_coverage": 0.652099250017523,
+            "observed_known_bigram_types": 4475,
+            "descriptor_changed_known_documents": 525
+          },
+          {
+            "cycle_code": 69,
+            "rows": 1079,
+            "stream_present_rows": 997,
+            "pair_bearing_present_documents": 997,
+            "known_pair_documents": 997,
+            "known_bigram_occurrences": 28478,
+            "known_occurrence_coverage": 0.6683250803783061,
+            "observed_known_bigram_types": 5475,
+            "descriptor_changed_known_documents": 997
+          },
+          {
+            "cycle_code": 70,
+            "rows": 1605,
+            "stream_present_rows": 1511,
+            "pair_bearing_present_documents": 1511,
+            "known_pair_documents": 1511,
+            "known_bigram_occurrences": 44112,
+            "known_occurrence_coverage": 0.6577499440840975,
+            "observed_known_bigram_types": 6810,
+            "descriptor_changed_known_documents": 1511
+          },
+          {
+            "cycle_code": 71,
+            "rows": 1689,
+            "stream_present_rows": 1575,
+            "pair_bearing_present_documents": 1575,
+            "known_pair_documents": 1575,
+            "known_bigram_occurrences": 49154,
+            "known_occurrence_coverage": 0.6748863839193772,
+            "observed_known_bigram_types": 7331,
+            "descriptor_changed_known_documents": 1573
+          },
+          {
+            "cycle_code": 72,
+            "rows": 1811,
+            "stream_present_rows": 1687,
+            "pair_bearing_present_documents": 1687,
+            "known_pair_documents": 1687,
+            "known_bigram_occurrences": 40181,
+            "known_occurrence_coverage": 0.6335798420031852,
+            "observed_known_bigram_types": 6971,
+            "descriptor_changed_known_documents": 1685
+          },
+          {
+            "cycle_code": 73,
+            "rows": 1880,
+            "stream_present_rows": 1738,
+            "pair_bearing_present_documents": 1738,
+            "known_pair_documents": 1737,
+            "known_bigram_occurrences": 45042,
+            "known_occurrence_coverage": 0.6373296732839981,
+            "observed_known_bigram_types": 7226,
+            "descriptor_changed_known_documents": 1735
+          },
+          {
+            "cycle_code": 74,
+            "rows": 1814,
+            "stream_present_rows": 1679,
+            "pair_bearing_present_documents": 1679,
+            "known_pair_documents": 1679,
+            "known_bigram_occurrences": 48104,
+            "known_occurrence_coverage": 0.6657532350702373,
+            "observed_known_bigram_types": 7300,
+            "descriptor_changed_known_documents": 1678
+          },
+          {
+            "cycle_code": 75,
+            "rows": 1957,
+            "stream_present_rows": 1851,
+            "pair_bearing_present_documents": 1851,
+            "known_pair_documents": 1851,
+            "known_bigram_occurrences": 44100,
+            "known_occurrence_coverage": 0.6260114129971893,
+            "observed_known_bigram_types": 7251,
+            "descriptor_changed_known_documents": 1851
+          }
+        ]
+      },
+      "query": {
+        "name": "query",
+        "rows": 8491,
+        "stream_present_rows": 7965,
+        "stream_missing_rows": 526,
+        "present_token_count_distribution": {
+          "min": 8,
+          "p50": 32.0,
+          "p90": 74.0,
+          "p95": 97.0,
+          "max": 141
+        },
+        "present_adjacent_pair_occurrences": 309226,
+        "known_bigram_occurrences": 187461,
+        "known_occurrence_coverage": 0.6062265139412598,
+        "pair_bearing_present_documents": 7965,
+        "known_pair_present_documents": 7963,
+        "known_document_coverage_of_present": 0.9997489014438167,
+        "known_document_coverage_of_pair_bearing": 0.9997489014438167,
+        "positive_known_count_distribution": {
+          "min": 1,
+          "p50": 19.0,
+          "p90": 49.0,
+          "p95": 58.0,
+          "max": 122
+        },
+        "observed_known_bigram_types": 11063,
+        "frozen_bigram_vocabulary_size": 14277,
+        "observed_known_bigram_type_coverage": 0.7748826784338446,
+        "positional_descriptor_changed_rows_under_pair_shuffle": 7952,
+        "descriptor_change_rate_among_known_documents": 0.9986186110762275,
+        "csr_blocks": {
+          "bag": {
+            "shape": [
+              8491,
+              14277
+            ],
+            "nnz": 179603,
+            "csr_bytes": 2189204
+          },
+          "real": {
+            "shape": [
+              8491,
+              42831
+            ],
+            "nnz": 184244,
+            "csr_bytes": 2244896
+          },
+          "shuffled": {
+            "shape": [
+              8491,
+              42831
+            ],
+            "nnz": 184188,
+            "csr_bytes": 2244224
+          }
+        },
+        "cycle_support": [
+          {
+            "cycle_code": 76,
+            "rows": 1822,
+            "stream_present_rows": 1704,
+            "pair_bearing_present_documents": 1704,
+            "known_pair_documents": 1704,
+            "known_bigram_occurrences": 41873,
+            "known_occurrence_coverage": 0.606529831829309,
+            "observed_known_bigram_types": 6620,
+            "descriptor_changed_known_documents": 1703
+          },
+          {
+            "cycle_code": 77,
+            "rows": 2335,
+            "stream_present_rows": 2163,
+            "pair_bearing_present_documents": 2163,
+            "known_pair_documents": 2162,
+            "known_bigram_occurrences": 53635,
+            "known_occurrence_coverage": 0.6259774515067342,
+            "observed_known_bigram_types": 7459,
+            "descriptor_changed_known_documents": 2159
+          },
+          {
+            "cycle_code": 78,
+            "rows": 2146,
+            "stream_present_rows": 2015,
+            "pair_bearing_present_documents": 2015,
+            "known_pair_documents": 2015,
+            "known_bigram_occurrences": 45179,
+            "known_occurrence_coverage": 0.5980488192311766,
+            "observed_known_bigram_types": 6838,
+            "descriptor_changed_known_documents": 2010
+          },
+          {
+            "cycle_code": 79,
+            "rows": 2188,
+            "stream_present_rows": 2083,
+            "pair_bearing_present_documents": 2083,
+            "known_pair_documents": 2082,
+            "known_bigram_occurrences": 46774,
+            "known_occurrence_coverage": 0.5923533806972886,
+            "observed_known_bigram_types": 6592,
+            "descriptor_changed_known_documents": 2080
+          }
+        ]
+      },
+      "resident_sparse_block_bytes_for_all_train_rows": {
+        "bag": 14061632,
+        "real": 14453216,
+        "shuffled": 14471804
+      },
+      "support_screen": {
+        "fit_known_documents_pass": true,
+        "query_known_documents_pass": true,
+        "all_query_cycles_pass": true,
+        "query_occurrence_coverage_pass": true,
+        "query_descriptor_change_pass": true
+      }
+    }
+  ],
+  "fit_or_scoring_performed": false,
+  "labels_opened": false,
+  "test_opened": false
+}
