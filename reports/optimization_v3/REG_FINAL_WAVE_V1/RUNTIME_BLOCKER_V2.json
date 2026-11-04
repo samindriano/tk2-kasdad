@@ -1,0 +1,86 @@
+{
+  "branch": "codex/reg-position-failure-mechanism-v1",
+  "broader_candidate_A_availability": "UNKNOWN",
+  "candidate_A_status": "SKIP_A_SCOPE_LIMITED_NOT_FOUND",
+  "candidate_csv_produced": false,
+  "candidate_data_read": false,
+  "candidate_fits": 0,
+  "candidate_lp_calls": 0,
+  "candidate_lp_started": false,
+  "created_utc": "2026-11-04T18:04:15.780820+00:00",
+  "freeze_signature": "a493888fe8cfe3bcd21769b9e249c2d482a702a32e4d6ee558062f3e5c18c4f0",
+  "namespace": "KASDAD_REG_FINAL_WAVE_V2_RUNTIME_BLOCKER",
+  "next_action": "After a meaningful resource-state change or user resume, perform one fresh resource gate as part of the single authorized --run invocation. If it fails, stop before reading Train labels. No fit permission re-request is required.",
+  "one_job_gate": {
+    "other_active_project_jobs": 0,
+    "status": "PASS"
+  },
+  "prediction_only_support": {
+    "E67_cycles_68_75_rows": 12412,
+    "E75_cycles_76_79_rows": 8491,
+    "cycle_counts": {
+      "68": 577,
+      "69": 1079,
+      "70": 1605,
+      "71": 1689,
+      "72": 1811,
+      "73": 1880,
+      "74": 1814,
+      "75": 1957,
+      "76": 1822,
+      "77": 2335,
+      "78": 2146,
+      "79": 2188
+    },
+    "rows": 20903,
+    "status": "PASS",
+    "unique_record_ids": 20903,
+    "unique_rows": 20903
+  },
+  "preprocessing_fits": 0,
+  "protocol_commit": "5b536d370fab70948c66d7801d5f9aed08ddd534",
+  "raw_train_hash_scanned": false,
+  "resource_gate": {
+    "additional_resource_checks_after_last_observation": 0,
+    "estimated_peak_bytes": 536870912,
+    "minimum_available_bytes": 4294967296,
+    "observations": [
+      {
+        "available_bytes": 4073455616,
+        "result": "FAIL",
+        "stage": "prediction-only prefit check before Sol PASS"
+      },
+      {
+        "available_bytes": 3739828224,
+        "result": "FAIL",
+        "stage": "post-review pre-LP gate check 1"
+      },
+      {
+        "available_bytes": 3243433984,
+        "result": "FAIL",
+        "stage": "post-review recheck after a 30-second wait"
+      }
+    ],
+    "reserved_bytes": 2147483648,
+    "threshold_changed": false
+  },
+  "review_receipt_commit": "16f95f6f6e82b337e2d7581eef5017fdc54f4675",
+  "review_receipt_sha256": "caf809f401a40bb4c97a2a28608d30574aa76f71d71ea7961cf0f141904e4707",
+  "review_signature": "10153ee79307b8a34ed76936be3c7cee1dbd980005605808e334778dcf734138",
+  "review_verdict": "PASS",
+  "schema_version": 1,
+  "signature": "b9ef32b95f9ebec779dd6d542aa2744652370dce56e102f732ec07b771a74f3e",
+  "signature_method": "SHA-256 canonical JSON integrity seal",
+  "status": "BLOCKED_RESOURCE",
+  "stop_conditions": [
+    "no further resource polling",
+    "no scheduled checks",
+    "no memory-gate lowering",
+    "no process termination",
+    "no alternative fit or research"
+  ],
+  "test_or_sample_accessed": false,
+  "train_labels_parsed": 0,
+  "upload_performed": false,
+  "worktree": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1"
+}
