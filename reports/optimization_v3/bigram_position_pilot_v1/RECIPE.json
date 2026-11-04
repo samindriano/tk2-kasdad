@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "card_id": "CLS_BIGRAM_POSITION_PILOT_V1",
+  "status": "FROZEN_SIX_FIT_TEMPORAL_PILOT",
+  "question": "Does three-part position information for known word-bigram occurrences add predictive information beyond an identical frozen C2B bag plus original unigram-position logit, bag bigrams, and a shuffled-position control?",
+  "selection_disclosure": "The pilot was selected after reviewing prior temporal experiments and feature support; it is not outcome-blind. E67 and E75 query windows overlap.",
+  "input": {
+    "path": "data/raw/classification/Train.csv",
+    "sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "rows": 50608,
+    "target": "artifact_signal"
+  },
+  "origins": {
+    "E67": {"fit_cycles": [47, 67], "fit_rows": 29705, "query_cycles": [68, 79], "query_rows": 20903,
+      "views": {"W4": [68, 71], "W5": [72, 75], "W6": [76, 79], "H12_E67": [68, 79]}},
+    "E75": {"fit_cycles": [47, 75], "fit_rows": 42117, "query_cycles": [76, 79], "query_rows": 8491,
+      "views": {"W6": [76, 79]}}
+  },
+  "feature_contract": {
+    "tokenization": "Frozen TfidfVectorizer preprocessor/tokenizer: Unicode strip accents, lowercase, token_pattern (?u)\\b\\w\\w+\\b.",
+    "pairs": "All adjacent normalized token pairs; OOV pairs remain in the pair sequence and define segment boundaries.",
+    "position_bins": "For pair occurrence j among m pairs, bin=floor(3*j/m), zero-based.",
+    "known_terms": "Exact bigram phrase lookup in the origin's frozen prefix C2B vocabulary; original IDF is reused.",
+    "tf_idf": "(1+log(count))*IDF for each known term/bin, followed by a single whole-row L2 normalization.",
+    "shuffle": "Seed-42 deterministic permutation of pair occurrences within each document, preserving pair multiset, bag counts, and all three bin sizes.",
+    "arms": {
+      "BAG": "All known bigram counts with original IDF, sublinear TF, and row L2 norm.",
+      "REAL": "Known bigrams assigned to observed first/middle/final thirds.",
+      "SHUFFLED": "Same pair occurrences assigned after within-document pair-sequence shuffle."
+    }
+  },
+  "model": {
+    "frozen_offset": "z_original = C2B bag intercept + C2B bag matrix @ saved coefficients + original unigram-position matrix @ its saved gamma; direct float64 computation.",
+    "learned_parameters": "One new gamma vector per origin and arm; initialized at zero; no new intercept.",
+    "objective": "SUM(logaddexp(0, -(2*y-1)*(z_original + X_arm@gamma))) + dot(gamma,gamma)/2; C=1.",
+    "optimizer": "scipy.optimize.minimize, L-BFGS-B, jac=True, maxiter=2000, ftol=1e-12, gtol=1e-6, maxls=50.",
+    "acceptance": "Optimizer success, finite gamma/loss/gradient, final objective <= zero-gamma objective + 1e-8; single attempt, no retries.",
+    "fit_ids_order": [
+      "CLS_BIGRAM_POSITION_PILOT_V1_E67_BAG",
+      "CLS_BIGRAM_POSITION_PILOT_V1_E67_REAL",
+      "CLS_BIGRAM_POSITION_PILOT_V1_E67_SHUFFLED",
+      "CLS_BIGRAM_POSITION_PILOT_V1_E75_BAG",
+      "CLS_BIGRAM_POSITION_PILOT_V1_E75_REAL",
+      "CLS_BIGRAM_POSITION_PILOT_V1_E75_SHUFFLED"
+    ]
+  },
+  "prediction_policy": {
+    "present": "0.5*sigmoid(z_original + X_arm@gamma) + 0.5*p_A02; threshold >= 0.50.",
+    "missing": "Exact frozen pP route.",
+    "no_known_bigram": "Exact frozen MIX50 probability on present rows; additionally verify zero-gamma equivalence <=1e-12.",
+    "comparator": "Frozen MIX50; all three new arms retain identical structured/text source boundaries."
+  },
+  "qualification_gates": {
+    "tolerance": 1e-12,
+    "required_real_gain": {"E67_H12_E67_vs_MIX50": 0.0005, "E75_W6_vs_MIX50": 0.0005},
+    "required_real_not_below_controls": {"views": ["E67_H12_E67", "E75_W6"], "comparators": ["BAG", "SHUFFLED"], "minimum": 0.0},
+    "E67_window_harm_vs_MIX50": {"views": ["W4", "W5", "W6"], "minimum": -0.003},
+    "fit_defined_subgroups": {
+      "groups": ["availability_present", "availability_missing", "entry_friction_0", "entry_friction_1", "text_load_Q1", "text_load_Q2", "text_load_Q3", "text_load_Q4"],
+      "views": ["E67_H12_E67", "E67_W4", "E67_W5", "E67_W6", "E75_W6"],
+      "support": {"n_min": 200, "each_class_min": 30},
+      "maximum_harm": {"macro_f1": 0.01, "positive_recall": 0.02},
+      "unsupported": "Report UNKNOWN; do not silently drop from report or claim overall qualification."
+    },
+    "interpretation": "Engineering screening criteria, not significance tests or evidence of causality."
+  },
+  "source_boundaries": {
+    "preflight": "Official Train identity and signal_stream only; frozen matrices, gamma, probabilities, and named non-target arrays.",
+    "fit_labels": "Only the exact row indices in the frozen origin prefix are parsed after that fit's durable FIT_STARTED event.",
+    "query_labels": "Remain closed until all six gamma receipts/predictions pass the independent prelabel verifier.",
+    "test_sample_kaggle": "Not accessed."
+  },
+  "resource_and_accounting": {
+    "parallel_fit_jobs": 1,
+    "thread_limit": 2,
+    "rss_max_bytes": 6442450944,
+    "initial_free_memory_min_bytes": 4294967296,
+    "free_memory_reserve_bytes": 2147483648,
+    "global_cap_before": 143,
+    "global_cap_after": 149,
+    "pilot_cap_before": 88,
+    "pilot_cap_after": 94,
+    "unchanged_category_caps": {"continuation": 52, "control_replay": 2, "technical_retry": 1}
+  },
+  "limitations": [
+    "E67 and E75 are nested development views, not independent replication or untouched holdout.",
+    "BAG has fewer columns than REAL/SHUFFLED; REAL-versus-SHUFFLED is the matched-capacity position contrast.",
+    "Sequential additive fitting uses saved in-sample base logits; it is not cross-fitted residual training.",
+    "No causal, semantic, quality, or Test-generalization claim is authorized."
+  ],
+  "authorization": "reports/optimization_v3/bigram_position_readiness_v1/SOL_PILOT_AUTHORIZATION.md"
+}
