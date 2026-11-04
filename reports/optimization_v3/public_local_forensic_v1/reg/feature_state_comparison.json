@@ -1,0 +1,175 @@
+{
+  "B_baseline_member_used": "manifest-bound final mapped R06 prediction",
+  "B_deployment_cycles": {
+    "80": 1060,
+    "81": 1618,
+    "82": 2474,
+    "83": 2823,
+    "84": 2763,
+    "85": 2338,
+    "86": 2616,
+    "87": 2472,
+    "88": 2242,
+    "89": 3051,
+    "90": 3317,
+    "91": 2647
+  },
+  "B_design_shape_from_fit_receipt": [
+    50608,
+    23439
+  ],
+  "B_feature_recipe": "Exact structured features plus L2 unigram bag, original three-third REAL position block built with shared IDF, and missing-text indicator. One full-Train target-free word TF-IDF state is used for both text blocks; no additional fit for position transforms.",
+  "B_fit_cycles": [
+    47,
+    79
+  ],
+  "B_fit_rows": 50608,
+  "B_missing_fallback_bit_exact": true,
+  "B_model_input_width": 23439,
+  "B_model_params_match_fit_receipt": true,
+  "B_policy_contract": "aux_rank50=0.5*raw_aux+0.5*100*averageRank(raw_aux within complete Test cycle)/complete_cycle_n; present: clip(0.75*CURRENT_R06_E79_final_mapped+0.25*aux_rank50,0,100); missing signal_stream: exact CURRENT_R06_E79 final mapped prediction. Rank the full cycle before applying missing mask.",
+  "B_raw_candidate_used_as_baseline": false,
+  "B_resolved_lgbm_parameters": {
+    "boosting_type": "gbdt",
+    "class_weight": null,
+    "colsample_bytree": 1.0,
+    "deterministic": true,
+    "force_col_wise": true,
+    "importance_type": "split",
+    "learning_rate": 0.05,
+    "max_depth": -1,
+    "min_child_samples": 80,
+    "min_child_weight": 0.001,
+    "min_split_gain": 0.0,
+    "n_estimators": 400,
+    "n_jobs": 2,
+    "num_leaves": 15,
+    "objective": "regression_l1",
+    "random_state": 42,
+    "reg_alpha": 0.0,
+    "reg_lambda": 3.0,
+    "subsample": 1.0,
+    "subsample_for_bin": 200000,
+    "subsample_freq": 0,
+    "verbosity": -1
+  },
+  "B_structured_output_shape": [
+    50608,
+    426
+  ],
+  "B_target": "direct threat_rank",
+  "B_test_labels_loaded": false,
+  "B_unigram_width": 5753,
+  "direct_fit_cycles": {
+    "67": [
+      47,
+      67
+    ],
+    "75": [
+      47,
+      75
+    ]
+  },
+  "direct_fit_rows": {
+    "67": 29705,
+    "75": 42117
+  },
+  "direct_lgbm_params_equal_B": [
+    true,
+    true
+  ],
+  "direct_model_input_widths": {
+    "67": 22985,
+    "75": 23263
+  },
+  "direct_query_cycles": {
+    "67": [
+      68,
+      79
+    ],
+    "75": [
+      76,
+      79
+    ]
+  },
+  "direct_recipe_status": "FROZEN_BY_PROTOCOL",
+  "direct_structured_categorical_positions_match_B": [
+    true,
+    true
+  ],
+  "direct_structured_numeric_positions_match_B": [
+    true,
+    true
+  ],
+  "direct_structured_order_matches_B": [
+    true,
+    true
+  ],
+  "direct_target": "Official threat_rank in [0,100]; direct fit on every same-prefix row, including missing-text rows. Query labels are excluded from each origin's fit.",
+  "direct_tfidf_parameters_equal_across_states": true,
+  "direct_unigram_widths": {
+    "67": 5675,
+    "75": 5723
+  },
+  "lgbm_class": "lightgbm.sklearn.LGBMRegressor",
+  "ohe_input_widths": {
+    "67": 3,
+    "75": 3
+  },
+  "ohe_params_equal_B": [
+    true,
+    true
+  ],
+  "position_bag_pipeline_contract": "[structured, unigram_bag, REAL_three_third_position_suffix, missing_text_indicator]",
+  "rank_mapping_and_final_blend_contract": {
+    "baseline": "Final mapped current R06 OOF prediction loaded from the E67/E75 R06 fit caches and identity-checked against Regression Train.",
+    "blend": "clip(0.75*cached_current_R06 + 0.25*mapped_auxiliary, 0, 100).",
+    "missing_text": "Calculate full-cycle rank mapping and blend before the missing mask; then replace missing-text candidate scores with the exact cached_current_R06 values. Do not re-rank after blending.",
+    "rank_mapping": "For each complete origin query cycle, rank raw auxiliary scores with average ties; percentile=100*rank/n; mapped=0.5*raw+0.5*percentile."
+  },
+  "scaler_input_widths": {
+    "67": 36,
+    "75": 36
+  },
+  "scaler_params_equal_B": [
+    true,
+    true
+  ],
+  "target_contract_matches": true,
+  "tfidf_vocab_idf_comparison": [
+    {
+      "B_idf_sha256": "ecee57b3976a17c715f30eee917d73c2319d69c6108f8d0bfb9f02d38ab70796",
+      "B_only_terms": 2857,
+      "B_rows": 50608,
+      "B_vocab_size": 20000,
+      "common_term_idf_abs_diff_max": 3.3459678360607583,
+      "common_term_idf_abs_diff_mean": 0.22855578392292322,
+      "common_term_idf_abs_diff_median": 0.18138249364462666,
+      "common_term_idf_abs_diff_p95": 0.5327803804825146,
+      "direct_idf_sha256": "6d47e8c8eba50871d3efef7b70786a9b1aec75f539d4b0594483d0d047376c89",
+      "direct_only_terms": 2857,
+      "direct_rows": 29705,
+      "direct_vocab_size": 20000,
+      "intersection_over_union": 0.7500109375683598,
+      "intersection_terms": 17143,
+      "origin": 67
+    },
+    {
+      "B_idf_sha256": "ecee57b3976a17c715f30eee917d73c2319d69c6108f8d0bfb9f02d38ab70796",
+      "B_only_terms": 1314,
+      "B_rows": 50608,
+      "B_vocab_size": 20000,
+      "common_term_idf_abs_diff_max": 2.015451822103657,
+      "common_term_idf_abs_diff_mean": 0.10437064687201589,
+      "common_term_idf_abs_diff_median": 0.09056380026625721,
+      "common_term_idf_abs_diff_p95": 0.18365422333226888,
+      "direct_idf_sha256": "85e53f369a187b1d5ef84d61005f3a44cd2e41c885de757be74da5fbab3b1f8e",
+      "direct_only_terms": 1314,
+      "direct_rows": 42117,
+      "direct_vocab_size": 20000,
+      "intersection_over_union": 0.8767007600638078,
+      "intersection_terms": 18686,
+      "origin": 75
+    }
+  ]
+}
