@@ -64,7 +64,8 @@ EXPECTED_PARENT_FREEZE = "ba58b1e446a6be8546789c5a56596fbdbf075efc0ee19fcc1f41e0
 BASE_CAPS = {"continuation": 49, "control_replay": 2, "pilot": 80, "technical_retry": 1}
 NEW_CAPS = {"continuation": 50, "control_replay": 2, "pilot": 84, "technical_retry": 1}
 BASE_SNAPSHOT = {
-    "event_rows": 332, "global_cap": 132, "active_reservations_by_category": {
+    "event_rows": 332, "global_cap": 132, "effective_category_caps": BASE_CAPS,
+    "active_reservations_by_category": {
         "continuation": 49, "control_replay": 2, "pilot": 77, "technical_retry": 1,
     }, "active_reservations": 129, "fit_starts": 129, "fit_saved": 123,
     "fit_failed": 6, "fit_pending": 0,
