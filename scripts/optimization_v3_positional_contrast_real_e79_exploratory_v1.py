@@ -67,7 +67,7 @@ RECIPE = REPORT / "RECIPE.json"
 AUTHORIZATION = REPORT / "BENCHMARK_AUTHORIZATION.md"
 SYNTHETIC_QA = REPORT / "SYNTHETIC_QA.json"
 PREFIT_AUDIT = REPORT / "PREFIT_AUDIT.json"
-PREFIT_FREEZE = REPORT / "PRE_FIT_FREEZE_R2.json"
+PREFIT_FREEZE = REPORT / "PRE_FIT_FREEZE_R3.json"
 RESERVATION_REPORT = REPORT / "RESERVATION.json"
 FIT_RECEIPT = REPORT / "FIT_RECEIPT.json"
 TRAINED_FREEZE = REPORT / "TRAINED_STATE_FREEZE.json"
@@ -227,6 +227,10 @@ def _ledger_events() -> list[dict[str, Any]]:
 
 def _ledger_snapshot(events: list[dict[str, Any]]) -> dict[str, Any]:
     return cgeom._budget_snapshot(events)
+
+
+def _category_caps(snapshot: Mapping[str, Any]) -> Mapping[str, Any]:
+    return snapshot.get("category_caps", snapshot.get("effective_category_caps", {}))
 
 
 def _append_event(event: Mapping[str, Any]) -> dict[str, Any]:
@@ -584,7 +588,7 @@ def reserve_fit() -> dict[str, Any]:
         raise BenchmarkError("Unique fit ID already has an ambiguous or started ledger state; no retry")
     if before.get("fit_pending") != 0:
         raise BenchmarkError(f"Another project fit is pending; do not overlap: {before}")
-    caps = before.get("category_caps", before.get("effective_category_caps", {}))
+    caps = _category_caps(before)
     active = before.get("active_reservations_by_category", {})
     if (before.get("active_reservations", 0) >= before.get("global_cap", 0)
             or active.get("pilot", 0) >= caps.get("pilot", 0)):
@@ -614,17 +618,18 @@ def reserve_fit() -> dict[str, Any]:
     # Reconcile a concurrent reservation or fit before appending. Do not revive the old key.
     current_events = _ledger_events()
     current_snapshot = _ledger_snapshot(current_events)
+    current_caps = _category_caps(current_snapshot)
     if (sha256_file(LEDGER) != before_sha or current_snapshot.get("fit_pending") != 0
             or current_snapshot.get("active_reservations", 0) >= current_snapshot.get("global_cap", 0)
             or current_snapshot.get("active_reservations_by_category", {}).get("pilot", 0)
-                >= current_snapshot.get("effective_category_caps", {}).get("pilot", 0)):
+                >= current_caps.get("pilot", 0)):
         raise BenchmarkError("Shared ledger changed or capacity was consumed during reservation precheck")
     _append_event(event)
     after = _ledger_events()
     after_snapshot = _ledger_snapshot(after)
     if (after_snapshot.get("active_reservations", 0) > after_snapshot.get("global_cap", 0)
             or after_snapshot.get("active_reservations_by_category", {}).get("pilot", 0)
-                > after_snapshot.get("category_caps", after_snapshot.get("effective_category_caps", {})).get("pilot", 0)):
+                > _category_caps(after_snapshot).get("pilot", 0)):
         raise BenchmarkError("Reservation exceeded a shared budget cap")
     result = {"schema_version": 1, "status": "ONE_FIT_RESERVED", "benchmark_id": BENCHMARK_ID,
               "fit_id": FIT_ID, "reservation_key": RESERVATION_KEY, "reservation_event": event,
