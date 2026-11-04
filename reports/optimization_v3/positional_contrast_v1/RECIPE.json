@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "card_id": "POS_CONTRAST_V1",
+  "status": "FROZEN_PILOT_PLAN",
+  "question": "Does removing equal-across-thirds coefficient freedom improve temporal transfer of the positional offset when combined with the fixed A02 route?",
+  "selection_disclosure": "Adaptive follow-up chosen after viewing prior POS, A02, MIX50 and frozen error-audit results. E67/E75 outcomes overlap and are not fresh or outcome-blind.",
+  "inputs": {
+    "train_path": "data/raw/classification/Train.csv",
+    "train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "parent_card": "POS_BAG_OFFSET_V1",
+    "parent_freeze_signature": "ba58b1e446a6be8546789c5a56596fbdbf075efc0ee19fcc1f41e02af7b419d7",
+    "error_audit": "reports/optimization_v3/posmix_followup_v1/ERROR_AUDIT.json",
+    "a02_train_prediction_roots": [
+      "experiments/runs/optimization_v3_a02_neighbors_v1/E67/observed",
+      "experiments/runs/optimization_v3_a02_neighbors_v1/E75/observed"
+    ]
+  },
+  "origins": {
+    "E67": {"fit_cycles": [47, 67], "fit_rows": 29705, "score_cycles": [68, 79], "score_rows": 20903},
+    "E75": {"fit_cycles": [47, 75], "fit_rows": 42117, "score_cycles": [76, 79], "score_rows": 8491}
+  },
+  "fit_ids": [
+    "POS_CONTRAST_V1_E67_REAL",
+    "POS_CONTRAST_V1_E67_SHUFFLED",
+    "POS_CONTRAST_V1_E75_REAL",
+    "POS_CONTRAST_V1_E75_SHUFFLED"
+  ],
+  "projection": {
+    "input": "verified augmented matrix [base | first-third | middle-third | last-third]",
+    "formula": ["Z1=(Xfirst-Xlast)/sqrt(2)", "Z2=(Xfirst-2*Xmiddle+Xlast)/sqrt(6)"],
+    "output": "[Z1 | Z2] appended after unchanged base; no post-projection normalization",
+    "interpretation": "orthonormal capacity restriction; because sublinear TF is applied within each third, common mode is not exactly an unordered bag direction"
+  },
+  "optimizer": {
+    "objective": "sum(logaddexp(0, -(2*y-1)*(z0 + Z@theta))) + dot(theta,theta)/2",
+    "offset": "original saved C2_B bag intercept + base matrix @ original bag coefficients",
+    "C": 1.0,
+    "objective_reduction": "sum",
+    "optimizer": "scipy.optimize.minimize(method='L-BFGS-B', jac=True, float64)",
+    "initial_theta": "zeros",
+    "options": {"maxiter": 2000, "ftol": 1e-12, "gtol": 1e-6, "maxls": 50},
+    "acceptance": "success; finite loss, gradient and coefficients; final loss <= zero-theta loss + 1e-8; no retry"
+  },
+  "policy": {
+    "real_present": "0.5 * new q + 0.5 * original A02 observed probability",
+    "shuffled_present": "0.5 * shuffled q + 0.5 * original A02 observed probability",
+    "both_missing": "exact original POS_BAG_OFFSET_V1 pP HGB fallback",
+    "threshold": ">= 0.50",
+    "primary_comparator": "current frozen MIX50 computed on identical rows",
+    "secondary_mechanism_control": "same fixed blend with shuffled-position contrast q"
+  },
+  "gates": {
+    "real_gain_vs_mix50": {"E67_H12": 0.0005, "E75_W6": 0.0005},
+    "real_gain_vs_shuffled": {"E67_H12": 0.0, "E75_W6": 0.0},
+    "E67_window_harm_max_vs_mix50": {"W4": 0.003, "W5": 0.003, "W6": 0.003},
+    "subgroup_support": {"minimum_n": 200, "minimum_each_class": 30},
+    "subgroup_harm_max_vs_mix50": {"macro_f1": 0.01, "positive_recall": 0.02},
+    "numeric_tolerance": 1e-12,
+    "unsupported_subgroups": "UNKNOWN, never imputed"
+  },
+  "accounting": {
+    "amendment_id": "POS_CONTRAST_V1_CAP137_2026_11_04",
+    "reservation_key_pilot": "POS_CONTRAST_V1:PILOT_4",
+    "reservation_key_conditional_e79": "POS_CONTRAST_V1:CONDITIONAL_E79_AFTER_SOL_REVIEW",
+    "old_global_cap": 132,
+    "new_global_cap": 137,
+    "old_pilot_cap": 80,
+    "new_pilot_cap": 84,
+    "old_continuation_cap": 49,
+    "new_continuation_cap": 50,
+    "fit_starts": 4,
+    "conditional_e79_starts": 0,
+    "retries": 0
+  },
+  "boundaries": {
+    "official_test": "not opened",
+    "sample_submission": "not opened",
+    "kaggle": "not accessed",
+    "query_targets": "remain closed until all four fits are durable and independent prelabel verification passes",
+    "full_train_refit": "not authorized in pilot",
+    "upload": "not authorized in pilot"
+  }
+}
