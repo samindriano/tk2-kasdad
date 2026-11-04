@@ -407,13 +407,13 @@
       "receipt_sha256": "e7c01a63224100e7d6e6fa15620de62b05e258ee8287e239bc0d3412dca4e702"
     }
   },
-  "continuation_signature": "951f2eae46798a79ee496010dbeba68b300ef7320b7a45edbfe2f0c2fb7cb0b0",
+  "continuation_signature": "58d74e80caa1236d105389d52b5875fe05c7dd9d62b7aadd1011fe718f39bf57",
   "continuation_source_file_hashes": {
-    "scripts/continue_reg_position_direct_l1_v1.py": "0fe8067bb7224950283dc9d6582fd5743fc84bf78deac412d72550279316373d",
-    "scripts/verify_reg_position_direct_l1_continuation_v1.py": "3bafff57c8fbd0338b34663d8907d0ce9dae0d7743fc75d8c1f21bb0fab470da",
+    "scripts/continue_reg_position_direct_l1_v1.py": "36b0f7cea9741951e070e8159894c1943ec1e46adbc238b2f27da7630bbd9daf",
+    "scripts/verify_reg_position_direct_l1_continuation_v1.py": "6f8e2f35145ee1cab8235f0a60d44cccd103a5dc6642f5b998338e51e12f7e60",
     "tests/test_reg_position_direct_l1_continuation_v1.py": "cecc7da1261785fc96748c431e445b98169f73376c8b1b82a9a24836489993d9"
   },
-  "created_utc": "2026-11-04T09:41:42.039838+00:00",
+  "created_utc": "2026-11-04T09:49:30.473764+00:00",
   "first_production_fit_started_utc": "2026-11-04T08:50:54.387327+00:00",
   "fit_targets_read_by_original_authorized_run": [
     "E67 same-origin prefix",
@@ -479,25 +479,16 @@
     "status_hash_is_historical_metadata": true
   },
   "local_code_provenance": {
-    "commit_required_before_remaining_units": true,
     "committed_before_original_ten_fits": false,
-    "local_git_head_at_continuation_capture": "c9b22e0eb1b1a1327cd7954da0ee65d7f65ea958",
-    "local_status_at_continuation_capture": [
-      "?? reports/optimization_v3/reg_position_direct_l1_v1/PREFIT_VERIFICATION.json",
-      "?? reports/optimization_v3/reg_position_direct_l1_v1/PREFIT_VERIFICATION_V2.json",
-      "?? reports/optimization_v3/reg_position_direct_l1_v1/PREFIT_VERIFICATION_V3.json",
-      "?? reports/optimization_v3/reg_position_direct_l1_v1/PREFIT_VERIFICATION_V4.json",
-      "?? reports/optimization_v3/reg_position_direct_l1_v1/RECIPE.json",
-      "?? reports/optimization_v3/reg_position_direct_l1_v1/SYNTHETIC_E2E.json",
-      "?? scripts/continue_reg_position_direct_l1_v1.py",
-      "?? scripts/reg_position_direct_l1_v1.py",
-      "?? scripts/verify_reg_position_direct_l1_continuation_v1.py",
-      "?? scripts/verify_reg_position_direct_l1_v1.py",
-      "?? tests/test_reg_position_direct_l1_continuation_v1.py",
-      "?? tests/test_reg_position_direct_l1_v1.py"
+    "committed_before_remaining_units": true,
+    "local_git_head_at_continuation_capture": "7f1fae62378b0d9de56b32a040bca5dfdcb304ea",
+    "local_status_at_audit_refresh": [
+      "D reports/optimization_v3/reg_position_direct_l1_v1/CONTINUATION_V1.json",
+      " M scripts/continue_reg_position_direct_l1_v1.py",
+      " M scripts/verify_reg_position_direct_l1_continuation_v1.py"
     ],
     "original_implementation_untracked_at_original_fit": true,
-    "original_implementation_untracked_paths_at_capture": [
+    "original_implementation_untracked_paths_at_initial_capture": [
       "scripts/reg_position_direct_l1_v1.py",
       "scripts/verify_reg_position_direct_l1_v1.py",
       "tests/test_reg_position_direct_l1_v1.py",
@@ -511,15 +502,30 @@
       "scripts/verify_reg_position_direct_l1_v1.py": "47ba4c3c5456d22dfed57e0b5467ddea02f6c5858818a0618fbe5d611a722fa8",
       "tests/test_reg_position_direct_l1_v1.py": "712168c32ae2d97f531c4bba02e1b9db8f3db533612488e82bddb7144b660e2d"
     },
-    "pinned_original_file_last_write_utc_at_capture": {
+    "pinned_original_file_last_write_utc_at_initial_capture": {
       "reports/optimization_v3/reg_position_direct_l1_v1/RECIPE.json": "2026-11-04T07:56:20.960823+00:00",
       "reports/optimization_v3/reg_position_direct_l1_v1/SYNTHETIC_E2E.json": "2026-11-04T08:49:25.982514+00:00",
       "scripts/reg_position_direct_l1_v1.py": "2026-11-04T08:49:02.680007+00:00",
       "scripts/verify_reg_position_direct_l1_v1.py": "2026-11-04T08:38:08.207538+00:00",
       "tests/test_reg_position_direct_l1_v1.py": "2026-11-04T08:46:05.987511+00:00"
     },
+    "precommit_provenance_reused_from_prior_signed_audit": "951f2eae46798a79ee496010dbeba68b300ef7320b7a45edbfe2f0c2fb7cb0b0",
     "prefit_local_git_head": "c9b22e0eb1b1a1327cd7954da0ee65d7f65ea958",
-    "provenance_note": "Original implementation bytes were untracked at the initial fit. FREEZE_V4 binds their exact prefit hashes; this continuation records that fact and requires a scoped commit before the remaining units."
+    "prior_audit_local_status_at_capture": [
+      "?? reports/optimization_v3/reg_position_direct_l1_v1/PREFIT_VERIFICATION.json",
+      "?? reports/optimization_v3/reg_position_direct_l1_v1/PREFIT_VERIFICATION_V2.json",
+      "?? reports/optimization_v3/reg_position_direct_l1_v1/PREFIT_VERIFICATION_V3.json",
+      "?? reports/optimization_v3/reg_position_direct_l1_v1/PREFIT_VERIFICATION_V4.json",
+      "?? reports/optimization_v3/reg_position_direct_l1_v1/RECIPE.json",
+      "?? reports/optimization_v3/reg_position_direct_l1_v1/SYNTHETIC_E2E.json",
+      "?? scripts/continue_reg_position_direct_l1_v1.py",
+      "?? scripts/reg_position_direct_l1_v1.py",
+      "?? scripts/verify_reg_position_direct_l1_continuation_v1.py",
+      "?? scripts/verify_reg_position_direct_l1_v1.py",
+      "?? tests/test_reg_position_direct_l1_continuation_v1.py",
+      "?? tests/test_reg_position_direct_l1_v1.py"
+    ],
+    "provenance_note": "The original pilot files were untracked at the initial fit, as proven by the prior signed audit. Their current bytes still match the V4 prefit hashes; the initial scoped commit preserves those exact files before the remaining units."
   },
   "pinned_input_contracts": {
     "classification_regression_feature_alignment": {
@@ -1153,21 +1159,20 @@
   ],
   "schema_version": 1,
   "scoped_source_reconciliation": {
-    "authorized_current_paths": [
-      "reports/optimization_v3/bigram_position_pilot_v1/PREFLIGHT_SUCCESSOR.json",
-      "reports/optimization_v3/bigram_position_pilot_v1/SYNTHETIC_QA_SUCCESSOR.json"
-    ],
+    "authorized_current_paths": [],
     "authorized_owner_file_hashes": {
       "reports/optimization_v3/bigram_position_pilot_v1/FREEZE.json": "617ae847c877ad4481be37995ac7a96e5d9b70ccc9e2b2f6c313750a31af8d68",
-      "reports/optimization_v3/bigram_position_pilot_v1/PREFIT_SCHEMA_REPAIR.md": "37b1aac0f6ed1687c42398c7be87655ba058f04399f063442510b586686ae0d5",
+      "reports/optimization_v3/bigram_position_pilot_v1/FREEZE_SUCCESSOR.json": "1a69ebdded6123a807fb48f05e6f854bf561504e812df0eefcadb0ee764f644c",
+      "reports/optimization_v3/bigram_position_pilot_v1/PREFIT_SCHEMA_REPAIR.md": "699935516ea1c2cd6c717f2cdfe073fd3eccdbf172bfe5bf03af1bcacfd15381",
       "reports/optimization_v3/bigram_position_pilot_v1/PREFLIGHT.json": "13d85864ddcd54783726a97ffa96238a6034e87c5acc1d3426e25ccc7c87075d",
-      "reports/optimization_v3/bigram_position_pilot_v1/PREFLIGHT_SUCCESSOR.json": "25b4245e3f0d9ef6a15801f318f9251798715eb8c8d20397e0a5efb004550244",
+      "reports/optimization_v3/bigram_position_pilot_v1/PREFLIGHT_SUCCESSOR.json": "75854aa544206a2b452c82db50008995b066437bb6f2e7603fb818c8da27307e",
       "reports/optimization_v3/bigram_position_pilot_v1/PROPOSED_CARD.md": "51887abec7ac264daeb7c4fb6a18bc305c5e2c2f51a51d618fa010e4b8621db8",
       "reports/optimization_v3/bigram_position_pilot_v1/RECIPE.json": "e5dbf18cf2cf79e35425c74db4cb0202501992be5f913a50aef467ce00741c6f",
+      "reports/optimization_v3/bigram_position_pilot_v1/RESERVATION_REBIND.json": "409612afbd1148de9fff1baf435d00ebf46e5c51ec16a66b66f9659124bf6c6a",
       "reports/optimization_v3/bigram_position_pilot_v1/SYNTHETIC_QA.json": "06fb97bfe4881301a5eee01c7fcd3d784ce53581699c3599b96114a9f85289d1",
-      "reports/optimization_v3/bigram_position_pilot_v1/SYNTHETIC_QA_SUCCESSOR.json": "5a83eeb6eebab1bf3f40924bf35b67fbaf51cf976d2e073a9c6f9d22222c784b",
-      "scripts/optimization_v3_bigram_position_pilot_v1.py": "25e7659bd08c669de5475acf897b4fb68f6229d88da0cf395257305bf4eafba7",
-      "scripts/verify_optimization_v3_bigram_position_pilot_v1.py": "b98f78717e6507de7e786c6fe34c86dee578d8a60390fa220da176290a3ce39a",
+      "reports/optimization_v3/bigram_position_pilot_v1/SYNTHETIC_QA_SUCCESSOR.json": "bc40be10564d9b77d83af067af58a0b78fa12543027282f7a89ed54f2032e37f",
+      "scripts/optimization_v3_bigram_position_pilot_v1.py": "90d800985a59aebb704faddcad27f066ef8bd914c67c090a2cf1b48f24ab122a",
+      "scripts/verify_optimization_v3_bigram_position_pilot_v1.py": "9474c63ed24c9a119be7ffd9ac94991fa821bc6888ca9c2771f8fdfba43b1e8f",
       "src/models/optimization_v3_bigram_position_pilot_v1.py": "d3d2ca2212711b9ef5011fe9bee5e264aeb1ef6ca3058ad711f515631fd9b49d",
       "tests/test_optimization_v3_bigram_position_pilot_v1.py": "035ff817d24a16f8611bde0a5a2f72ee524c15af9f477337602c1184732c64a0"
     },
@@ -1223,48 +1228,265 @@
           "reservation_key": "CLS_BIGRAM_POSITION_PILOT_V1:SIX_FIT_TEMPORAL_PILOT",
           "source_commit": "f2b39043afe612030ab33e24338c24b8e3d89594",
           "stage": "SIX_FIT_TEMPORAL_PILOT"
+        },
+        {
+          "at_utc": "2026-11-04T09:46:33.407295+00:00",
+          "card_id": "CLS_BIGRAM_POSITION_PILOT_V1",
+          "event": "PREFIT_FREEZE_SUCCESSOR_BOUND",
+          "fit_ids": [
+            "CLS_BIGRAM_POSITION_PILOT_V1_E67_BAG",
+            "CLS_BIGRAM_POSITION_PILOT_V1_E67_REAL",
+            "CLS_BIGRAM_POSITION_PILOT_V1_E67_SHUFFLED",
+            "CLS_BIGRAM_POSITION_PILOT_V1_E75_BAG",
+            "CLS_BIGRAM_POSITION_PILOT_V1_E75_REAL",
+            "CLS_BIGRAM_POSITION_PILOT_V1_E75_SHUFFLED"
+          ],
+          "freeze_signature": "57eb673e044fb810353d792d5ae7ded61bec9cd2ef3e0f2dd37ebf400ac5fd04",
+          "parent_freeze_signature": "63bb97834144f50e27a5bd6bf90603f04b8c303e7c234401c7e988a1cf71cebb",
+          "reason": "prefit ID arrays were reserialized from object to Unicode before any fit; original row-NPZ byte sequence reconstructed and matched to frozen SHA-256",
+          "reservation_key": "CLS_BIGRAM_POSITION_PILOT_V1:SIX_FIT_TEMPORAL_PILOT",
+          "source_commit": "70898d5e2049b7812c7e75e77af6890fb3f64d88",
+          "stage": "SIX_FIT_TEMPORAL_PILOT"
+        },
+        {
+          "arm": "BAG",
+          "at_utc": "2026-11-04T09:47:39.257184+00:00",
+          "card_id": "CLS_BIGRAM_POSITION_PILOT_V1",
+          "event": "FIT_STARTED",
+          "fit_id": "CLS_BIGRAM_POSITION_PILOT_V1_E67_BAG",
+          "freeze_signature": "57eb673e044fb810353d792d5ae7ded61bec9cd2ef3e0f2dd37ebf400ac5fd04",
+          "origin": 67,
+          "reservation_key": "CLS_BIGRAM_POSITION_PILOT_V1:SIX_FIT_TEMPORAL_PILOT",
+          "resource_snapshot": {
+            "available_memory_bytes": 5366292480,
+            "initial_threshold_bytes": 4294967296,
+            "other_research_processes": [],
+            "process_rss_bytes": 185135104,
+            "reserve_threshold_bytes": 2147483648
+          },
+          "source_commit": "70898d5e2049b7812c7e75e77af6890fb3f64d88",
+          "stage": "SIX_FIT_TEMPORAL_PILOT"
+        },
+        {
+          "artifact_sha256": "5adde8e06a6a3a3eaadd3986b59c308239d14666e0bb9f96e8be94d8c6651252",
+          "at_utc": "2026-11-04T09:47:39.641328+00:00",
+          "card_id": "CLS_BIGRAM_POSITION_PILOT_V1",
+          "event": "FIT_SAVED",
+          "fit_id": "CLS_BIGRAM_POSITION_PILOT_V1_E67_BAG",
+          "freeze_signature": "57eb673e044fb810353d792d5ae7ded61bec9cd2ef3e0f2dd37ebf400ac5fd04",
+          "receipt_sha256": "f31ea48b471861cb7396ab9135bb1568b0c83e74272105e8fcffd35ce2fa2075",
+          "reservation_key": "CLS_BIGRAM_POSITION_PILOT_V1:SIX_FIT_TEMPORAL_PILOT",
+          "source_commit": "70898d5e2049b7812c7e75e77af6890fb3f64d88",
+          "stage": "SIX_FIT_TEMPORAL_PILOT"
+        },
+        {
+          "arm": "REAL",
+          "at_utc": "2026-11-04T09:47:39.959020+00:00",
+          "card_id": "CLS_BIGRAM_POSITION_PILOT_V1",
+          "event": "FIT_STARTED",
+          "fit_id": "CLS_BIGRAM_POSITION_PILOT_V1_E67_REAL",
+          "freeze_signature": "57eb673e044fb810353d792d5ae7ded61bec9cd2ef3e0f2dd37ebf400ac5fd04",
+          "origin": 67,
+          "reservation_key": "CLS_BIGRAM_POSITION_PILOT_V1:SIX_FIT_TEMPORAL_PILOT",
+          "resource_snapshot": {
+            "available_memory_bytes": 5327151104,
+            "initial_threshold_bytes": 4294967296,
+            "other_research_processes": [],
+            "process_rss_bytes": 239206400,
+            "reserve_threshold_bytes": 2147483648
+          },
+          "source_commit": "70898d5e2049b7812c7e75e77af6890fb3f64d88",
+          "stage": "SIX_FIT_TEMPORAL_PILOT"
+        },
+        {
+          "artifact_sha256": "86254d9a127b3cb2d9ae2ca99d6a499860da96b3a90a270f16ac709257ea5620",
+          "at_utc": "2026-11-04T09:47:40.480804+00:00",
+          "card_id": "CLS_BIGRAM_POSITION_PILOT_V1",
+          "event": "FIT_SAVED",
+          "fit_id": "CLS_BIGRAM_POSITION_PILOT_V1_E67_REAL",
+          "freeze_signature": "57eb673e044fb810353d792d5ae7ded61bec9cd2ef3e0f2dd37ebf400ac5fd04",
+          "receipt_sha256": "ce82fb2ec840dc505c7672e1a4d273ef82bd23db3e5039081b81701e69ddb457",
+          "reservation_key": "CLS_BIGRAM_POSITION_PILOT_V1:SIX_FIT_TEMPORAL_PILOT",
+          "source_commit": "70898d5e2049b7812c7e75e77af6890fb3f64d88",
+          "stage": "SIX_FIT_TEMPORAL_PILOT"
+        },
+        {
+          "arm": "SHUFFLED",
+          "at_utc": "2026-11-04T09:47:40.809855+00:00",
+          "card_id": "CLS_BIGRAM_POSITION_PILOT_V1",
+          "event": "FIT_STARTED",
+          "fit_id": "CLS_BIGRAM_POSITION_PILOT_V1_E67_SHUFFLED",
+          "freeze_signature": "57eb673e044fb810353d792d5ae7ded61bec9cd2ef3e0f2dd37ebf400ac5fd04",
+          "origin": 67,
+          "reservation_key": "CLS_BIGRAM_POSITION_PILOT_V1:SIX_FIT_TEMPORAL_PILOT",
+          "resource_snapshot": {
+            "available_memory_bytes": 5265424384,
+            "initial_threshold_bytes": 4294967296,
+            "other_research_processes": [],
+            "process_rss_bytes": 287326208,
+            "reserve_threshold_bytes": 2147483648
+          },
+          "source_commit": "70898d5e2049b7812c7e75e77af6890fb3f64d88",
+          "stage": "SIX_FIT_TEMPORAL_PILOT"
+        },
+        {
+          "artifact_sha256": "f34448fda2250fa88b5f5a9e9f18a513505ec9da28ae3368583552fa151e98a8",
+          "at_utc": "2026-11-04T09:47:41.225937+00:00",
+          "card_id": "CLS_BIGRAM_POSITION_PILOT_V1",
+          "event": "FIT_SAVED",
+          "fit_id": "CLS_BIGRAM_POSITION_PILOT_V1_E67_SHUFFLED",
+          "freeze_signature": "57eb673e044fb810353d792d5ae7ded61bec9cd2ef3e0f2dd37ebf400ac5fd04",
+          "receipt_sha256": "5f0335849f7768acab2d2fc0bc05d99edb6d2a24e5e001d9f92d62c4db02e230",
+          "reservation_key": "CLS_BIGRAM_POSITION_PILOT_V1:SIX_FIT_TEMPORAL_PILOT",
+          "source_commit": "70898d5e2049b7812c7e75e77af6890fb3f64d88",
+          "stage": "SIX_FIT_TEMPORAL_PILOT"
+        },
+        {
+          "arm": "BAG",
+          "at_utc": "2026-11-04T09:47:41.533521+00:00",
+          "card_id": "CLS_BIGRAM_POSITION_PILOT_V1",
+          "event": "FIT_STARTED",
+          "fit_id": "CLS_BIGRAM_POSITION_PILOT_V1_E75_BAG",
+          "freeze_signature": "57eb673e044fb810353d792d5ae7ded61bec9cd2ef3e0f2dd37ebf400ac5fd04",
+          "origin": 75,
+          "reservation_key": "CLS_BIGRAM_POSITION_PILOT_V1:SIX_FIT_TEMPORAL_PILOT",
+          "resource_snapshot": {
+            "available_memory_bytes": 5316534272,
+            "initial_threshold_bytes": 4294967296,
+            "other_research_processes": [],
+            "process_rss_bytes": 240799744,
+            "reserve_threshold_bytes": 2147483648
+          },
+          "source_commit": "70898d5e2049b7812c7e75e77af6890fb3f64d88",
+          "stage": "SIX_FIT_TEMPORAL_PILOT"
+        },
+        {
+          "artifact_sha256": "3c92bcb7c0795fc59c9ee143bcf0a839e367008356380a75db1000622402dbc1",
+          "at_utc": "2026-11-04T09:47:42.142843+00:00",
+          "card_id": "CLS_BIGRAM_POSITION_PILOT_V1",
+          "event": "FIT_SAVED",
+          "fit_id": "CLS_BIGRAM_POSITION_PILOT_V1_E75_BAG",
+          "freeze_signature": "57eb673e044fb810353d792d5ae7ded61bec9cd2ef3e0f2dd37ebf400ac5fd04",
+          "receipt_sha256": "379c981705a33085742228c9b6359464326d4e60902dc505950d93628d256354",
+          "reservation_key": "CLS_BIGRAM_POSITION_PILOT_V1:SIX_FIT_TEMPORAL_PILOT",
+          "source_commit": "70898d5e2049b7812c7e75e77af6890fb3f64d88",
+          "stage": "SIX_FIT_TEMPORAL_PILOT"
+        },
+        {
+          "arm": "REAL",
+          "at_utc": "2026-11-04T09:47:42.474597+00:00",
+          "card_id": "CLS_BIGRAM_POSITION_PILOT_V1",
+          "event": "FIT_STARTED",
+          "fit_id": "CLS_BIGRAM_POSITION_PILOT_V1_E75_REAL",
+          "freeze_signature": "57eb673e044fb810353d792d5ae7ded61bec9cd2ef3e0f2dd37ebf400ac5fd04",
+          "origin": 75,
+          "reservation_key": "CLS_BIGRAM_POSITION_PILOT_V1:SIX_FIT_TEMPORAL_PILOT",
+          "resource_snapshot": {
+            "available_memory_bytes": 5247774720,
+            "initial_threshold_bytes": 4294967296,
+            "other_research_processes": [],
+            "process_rss_bytes": 289169408,
+            "reserve_threshold_bytes": 2147483648
+          },
+          "source_commit": "70898d5e2049b7812c7e75e77af6890fb3f64d88",
+          "stage": "SIX_FIT_TEMPORAL_PILOT"
+        },
+        {
+          "artifact_sha256": "4ddee93739d5e5d97cad952bac703478b458cf45ffb1e2e3fb36f31eebe91371",
+          "at_utc": "2026-11-04T09:47:43.092014+00:00",
+          "card_id": "CLS_BIGRAM_POSITION_PILOT_V1",
+          "event": "FIT_SAVED",
+          "fit_id": "CLS_BIGRAM_POSITION_PILOT_V1_E75_REAL",
+          "freeze_signature": "57eb673e044fb810353d792d5ae7ded61bec9cd2ef3e0f2dd37ebf400ac5fd04",
+          "receipt_sha256": "e52f3aebcc912d7d7aa4801b2faedfd16f28807d1ba520a400839c2f023f5bd5",
+          "reservation_key": "CLS_BIGRAM_POSITION_PILOT_V1:SIX_FIT_TEMPORAL_PILOT",
+          "source_commit": "70898d5e2049b7812c7e75e77af6890fb3f64d88",
+          "stage": "SIX_FIT_TEMPORAL_PILOT"
+        },
+        {
+          "arm": "SHUFFLED",
+          "at_utc": "2026-11-04T09:47:43.434689+00:00",
+          "card_id": "CLS_BIGRAM_POSITION_PILOT_V1",
+          "event": "FIT_STARTED",
+          "fit_id": "CLS_BIGRAM_POSITION_PILOT_V1_E75_SHUFFLED",
+          "freeze_signature": "57eb673e044fb810353d792d5ae7ded61bec9cd2ef3e0f2dd37ebf400ac5fd04",
+          "origin": 75,
+          "reservation_key": "CLS_BIGRAM_POSITION_PILOT_V1:SIX_FIT_TEMPORAL_PILOT",
+          "resource_snapshot": {
+            "available_memory_bytes": 5293395968,
+            "initial_threshold_bytes": 4294967296,
+            "other_research_processes": [],
+            "process_rss_bytes": 243306496,
+            "reserve_threshold_bytes": 2147483648
+          },
+          "source_commit": "70898d5e2049b7812c7e75e77af6890fb3f64d88",
+          "stage": "SIX_FIT_TEMPORAL_PILOT"
+        },
+        {
+          "artifact_sha256": "20b44c05b3a39493c4388ba7242e5bf22afda6b661a8d1d642c14c49b70c0ef7",
+          "at_utc": "2026-11-04T09:47:43.958745+00:00",
+          "card_id": "CLS_BIGRAM_POSITION_PILOT_V1",
+          "event": "FIT_SAVED",
+          "fit_id": "CLS_BIGRAM_POSITION_PILOT_V1_E75_SHUFFLED",
+          "freeze_signature": "57eb673e044fb810353d792d5ae7ded61bec9cd2ef3e0f2dd37ebf400ac5fd04",
+          "receipt_sha256": "d7f06d101b84fce2b7f7abc0356eabc5c9834e1469d69508a7534e6f53ff4966",
+          "reservation_key": "CLS_BIGRAM_POSITION_PILOT_V1:SIX_FIT_TEMPORAL_PILOT",
+          "source_commit": "70898d5e2049b7812c7e75e77af6890fb3f64d88",
+          "stage": "SIX_FIT_TEMPORAL_PILOT"
         }
       ],
-      "bigram_fit_started_ids": [],
-      "bigram_fit_terminal_events": {},
+      "bigram_fit_started_ids": [
+        "CLS_BIGRAM_POSITION_PILOT_V1_E67_BAG",
+        "CLS_BIGRAM_POSITION_PILOT_V1_E67_REAL",
+        "CLS_BIGRAM_POSITION_PILOT_V1_E67_SHUFFLED",
+        "CLS_BIGRAM_POSITION_PILOT_V1_E75_BAG",
+        "CLS_BIGRAM_POSITION_PILOT_V1_E75_REAL",
+        "CLS_BIGRAM_POSITION_PILOT_V1_E75_SHUFFLED"
+      ],
+      "bigram_fit_terminal_events": {
+        "CLS_BIGRAM_POSITION_PILOT_V1_E67_BAG": "FIT_SAVED",
+        "CLS_BIGRAM_POSITION_PILOT_V1_E67_REAL": "FIT_SAVED",
+        "CLS_BIGRAM_POSITION_PILOT_V1_E67_SHUFFLED": "FIT_SAVED",
+        "CLS_BIGRAM_POSITION_PILOT_V1_E75_BAG": "FIT_SAVED",
+        "CLS_BIGRAM_POSITION_PILOT_V1_E75_REAL": "FIT_SAVED",
+        "CLS_BIGRAM_POSITION_PILOT_V1_E75_SHUFFLED": "FIT_SAVED"
+      },
       "bigram_pending_fit_id": null,
-      "current_line_count": 363,
-      "current_sha256": "ca8bb8081c001384fef0ea6ad30f1f4b7cb4c236acfdfd5a7f4051bf1cb1b528",
+      "current_line_count": 376,
+      "current_sha256": "558f562e31f32133f4e01601dc340041672d5b002824e91c8978ba39d75cafaf",
       "expected_prefix_sha256": "c62d03ed9def54ebbda891b0931c0e235b4baa444a9f5322bbba3a517ff88efa",
       "prefix_line_count": 361,
       "prefix_sha256": "c62d03ed9def54ebbda891b0931c0e235b4baa444a9f5322bbba3a517ff88efa",
-      "suffix_line_count": 2,
-      "suffix_sha256": "fa980875d9578a0b9d1654231d8002fc39833bd89091860a65be879a00343b39"
+      "suffix_line_count": 15,
+      "suffix_sha256": "67834fa4bec4859a9b04197f2ff8aa69375f5db2fd507336edf0e7c3bd2217a8"
     },
     "changed_commit_paths": [
       "reports/optimization_v3/bigram_position_pilot_v1/FREEZE.json",
+      "reports/optimization_v3/bigram_position_pilot_v1/FREEZE_SUCCESSOR.json",
       "reports/optimization_v3/bigram_position_pilot_v1/PREFIT_SCHEMA_REPAIR.md",
       "reports/optimization_v3/bigram_position_pilot_v1/PREFLIGHT.json",
+      "reports/optimization_v3/bigram_position_pilot_v1/PREFLIGHT_SUCCESSOR.json",
       "reports/optimization_v3/bigram_position_pilot_v1/PROPOSED_CARD.md",
       "reports/optimization_v3/bigram_position_pilot_v1/RECIPE.json",
+      "reports/optimization_v3/bigram_position_pilot_v1/RESERVATION_REBIND.json",
       "reports/optimization_v3/bigram_position_pilot_v1/SYNTHETIC_QA.json",
+      "reports/optimization_v3/bigram_position_pilot_v1/SYNTHETIC_QA_SUCCESSOR.json",
       "scripts/optimization_v3_bigram_position_pilot_v1.py",
       "scripts/verify_optimization_v3_bigram_position_pilot_v1.py",
       "src/models/optimization_v3_bigram_position_pilot_v1.py",
       "tests/test_optimization_v3_bigram_position_pilot_v1.py"
     ],
     "checkpoint_artifacts_match": true,
-    "current_head": "50df7326b6131a00a6f0750f71ae9ad288d19326",
+    "current_head": "627348744dd4aa132f73523076f94357b9499af8",
     "current_source_branch": "main",
-    "current_source_head": "50df7326b6131a00a6f0750f71ae9ad288d19326",
-    "current_source_status_sha256": "bb2924255332d6633eab8f409a683ac46f5778be1397fca34904a5e1f48bc1b8",
-    "current_status_lines": [
-      "?? reports/optimization_v3/bigram_position_pilot_v1/PREFLIGHT_SUCCESSOR.json",
-      "?? reports/optimization_v3/bigram_position_pilot_v1/SYNTHETIC_QA_SUCCESSOR.json"
-    ],
+    "current_source_head": "627348744dd4aa132f73523076f94357b9499af8",
+    "current_source_status_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "current_status_lines": [],
     "feature_row_and_prefix_contracts_match": true,
     "frozen_head": "85c975cd7dd85b9e1efe3fb46c89cf2ae8e78e3f",
     "frozen_source_hashes_match": true,
     "historical_status_sha256": "5dfadaf243e0056e272419d7f3ea72adb25e9cf9a35130e9a389f0aa3b5fb160",
-    "new_status_lines": [
-      "?? reports/optimization_v3/bigram_position_pilot_v1/PREFLIGHT_SUCCESSOR.json",
-      "?? reports/optimization_v3/bigram_position_pilot_v1/SYNTHETIC_QA_SUCCESSOR.json"
-    ],
+    "new_status_lines": [],
     "outside_baseline_status_lines": [],
     "outside_current_status_lines": [],
     "query_targets_read": false,

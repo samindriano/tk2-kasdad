@@ -88,22 +88,63 @@ def _local_provenance(freeze: dict[str, Any]) -> dict[str, Any]:
     if any(relative not in source_hashes for relative in original_paths):
         raise scope.ContinuationError("V4 freeze lacks one or more original local implementation hashes")
     untracked = [relative for relative in original_paths if path_status.get(relative) == "??"]
-    if len(untracked) != len(original_paths):
-        raise scope.ContinuationError("Original pilot implementation no longer matches the expected precommit state")
+    pinned_hashes = {relative: source_hashes[relative] for relative in original_paths}
+    current_hashes = {relative: _sha(ROOT / relative) for relative in original_paths}
+    if current_hashes != pinned_hashes:
+        raise scope.ContinuationError("Original pilot implementation differs from its V4 prefit hashes")
+    if len(untracked) == len(original_paths):
+        return {
+            "prefit_local_git_head": freeze.get("local_git_head"),
+            "local_git_head_at_continuation_capture": pilot._git(ROOT, "rev-parse", "HEAD"),
+            "original_implementation_untracked_at_original_fit": True,
+            "original_implementation_untracked_paths_at_capture": untracked,
+            "committed_before_original_ten_fits": False,
+            "commit_required_before_remaining_units": True,
+            "provenance_note": "Original implementation bytes were untracked at the initial fit. FREEZE_V4 binds their exact prefit hashes; this continuation records that fact and requires a scoped commit before the remaining units.",
+            "pinned_original_file_hashes": pinned_hashes,
+            "pinned_original_file_last_write_utc_at_capture": {
+                relative: datetime.fromtimestamp((ROOT / relative).stat().st_mtime, timezone.utc).isoformat()
+                for relative in original_paths
+            },
+            "local_status_at_continuation_capture": status,
+        }
+
+    # A later audit refresh may happen after the first scoped commit. Reuse the
+    # prior signed evidence for the historical prefit state, but recheck every
+    # original file against the exact hashes frozen before the first fit.
+    previous_audit_ref = f"HEAD:{_relative(scope.CONTINUATION_PATH)}"
+    previous = subprocess.run(["git", "show", previous_audit_ref], cwd=ROOT,
+                              capture_output=True, text=True, encoding="utf-8", check=False)
+    if previous.returncode != 0:
+        raise scope.ContinuationError("Committed precommit provenance audit is unavailable for refresh")
+    try:
+        prior_audit = json.loads(previous.stdout)
+    except Exception as exc:
+        raise scope.ContinuationError("Committed precommit provenance audit is invalid") from exc
+    if (prior_audit.get("freeze_signature") != freeze.get("freeze_signature")
+            or prior_audit.get("continuation_signature") != scope._body_signature(
+                prior_audit, "continuation_signature")):
+        raise scope.ContinuationError("Committed precommit provenance audit signature is invalid")
+    prior = prior_audit.get("local_code_provenance", {})
+    if (prior.get("original_implementation_untracked_at_original_fit") is not True
+            or prior.get("committed_before_original_ten_fits") is not False
+            or prior.get("pinned_original_file_hashes") != pinned_hashes):
+        raise scope.ContinuationError("Committed audit does not prove the original prefit implementation state")
     return {
         "prefit_local_git_head": freeze.get("local_git_head"),
         "local_git_head_at_continuation_capture": pilot._git(ROOT, "rev-parse", "HEAD"),
         "original_implementation_untracked_at_original_fit": True,
-        "original_implementation_untracked_paths_at_capture": untracked,
+        "original_implementation_untracked_paths_at_initial_capture": prior.get(
+            "original_implementation_untracked_paths_at_capture", []),
         "committed_before_original_ten_fits": False,
-        "commit_required_before_remaining_units": True,
-        "provenance_note": "Original implementation bytes were untracked at the initial fit. FREEZE_V4 binds their exact prefit hashes; this continuation records that fact and requires a scoped commit before the remaining units.",
-        "pinned_original_file_hashes": {relative: source_hashes[relative] for relative in original_paths},
-        "pinned_original_file_last_write_utc_at_capture": {
-            relative: datetime.fromtimestamp((ROOT / relative).stat().st_mtime, timezone.utc).isoformat()
-            for relative in original_paths
-        },
-        "local_status_at_continuation_capture": status,
+        "committed_before_remaining_units": True,
+        "precommit_provenance_reused_from_prior_signed_audit": prior_audit["continuation_signature"],
+        "provenance_note": "The original pilot files were untracked at the initial fit, as proven by the prior signed audit. Their current bytes still match the V4 prefit hashes; the initial scoped commit preserves those exact files before the remaining units.",
+        "pinned_original_file_hashes": pinned_hashes,
+        "pinned_original_file_last_write_utc_at_initial_capture": prior.get(
+            "pinned_original_file_last_write_utc_at_capture", {}),
+        "prior_audit_local_status_at_capture": prior.get("local_status_at_continuation_capture", []),
+        "local_status_at_audit_refresh": status,
     }
 
 
@@ -413,6 +454,7 @@ def run_remaining_units() -> dict[str, Any]:
         "checkpoint_ledger_prefix_sha256": audit["checkpoint_ledger_sha256"],
         "implementation_commit_head": pilot._git(ROOT, "rev-parse", "HEAD"),
         "source_reconciliation_at_completion": continuation["source_reconciliation"],
+        "budget_log_extension_at_completion": continuation["budget_log_extension"],
         "authorized_owner_file_hashes_at_completion": continuation["authorized_owner_file_hashes"],
         "models": {
             **models,
@@ -428,6 +470,7 @@ def run_remaining_units() -> dict[str, Any]:
             "continuation_signature": continuation["continuation_signature"],
             "ledger_sha256": ready["ledger_sha256"],
             "source_reconciliation": completed["source_reconciliation"],
+            "budget_log_extension": completed["budget_log_extension"],
             "query_targets_read": False}
 
 

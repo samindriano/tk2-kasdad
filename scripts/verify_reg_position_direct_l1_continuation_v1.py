@@ -35,7 +35,10 @@ BUDGET_FIT_IDS = tuple(
     f"{BUDGET_CARD_ID}_E{origin}_{arm}"
     for origin in (67, 75) for arm in ("BAG", "REAL", "SHUFFLED")
 )
-BUDGET_SUCCESSOR_REASON = "prefit ID arrays changed from object to Unicode; no fit had started"
+BUDGET_SUCCESSOR_REASON = (
+    "prefit ID arrays were reserialized from object to Unicode before any fit; "
+    "original row-NPZ byte sequence reconstructed and matched to frozen SHA-256"
+)
 BUDGET_RUN_REL = "experiments/runs/optimization_v3_research_next_v1/BIGRAM_POSITION_PILOT_V1"
 
 # These four status entries reconstruct the V4 prefit snapshot. Their canonical
@@ -318,6 +321,42 @@ def _validate_bigram_saved_receipts(source_root: Path, budget_extension: Mapping
                 raise ContinuationError(f"Bigram saved receipt identity mismatch: {fit_id} {key}")
 
 
+def _validate_bigram_successor_evidence(source_root: Path, budget_extension: Mapping[str, Any]) -> None:
+    successor_events = [event for event in budget_extension.get("authorized_events", [])
+                        if event.get("event") == "PREFIT_FREEZE_SUCCESSOR_BOUND"]
+    if not successor_events:
+        return
+    successor_path = source_root / "reports/optimization_v3/bigram_position_pilot_v1/FREEZE_SUCCESSOR.json"
+    active_path = source_root / BUDGET_RUN_REL / "FREEZE_ACTIVE.json"
+    rebind_path = source_root / "reports/optimization_v3/bigram_position_pilot_v1/RESERVATION_REBIND.json"
+    for path in (successor_path, active_path, rebind_path):
+        if not path.is_file() or path.is_symlink():
+            raise ContinuationError(f"Bigram successor binding evidence is missing or unsafe: {path}")
+    successor = _read_json(successor_path)
+    active = _read_json(active_path)
+    rebind = _read_json(rebind_path)
+    event = successor_events[0]
+    if (successor.get("status") != "SUCCESSOR_FREEZE_BEFORE_FIT"
+            or successor.get("freeze_signature") != _body_signature(successor, "freeze_signature")
+            or active != successor
+            or successor.get("card_id") != BUDGET_CARD_ID
+            or successor.get("stage") != BUDGET_STAGE
+            or successor.get("parent_freeze_signature") != BUDGET_FREEZE_SIGNATURE
+            or successor.get("source_commit") != event.get("source_commit")
+            or successor.get("freeze_signature") != event.get("freeze_signature")
+            or successor.get("successor_reason") != event.get("reason")
+            or successor.get("authorized_fit_ids") != list(BUDGET_FIT_IDS)
+            or successor.get("target_columns_read") != []
+            or successor.get("query_labels_read") is not False
+            or successor.get("test_opened") is not False
+            or successor.get("sample_submission_opened") is not False
+            or successor.get("kaggle_accessed") is not False):
+        raise ContinuationError("Bigram successor freeze artifact differs from its bound budget event")
+    if (rebind.get("status") != "BOUND" or rebind.get("no_fit_started") is not True
+            or rebind.get("event") != event):
+        raise ContinuationError("Bigram reservation rebind receipt differs from the bound budget event")
+
+
 def validate_scoped_reconciliation(
     *,
     historical_status_sha256: str,
@@ -457,6 +496,7 @@ def validate_source_context(freeze: Mapping[str, Any], source_root: Path = pilot
         valid_source_commits=history,
     )
     _validate_bigram_saved_receipts(source_root, budget_extension)
+    _validate_bigram_successor_evidence(source_root, budget_extension)
     source_hashes_match = (
         set(current_hashes) == set(expected_hashes)
         and all(current_hashes.get(path) == expected_hashes.get(path)
@@ -622,6 +662,7 @@ def verify_continuation(source_root: Path = pilot.SOURCE_ROOT, *, require_comple
                                   f"{fit_id} completion prediction receipt")
     return {"status": "PASS", "continuation_signature": audit["continuation_signature"],
             "source_reconciliation": source_context["reconciliation"],
+            "budget_log_extension": source_context["budget_log_extension"],
             "authorized_owner_file_hashes": source_context["authorized_owner_file_hashes"],
             "local_commit_scope": local_commit,
             "checkpoint_units": len(audit.get("ten_unit_checkpoint", {})),
