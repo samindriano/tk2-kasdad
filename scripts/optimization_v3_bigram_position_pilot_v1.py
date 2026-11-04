@@ -783,6 +783,18 @@ def freeze_successor() -> dict[str, Any]:
             key: old["origins"][key]["row_arrays_sha256"]["metadata_file"]
             for key in ("E67", "E75")
         },
+        "original_row_metadata_reconstruction": {
+            "archive_label": "RECONSTRUCTED_EXACT_HASH_ORIGINAL_SERIALIZATION",
+            "method": "re-serialize current arrays in original key order with fit/score IDs cast to object-string arrays; no object arrays are loaded",
+            "by_origin": {
+                key: {
+                    "path": preflight_result["cache_migration_verification"]["origins"][key]["reconstructed_old_row_file_path"],
+                    "sha256": preflight_result["cache_migration_verification"]["origins"][key]["reconstructed_old_row_file_sha256"],
+                    "matches_original_freeze": preflight_result["cache_migration_verification"]["origins"][key]["reconstructed_old_row_bytes_match_freeze"],
+                }
+                for key in ("E67", "E75")
+            },
+        },
         "target_columns_read": [], "query_labels_read": False,
         "test_opened": False, "sample_submission_opened": False, "kaggle_accessed": False,
     }

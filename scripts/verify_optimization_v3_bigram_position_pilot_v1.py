@@ -50,7 +50,7 @@ def verify_schema_successor_cache(root: Path, run_root: Path,
     identity = offset._read_identity_frame()
     origin_checks: dict[str, Any] = {}
     failures: list[str] = []
-    recovered_root = run_root / "PREFIT_SCHEMA_V1_RECOVERED_PARENT_BYTES"
+    recovered_root = run_root / "PREFIT_SCHEMA_V1_RECONSTRUCTED_EXACT_HASH_ORIGINAL_SERIALIZATION"
     for origin in (67, 75):
         key = f"E{origin}"
         expected = old_freeze["origins"][key]
@@ -140,6 +140,7 @@ def verify_schema_successor_cache(root: Path, run_root: Path,
             "reconstructed_old_row_file_sha256": recovered_sha,
             "reconstructed_old_row_bytes_match_freeze": recovered_bytes_match,
             "reconstructed_old_row_file_path": recovered_path.relative_to(root).as_posix(),
+            "reconstruction_method": "re-serialize current arrays in original key order with fit/score IDs cast to object-string arrays; no object arrays are loaded",
             "original_file_instance_available": False,
             "row_arrays": array_checks,
             "old_freeze_row_checks": row_hash_checks,
