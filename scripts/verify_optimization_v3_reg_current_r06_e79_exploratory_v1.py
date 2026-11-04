@@ -28,6 +28,7 @@ ANCHOR_FIT_STATE = SOURCE_ROOT / "experiments/runs/optimization_v3_expanded_subm
 PUBLIC_REGISTRY = SOURCE_ROOT / "reports/submissions/reconciliation_20261102/REGISTRY.json"
 PROTOCOL_PATH = ROOT / "experiments/REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1/PROTOCOL.json"
 INITIAL_FREEZE_PATH = ROOT / "experiments/REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1/PREFIT_TRAIN_FREEZE.json"
+SUCCESSOR_FREEZE_V2_PATH = ROOT / "experiments/REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1/PREFIT_TRAIN_FREEZE_V2.json"
 FREEZE_PATH = Path(os.environ.get(
     "REG_CURRENT_R06_E79_PREFIT_FREEZE_PATH", str(INITIAL_FREEZE_PATH)
 )).resolve()
@@ -157,6 +158,36 @@ def trained_paths(candidate: str) -> tuple[Path, Path, Path]:
     )
 
 
+def predecessor_freeze_v2(active_freeze: dict[str, Any]) -> dict[str, Any]:
+    meta = active_freeze.get("previous_successor_freeze", {})
+    prior_path = ROOT / meta.get("path", "")
+    prior = verify_signed(prior_path)
+    if (sha_file(prior_path) != meta.get("sha256")
+            or prior.get("signature") != meta.get("signature")
+            or prior.get("status") != "PREFIT_TRAIN_FREEZE_PASS"
+            or prior.get("version") != 2
+            or prior.get("input_sha256") != active_freeze.get("input_sha256")
+            or prior.get("resource_attestation", {}).get("signature")
+               != active_freeze.get("resource_attestation", {}).get("signature")):
+        raise VerifyError("Active V3 freeze does not preserve the signed V2 predecessor")
+    changed_sources = {
+        path for path, digest in prior.get("source_sha256", {}).items()
+        if active_freeze.get("source_sha256", {}).get(path) != digest
+    }
+    if changed_sources != {
+        "scripts/optimization_v3_reg_current_r06_e79_exploratory_v1.py",
+        "scripts/verify_optimization_v3_reg_current_r06_e79_exploratory_v1.py",
+    }:
+        raise VerifyError("V3 and V2 source lineages differ outside the receipt-gate repair")
+    return prior
+
+
+def evidence_freeze(candidate: str, active_freeze: dict[str, Any]) -> dict[str, Any]:
+    if candidate.upper() == "A" and active_freeze.get("version") == 3:
+        return predecessor_freeze_v2(active_freeze)
+    return active_freeze
+
+
 def candidate_csv(candidate: str) -> Path:
     name = "r12_current_route_e79.csv" if candidate == "A" else "direct_position_real_e79.csv"
     return CSV_ROOT / name
@@ -204,16 +235,22 @@ def prelabel(candidate: str) -> dict[str, Any]:
     if candidate == "B":
         qa_a = verify_signed(REPORT_DIR / "CSV_QA_A.json")
         manifest_a = verify_signed(REPORT_DIR / "INFERENCE_MANIFEST_A.json")
+        prelabel_a = verify_signed(REPORT_DIR / "PRELABEL_PASS_A.json")
+        prior_freeze = predecessor_freeze_v2(freeze)
         if (qa_a.get("status") != "PASS_INDEPENDENT_CSV_QA"
                 or qa_a.get("candidate") != "A"
-                or manifest_a.get("candidate") != "A"
+                or qa_a.get("active_successor_freeze_signature") != freeze.get("signature")
                 or qa_a.get("inference_manifest_signature") != manifest_a.get("signature")
-                or qa_a.get("prefit_freeze_signature") != freeze.get("signature")
-                or qa_a.get("input_sha256") != freeze.get("input_sha256")
-                or qa_a.get("source_sha256") != freeze.get("source_sha256")
-                or manifest_a.get("prefit_freeze_signature") != freeze.get("signature")
-                or manifest_a.get("input_sha256") != freeze.get("input_sha256")
-                or manifest_a.get("source_sha256") != freeze.get("source_sha256")
+                or qa_a.get("prefit_freeze_signature") != prior_freeze.get("signature")
+                or qa_a.get("input_sha256") != prior_freeze.get("input_sha256")
+                or qa_a.get("source_sha256") != prior_freeze.get("source_sha256")
+                or prelabel_a.get("prefit_freeze_signature") != prior_freeze.get("signature")
+                or prelabel_a.get("source_sha256") != prior_freeze.get("source_sha256")
+                or manifest_a.get("prefit_freeze_signature") != prior_freeze.get("signature")
+                or manifest_a.get("input_sha256") != prior_freeze.get("input_sha256")
+                or manifest_a.get("prelabel_signature") != prelabel_a.get("signature")
+                or (manifest_a.get("source_sha256") is not None
+                    and manifest_a.get("source_sha256") != prior_freeze.get("source_sha256"))
                 or qa_a.get("csv_sha256") != sha_file(candidate_csv("A"))):
             raise VerifyError("Candidate B prelabel gate lacks a valid candidate A CSV QA handoff")
     state_path = ROOT / trained["candidate_state_path"]
@@ -309,6 +346,7 @@ def csv_qa(candidate: str) -> dict[str, Any]:
     if qa_path.exists():
         raise VerifyError("CSV QA receipt exists; overwrite/retry forbidden")
     freeze = verify_signed(FREEZE_PATH)
+    evidence = evidence_freeze(candidate, freeze)
     trained = verify_signed(trained_path)
     prelabel_receipt = verify_signed(prelabel_path)
     manifest = verify_signed(manifest_path)
@@ -317,13 +355,19 @@ def csv_qa(candidate: str) -> dict[str, Any]:
             or manifest.get("candidate") != candidate
             or trained.get("candidate") != candidate
             or trained.get("status") != "TRAINED_STATE_FROZEN_EXPLORATORY_ONLY"
+            or trained.get("prefit_freeze_signature") != evidence.get("signature")
+            or trained.get("source_sha256") != evidence.get("source_sha256")
+            or trained.get("input_sha256") != evidence.get("input_sha256")
             or manifest.get("trained_state_signature") != trained.get("signature")
             or manifest.get("prelabel_signature") != prelabel_receipt.get("signature")
             or prelabel_receipt.get("trained_state_signature") != trained.get("signature")
-            or prelabel_receipt.get("prefit_freeze_signature") != freeze.get("signature")
-            or manifest.get("prefit_freeze_signature") != freeze.get("signature")
-            or manifest.get("input_sha256") != freeze.get("input_sha256")
-            or manifest.get("source_sha256") != freeze.get("source_sha256")
+            or prelabel_receipt.get("prefit_freeze_signature") != evidence.get("signature")
+            or prelabel_receipt.get("source_sha256") != evidence.get("source_sha256")
+            or prelabel_receipt.get("input_sha256") != evidence.get("input_sha256")
+            or manifest.get("prefit_freeze_signature") != evidence.get("signature")
+            or manifest.get("input_sha256") != evidence.get("input_sha256")
+            or (manifest.get("source_sha256") is not None
+                and manifest.get("source_sha256") != evidence.get("source_sha256"))
             or manifest.get("test_features_loaded_after_trained_state_freeze") is not True
             or manifest.get("test_labels_loaded") is not False
             or manifest.get("kaggle_accessed") is not False
@@ -416,9 +460,11 @@ def csv_qa(candidate: str) -> dict[str, Any]:
         "candidate_id": manifest["candidate_id"],
         "status": "PASS_INDEPENDENT_CSV_QA",
         "scientific_status": "EXPLORATORY_ONLY_PRIOR_LOCAL_GATES_FAILED",
-        "prefit_freeze_signature": freeze["signature"],
-        "input_sha256": freeze["input_sha256"],
-        "source_sha256": freeze["source_sha256"],
+        "prefit_freeze_signature": evidence["signature"],
+        "input_sha256": evidence["input_sha256"],
+        "source_sha256": evidence["source_sha256"],
+        "active_successor_freeze_signature": freeze["signature"],
+        "active_source_sha256": freeze["source_sha256"],
         "inference_manifest_signature": manifest["signature"],
         "inference_manifest_sha256": sha_file(manifest_path),
         "csv_path": csv_path.relative_to(ROOT).as_posix(),

@@ -43,6 +43,7 @@ PROTOCOL_PATH = ROOT / "experiments/REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1/PRO
 INITIAL_FREEZE_PATH = ROOT / "experiments/REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1/PREFIT_TRAIN_FREEZE.json"
 RESOURCE_CHECK_V2_PATH = ROOT / "experiments/REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1/PREFIT_RESOURCE_CHECK_V2.json"
 SUCCESSOR_FREEZE_V2_PATH = ROOT / "experiments/REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1/PREFIT_TRAIN_FREEZE_V2.json"
+SUCCESSOR_FREEZE_V3_PATH = ROOT / "experiments/REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1/PREFIT_TRAIN_FREEZE_V3.json"
 FREEZE_PATH_ENV = "REG_CURRENT_R06_E79_PREFIT_FREEZE_PATH"
 FREEZE_PATH = Path(os.environ.get(FREEZE_PATH_ENV, str(INITIAL_FREEZE_PATH))).resolve()
 TRAINED_REPORT_DIR = ROOT / "reports/optimization_v3/REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1"
@@ -173,6 +174,12 @@ def git_object_is_commit(root: Path, revision: str) -> bool:
     result = subprocess.run(["git", "-C", str(root), "cat-file", "-t", revision],
                             capture_output=True, text=True)
     return result.returncode == 0 and result.stdout.strip() == "commit"
+
+
+def git_is_ancestor(root: Path, ancestor: str, descendant: str) -> bool:
+    result = subprocess.run(["git", "-C", str(root), "merge-base", "--is-ancestor", ancestor, descendant],
+                            capture_output=True, text=True)
+    return result.returncode == 0
 
 
 def read_json(path: Path) -> dict[str, Any]:
@@ -526,6 +533,148 @@ def successor_prefit_freeze_v2() -> dict[str, Any]:
     return signed
 
 
+def successor_prefit_freeze_v3() -> dict[str, Any]:
+    """Version the unchanged resource snapshot after the receipt-chain repair."""
+    if SUCCESSOR_FREEZE_V3_PATH.exists():
+        raise IntegrityError("Versioned V3 successor freeze already exists; overwrite forbidden")
+    if git_text("status", "--porcelain"):
+        raise IntegrityError("Source tree must be clean before the V3 successor freeze")
+    initial = read_signed_json(INITIAL_FREEZE_PATH)
+    previous = read_signed_json(SUCCESSOR_FREEZE_V2_PATH)
+    attestation = read_signed_json(RESOURCE_CHECK_V2_PATH)
+    if (initial.get("status") != "BLOCKED_RESOURCE"
+            or previous.get("status") != "PREFIT_TRAIN_FREEZE_PASS"
+            or previous.get("version") != 2
+            or previous.get("initial_blocked_freeze", {}).get("signature") != initial.get("signature")
+            or previous.get("resource_attestation", {}).get("signature") != attestation.get("signature")
+            or previous.get("input_sha256") != initial.get("input_sha256")
+            or attestation.get("status") != "PREFIT_RESOURCE_CHECK_PASS"
+            or attestation.get("supersedes_blocked_freeze_signature") != initial.get("signature")
+            or attestation.get("initial_blocked_freeze_sha256") != sha_file(INITIAL_FREEZE_PATH)
+            or attestation.get("source_commit") != initial.get("source_commit")
+            or attestation.get("source_sha256") != initial.get("source_sha256")
+            or attestation.get("input_sha256") != initial.get("input_sha256")):
+        raise IntegrityError("V3 successor lineage does not preserve the blocked receipt and V2 attestation")
+    if (attestation.get("fit_ledger_exists_before_gate") is not False
+            or attestation.get("test_features_loaded") is not False
+            or attestation.get("test_labels_loaded") is not False
+            or attestation.get("predictor_fits_performed") != 0
+            or attestation.get("preprocessing_fits_performed") != 0):
+        raise IntegrityError("Fresh resource attestation crossed the pre-fit boundary")
+    current_sources = current_source_hashes()
+    current_inputs = current_input_hashes()
+    if current_inputs != initial["input_sha256"]:
+        raise IntegrityError("Official input bytes differ from the preserved initial freeze")
+    allowed_operational_updates = {
+        "scripts/optimization_v3_reg_current_r06_e79_exploratory_v1.py",
+        "scripts/verify_optimization_v3_reg_current_r06_e79_exploratory_v1.py",
+    }
+    source_differences = [path for path in current_sources
+                          if current_sources[path] != initial["source_sha256"].get(path)]
+    if set(source_differences) != allowed_operational_updates:
+        raise IntegrityError(f"Unexpected recipe/source changes since initial freeze: {source_differences}")
+    available = float(attestation["available_gib"])
+    old_resources = initial["resource_preflight"]
+    peaks = {c: float(old_resources[f"{c}_estimated_peak_gib"]) for c in ("A", "B")}
+    if attestation.get("estimated_peak_gib") != peaks:
+        raise IntegrityError("V3 resource peaks differ from the immutable initial estimate")
+    projected = {candidate: available - peak for candidate, peak in peaks.items()}
+    limits = attestation.get("resource_limits", {})
+    if (available < float(limits.get("minimum_available_gib", 4.0))
+            or any(value < float(limits.get("minimum_projected_reserve_gib", 2.0))
+                   for value in projected.values())
+            or any(value > float(limits.get("maximum_job_rss_gib", 6.0))
+                   for value in peaks.values())):
+        raise IntegrityError("The original one-time resource attestation no longer satisfies the fixed gate")
+    head = git_text("rev-parse", "HEAD")
+    resource_preflight = {
+        **old_resources,
+        "snapshot": {"available_gib": available,
+                     "total_gib": float(old_resources["snapshot"]["total_gib"])},
+        "projected_reserve_gib": projected,
+        "process_snapshot": attestation["process_snapshot"],
+        "fresh_resource_attestation_signature": attestation["signature"],
+        "fresh_resource_attestation_sha256": sha_file(RESOURCE_CHECK_V2_PATH),
+        "status": "PASS",
+    }
+    body = {key: value for key, value in initial.items()
+            if key not in {"signature", "signature_method"}}
+    body.update({
+        "version": 3,
+        "status": "PREFIT_TRAIN_FREEZE_PASS",
+        "source_commit": head,
+        "source_sha256": current_sources,
+        "input_sha256": current_inputs,
+        "resource_preflight": resource_preflight,
+        "initial_blocked_freeze": {
+            "path": INITIAL_FREEZE_PATH.relative_to(ROOT).as_posix(),
+            "sha256": sha_file(INITIAL_FREEZE_PATH),
+            "signature": initial["signature"],
+            "status": initial["status"],
+        },
+        "previous_successor_freeze": {
+            "path": SUCCESSOR_FREEZE_V2_PATH.relative_to(ROOT).as_posix(),
+            "sha256": sha_file(SUCCESSOR_FREEZE_V2_PATH),
+            "signature": previous["signature"],
+            "source_commit": previous["source_commit"],
+            "source_sha256": previous["source_sha256"],
+            "status": previous["status"],
+        },
+        "resource_attestation": {
+            "path": RESOURCE_CHECK_V2_PATH.relative_to(ROOT).as_posix(),
+            "sha256": sha_file(RESOURCE_CHECK_V2_PATH),
+            "signature": attestation["signature"],
+        },
+        "source_changes_since_initial_blocked_freeze": source_differences,
+    })
+    signed = {**body, "signature": canonical_sha(body),
+              "signature_method": "SHA-256 canonical JSON"}
+    write_json_once(SUCCESSOR_FREEZE_V3_PATH, signed)
+    return signed
+
+
+def _candidate_a_prior_receipts_match_v3(freeze: dict[str, Any], qa: dict[str, Any],
+                                         manifest: dict[str, Any], prelabel: dict[str, Any],
+                                         prior_freeze: dict[str, Any], prior_csv: Path) -> bool:
+    predecessor = freeze.get("previous_successor_freeze", {})
+    same_sources_except_gate_code = {
+        path for path in prior_freeze.get("source_sha256", {})
+        if prior_freeze["source_sha256"][path] != freeze.get("source_sha256", {}).get(path)
+    } == {
+        "scripts/optimization_v3_reg_current_r06_e79_exploratory_v1.py",
+        "scripts/verify_optimization_v3_reg_current_r06_e79_exploratory_v1.py",
+    }
+    return bool(
+        freeze.get("version") == 3
+        and predecessor.get("signature") == prior_freeze.get("signature")
+        and prior_freeze.get("version") == 2
+        and prior_freeze.get("status") == "PREFIT_TRAIN_FREEZE_PASS"
+        and prior_freeze.get("input_sha256") == freeze.get("input_sha256")
+        and same_sources_except_gate_code
+        and qa.get("status") == "PASS_INDEPENDENT_CSV_QA"
+        and qa.get("candidate") == "A"
+        and qa.get("active_successor_freeze_signature") == freeze.get("signature")
+        and qa.get("prefit_freeze_signature") == prior_freeze.get("signature")
+        and qa.get("input_sha256") == prior_freeze.get("input_sha256")
+        and qa.get("source_sha256") == prior_freeze.get("source_sha256")
+        and qa.get("inference_manifest_signature") == manifest.get("signature")
+        and prelabel.get("status") == "PRELABEL_PASS"
+        and prelabel.get("candidate") == "A"
+        and prelabel.get("prefit_freeze_signature") == prior_freeze.get("signature")
+        and prelabel.get("input_sha256") == prior_freeze.get("input_sha256")
+        and prelabel.get("source_sha256") == prior_freeze.get("source_sha256")
+        and manifest.get("candidate") == "A"
+        and manifest.get("prefit_freeze_signature") == prior_freeze.get("signature")
+        and manifest.get("input_sha256") == prior_freeze.get("input_sha256")
+        and manifest.get("prelabel_signature") == prelabel.get("signature")
+        and manifest.get("trained_state_signature") == prelabel.get("trained_state_signature")
+        and (manifest.get("source_sha256") is None
+             or manifest.get("source_sha256") == prior_freeze.get("source_sha256"))
+        and prior_csv.is_file()
+        and qa.get("csv_sha256") == sha_file(prior_csv)
+    )
+
+
 def validate_prefit_freeze(*, rehash: bool = True) -> dict[str, Any]:
     freeze = read_signed_json(FREEZE_PATH)
     if freeze.get("status") != "PREFIT_TRAIN_FREEZE_PASS":
@@ -533,7 +682,7 @@ def validate_prefit_freeze(*, rehash: bool = True) -> dict[str, Any]:
     if freeze.get("predictor_fits_max") != 2 or freeze.get("preprocessing_fits_max") != 8:
         raise IntegrityError("Frozen learned-unit caps changed")
     if rehash:
-        if freeze.get("version") == 2:
+        if freeze.get("version") in {2, 3}:
             attestation_meta = freeze.get("resource_attestation", {})
             attestation_path = ROOT / attestation_meta.get("path", "")
             attestation = read_signed_json(attestation_path)
@@ -541,8 +690,18 @@ def validate_prefit_freeze(*, rehash: bool = True) -> dict[str, Any]:
                     or attestation.get("signature") != attestation_meta.get("signature")
                     or attestation.get("status") != "PREFIT_RESOURCE_CHECK_PASS"):
                 raise IntegrityError("Successor freeze resource attestation is missing or changed")
-            if git_text("rev-parse", "HEAD") != freeze.get("source_commit"):
-                raise IntegrityError("Successor freeze is not bound to the current source commit")
+            current_head = git_text("rev-parse", "HEAD")
+            if not git_is_ancestor(ROOT, freeze.get("source_commit", ""), current_head):
+                raise IntegrityError("Successor freeze source commit is not an ancestor of the current checkout")
+            if freeze.get("version") == 3:
+                previous_meta = freeze.get("previous_successor_freeze", {})
+                previous_path = ROOT / previous_meta.get("path", "")
+                previous = read_signed_json(previous_path)
+                if (sha_file(previous_path) != previous_meta.get("sha256")
+                        or previous.get("signature") != previous_meta.get("signature")
+                        or previous.get("status") != "PREFIT_TRAIN_FREEZE_PASS"
+                        or previous.get("input_sha256") != freeze.get("input_sha256")):
+                    raise IntegrityError("V3 successor predecessor freeze is missing or changed")
         if current_source_hashes() != freeze["source_sha256"]:
             raise IntegrityError("Frozen source hashes changed after prefit freeze")
         if current_input_hashes() != freeze["input_sha256"]:
@@ -756,18 +915,11 @@ def fit_candidate(candidate: str) -> dict[str, Any]:
         prior = TRAINED_REPORT_DIR / "CSV_QA_A.json"
         qa = read_signed_json(prior)
         prior_manifest = read_signed_json(TRAINED_REPORT_DIR / "INFERENCE_MANIFEST_A.json")
+        prior_prelabel = read_signed_json(TRAINED_REPORT_DIR / "PRELABEL_PASS_A.json")
+        prior_freeze = read_signed_json(SUCCESSOR_FREEZE_V2_PATH)
         prior_csv = CSV_ROOT / "r12_current_route_e79.csv"
-        if (qa.get("status") != "PASS_INDEPENDENT_CSV_QA"
-                or qa.get("candidate") != "A"
-                or qa.get("inference_manifest_signature") != prior_manifest.get("signature")
-                or qa.get("prefit_freeze_signature") != freeze.get("signature")
-                or qa.get("input_sha256") != freeze.get("input_sha256")
-                or qa.get("source_sha256") != freeze.get("source_sha256")
-                or prior_manifest.get("prefit_freeze_signature") != freeze.get("signature")
-                or prior_manifest.get("input_sha256") != freeze.get("input_sha256")
-                or prior_manifest.get("source_sha256") != freeze.get("source_sha256")
-                or not prior_csv.is_file()
-                or qa.get("csv_sha256") != sha_file(prior_csv)):
+        if not _candidate_a_prior_receipts_match_v3(
+                freeze, qa, prior_manifest, prior_prelabel, prior_freeze, prior_csv):
             raise IntegrityError("Candidate B is blocked until candidate A CSV QA passes")
     expected_before = 0 if candidate == "A" else 5
     prior_starts = [event for event in _read_ledger() if event.get("event") == "FIT_STARTED"]
@@ -1105,6 +1257,7 @@ def infer_candidate(candidate: str) -> dict[str, Any]:
         "prelabel_signature": prelabel["signature"],
         "prefit_freeze_signature": freeze["signature"],
         "input_sha256": input_sha,
+        "source_sha256": freeze["source_sha256"],
         "test_features_loaded_after_trained_state_freeze": True,
         "test_labels_loaded": False,
         "test_rows": int(len(test)),
@@ -1164,7 +1317,7 @@ def _synthetic_e2e() -> dict[str, Any]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--mode", choices=("synthetic", "freeze", "successor-freeze", "train", "infer"), required=True)
+    parser.add_argument("--mode", choices=("synthetic", "freeze", "successor-freeze", "successor-freeze-v3", "train", "infer"), required=True)
     parser.add_argument("--candidate", choices=("A", "B"))
     args = parser.parse_args(argv)
     if args.mode in {"train", "infer"} and args.candidate is None:
@@ -1175,6 +1328,8 @@ def main(argv: list[str] | None = None) -> int:
         result = prefit_freeze()
     elif args.mode == "successor-freeze":
         result = successor_prefit_freeze_v2()
+    elif args.mode == "successor-freeze-v3":
+        result = successor_prefit_freeze_v3()
     elif args.mode == "train":
         result = fit_candidate(args.candidate)
     else:
