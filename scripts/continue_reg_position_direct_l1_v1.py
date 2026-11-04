@@ -25,6 +25,9 @@ CHECKPOINT_PREDICTIONS = (
     f"{CARD_ID}_E67_BAG", f"{CARD_ID}_E67_REAL", f"{CARD_ID}_E67_SHUFFLED",
     f"{CARD_ID}_E75_BAG",
 )
+PREDICTION_FIT_IDS = tuple(
+    f"{CARD_ID}_E{origin}_{arm}" for origin in pilot.ORIGINS for arm in pilot.ARMS
+)
 PINNED_RUN_FILES = (
     "experiments/runs/reg_position_direct_l1_v1/FREEZE_V4.json",
     "experiments/runs/reg_position_direct_l1_v1/PREFIT_VERIFICATION_V4.json",
@@ -47,10 +50,21 @@ REQUIRED_LOCAL_COMMIT_PATHS = (
     "reports/optimization_v3/reg_position_direct_l1_v1/SYNTHETIC_E2E.json",
     "reports/optimization_v3/reg_position_direct_l1_v1/CONTINUATION_V1.json",
 )
+REPAIR_SOURCE_FILES = (
+    "scripts/continue_reg_position_direct_l1_v1.py",
+    "scripts/verify_reg_position_direct_l1_continuation_v1.py",
+    "tests/test_reg_position_direct_l1_continuation_v1.py",
+)
+REQUIRED_REPAIR_COMMIT_PATHS = (*REPAIR_SOURCE_FILES,
+    "reports/optimization_v3/reg_position_direct_l1_v1/POSTFIT_VALIDATOR_REPAIR_V1.json")
 
 
 def _relative(path: Path) -> str:
     return path.resolve().relative_to(ROOT.resolve()).as_posix()
+
+
+def already_complete_ledger(starts: list[str], saves: list[str]) -> bool:
+    return starts == list(pilot.FIT_IDS) and saves == list(pilot.FIT_IDS)
 
 
 def _sha(path: Path) -> str:
@@ -340,6 +354,131 @@ def create_continuation_audit() -> dict[str, Any]:
     return audit
 
 
+def create_postfit_repair_audit() -> dict[str, Any]:
+    """Bind the postfit prediction-scope repair without altering V1 or fit receipts."""
+    repair_path = scope.BUDGET_REPAIR_PATH
+    if repair_path.exists():
+        raise scope.ContinuationError("POSTFIT_VALIDATOR_REPAIR_V1 already exists; it will not be overwritten")
+    audit = scope._load_continuation_audit()
+    freeze = pilot._read_json(pilot.FREEZE_PATH)
+    context = scope.validate_source_context(freeze, pilot.SOURCE_ROOT)
+    events = pilot._read_events(pilot.LEDGER_PATH)
+    starts = [event for event in events if event.get("event") == "FIT_STARTED"]
+    saves = [event for event in events if event.get("event") == "FIT_SAVED"]
+    failures = [event for event in events if event.get("event") == "FIT_FAILED"]
+    if ([event.get("fit_id") for event in starts] != list(pilot.FIT_IDS)
+            or [event.get("fit_id") for event in saves] != list(pilot.FIT_IDS) or failures):
+        raise scope.ContinuationError("Repair audit requires exactly 12 ordered starts/saves and zero failures")
+
+    frame = pilot._load_feature_frame(pilot.SOURCE_ROOT)
+    origins = {origin: pilot._load_origin(pilot.SOURCE_ROOT, frame, origin) for origin in pilot.ORIGINS}
+    models: dict[str, dict[str, str]] = {}
+    for fit_id in pilot.FIT_IDS:
+        artifact, receipt_path = pilot._unit_paths(fit_id)
+        _, receipt = pilot._validate_unit(pilot.RUN_ROOT, fit_id, freeze)
+        models[fit_id] = {
+            "artifact_sha256": _sha(artifact),
+            "receipt_sha256": _sha(receipt_path),
+            "freeze_signature": str(receipt.get("freeze_signature", "")),
+            "fit_id": fit_id,
+        }
+
+    prediction_ids = scope.prediction_inventory(pilot.RUN_ROOT)
+    predictions: dict[str, dict[str, str]] = {}
+    for fit_id in prediction_ids:
+        origin = 67 if "_E67_" in fit_id else 75
+        arm = fit_id.rsplit("_", 1)[-1]
+        item = origins[origin]
+        bundle, receipt = pilot._prediction_paths(fit_id)
+        pilot._validate_prediction_bundle(
+            bundle, receipt, freeze=freeze, fit_id=fit_id, origin=origin, arm=arm,
+            query_rows=item.query_rows, query_ids=item.query_ids, query_cycles=item.query_cycles,
+            missing=item.query_missing, baseline=item.query_baseline,
+        )
+        predictions[fit_id] = {"bundle_sha256": _sha(bundle), "receipt_sha256": _sha(receipt)}
+
+    fit_source_commit = pilot._git(ROOT, "rev-parse", "HEAD")
+    fit_source_hashes = dict(audit.get("continuation_source_file_hashes", {}))
+    if set(fit_source_hashes) != set(REPAIR_SOURCE_FILES):
+        raise scope.ContinuationError("V1 authorization does not pin the expected adapter source files")
+    for relative, expected in fit_source_hashes.items():
+        actual = scope._git_file_sha_at_commit(ROOT, fit_source_commit, relative)
+        scope._require_digest_match(str(expected), actual, f"fit implementation {relative}")
+
+    local_base = str(freeze.get("local_git_head", ""))
+    committed_paths = set(pilot._git(ROOT, "diff", "--name-only", local_base, fit_source_commit).splitlines())
+    allowed_paths = set(scope.LOCAL_COMMIT_PATHS)
+    if not committed_paths or any(not scope._within_allowed(path, allowed_paths) for path in committed_paths):
+        raise scope.ContinuationError("Fit implementation commit includes an unexpected local path")
+
+    final_receipts: dict[str, dict[str, str]] = {}
+    for fit_id in ALLOWED_NEW_FITS:
+        artifact, receipt_path = pilot._unit_paths(fit_id)
+        receipt = pilot._read_json(receipt_path)
+        if receipt.get("freeze_signature") != freeze.get("freeze_signature"):
+            raise scope.ContinuationError(f"Final fit receipt does not bind the original V4 freeze: {fit_id}")
+        final_receipts[fit_id] = {
+            "fit_id": fit_id,
+            "artifact_sha256": _sha(artifact),
+            "receipt_sha256": _sha(receipt_path),
+            "original_v4_freeze_signature": freeze["freeze_signature"],
+            "fit_authorization_continuation_signature": audit["continuation_signature"],
+            "fit_source_commit": fit_source_commit,
+            "production_source_commit_at_fit": audit["scoped_source_reconciliation"]["current_source_head"],
+        }
+
+    repair_sources = {relative: _sha(ROOT / relative) for relative in REPAIR_SOURCE_FILES}
+    repair = {
+        "schema_version": 1,
+        "repair_version": "PREDICTION_ARM_INVENTORY_REPAIR_V1",
+        "status": "PASS",
+        "created_utc": datetime.now(timezone.utc).isoformat(),
+        "card_id": CARD_ID,
+        "freeze_signature": freeze["freeze_signature"],
+        "fit_authorization_continuation_signature": audit["continuation_signature"],
+        "fit_source_commit": fit_source_commit,
+        "repair_parent_commit": fit_source_commit,
+        "fit_source_file_hashes": fit_source_hashes,
+        "repair_source_file_hashes": repair_sources,
+        "required_repair_commit_paths": list(REQUIRED_REPAIR_COMMIT_PATHS),
+        "prior_postfit_validation_failure": {
+            "command": "python scripts/continue_reg_position_direct_l1_v1.py fit-remaining",
+            "error": "NO-GO: Missing prediction bundle/receipt for REG_POSITION_DIRECT_L1_V1_E67_STRUCTURED",
+            "cause": "The postfit validator incorrectly required prediction bundles for structured/scaler/OHE preprocessing units.",
+            "fit_units_at_failure": 12,
+            "fit_units_saved_at_failure": 12,
+            "fit_failed_at_failure": 0,
+            "fit_retry_or_refit_after_failure": False,
+        },
+        "prediction_scope": {
+            "prediction_fit_ids": list(PREDICTION_FIT_IDS),
+            "preprocessing_only_fit_ids": [fit_id for fit_id in pilot.FIT_IDS
+                                            if fit_id not in PREDICTION_FIT_IDS],
+            "preprocessing_units_require_model_receipts": True,
+            "preprocessing_units_require_prediction_bundles": False,
+            "prediction_inventory": prediction_ids,
+        },
+        "ledger_sha256": _sha(pilot.LEDGER_PATH),
+        "fit_started_ids": [event["fit_id"] for event in starts],
+        "fit_saved_ids": [event["fit_id"] for event in saves],
+        "fit_failed_count": 0,
+        "models": models,
+        "predictions": predictions,
+        "final_fit_receipts": final_receipts,
+        "source_reconciliation_at_repair": {
+            "source_head": context["current_source_head"],
+            "source_hashes_match": context["source_hashes_match"],
+            "budget_log_extension": context["budget_log_extension"],
+            "authorized_owner_file_hashes": context["authorized_owner_file_hashes"],
+        },
+        "query_targets_read": False,
+        "test_sample_kaggle_accessed": False,
+    }
+    repair["repair_signature"] = pilot._canonical_sha(repair)
+    pilot._atomic_json(repair_path, repair)
+    return repair
+
+
 def _active_same_pilot_trainers() -> list[dict[str, Any]]:
     current_pid = os.getpid()
     active: list[dict[str, Any]] = []
@@ -396,7 +535,13 @@ def run_remaining_units() -> dict[str, Any]:
                 or starts_before != list(pilot.FIT_IDS[:len(starts_before)])
                 or saves_before != starts_before):
             raise scope.ContinuationError("Checkpoint order changed before the E75 continuation entered the lock")
-        result = pilot._fit_one_origin(source_root, frame, item, freeze)
+        if already_complete_ledger(starts_before, saves_before):
+            # A previous single attempt already saved both authorized units.
+            # Finalization must not re-enter the estimator path or reread labels.
+            result = {"origin": 75, "restored_from_complete_ledger": True,
+                      "new_fit_units_started": 0}
+        else:
+            result = pilot._fit_one_origin(source_root, frame, item, freeze)
         events = pilot._read_events(pilot.LEDGER_PATH)
         starts = [event.get("fit_id") for event in events if event.get("event") == "FIT_STARTED"]
         saves = [event.get("fit_id") for event in events if event.get("event") == "FIT_SAVED"]
@@ -404,7 +549,7 @@ def run_remaining_units() -> dict[str, Any]:
         if starts != list(pilot.FIT_IDS) or saves != list(pilot.FIT_IDS) or failed:
             raise scope.ContinuationError("Continuation ledger did not end at exactly 12 ordered starts/saves")
 
-    # Revalidate every model and full prediction bundle before writing readiness.
+    # Revalidate all model units and the six arm prediction bundles before readiness.
     e67_item = pilot._load_origin(source_root, frame, 67)
     items = {67: e67_item, 75: item}
     models: dict[str, dict[str, str]] = {}
@@ -413,9 +558,11 @@ def run_remaining_units() -> dict[str, Any]:
         _, receipt = pilot._validate_unit(pilot.RUN_ROOT, fit_id, freeze)
         models[fit_id] = {"artifact_sha256": _sha(artifact_path),
                           "receipt_sha256": _sha(receipt_path),
-                          "receipt_signature": str(receipt.get("receipt_sha256", ""))}
+                          "receipt_signature": str(receipt.get("receipt_sha256", "")),
+                          "freeze_signature": str(receipt.get("freeze_signature", ""))}
     predictions = {}
-    for fit_id in pilot.FIT_IDS:
+    prediction_ids = scope.prediction_inventory(pilot.RUN_ROOT)
+    for fit_id in prediction_ids:
         origin = 67 if "_E67_" in fit_id else 75
         arm = fit_id.rsplit("_", 1)[-1]
         item_for_prediction = items[origin]
@@ -429,6 +576,15 @@ def run_remaining_units() -> dict[str, Any]:
         predictions[fit_id] = {"bundle_sha256": _sha(artifact_path),
                                "receipt_sha256": _sha(receipt_path)}
     continuation = scope.verify_continuation(pilot.SOURCE_ROOT, require_completion=False)
+    repair = scope._read_json(scope.BUDGET_REPAIR_PATH)
+    repair_receipts = repair.get("final_fit_receipts", {})
+    for fit_id in ALLOWED_NEW_FITS:
+        link = repair_receipts.get(fit_id, {})
+        models[fit_id].update({
+            "fit_authorization_continuation_signature": link.get("fit_authorization_continuation_signature"),
+            "fit_source_commit": link.get("fit_source_commit"),
+            "production_source_commit_at_fit": link.get("production_source_commit_at_fit"),
+        })
 
     ready = {
         "schema_version": 1, "card_id": CARD_ID,
@@ -439,6 +595,7 @@ def run_remaining_units() -> dict[str, Any]:
         "continuation_signature": continuation["continuation_signature"],
         "origins": [{"origin": 67, "restored_from_checkpoint": True}, result],
         "ledger_sha256": _sha(pilot.LEDGER_PATH),
+        "prediction_fit_ids": list(prediction_ids),
         "predictions": predictions,
     }
     pilot._atomic_json(pilot.RUN_ROOT / "PREDICTIONS_READY.json", ready)
@@ -453,12 +610,21 @@ def run_remaining_units() -> dict[str, Any]:
         "ledger_sha256": ready["ledger_sha256"],
         "checkpoint_ledger_prefix_sha256": audit["checkpoint_ledger_sha256"],
         "implementation_commit_head": pilot._git(ROOT, "rev-parse", "HEAD"),
+        "fit_source_commit": repair["fit_source_commit"],
+        "production_source_commit_at_fit": audit["scoped_source_reconciliation"]["current_source_head"],
+        "postfit_validator_repair": {
+            "path": _relative(scope.BUDGET_REPAIR_PATH),
+            "sha256": _sha(scope.BUDGET_REPAIR_PATH),
+            "repair_signature": repair["repair_signature"],
+            "repair_version": repair["repair_version"],
+        },
         "source_reconciliation_at_completion": continuation["source_reconciliation"],
         "budget_log_extension_at_completion": continuation["budget_log_extension"],
         "authorized_owner_file_hashes_at_completion": continuation["authorized_owner_file_hashes"],
         "models": {
             **models,
         },
+        "final_fit_receipts": repair_receipts,
         "predictions": predictions,
         "query_targets_read": False,
     }
@@ -476,10 +642,15 @@ def run_remaining_units() -> dict[str, Any]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("audit", "fit-remaining"))
+    parser.add_argument("command", choices=("audit", "repair-audit", "fit-remaining"))
     args = parser.parse_args(argv)
     try:
-        result = create_continuation_audit() if args.command == "audit" else run_remaining_units()
+        if args.command == "audit":
+            result = create_continuation_audit()
+        elif args.command == "repair-audit":
+            result = create_postfit_repair_audit()
+        else:
+            result = run_remaining_units()
         print(json.dumps(result, sort_keys=True, indent=2))
         return 0
     except (scope.ContinuationError, pilot.PilotError) as exc:

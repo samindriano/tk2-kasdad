@@ -21,6 +21,8 @@ COMPLETION_PATH = ROOT / COMPLETION_REL
 CONTINUATION_PRELABEL_REL = pilot.REPORT_REL / "CONTINUATION_PRELABEL_VERIFICATION_V1.json"
 CONTINUATION_PRELABEL_PATH = ROOT / CONTINUATION_PRELABEL_REL
 CONTINUATION_FINAL_REL = pilot.REPORT_REL / "CONTINUATION_FINAL_VERIFICATION_V1.json"
+BUDGET_REPAIR_REL = pilot.REPORT_REL / "POSTFIT_VALIDATOR_REPAIR_V1.json"
+BUDGET_REPAIR_PATH = ROOT / BUDGET_REPAIR_REL
 CONTINUATION_FINAL_PATH = ROOT / CONTINUATION_FINAL_REL
 BUDGET_REL = "experiments/runs/optimization_v3_research_next_v1/budget.jsonl"
 BUDGET_PREFIX_LINE_COUNT = 361
@@ -40,6 +42,9 @@ BUDGET_SUCCESSOR_REASON = (
     "original row-NPZ byte sequence reconstructed and matched to frozen SHA-256"
 )
 BUDGET_RUN_REL = "experiments/runs/optimization_v3_research_next_v1/BIGRAM_POSITION_PILOT_V1"
+PREDICTION_FIT_IDS = tuple(
+    f"{CARD_ID}_E{origin}_{arm}" for origin in pilot.ORIGINS for arm in pilot.ARMS
+)
 
 # These four status entries reconstruct the V4 prefit snapshot. Their canonical
 # hash is checked against the immutable historical hash stored in FREEZE_V4.
@@ -54,9 +59,11 @@ AUTHORIZED_MAIN_PATHS = frozenset({
     "reports/optimization_v3/bigram_position_pilot_v1",
     "scripts/optimization_v3_bigram_position_pilot_v1.py",
     "scripts/verify_optimization_v3_bigram_position_pilot_v1.py",
+    "scripts/verify_optimization_v3_bigram_position_pilot_v1_successor.py",
     "src/models/optimization_v3_bigram_position_pilot_v1.py",
     "tests/test_optimization_v3_bigram_position_pilot_v1.py",
 })
+AUTHORIZED_MAIN_GLOBS = ("tests/test_optimization_v3_bigram_position_pilot*",)
 
 LOCAL_COMMIT_PATHS = frozenset({
     "scripts/reg_position_direct_l1_v1.py",
@@ -66,6 +73,7 @@ LOCAL_COMMIT_PATHS = frozenset({
     "tests/test_reg_position_direct_l1_v1.py",
     "tests/test_reg_position_direct_l1_continuation_v1.py",
     "reports/optimization_v3/reg_position_direct_l1_v1",
+    "reports/optimization_v3/reg_position_direct_l1_v1/POSTFIT_VALIDATOR_REPAIR_V1.json",
 })
 
 
@@ -99,7 +107,11 @@ def _normalize_paths(paths: Iterable[str]) -> set[str]:
 
 
 def _within_allowed(path: str, allowed: set[str]) -> bool:
-    return any(path == prefix or path.startswith(prefix + "/") for prefix in allowed)
+    return any(
+        path.startswith(prefix[:-1]) if prefix.endswith("*")
+        else path == prefix or path.startswith(prefix + "/")
+        for prefix in allowed
+    )
 
 
 def _require_digest_match(expected: str, actual: str, label: str) -> None:
@@ -178,6 +190,7 @@ def validate_budget_extension(
         "added_fits": 6, "source_commit": BUDGET_SOURCE_COMMIT,
         "freeze_signature": BUDGET_FREEZE_SIGNATURE, "authorization": BUDGET_AUTHORIZATION,
     }
+
     reservation = {
         "event": "CARD_FITS_RESERVED", "reservation_key": BUDGET_RESERVATION_KEY,
         "card_id": BUDGET_CARD_ID, "stage": BUDGET_STAGE, "category": "pilot", "fits": 6,
@@ -302,6 +315,29 @@ def validate_budget_extension(
         "bigram_fit_terminal_events": terminals,
         "bigram_pending_fit_id": pending,
     }
+
+
+def validate_prediction_inventory(prediction_ids: Iterable[str]) -> list[str]:
+    """Require exactly the six arm estimators; preprocessing units have no prediction bundles."""
+    actual = list(prediction_ids)
+    if len(actual) != len(set(actual)) or actual != list(PREDICTION_FIT_IDS):
+        missing = [fit_id for fit_id in PREDICTION_FIT_IDS if fit_id not in actual]
+        unexpected = [fit_id for fit_id in actual if fit_id not in PREDICTION_FIT_IDS]
+        raise ContinuationError(
+            f"Prediction inventory differs from the six arm estimators; missing={missing}, unexpected={unexpected}"
+        )
+    return actual
+
+
+def prediction_inventory(run_root: Path = pilot.RUN_ROOT) -> list[str]:
+    present: list[str] = []
+    for fit_id in pilot.FIT_IDS:
+        bundle, receipt = pilot._prediction_paths(fit_id, run_root)
+        if bundle.exists() != receipt.exists():
+            raise ContinuationError(f"Prediction bundle and receipt are incomplete: {fit_id}")
+        if bundle.exists():
+            present.append(fit_id)
+    return validate_prediction_inventory(present)
 
 
 def _validate_bigram_saved_receipts(source_root: Path, budget_extension: Mapping[str, Any]) -> None:
@@ -429,6 +465,14 @@ def _is_ancestor(source_root: Path, frozen_head: str, current_head: str) -> bool
     return result.returncode == 0
 
 
+def _git_file_sha_at_commit(repo: Path, commit: str, relative: str) -> str:
+    result = subprocess.run(["git", "show", f"{commit}:{relative}"], cwd=repo,
+                             capture_output=True, check=False)
+    if result.returncode != 0:
+        raise ContinuationError(f"Pinned implementation file is absent from source commit: {relative}")
+    return _sha256_bytes(result.stdout)
+
+
 def _git_status_lines(source_root: Path) -> list[str]:
     # Preserve the leading XY status columns; pilot._git intentionally strips output.
     result = subprocess.check_output(["git", "status", "--porcelain"], cwd=source_root, text=True,
@@ -459,6 +503,12 @@ def _owner_path_hashes(source_root: Path) -> dict[str, str]:
         for child in files:
             key = child.relative_to(source_root).as_posix()
             hashes[key] = pilot._sha_file(child)
+    for pattern in AUTHORIZED_MAIN_GLOBS:
+        for child in sorted(source_root.glob(pattern)):
+            if child.is_symlink() or not child.is_file():
+                raise ContinuationError(f"Unsafe companion verifier QA path: {child}")
+            key = child.relative_to(source_root).as_posix()
+            hashes[key] = pilot._sha_file(child)
     return hashes
 
 
@@ -477,10 +527,18 @@ def validate_source_context(freeze: Mapping[str, Any], source_root: Path = pilot
     frozen_branch = str(freeze.get("source_git_branch", ""))
     if current_branch != frozen_branch:
         raise ContinuationError("Source branch changed from the V4 snapshot")
-    descendant = _is_ancestor(source_root, frozen_head, current_head)
-    if not descendant:
-        raise ContinuationError("Current source HEAD is not descended from the V4 snapshot")
-    changed_commit_paths = pilot._git(source_root, "diff", "--name-only", frozen_head, current_head).splitlines()
+    snapshot_head = current_head
+    if CONTINUATION_PATH.is_file():
+        fit_audit = _load_continuation_audit()
+        snapshot_head = str(fit_audit.get("scoped_source_reconciliation", {}).get("current_source_head", ""))
+        if not snapshot_head:
+            raise ContinuationError("Fit-time source snapshot head is missing from the signed continuation audit")
+    snapshot_is_descendant = _is_ancestor(source_root, frozen_head, snapshot_head)
+    current_is_snapshot_descendant = _is_ancestor(source_root, snapshot_head, current_head)
+    if not snapshot_is_descendant or not current_is_snapshot_descendant:
+        raise ContinuationError("Current source HEAD does not descend from the frozen fit-time source snapshot")
+    changed_commit_paths = pilot._git(source_root, "diff", "--name-only", frozen_head, snapshot_head).splitlines()
+    post_snapshot_commit_paths = pilot._git(source_root, "diff", "--name-only", snapshot_head, current_head).splitlines()
     baseline = list(BASELINE_STATUS_LINES)
     current_status = _git_status_lines(source_root)
     current_hashes = pilot._source_hashes(source_root)
@@ -507,14 +565,16 @@ def validate_source_context(freeze: Mapping[str, Any], source_root: Path = pilot
         historical_status_sha256=str(freeze.get("source_worktree_status_sha256", "")),
         baseline_status_lines=baseline,
         current_status_lines=current_status,
-        allowed_paths=AUTHORIZED_MAIN_PATHS,
+        allowed_paths=(*AUTHORIZED_MAIN_PATHS, *AUTHORIZED_MAIN_GLOBS),
         current_head=current_head,
         frozen_head=frozen_head,
-        current_is_descendant=descendant,
+        current_is_descendant=current_is_snapshot_descendant,
         changed_commit_paths=changed_commit_paths,
         frozen_source_hashes_match=source_hashes_match,
         checkpoint_artifacts_match=True,
     )
+    reconciliation["validated_source_snapshot_head"] = snapshot_head
+    reconciliation["post_snapshot_commit_paths"] = post_snapshot_commit_paths
 
     frame = pilot._load_feature_frame(source_root)  # Feature-only; target column remains closed.
     origins = {origin: pilot._load_origin(source_root, frame, origin) for origin in pilot.ORIGINS}
@@ -590,9 +650,95 @@ def _verify_local_commit_scope(freeze: Mapping[str, Any], audit: Mapping[str, An
     if missing_required:
         raise ContinuationError(f"Required pinned implementation/audit paths are not committed: {missing_required}")
     source_files = audit.get("continuation_source_file_hashes", {})
-    for relative, expected in source_files.items():
-        path = pilot._contained_file(ROOT, Path(relative))
-        _require_digest_match(str(expected), pilot._sha_file(path), relative)
+    if BUDGET_REPAIR_PATH.is_file():
+        repair = _read_json(BUDGET_REPAIR_PATH)
+        if (repair.get("status") != "PASS"
+                or repair.get("repair_signature") != _body_signature(repair, "repair_signature")
+                or repair.get("fit_authorization_continuation_signature") != audit.get("continuation_signature")
+                or repair.get("freeze_signature") != freeze.get("freeze_signature")):
+            raise ContinuationError("Postfit validator repair audit is absent or invalid")
+        fit_source_commit = str(repair.get("fit_source_commit", ""))
+        repair_parent_commit = str(repair.get("repair_parent_commit", ""))
+        for commit, label in ((fit_source_commit, "fit source"), (repair_parent_commit, "repair parent")):
+            if len(commit) != 40 or not _is_ancestor(ROOT, commit, current):
+                raise ContinuationError(f"Postfit repair {label} commit is not in the authorized task history")
+        fit_files = repair.get("fit_source_file_hashes", {})
+        if fit_files != source_files:
+            raise ContinuationError("Postfit repair does not preserve the implementation hashes used for fitting")
+        for relative, expected in source_files.items():
+            _require_digest_match(str(expected), _git_file_sha_at_commit(ROOT, fit_source_commit, relative),
+                                  f"{relative} at fit source commit")
+        repair_files = repair.get("repair_source_file_hashes", {})
+        if set(repair_files) != set(source_files):
+            raise ContinuationError("Postfit repair hash list does not cover every adapter source file")
+        for relative, expected in repair_files.items():
+            path = pilot._contained_file(ROOT, Path(relative))
+            _require_digest_match(str(expected), pilot._sha_file(path), f"postfit repair source {relative}")
+        required_repair_paths = _normalize_paths(repair.get("required_repair_commit_paths", ()))
+        missing_repair_paths = sorted(path for path in required_repair_paths if path not in changed)
+        if missing_repair_paths:
+            raise ContinuationError(f"Postfit repair files are not committed: {missing_repair_paths}")
+        if (repair.get("repair_version") != "PREDICTION_ARM_INVENTORY_REPAIR_V1"
+                or repair.get("fit_source_commit") != repair.get("repair_parent_commit")
+                or repair.get("fit_started_ids") != list(pilot.FIT_IDS)
+                or repair.get("fit_saved_ids") != list(pilot.FIT_IDS)
+                or repair.get("fit_failed_count") != 0
+                or repair.get("prediction_scope", {}).get("prediction_fit_ids") != list(PREDICTION_FIT_IDS)
+                or repair.get("prediction_scope", {}).get("preprocessing_only_fit_ids")
+                != [fit_id for fit_id in pilot.FIT_IDS if fit_id not in PREDICTION_FIT_IDS]):
+            raise ContinuationError("Postfit repair audit does not describe the authorized 12/6 unit boundary")
+        repair_models = repair.get("models", {})
+        if set(repair_models) != set(pilot.FIT_IDS):
+            raise ContinuationError("Postfit repair does not pin all 12 model artifacts and receipts")
+        for fit_id in pilot.FIT_IDS:
+            artifact, receipt_path = pilot._unit_paths(fit_id)
+            receipt = _read_json(receipt_path)
+            record = repair_models[fit_id]
+            if (record.get("artifact_sha256") != pilot._sha_file(artifact)
+                    or record.get("receipt_sha256") != pilot._sha_file(receipt_path)
+                    or record.get("freeze_signature") != freeze.get("freeze_signature")
+                    or receipt.get("freeze_signature") != freeze.get("freeze_signature")):
+                raise ContinuationError(f"Postfit repair model artifact/receipt identity differs: {fit_id}")
+        failure = repair.get("prior_postfit_validation_failure", {})
+        if (failure.get("command") != "python scripts/continue_reg_position_direct_l1_v1.py fit-remaining"
+                or failure.get("error")
+                != "NO-GO: Missing prediction bundle/receipt for REG_POSITION_DIRECT_L1_V1_E67_STRUCTURED"
+                or failure.get("fit_units_at_failure") != 12
+                or failure.get("fit_units_saved_at_failure") != 12
+                or failure.get("fit_failed_at_failure") != 0
+                or failure.get("fit_retry_or_refit_after_failure") is not False):
+            raise ContinuationError("Postfit repair does not preserve the no-refit failure trace")
+        if repair.get("ledger_sha256") != pilot._sha_file(pilot.LEDGER_PATH):
+            raise ContinuationError("Postfit repair ledger hash differs from the 12 saved units")
+        final_receipts = repair.get("final_fit_receipts", {})
+        if set(final_receipts) != set(pilot.FIT_IDS[10:12]):
+            raise ContinuationError("Postfit repair lacks a final-two receipt linkage")
+        for fit_id in pilot.FIT_IDS[10:12]:
+            record = final_receipts[fit_id]
+            artifact, receipt_path = pilot._unit_paths(fit_id)
+            receipt = _read_json(receipt_path)
+            if (record.get("fit_id") != fit_id
+                    or record.get("artifact_sha256") != pilot._sha_file(artifact)
+                    or record.get("receipt_sha256") != pilot._sha_file(receipt_path)
+                    or record.get("original_v4_freeze_signature") != freeze.get("freeze_signature")
+                    or record.get("fit_authorization_continuation_signature") != audit.get("continuation_signature")
+                    or record.get("fit_source_commit") != fit_source_commit
+                    or record.get("production_source_commit_at_fit")
+                    != audit.get("scoped_source_reconciliation", {}).get("current_source_head")
+                    or receipt.get("freeze_signature") != freeze.get("freeze_signature")):
+                raise ContinuationError(f"Postfit repair final receipt linkage differs: {fit_id}")
+        repair_predictions = repair.get("predictions", {})
+        validate_prediction_inventory(repair_predictions.keys())
+        for fit_id in PREDICTION_FIT_IDS:
+            bundle, receipt = pilot._prediction_paths(fit_id)
+            record = repair_predictions[fit_id]
+            if (record.get("bundle_sha256") != pilot._sha_file(bundle)
+                    or record.get("receipt_sha256") != pilot._sha_file(receipt)):
+                raise ContinuationError(f"Postfit repair prediction artifact hash differs: {fit_id}")
+    else:
+        for relative, expected in source_files.items():
+            path = pilot._contained_file(ROOT, Path(relative))
+            _require_digest_match(str(expected), pilot._sha_file(path), relative)
     return {"base_head": base, "current_head": current,
             "committed_paths": sorted(changed), "scope_status": "PASS"}
 
@@ -622,6 +768,18 @@ def verify_continuation(source_root: Path = pilot.SOURCE_ROOT, *, require_comple
         raise ContinuationError("Continuation ledger is not a clean ordered prefix of the 12-unit cap")
     for fit_id in pilot.FIT_IDS[10:len(starts)]:
         pilot._validate_unit(pilot.RUN_ROOT, fit_id, freeze)
+    present_predictions = prediction_inventory() if len(starts) == 12 else None
+    if present_predictions is not None:
+        for fit_id in present_predictions:
+            origin = 67 if "_E67_" in fit_id else 75
+            arm = fit_id.rsplit("_", 1)[-1]
+            item = source_context["origins"][origin]
+            bundle, receipt = pilot._prediction_paths(fit_id)
+            pilot._validate_prediction_bundle(
+                bundle, receipt, freeze=freeze, fit_id=fit_id, origin=origin, arm=arm,
+                query_rows=item.query_rows, query_ids=item.query_ids, query_cycles=item.query_cycles,
+                missing=item.query_missing, baseline=item.query_baseline,
+            )
     ledger_bytes = pilot.LEDGER_PATH.read_bytes()
     checkpoint_size = int(audit["checkpoint_ledger_size_bytes"])
     if (len(ledger_bytes) < checkpoint_size
@@ -638,13 +796,26 @@ def verify_continuation(source_root: Path = pilot.SOURCE_ROOT, *, require_comple
             raise ContinuationError("Continuation completion audit is absent or invalid")
         if completion.get("new_fit_ids") != list(pilot.FIT_IDS[10:12]):
             raise ContinuationError("Completion audit lists fit IDs outside the two authorized E75 units")
+        validate_prediction_inventory(completion.get("predictions", {}).keys())
+        repair = _read_json(BUDGET_REPAIR_PATH)
+        repair_link = completion.get("postfit_validator_repair", {})
+        if (repair_link.get("path") != BUDGET_REPAIR_REL.as_posix()
+                or repair_link.get("sha256") != pilot._sha_file(BUDGET_REPAIR_PATH)
+                or repair_link.get("repair_signature") != repair.get("repair_signature")
+                or repair_link.get("repair_version") != "PREDICTION_ARM_INVENTORY_REPAIR_V1"
+                or completion.get("fit_source_commit") != repair.get("fit_source_commit")
+                or completion.get("production_source_commit_at_fit")
+                != audit.get("scoped_source_reconciliation", {}).get("current_source_head")
+                or completion.get("final_fit_receipts") != repair.get("final_fit_receipts")):
+            raise ContinuationError("Completion does not link the signed postfit repair and fit-time source commits")
         if starts != list(pilot.FIT_IDS) or saves != list(pilot.FIT_IDS) or failed:
             raise ContinuationError("Completion ledger is not exactly 12 ordered starts/saves")
         ready = _read_json(pilot.RUN_ROOT / "PREDICTIONS_READY.json")
         if (ready.get("freeze_signature") != freeze.get("freeze_signature")
                 or ready.get("fit_units_started") != 12 or ready.get("fit_units_saved") != 12
                 or ready.get("query_targets_read") is not False
-                or ready.get("ledger_sha256") != pilot._sha_file(pilot.LEDGER_PATH)):
+                or ready.get("ledger_sha256") != pilot._sha_file(pilot.LEDGER_PATH)
+                or ready.get("predictions", {}).keys() != set(PREDICTION_FIT_IDS)):
             raise ContinuationError("Runner readiness record is missing or differs from the signed completion")
         for fit_id in pilot.FIT_IDS:
             artifact, receipt = pilot._unit_paths(fit_id)
@@ -653,7 +824,18 @@ def verify_continuation(source_root: Path = pilot.SOURCE_ROOT, *, require_comple
                                   f"{fit_id} completion artifact")
             _require_digest_match(record.get("receipt_sha256", ""), pilot._sha_file(receipt),
                                   f"{fit_id} completion receipt")
-        for fit_id in pilot.FIT_IDS:
+            if record.get("freeze_signature") != freeze.get("freeze_signature"):
+                raise ContinuationError(f"Completion model record lacks the original V4 freeze: {fit_id}")
+        for fit_id in pilot.FIT_IDS[10:12]:
+            record = completion["models"][fit_id]
+            repair_record = repair["final_fit_receipts"][fit_id]
+            if (record.get("fit_authorization_continuation_signature")
+                    != audit.get("continuation_signature")
+                    or record.get("fit_source_commit") != repair_record.get("fit_source_commit")
+                    or record.get("production_source_commit_at_fit")
+                    != repair_record.get("production_source_commit_at_fit")):
+                raise ContinuationError(f"Final fit completion record lacks continuation/source commit linkage: {fit_id}")
+        for fit_id in PREDICTION_FIT_IDS:
             bundle, receipt = pilot._prediction_paths(fit_id)
             record = completion.get("predictions", {}).get(fit_id, {})
             _require_digest_match(record.get("bundle_sha256", ""), pilot._sha_file(bundle),
@@ -666,6 +848,7 @@ def verify_continuation(source_root: Path = pilot.SOURCE_ROOT, *, require_comple
             "authorized_owner_file_hashes": source_context["authorized_owner_file_hashes"],
             "local_commit_scope": local_commit,
             "checkpoint_units": len(audit.get("ten_unit_checkpoint", {})),
+            "prediction_ids": present_predictions,
             "query_targets_read": False}
 
 
@@ -676,7 +859,24 @@ def hashlib_sha256(value: bytes) -> str:
 
 def prelabel_verify(source_root: Path = pilot.SOURCE_ROOT) -> dict[str, Any]:
     continuation = verify_continuation(source_root, require_completion=True)
-    original = original_verifier.prelabel_verify(source_root)
+    freeze = _read_json(pilot.FREEZE_PATH)
+    real_sha_file = pilot._sha_file
+    budget_path = (source_root.resolve() / BUDGET_REL).resolve()
+
+    def scoped_sha_file(path: Path) -> str:
+        resolved = Path(path).resolve()
+        if resolved == budget_path:
+            # The complete current bytes were separately validated by the
+            # versioned raw-prefix/suffix gate; preserve the original verifier's
+            # immutable V4 source-hash expectation without editing FREEZE_V4.
+            return str(freeze["source_hashes"][BUDGET_REL])
+        return real_sha_file(path)
+
+    pilot._sha_file = scoped_sha_file
+    try:
+        original = original_verifier.prelabel_verify(source_root)
+    finally:
+        pilot._sha_file = real_sha_file
     result = {
         "schema_version": 1, "card_id": CARD_ID, "status": original["status"],
         "verified_utc": datetime.now(timezone.utc).isoformat(),
@@ -691,6 +891,8 @@ def prelabel_verify(source_root: Path = pilot.SOURCE_ROOT) -> dict[str, Any]:
         "models_verified": original["models_verified"],
         "predictions_verified": original["predictions_verified"],
         "source_reconciliation": continuation["source_reconciliation"],
+        "budget_log_extension": continuation["budget_log_extension"],
+        "postfit_repair_signature": _read_json(BUDGET_REPAIR_PATH)["repair_signature"],
     }
     result["verification_signature"] = pilot._canonical_sha(result)
     pilot._atomic_json(CONTINUATION_PRELABEL_PATH, result)
@@ -704,7 +906,20 @@ def score_after_prelabel(source_root: Path = pilot.SOURCE_ROOT) -> dict[str, Any
             or prelabel.get("continuation_signature") != continuation["continuation_signature"]
             or prelabel.get("verification_signature") != _body_signature(prelabel, "verification_signature")):
         raise ContinuationError("Scoring blocked until versioned continuation prelabel QA passes")
-    result = original_verifier.score_after_prelabel(source_root)
+    freeze = _read_json(pilot.FREEZE_PATH)
+    real_sha_file = pilot._sha_file
+    budget_path = (source_root.resolve() / BUDGET_REL).resolve()
+
+    def scoped_sha_file(path: Path) -> str:
+        if Path(path).resolve() == budget_path:
+            return str(freeze["source_hashes"][BUDGET_REL])
+        return real_sha_file(path)
+
+    pilot._sha_file = scoped_sha_file
+    try:
+        result = original_verifier.score_after_prelabel(source_root)
+    finally:
+        pilot._sha_file = real_sha_file
     final = {
         "schema_version": 1, "card_id": CARD_ID, "verification_status": "PASS",
         "candidate_status": result.get("status"),
@@ -716,6 +931,8 @@ def score_after_prelabel(source_root: Path = pilot.SOURCE_ROOT) -> dict[str, Any
         "report_sha256": pilot._sha_file(pilot.REPORT_ROOT / "REPORT.md"),
         "fit_budget_cap": 12, "fit_units_started": 12, "fit_units_saved": 12,
         "remaining_fit_units": 0,
+        "budget_log_extension": continuation["budget_log_extension"],
+        "postfit_validator_repair_signature": _read_json(BUDGET_REPAIR_PATH)["repair_signature"],
         "promotion_or_upload": "NOT_AUTHORIZED_BY_THIS_PILOT",
     }
     final["verification_signature"] = pilot._canonical_sha(final)

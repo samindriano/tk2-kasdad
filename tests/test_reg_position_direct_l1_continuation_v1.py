@@ -18,7 +18,7 @@ def _reconcile(*, baseline=None, current=None, head="base", frozen="base",
         historical_status_sha256=pilot._canonical_sha(base),
         baseline_status_lines=base,
         current_status_lines=status,
-        allowed_paths=continuation.AUTHORIZED_MAIN_PATHS,
+        allowed_paths=(*continuation.AUTHORIZED_MAIN_PATHS, *continuation.AUTHORIZED_MAIN_GLOBS),
         current_head=head,
         frozen_head=frozen,
         current_is_descendant=descendant,
@@ -41,6 +41,35 @@ def test_continuation_fit_plan_is_only_the_two_remaining_e75_units() -> None:
     )
 
 
+def test_complete_ledger_finalization_cannot_reenter_fit_path() -> None:
+    assert runner.already_complete_ledger(list(pilot.FIT_IDS), list(pilot.FIT_IDS))
+    assert not runner.already_complete_ledger(list(pilot.FIT_IDS[:10]), list(pilot.FIT_IDS[:10]))
+
+
+def test_prediction_inventory_requires_six_arms_but_not_preprocessing_units() -> None:
+    expected = [
+        "REG_POSITION_DIRECT_L1_V1_E67_BAG",
+        "REG_POSITION_DIRECT_L1_V1_E67_REAL",
+        "REG_POSITION_DIRECT_L1_V1_E67_SHUFFLED",
+        "REG_POSITION_DIRECT_L1_V1_E75_BAG",
+        "REG_POSITION_DIRECT_L1_V1_E75_REAL",
+        "REG_POSITION_DIRECT_L1_V1_E75_SHUFFLED",
+    ]
+    preprocessing = {"REG_POSITION_DIRECT_L1_V1_E67_STRUCTURED",
+                     "REG_POSITION_DIRECT_L1_V1_E67_SCALER",
+                     "REG_POSITION_DIRECT_L1_V1_E67_OHE",
+                     "REG_POSITION_DIRECT_L1_V1_E75_STRUCTURED",
+                     "REG_POSITION_DIRECT_L1_V1_E75_SCALER",
+                     "REG_POSITION_DIRECT_L1_V1_E75_OHE"}
+    assert continuation.PREDICTION_FIT_IDS == tuple(expected)
+    assert continuation.validate_prediction_inventory(expected) == expected
+    assert not preprocessing.intersection(expected)
+    with pytest.raises(continuation.ContinuationError, match="missing=.*E75_SHUFFLED"):
+        continuation.validate_prediction_inventory(expected[:-1])
+    with pytest.raises(continuation.ContinuationError, match="unexpected=.*E67_STRUCTURED"):
+        continuation.validate_prediction_inventory([*expected, "REG_POSITION_DIRECT_L1_V1_E67_STRUCTURED"])
+
+
 def test_authorized_new_bigram_report_file_is_allowed() -> None:
     report = "?? reports/optimization_v3/bigram_position_pilot_v1/"
     result = _reconcile(current=[report, *continuation.BASELINE_STATUS_LINES])
@@ -54,6 +83,13 @@ def test_authorized_bigram_commit_on_descendant_head_is_allowed() -> None:
     current = [line for line in continuation.BASELINE_STATUS_LINES
                if not line.endswith(committed)]
     result = _reconcile(head="authorized-descendant", commits=[committed], current=current)
+    assert result["status"] == "PASS"
+    assert result["changed_commit_paths"] == [committed]
+
+
+def test_authorized_bigram_successor_companion_test_path_is_allowed() -> None:
+    committed = "tests/test_optimization_v3_bigram_position_pilot_verifier_successor.py"
+    result = _reconcile(head="authorized-descendant", commits=[committed])
     assert result["status"] == "PASS"
     assert result["changed_commit_paths"] == [committed]
 
