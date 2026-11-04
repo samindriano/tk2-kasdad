@@ -6,4 +6,3 @@ def test_ledger_extension_requires_exact_prior_prefix():
     assert ledger_is_extension([], ["a"])
     assert not ledger_is_extension(["a", "b"], ["a", "x", "b"])
     assert not ledger_is_extension(["a", "b"], ["a"])
-
