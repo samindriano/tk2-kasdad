@@ -1,0 +1,73 @@
+{
+  "application_freeze_commit": "4636090ac83be3541bb70ba3c1318b046609f0a3",
+  "application_freeze_sha256": "b6d4bee60015bd47eef1e10ceefe0e310e7c3cac804ebfe035bcc60766f1f017",
+  "candidate_positive_count": 6759,
+  "canonical_sha256": "0918ac7dfda977f4d3a153a7afba36d3d432954cfad4e383fb1595fd343b36f9",
+  "columns": [
+    "record_id",
+    "artifact_signal"
+  ],
+  "csv_path": "submissions/optimization_v3/cls_a02_missing_temporal_decision_v2/classification_a02_missing_temporal_e79.csv",
+  "csv_sha256": "189a779b6100333a2fecfe443689fe7d340a331e828167221c81281a7ece4a4a",
+  "current_best_csv_sha256": "3d970fa208d094e1e01c462671eeff327e05125bfacde2bacf36259b29fdf0bc",
+  "duplicate_full_label_scan": {
+    "duplicate_found": false,
+    "exact_duplicate_matches": [],
+    "full_test_classification_vectors_scanned": 22,
+    "ignored_nonclassification_csvs": 14,
+    "ignored_nonfull_or_other_id_csvs": 0,
+    "scanned_root": "submissions"
+  },
+  "final_selector_receipt_sha256": "a54b24cab82102d9ff4652dbc19d76291258c3ae12d2c069e7fd3a275e2e060c",
+  "formula": "present=current best MIX50 >=0.50; missing=original A02 pA >= final selector threshold",
+  "input_hashes": {
+    "data/raw/classification/Test.csv": "4e6c381d582ed24f92d17f620f4f0ad25e2e0def29eb57a91a5482867f6afe3c",
+    "data/raw/classification/Train.csv": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/test_predictions.npz": "ffc55aa2d18b75438257f3cf0aa205baa3f4c2922180e2b3688b36c352c00271",
+    "experiments/runs/optimization_v3_posoffset_a02_endgame_v1/policy_predictions.npz": "25d1d2b91348a57d33b3b0e5ce78da29840d115b75e24f9502cc83c1b63ef351",
+    "reports/optimization_v3/cls_mix50_a02_missing_e79_v1/MANIFEST.json": "c0ef8ce6b3116b765072fd2fe9e6dfb37dbc1577ee456ac84e8ec8f93498cfca",
+    "reports/optimization_v3/cls_mix50_a02_missing_e79_v1/QA.json": "36db9799ccf10a6d5dbd9842b3c10fc28780683c4171ee2aeaa01cfe2d3493ce",
+    "submissions/optimization_v3/cls_mix50_a02_missing_e79_v1/classification_mix50_present_a02_missing_e79.csv": "3d970fa208d094e1e01c462671eeff327e05125bfacde2bacf36259b29fdf0bc"
+  },
+  "kaggle_contacted": false,
+  "missing_label_comparison_vs_current_best": {
+    "baseline_missing_positive_count": 238,
+    "candidate_missing_positive_count": 220,
+    "candidate_total_positive_count": 6759,
+    "changed_missing_count": 18,
+    "missing_rows": 1062,
+    "newly_negative_missing_count": 18,
+    "newly_positive_missing_count": 0
+  },
+  "missing_stream_rows": 1062,
+  "new_decision_selectors": 3,
+  "new_estimator_fits": 0,
+  "new_model_inference": 0,
+  "new_preprocessing_fits": 0,
+  "policy_id": "CLS_A02_MISSING_TEMPORAL_DECISION_V1",
+  "prefit_freeze_sha256": "ea05b4eef96981e380baabd45ed2f9c4645115f99b4cb710c0d18cfdff8fc067",
+  "prefit_source_commit": "85c1d2aff1c20f4d80c0583576ffc662beed9ab4",
+  "present_labels_bit_exact_to_current_best": true,
+  "present_stream_rows": 28359,
+  "rows": 29421,
+  "sample_submission_read": false,
+  "schema_version": 1,
+  "selected_missing_threshold": 0.53230976129477,
+  "source_hashes": {
+    "experiments/optimization_v3/cls_a02_missing_temporal_decision_v2/protocol.json": "a83198283dc7eb26cbc7b4edfd44194ed25f1778bb1dd4603b364fb76d9d8985",
+    "reports/optimization_v3/cls_a02_missing_temporal_decision_v2/SYNTHETIC_QA.json": "db67f2dce51965715dd65a05d4e6aaa24563466479121a2c976967ff02028990",
+    "scripts/optimization_v3_cls_a02_missing_temporal_decision_v2.py": "2e11efbe8184c40b1050d4aca499a4995336c21c050ef3f0bf5f7d54df1cfde5",
+    "scripts/optimization_v3_cls_mix50_a02_missing_e79_v1.py": "21ce5edf7abfd72a417c9556e74b7e27a1e08c467da78ef2b7dc88eea8fa60ea",
+    "scripts/optimization_v3_cls_mix50_temporal_decision_v1.py": "fa8ed546073914dec1035568dd18ce8462935db96334744eaad481e38deca27f",
+    "tests/test_optimization_v3_cls_a02_missing_temporal_decision_v2.py": "83d15a7db132c6cb32fb81b3b030e2398ae4918bbb5f37acf994f72b840d5411"
+  },
+  "status": "READY_FOR_ROOT_REVIEW_ONE_UPLOAD_MAX",
+  "test_fields_read": [
+    "record_id",
+    "signal_stream"
+  ],
+  "test_labels_read": false,
+  "threshold_operator": ">=",
+  "unique_ids": 29421,
+  "upload_performed": false
+}

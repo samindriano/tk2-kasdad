@@ -67,4 +67,15 @@ The final selector chose `0.532309761295` with Macro F1 `0.821941` on the same 2
 - Original five-input E79 application freeze remains byte-identical (SHA-256 `b833b5d078a233ae17dcb7d14fecd451cdeac3cd8f63d0b94e9db7a8838cd493`). A versioned successor at `E79_APPLICATION_FREEZE_V2.json` adds the two prefit-pinned Train/OOF hashes required by the seven-input builder guard (SHA-256 `b6d4bee60015bd47eef1e10ceefe0e310e7c3cac804ebfe035bcc60766f1f017`); threshold, final receipt, source commit, and recipe are unchanged.
 - The first builder attempt failed closed at the seven-hash equality check before loading the E79 NPZ or parsing Test rows. No E79 probability array or Test field was read in that attempt.
 - Run manifest is retained in ignored runtime output `experiments/runs/optimization_v3_cls_a02_missing_temporal_decision_v2/RUN_MANIFEST.json` (SHA-256 `9efe0ddc00dfbfbea1a67f122efecfb390936e2d03e9877e09880b50e459b383`).
-- No Test fields, E79 probability bundle, SampleSubmission, or Kaggle endpoint were accessed for this report.
+- After the successor freeze and pre-access guard were committed, the authorized candidate build read only Test `record_id`/`signal_stream` plus the frozen E79 probability arrays; it did not read Test targets or SampleSubmission and did not contact Kaggle.
+
+## Frozen E79 application result
+
+The one exploratory CSV applies the selected missing-stream threshold `0.53230976129477` to frozen A02 probabilities for missing-stream rows; present-stream labels remain exactly the current MIX50 candidate at threshold 0.50. The build reused predictions and performed zero estimator fits, preprocessing fits, or model inference.
+
+- Candidate: `submissions/optimization_v3/cls_a02_missing_temporal_decision_v2/classification_a02_missing_temporal_e79.csv` (29,421 rows, 29,421 unique IDs, binary integer labels, official Test ID order).
+- CSV SHA-256: `189a779b6100333a2fecfe443689fe7d340a331e828167221c81281a7ece4a4a`.
+- Of 1,062 missing-stream rows, 18 changed from positive to negative and none changed from negative to positive; all 28,359 present-stream labels stayed bit-exact. Candidate total positives: 6,759.
+- Builder duplicate scan and independent duplicate scan each examined 22 full Test classification vectors and found no exact label-vector duplicate; each ignored 14 non-classification CSVs.
+- Builder QA is `PASS_LOCAL_E79_QA`; independent receipt is `E79_INDEPENDENT_QA.json` with status `PASS_INDEPENDENT_E79_QA` (SHA-256 `742a85c57458ad2b702e00b3b478d82b91a189e6113846737ad2b8e2337f1ec3`). It independently verified the seven input hashes, threshold/formula replay, ordered IDs, present-label invariance, binary schema, and duplicate scan.
+- This is a frozen-policy exploratory artifact, not a new validation result or champion decision. No Kaggle submission was performed.
