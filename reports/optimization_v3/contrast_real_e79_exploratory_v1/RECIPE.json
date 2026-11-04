@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "benchmark_id": "POS_CONTRAST_REAL_E79_EXPLORATORY_V1",
+  "status": "USER_AUTHORIZED_EXPLORATORY_BENCHMARK_ONLY",
+  "authorization": {
+    "user_confirmation": "Ya, otorisasi satu benchmark E79",
+    "scope": "one new full-Train REAL POS_CONTRAST theta fit plus official Test feature inference; no Kaggle upload",
+    "historical_verdict": "POS_CONTRAST_V1 remains PILOT_GATE_FAILED"
+  },
+  "input": {
+    "train_path": "data/raw/classification/Train.csv",
+    "train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "fit_rows": 50608,
+    "fit_cycles": [47, 79],
+    "target": "artifact_signal",
+    "record_id": "identity and row alignment only; never a model feature"
+  },
+  "reused_full_train_state": {
+    "checkpoint": "reports/optimization_v3/a02_cgeom_benchmark_v1/E79_TRAINED_FREEZE.json",
+    "required_components": [
+      "original C2_B structured state, scaler, OHE, and C2_B LogisticRegression",
+      "original full-Train A02 TF-IDF vectorizer and tokenizer state",
+      "original full-Train A02 observed Test probabilities",
+      "C1_B structured state and full-Train HGB missing-stream fallback"
+    ],
+    "all_component_fit_population": "50,608 official Classification Train rows",
+    "prerequisite_refits": 0
+  },
+  "features": {
+    "source": "the frozen POS_CONTRAST_V1 third-position TF-IDF block built with the original C2_B vectorizer",
+    "tokenizer": "the exact saved full-Train A02 C2_B TfidfVectorizer preprocessor and tokenizer",
+    "position_bins": "the original three contiguous token thirds",
+    "position_features": "(1+log(count))*shared_IDF, concatenate three blocks, one whole-row L2 normalization before projection",
+    "projection": [
+      "Z1=(first-last)/sqrt(2)",
+      "Z2=(first-2*middle+last)/sqrt(6)"
+    ],
+    "contrast_output": "append projected Z to unchanged base; no post-projection normalization",
+    "fit_arm": "REAL only; no shuffled or bag estimator fit"
+  },
+  "model": {
+    "fixed_offset": "original C2_B bag intercept + original C2_B base matrix @ original C2_B bag coefficients; do not include the original POS_BAG_OFFSET gamma",
+    "new_parameters": "one REAL contrast theta vector initialized at zero; no new intercept",
+    "objective": "sum(logaddexp(0, -(2*y-1)*(z0 + Z@theta))) + dot(theta,theta)/2",
+    "C": 1.0,
+    "optimizer": "scipy.optimize.minimize, L-BFGS-B, jac=True, float64, maxiter=2000, ftol=1e-12, gtol=1e-6, maxls=50",
+    "acceptance": "optimizer success; finite coefficients, loss and gradient; final objective <= zero-theta objective + 1e-8",
+    "retry_count": 0
+  },
+  "inference_policy": {
+    "present_stream": "0.5*expit(C2_B_logit + Z_real@theta) + 0.5*original_A02_E79_probability",
+    "missing_stream": "exact saved full-Train C1_B HGB probability",
+    "threshold": 0.5,
+    "rule": "probability >= 0.50",
+    "gamma_zero_replay": "replay the same fixed policy with theta=0; no new fit",
+    "relation_to_historical_pilot": "the E79 full-Train fallback is the already fitted full-Train C1_B HGB; historical E67/E75 fallback artifacts and pilot verdict are unchanged"
+  },
+  "budget": {
+    "ledger_path": "experiments/runs/optimization_v3_research_next_v1/budget.jsonl",
+    "fit_id": "POS_CONTRAST_REAL_E79_EXPLORATORY_V1_THETA_FULLTRAIN",
+    "reservation_key": "POS_CONTRAST_REAL_E79_EXPLORATORY_V1:ONE_THETA_FULLTRAIN",
+    "category": "pilot",
+    "one_new_fit_only": true,
+    "cap_amendment": "none; reserve one available slot under the current live cap",
+    "old_conditional_reservation": "POS_CONTRAST_V1:CONDITIONAL_E79_AFTER_SOL_REVIEW was released and must not be reused"
+  },
+  "resource_policy": {
+    "jobs": 1,
+    "threads": 2,
+    "rss_ceiling_bytes": 6442450944,
+    "initial_free_ram_min_bytes": 4294967296,
+    "free_ram_reserve_bytes": 2147483648,
+    "no_other_python_training_process": true
+  },
+  "boundaries": {
+    "fit_labels": "read only after the unique durable FIT_STARTED event and committed pre-fit freeze/reservation; full official Train only",
+    "test": "feature inference only after trained-state freeze is committed",
+    "test_labels": "never read",
+    "sample_submission": "read schema and ordered IDs only to verify exact output format",
+    "kaggle": "not contacted; no upload authorized in this lane"
+  },
+  "output": {
+    "csv_path": "submissions/optimization_v3/contrast_real_e79_exploratory_v1/classification_pos_contrast_real_e79_exploratory.csv",
+    "status": "exploratory candidate for Sol review; not submitted"
+  }
+}
