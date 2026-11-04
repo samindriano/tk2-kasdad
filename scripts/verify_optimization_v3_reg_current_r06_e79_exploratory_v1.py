@@ -27,7 +27,10 @@ ANCHOR_PREDICTIONS = SOURCE_ROOT / "experiments/runs/optimization_v3_expanded_su
 ANCHOR_FIT_STATE = SOURCE_ROOT / "experiments/runs/optimization_v3_expanded_submissions_v1/R06_ORIGINAL/fit_state.json"
 PUBLIC_REGISTRY = SOURCE_ROOT / "reports/submissions/reconciliation_20261102/REGISTRY.json"
 PROTOCOL_PATH = ROOT / "experiments/REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1/PROTOCOL.json"
-FREEZE_PATH = ROOT / "experiments/REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1/PREFIT_TRAIN_FREEZE.json"
+INITIAL_FREEZE_PATH = ROOT / "experiments/REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1/PREFIT_TRAIN_FREEZE.json"
+FREEZE_PATH = Path(os.environ.get(
+    "REG_CURRENT_R06_E79_PREFIT_FREEZE_PATH", str(INITIAL_FREEZE_PATH)
+)).resolve()
 REPORT_DIR = ROOT / "reports/optimization_v3/REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1"
 RUN_ROOT = ROOT / "experiments/runs/REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1"
 CSV_ROOT = ROOT / "submissions/reg_current_r06_e79_exploratory_v1"
@@ -205,6 +208,12 @@ def prelabel(candidate: str) -> dict[str, Any]:
                 or qa_a.get("candidate") != "A"
                 or manifest_a.get("candidate") != "A"
                 or qa_a.get("inference_manifest_signature") != manifest_a.get("signature")
+                or qa_a.get("prefit_freeze_signature") != freeze.get("signature")
+                or qa_a.get("input_sha256") != freeze.get("input_sha256")
+                or qa_a.get("source_sha256") != freeze.get("source_sha256")
+                or manifest_a.get("prefit_freeze_signature") != freeze.get("signature")
+                or manifest_a.get("input_sha256") != freeze.get("input_sha256")
+                or manifest_a.get("source_sha256") != freeze.get("source_sha256")
                 or qa_a.get("csv_sha256") != sha_file(candidate_csv("A"))):
             raise VerifyError("Candidate B prelabel gate lacks a valid candidate A CSV QA handoff")
     state_path = ROOT / trained["candidate_state_path"]
@@ -407,6 +416,9 @@ def csv_qa(candidate: str) -> dict[str, Any]:
         "candidate_id": manifest["candidate_id"],
         "status": "PASS_INDEPENDENT_CSV_QA",
         "scientific_status": "EXPLORATORY_ONLY_PRIOR_LOCAL_GATES_FAILED",
+        "prefit_freeze_signature": freeze["signature"],
+        "input_sha256": freeze["input_sha256"],
+        "source_sha256": freeze["source_sha256"],
         "inference_manifest_signature": manifest["signature"],
         "inference_manifest_sha256": sha_file(manifest_path),
         "csv_path": csv_path.relative_to(ROOT).as_posix(),

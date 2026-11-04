@@ -40,7 +40,11 @@ ANCHOR_PREDICTIONS = ANCHOR_RUN / "predictions.npz"
 ANCHOR_FIT_STATE = ANCHOR_RUN / "fit_state.json"
 PUBLIC_REGISTRY = SOURCE_ROOT / "reports/submissions/reconciliation_20261102/REGISTRY.json"
 PROTOCOL_PATH = ROOT / "experiments/REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1/PROTOCOL.json"
-FREEZE_PATH = ROOT / "experiments/REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1/PREFIT_TRAIN_FREEZE.json"
+INITIAL_FREEZE_PATH = ROOT / "experiments/REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1/PREFIT_TRAIN_FREEZE.json"
+RESOURCE_CHECK_V2_PATH = ROOT / "experiments/REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1/PREFIT_RESOURCE_CHECK_V2.json"
+SUCCESSOR_FREEZE_V2_PATH = ROOT / "experiments/REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1/PREFIT_TRAIN_FREEZE_V2.json"
+FREEZE_PATH_ENV = "REG_CURRENT_R06_E79_PREFIT_FREEZE_PATH"
+FREEZE_PATH = Path(os.environ.get(FREEZE_PATH_ENV, str(INITIAL_FREEZE_PATH))).resolve()
 TRAINED_REPORT_DIR = ROOT / "reports/optimization_v3/REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1"
 RUN_ROOT = ROOT / "experiments/runs/REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1"
 CSV_ROOT = ROOT / "submissions/reg_current_r06_e79_exploratory_v1"
@@ -359,7 +363,7 @@ def resource_estimates(frame: pd.DataFrame) -> dict[str, Any]:
 
 
 def prefit_freeze() -> dict[str, Any]:
-    if FREEZE_PATH.exists():
+    if INITIAL_FREEZE_PATH.exists():
         raise IntegrityError("Prefit freeze already exists; refusing overwrite or retry")
     if git_text("status", "--porcelain"):
         raise IntegrityError("Source/protocol worktree must be clean before prefit freeze")
@@ -421,21 +425,124 @@ def prefit_freeze() -> dict[str, Any]:
         },
     }
     signed = {**body, "signature": canonical_sha(body), "signature_method": "SHA-256 canonical JSON"}
-    write_json_once(FREEZE_PATH, signed)
+    write_json_once(INITIAL_FREEZE_PATH, signed)
+    return signed
+
+
+def successor_prefit_freeze_v2() -> dict[str, Any]:
+    """Bind one newly captured resource check to a versioned successor freeze."""
+    if SUCCESSOR_FREEZE_V2_PATH.exists():
+        raise IntegrityError("Versioned successor freeze already exists; overwrite forbidden")
+    if git_text("status", "--porcelain"):
+        raise IntegrityError("Source and resource-attestation commit must be clean before successor freeze")
+    initial = read_signed_json(INITIAL_FREEZE_PATH)
+    if initial.get("status") != "BLOCKED_RESOURCE":
+        raise IntegrityError("Successor freeze requires the preserved initial BLOCKED_RESOURCE receipt")
+    attestation = read_signed_json(RESOURCE_CHECK_V2_PATH)
+    if attestation.get("status") != "PREFIT_RESOURCE_CHECK_PASS":
+        raise IntegrityError("Fresh versioned resource attestation did not pass")
+    if (attestation.get("supersedes_blocked_freeze_signature") != initial.get("signature")
+            or attestation.get("initial_blocked_freeze_sha256") != sha_file(INITIAL_FREEZE_PATH)
+            or attestation.get("source_commit") != initial.get("source_commit")
+            or attestation.get("source_sha256") != initial.get("source_sha256")
+            or attestation.get("input_sha256") != initial.get("input_sha256")):
+        raise IntegrityError("Resource attestation is not bound to the initial frozen lineage")
+    if attestation.get("fit_ledger_exists_before_gate") is not False:
+        raise IntegrityError("Resource attestation reports an existing fit ledger")
+    if (attestation.get("test_features_loaded") is not False
+            or attestation.get("test_labels_loaded") is not False
+            or attestation.get("predictor_fits_performed") != 0
+            or attestation.get("preprocessing_fits_performed") != 0):
+        raise IntegrityError("Resource attestation crossed the pre-fit boundary")
+
+    current_sources = current_source_hashes()
+    current_inputs = current_input_hashes()
+    if current_inputs != initial["input_sha256"]:
+        raise IntegrityError("Official input bytes differ from the immutable initial freeze")
+    allowed_operational_updates = {
+        "scripts/optimization_v3_reg_current_r06_e79_exploratory_v1.py",
+        "scripts/verify_optimization_v3_reg_current_r06_e79_exploratory_v1.py",
+    }
+    source_differences = [path for path in current_sources
+                          if current_sources[path] != initial["source_sha256"].get(path)]
+    if set(source_differences) != allowed_operational_updates:
+        raise IntegrityError(f"Unexpected recipe/source changes since initial freeze: {source_differences}")
+    if attestation.get("available_gib") is None:
+        raise IntegrityError("Resource attestation lacks its one fresh RAM snapshot")
+    available = float(attestation["available_gib"])
+    old_resources = initial["resource_preflight"]
+    peaks = {
+        "A": float(old_resources["A_estimated_peak_gib"]),
+        "B": float(old_resources["B_estimated_peak_gib"]),
+    }
+    if attestation.get("estimated_peak_gib") != peaks:
+        raise IntegrityError("Resource peaks differ from the immutable initial estimate")
+    projected = {candidate: available - peak for candidate, peak in peaks.items()}
+    limits = attestation.get("resource_limits", {})
+    if (available < float(limits.get("minimum_available_gib", 4.0))
+            or any(value < float(limits.get("minimum_projected_reserve_gib", 2.0))
+                   for value in projected.values())
+            or any(value > float(limits.get("maximum_job_rss_gib", 6.0))
+                   for value in peaks.values())):
+        raise IntegrityError("Fresh resource attestation no longer satisfies the fixed gate")
+    if git_text("status", "--porcelain"):
+        raise IntegrityError("Worktree became dirty while successor lineage was being checked")
+    head = git_text("rev-parse", "HEAD")
+    resource_preflight = {
+        **old_resources,
+        "snapshot": {"available_gib": available,
+                     "total_gib": float(old_resources["snapshot"]["total_gib"])},
+        "projected_reserve_gib": projected,
+        "process_snapshot": attestation["process_snapshot"],
+        "fresh_resource_attestation_signature": attestation["signature"],
+        "fresh_resource_attestation_sha256": sha_file(RESOURCE_CHECK_V2_PATH),
+        "status": "PASS",
+    }
+    body = {key: value for key, value in initial.items()
+            if key not in {"signature", "signature_method"}}
+    body.update({
+        "version": 2,
+        "status": "PREFIT_TRAIN_FREEZE_PASS",
+        "source_commit": head,
+        "source_sha256": current_sources,
+        "input_sha256": current_inputs,
+        "resource_preflight": resource_preflight,
+        "initial_blocked_freeze": {
+            "path": INITIAL_FREEZE_PATH.relative_to(ROOT).as_posix(),
+            "sha256": sha_file(INITIAL_FREEZE_PATH),
+            "signature": initial["signature"],
+            "status": initial["status"],
+        },
+        "resource_attestation": {
+            "path": RESOURCE_CHECK_V2_PATH.relative_to(ROOT).as_posix(),
+            "sha256": sha_file(RESOURCE_CHECK_V2_PATH),
+            "signature": attestation["signature"],
+        },
+        "source_changes_since_initial_blocked_freeze": source_differences,
+    })
+    signed = {**body, "signature": canonical_sha(body),
+              "signature_method": "SHA-256 canonical JSON"}
+    write_json_once(SUCCESSOR_FREEZE_V2_PATH, signed)
     return signed
 
 
 def validate_prefit_freeze(*, rehash: bool = True) -> dict[str, Any]:
-    freeze = read_json(FREEZE_PATH)
-    signature = freeze.get("signature")
-    body = {key: value for key, value in freeze.items() if key not in {"signature", "signature_method"}}
-    if signature != canonical_sha(body):
-        raise IntegrityError("Prefit freeze signature mismatch")
+    freeze = read_signed_json(FREEZE_PATH)
     if freeze.get("status") != "PREFIT_TRAIN_FREEZE_PASS":
         raise IntegrityError("Prefit freeze did not pass; no fit may start")
     if freeze.get("predictor_fits_max") != 2 or freeze.get("preprocessing_fits_max") != 8:
         raise IntegrityError("Frozen learned-unit caps changed")
     if rehash:
+        if freeze.get("version") == 2:
+            attestation_meta = freeze.get("resource_attestation", {})
+            attestation_path = ROOT / attestation_meta.get("path", "")
+            attestation = read_signed_json(attestation_path)
+            if (sha_file(attestation_path) != attestation_meta.get("sha256")
+                    or attestation.get("signature") != attestation_meta.get("signature")
+                    or attestation.get("status") != "PREFIT_RESOURCE_CHECK_PASS"):
+                raise IntegrityError("Successor freeze resource attestation is missing or changed")
+            if git_text("rev-parse", "HEAD") != freeze.get("source_commit"):
+                raise IntegrityError("Successor freeze is not bound to the current source commit")
         if current_source_hashes() != freeze["source_sha256"]:
             raise IntegrityError("Frozen source hashes changed after prefit freeze")
         if current_input_hashes() != freeze["input_sha256"]:
@@ -653,6 +760,12 @@ def fit_candidate(candidate: str) -> dict[str, Any]:
         if (qa.get("status") != "PASS_INDEPENDENT_CSV_QA"
                 or qa.get("candidate") != "A"
                 or qa.get("inference_manifest_signature") != prior_manifest.get("signature")
+                or qa.get("prefit_freeze_signature") != freeze.get("signature")
+                or qa.get("input_sha256") != freeze.get("input_sha256")
+                or qa.get("source_sha256") != freeze.get("source_sha256")
+                or prior_manifest.get("prefit_freeze_signature") != freeze.get("signature")
+                or prior_manifest.get("input_sha256") != freeze.get("input_sha256")
+                or prior_manifest.get("source_sha256") != freeze.get("source_sha256")
                 or not prior_csv.is_file()
                 or qa.get("csv_sha256") != sha_file(prior_csv)):
             raise IntegrityError("Candidate B is blocked until candidate A CSV QA passes")
@@ -665,10 +778,11 @@ def fit_candidate(candidate: str) -> dict[str, Any]:
 
     resources = freeze["resource_preflight"]
     peak = float(resources["A_estimated_peak_gib"] if candidate == "A" else resources["B_estimated_peak_gib"])
-    memory = memory_snapshot()
-    if memory["available_gib"] < 4.0 or peak > min(6.0, memory["available_gib"] - 2.0):
+    available = float(resources["snapshot"]["available_gib"])
+    if (resources.get("status") != "PASS" or available < 4.0
+            or peak > min(6.0, available - 2.0)):
         raise IntegrityError(
-            f"Resource gate blocked candidate {candidate}: available={memory['available_gib']:.3f}GiB "
+            f"Resource gate blocked candidate {candidate}: frozen_available={available:.3f}GiB "
             f"estimated_peak={peak:.3f}GiB reserve=2GiB"
         )
 
@@ -1050,7 +1164,7 @@ def _synthetic_e2e() -> dict[str, Any]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--mode", choices=("synthetic", "freeze", "train", "infer"), required=True)
+    parser.add_argument("--mode", choices=("synthetic", "freeze", "successor-freeze", "train", "infer"), required=True)
     parser.add_argument("--candidate", choices=("A", "B"))
     args = parser.parse_args(argv)
     if args.mode in {"train", "infer"} and args.candidate is None:
@@ -1059,6 +1173,8 @@ def main(argv: list[str] | None = None) -> int:
         result = _synthetic_e2e()
     elif args.mode == "freeze":
         result = prefit_freeze()
+    elif args.mode == "successor-freeze":
+        result = successor_prefit_freeze_v2()
     elif args.mode == "train":
         result = fit_candidate(args.candidate)
     else:
