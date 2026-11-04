@@ -431,6 +431,15 @@ def _verify_position_offset(frame: pd.DataFrame, vectorizer: Any) -> tuple[np.nd
     pos_probability = np.asarray(expit(z_original), dtype=np.float64)
     if not np.isfinite(pos_probability).all():
         raise BenchmarkError("Reconstructed original POS full-Train probabilities are non-finite")
+    matrix_audit = {
+        "missing_rows": int(np.asarray(audit["missing"], dtype=bool).sum()),
+        "missing_mask_sha256": offset.sha256_array(np.asarray(audit["missing"], dtype=bool)),
+        "structured_width": int(audit["structured_width"]),
+        "text_width": int(audit["text_width"]),
+        "base_width": int(audit["base_width"]),
+        "base_sha256": str(audit["base_sha256"]),
+        "position_sha256": str(audit["position_sha256"]),
+    }
     return z_original, pos_probability, {
         "base_matrix_sha256": base_sha,
         "unigram_position_matrix_sha256": position_sha,
@@ -442,7 +451,7 @@ def _verify_position_offset(frame: pd.DataFrame, vectorizer: Any) -> tuple[np.nd
         "base_shape": list(base.shape),
         "unigram_position_shape": list(unigram_position.shape),
         "a02_vectorizer_compatibility": cgeom.audit_c2b_vectorizer_compatibility(),
-        "matrix_audit": audit,
+        "matrix_audit": matrix_audit,
     }
 
 
