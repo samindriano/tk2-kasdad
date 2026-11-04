@@ -149,4 +149,3 @@ def test_identity_rejects_wrong_original_hash() -> None:
 def test_identity_rejects_duplicate_or_missing_train_ids(bad_ids: list[str]) -> None:
     with pytest.raises(SafeExportError, match="missing or duplicated"):
         _identity_case(bad_ids)
-
