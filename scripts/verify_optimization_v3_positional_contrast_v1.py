@@ -205,6 +205,70 @@ def _verify_source_files(root: Path, freeze: Mapping[str, Any]) -> None:
                         cwd=root, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if rc.returncode != 0:
         raise AssertionError("frozen implementation commit is not an ancestor of current HEAD")
+    if freeze.get("schema_version") == 2:
+        report_root = root / REPORT_ROOT_REL
+        base = _read(report_root / "FREEZE.json")
+        base_body = {key: value for key, value in base.items() if key != "freeze_signature"}
+        if base.get("freeze_signature") != _sha_obj(base_body):
+            raise AssertionError("prefit successor base freeze signature mismatch")
+        if (freeze.get("prior_freeze_signature") != base.get("freeze_signature")
+                or freeze.get("prior_source_commit") != base.get("source_commit")):
+            raise AssertionError("prefit successor does not identify its exact predecessor")
+        attempt = freeze.get("prefit_dispatch_attempt", {})
+        if (freeze.get("prefit_amendment_id") != "POS_CONTRAST_V1_PREFIT_SOURCE_REBIND_1"
+                or attempt.get("attempt_source_commit") != "ba79ec30fd6a8b17f66cfde8186e79282ca1a494"
+                or attempt.get("result") != "PRE_DISPATCH_REJECTED_ZERO_FITS"
+                or attempt.get("error") != "TypeError: _check_ledger() got an unexpected keyword argument 'freeze_signature'"
+                or attempt.get("estimator_fit_calls") != 0 or attempt.get("fit_started_ids") != []
+                or attempt.get("terminal_fit_ids") != []
+                or attempt.get("ledger_sha256_after_attempt") != freeze.get("reservation_checkpoint_ledger_sha256")):
+            raise AssertionError("prefit successor lacks exact zero-fit recovery evidence")
+        for key, value in base.items():
+            if key in {"schema_version", "source_commit", "source_hashes", "freeze_signature"}:
+                continue
+            if freeze.get(key) != value:
+                raise AssertionError(f"prefit successor altered frozen recipe/input field {key}")
+        record = _read(report_root / "PREFIT_AMENDMENT.json")
+        event = record.get("event")
+        if not isinstance(event, dict) or record.get("event_sha256") != _sha_obj(event):
+            raise AssertionError("prefit rebind report is missing or has an invalid event hash")
+        events = offset._ledger_events(root / "experiments/runs/optimization_v3_research_next_v1/budget.jsonl")
+        ledger_bytes = (root / "experiments/runs/optimization_v3_research_next_v1/budget.jsonl").read_bytes()
+        prefix_size = int(freeze["reservation_checkpoint_ledger_bytes"])
+        prefix = ledger_bytes[:prefix_size]
+        first_tail_line = ledger_bytes[prefix_size:].splitlines()[0]
+        if (hashlib.sha256(prefix).hexdigest() != freeze["reservation_checkpoint_ledger_sha256"]
+                or json.loads(first_tail_line.decode("utf-8")) != event):
+            raise AssertionError("prefit source rebind is not immediately appended after the frozen reservation checkpoint")
+        rebinds = [item for item in events if item.get("event") == "PREFIT_SOURCE_REBIND"
+                   and item.get("card_id") == CARD_ID]
+        if len(rebinds) != 1 or rebinds[0] != event:
+            raise AssertionError("append-only prefit source rebind differs from its report")
+        required = {
+            "prior_freeze_signature": base["freeze_signature"],
+            "freeze_signature": freeze["freeze_signature"],
+            "prior_source_commit": base["source_commit"],
+            "source_commit": freeze["source_commit"],
+            "fit_ids": list(FIT_IDS), "conditional_fit_id": E79_ID,
+            "reservation_keys": ["POS_CONTRAST_V1:PILOT_4", "POS_CONTRAST_V1:CONDITIONAL_E79_AFTER_SOL_REVIEW"],
+            "added_fit_slots": 0, "estimator_fit_calls_before_rebind": 0,
+            "fit_starts_before_rebind": [], "terminal_fit_ids_before_rebind": [],
+            "ledger_sha256_before_rebind": freeze["reservation_checkpoint_ledger_sha256"],
+            "ledger_snapshot_before_rebind": freeze["reservation_checkpoint_snapshot"],
+            "caps_unchanged": True, "recipe_gates_populations_unchanged": True,
+        }
+        if any(event.get(key) != value for key, value in required.items()):
+            raise AssertionError("prefit rebind changed authorization or lacks zero-start evidence")
+        if record.get("status") != "PASS_REBOUND_NO_NEW_SLOTS":
+            raise AssertionError("prefit rebind report status is not PASS")
+        amendments = [item for item in events if item.get("event") == "BUDGET_CAP_AMENDMENT"
+                      and item.get("amendment_id") == "POS_CONTRAST_V1_CAP137_2026_11_04"]
+        reservations = [item for item in events if item.get("event") == "CARD_FITS_RESERVED"
+                        and item.get("reservation_key") in required["reservation_keys"]]
+        if (len(amendments) != 1 or len(reservations) != 2
+                or amendments[0].get("freeze_signature") != base["freeze_signature"]
+                or any(item.get("freeze_signature") != base["freeze_signature"] for item in reservations)):
+            raise AssertionError("original budget reservations are not preserved by the rebind")
 
 
 def verify_prelabel_outputs(root: Path, run_root: Path,

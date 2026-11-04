@@ -42,6 +42,8 @@ RUN_ROOT = ROOT / "experiments/runs/optimization_v3_research_next_v1/POS_CONTRAS
 LEDGER = ROOT / "experiments/runs/optimization_v3_research_next_v1/budget.jsonl"
 TRAIN = ROOT / "data/raw/classification/Train.csv"
 RECIPE = REPORT_ROOT / "RECIPE.json"
+PREFIT_FREEZE_REPORT = REPORT_ROOT / "PREFIT_FREEZE.json"
+PREFIT_AMENDMENT_REPORT = REPORT_ROOT / "PREFIT_AMENDMENT.json"
 PROTOCOL = ROOT / "reports/optimization_v3/posmix_followup_v1/SOL_NEXT_RESEARCH.md"
 ERROR_AUDIT = ROOT / "reports/optimization_v3/posmix_followup_v1/ERROR_AUDIT.json"
 BAG_ROOT = ROOT / "experiments/runs/optimization_v3_research_next_v1/POS_BAG_OFFSET_V1"
@@ -74,6 +76,9 @@ BASE_SNAPSHOT = {
     "fit_failed": 6, "fit_pending": 0,
 }
 E79_REVIEW_CYCLES = (76, 79)
+PREFIT_REBIND_ID = "POS_CONTRAST_V1_PREFIT_SOURCE_REBIND_1"
+FAILED_DISPATCH_COMMIT = "ba79ec30fd6a8b17f66cfde8186e79282ca1a494"
+FAILED_DISPATCH_ERROR = "TypeError: _check_ledger() got an unexpected keyword argument 'freeze_signature'"
 
 _ORIGINAL_LOAD = offset._load_origin_payload
 _ORIGINAL_VERIFY = offset.verify_saved_inputs
@@ -372,23 +377,221 @@ def freeze() -> dict[str, Any]:
     return body
 
 
-def load_freeze() -> dict[str, Any]:
-    freeze_data = _json_read(RUN_ROOT / "FREEZE.json")
-    signature = freeze_data.get("freeze_signature")
-    body = {k: v for k, v in freeze_data.items() if k != "freeze_signature"}
+def _read_signed_freeze(path: Path) -> dict[str, Any]:
+    data = _json_read(path)
+    signature = data.get("freeze_signature")
+    body = {key: value for key, value in data.items() if key != "freeze_signature"}
     if signature != _sha_obj(body):
-        raise ContrastPilotError("Freeze signature mismatch")
-    if offset.sha256_file(RECIPE) != freeze_data["recipe_sha256"]:
+        raise ContrastPilotError(f"Freeze signature mismatch: {path.name}")
+    return data
+
+
+def _read_base_freeze() -> dict[str, Any]:
+    run_freeze = _read_signed_freeze(RUN_ROOT / "FREEZE.json")
+    report_freeze = _read_signed_freeze(REPORT_ROOT / "FREEZE.json")
+    if run_freeze != report_freeze:
+        raise ContrastPilotError("Run-root and reported predecessor freezes differ")
+    return run_freeze
+
+
+def _validate_successor_freeze(*, require_rebind: bool) -> tuple[dict[str, Any], dict[str, Any]]:
+    base = _read_base_freeze()
+    if not PREFIT_FREEZE_REPORT.is_file():
+        if _source_hashes() != base["source_hashes"]:
+            raise ContrastPilotError("Source changed after the original freeze; successor freeze is required")
+        return base, base
+    active = _read_signed_freeze(RUN_ROOT / "PREFIT_FREEZE.json")
+    if active != _read_signed_freeze(PREFIT_FREEZE_REPORT):
+        raise ContrastPilotError("Reported and run-root prefit freezes differ")
+    if (active.get("schema_version") != 2
+            or active.get("prior_freeze_signature") != base["freeze_signature"]
+            or active.get("prior_source_commit") != base["source_commit"]
+            or active.get("source_hashes") != _source_hashes()):
+        raise ContrastPilotError("Successor freeze does not match the committed source or original freeze")
+    attempt = active.get("prefit_dispatch_attempt", {})
+    if (active.get("prefit_amendment_id") != PREFIT_REBIND_ID
+            or attempt.get("attempt_source_commit") != FAILED_DISPATCH_COMMIT
+            or attempt.get("result") != "PRE_DISPATCH_REJECTED_ZERO_FITS"
+            or attempt.get("error") != FAILED_DISPATCH_ERROR
+            or attempt.get("estimator_fit_calls") != 0
+            or attempt.get("fit_started_ids") != [] or attempt.get("terminal_fit_ids") != []
+            or attempt.get("ledger_sha256_after_attempt") != active.get("reservation_checkpoint_ledger_sha256")):
+        raise ContrastPilotError("Successor freeze lacks exact zero-fit recovery evidence")
+    if _git("merge-base", "--is-ancestor", active["source_commit"], "HEAD") != "":
+        raise ContrastPilotError("Successor source commit is not an ancestor of the current checkout")
+    for key, value in base.items():
+        if key in {"schema_version", "source_commit", "source_hashes", "freeze_signature"}:
+            continue
+        if active.get(key) != value:
+            raise ContrastPilotError(f"Successor freeze changed original frozen field: {key}")
+    for rel in ("recipe_sha256", "protocol_sha256", "error_audit_sha256", "input_sha256"):
+        if active.get(rel) != base.get(rel):
+            raise ContrastPilotError(f"Successor freeze changed protected identity: {rel}")
+    if (offset.sha256_file(RECIPE) != base["recipe_sha256"]
+            or offset.sha256_file(PROTOCOL) != base["protocol_sha256"]
+            or offset.sha256_file(ERROR_AUDIT) != base["error_audit_sha256"]):
+        raise ContrastPilotError("Frozen recipe, protocol, or source audit changed")
+    if require_rebind:
+        _verify_prefit_rebind(base, active)
+    return base, active
+
+
+def prepare_prefit_amendment() -> dict[str, Any]:
+    """Freeze a narrow source fix without changing recipe, gates, inputs or fit slots."""
+    if _git("status", "--porcelain"):
+        raise ContrastPilotError("Commit the prefit adapter fix before successor freeze")
+    if _git("branch", "--show-current") != "main":
+        raise ContrastPilotError("Prefit successor freeze requires the authorized main branch")
+    base = _read_base_freeze()
+    if PREFIT_FREEZE_REPORT.exists():
+        _, active = _validate_successor_freeze(require_rebind=False)
+        return active
+    events, snapshot = _ledger_snapshot()
+    ledger_sha = offset.sha256_file(LEDGER)
+    ledger_bytes = LEDGER.stat().st_size
+    expected_reserved = {
+        "event_rows": 335, "global_cap": 137, "effective_category_caps": NEW_CAPS,
+        "active_reservations_by_category": {"continuation": 50, "control_replay": 2, "pilot": 81, "technical_retry": 1},
+        "active_reservations": 134, "fit_starts": 129, "fit_saved": 123,
+        "fit_failed": 6, "fit_pending": 0,
+    }
+    own = [event for event in events if event.get("fit_id") in (*FIT_IDS, E79_ID)]
+    starts = [event for event in own if event.get("event") == "FIT_STARTED"]
+    terminal = [event for event in own if event.get("event") in {"FIT_SAVED", "FIT_FAILED"}]
+    artifacts = [path for fit_id in FIT_IDS for path in (
+        RUN_ROOT / "units" / f"{fit_id}.npz", RUN_ROOT / "receipts" / f"{fit_id}.json") if path.exists()]
+    amendments = [event for event in events if event.get("event") == "BUDGET_CAP_AMENDMENT" and event.get("amendment_id") == AMENDMENT_ID]
+    reservations = [event for event in events if event.get("event") == "CARD_FITS_RESERVED" and event.get("reservation_key") in {PILOT_RESERVATION_KEY, E79_RESERVATION_KEY}]
+    if any(event.get("event") == "PREFIT_SOURCE_REBIND" and event.get("card_id") == CARD_ID for event in events):
+        raise ContrastPilotError("A prefit rebind event already exists without its matching successor record")
+    if (snapshot != expected_reserved or ledger_sha != _json_read(RUN_ROOT / "RESERVATION.json").get("ledger_sha256")
+            or starts or terminal or artifacts or len(amendments) != 1 or len(reservations) != 2
+            or any(event.get("freeze_signature") != base["freeze_signature"] for event in (*amendments, *reservations))):
+        raise ContrastPilotError("The exact reservations or zero-start prefit state changed")
+    _git("merge-base", "--is-ancestor", FAILED_DISPATCH_COMMIT, "HEAD")
+    attempt = {
+        "attempt_source_commit": FAILED_DISPATCH_COMMIT,
+        "command": "python -m scripts.optimization_v3_positional_contrast_v1 run-all",
+        "result": "PRE_DISPATCH_REJECTED_ZERO_FITS",
+        "error": FAILED_DISPATCH_ERROR,
+        "estimator_fit_calls": 0, "fit_started_ids": [], "terminal_fit_ids": [],
+        "ledger_sha256_after_attempt": ledger_sha,
+        "recovery": "callback now accepts and validates the active successor freeze signature",
+    }
+    body = {key: value for key, value in base.items() if key != "freeze_signature"}
+    body.update({
+        "schema_version": 2, "source_commit": _git("rev-parse", "HEAD"),
+        "source_hashes": _source_hashes(), "prior_freeze_signature": base["freeze_signature"],
+        "prior_source_commit": base["source_commit"], "prefit_dispatch_attempt": attempt,
+        "reservation_checkpoint_ledger_sha256": ledger_sha,
+        "reservation_checkpoint_ledger_bytes": ledger_bytes,
+        "reservation_checkpoint_snapshot": snapshot,
+        "prefit_amendment_id": PREFIT_REBIND_ID,
+    })
+    body["freeze_signature"] = _sha_obj(body)
+    _atomic_json(RUN_ROOT / "PREFIT_FREEZE.json", body)
+    _atomic_json(PREFIT_FREEZE_REPORT, body)
+    return body
+
+
+def _verify_prefit_rebind(base: Mapping[str, Any], active: Mapping[str, Any]) -> dict[str, Any]:
+    record = _json_read(PREFIT_AMENDMENT_REPORT)
+    event = record.get("event")
+    if not isinstance(event, dict) or record.get("event_sha256") != _sha_obj(event):
+        raise ContrastPilotError("Prefit source rebind report is missing or corrupt")
+    ledger_bytes = LEDGER.read_bytes()
+    prefix_bytes = int(active["reservation_checkpoint_ledger_bytes"])
+    prefix = ledger_bytes[:prefix_bytes]
+    tail = ledger_bytes[prefix_bytes:]
+    first_tail_line = tail.splitlines()[0] if tail else b""
+    if (hashlib.sha256(prefix).hexdigest() != active["reservation_checkpoint_ledger_sha256"]
+            or json.loads(first_tail_line.decode("utf-8")) != event):
+        raise ContrastPilotError("Prefit rebind is not append-only after the frozen reservation checkpoint")
+    events, _ = _ledger_snapshot()
+    matches = [item for item in events if item.get("event") == "PREFIT_SOURCE_REBIND" and item.get("card_id") == CARD_ID]
+    if len(matches) != 1 or matches[0] != event:
+        raise ContrastPilotError("Append-only prefit source rebind event differs from report")
+    expected = {
+        "amendment_id": AMENDMENT_ID, "prefit_amendment_id": PREFIT_REBIND_ID,
+        "prior_freeze_signature": base["freeze_signature"], "freeze_signature": active["freeze_signature"],
+        "prior_source_commit": base["source_commit"], "source_commit": active["source_commit"],
+        "fit_ids": list(FIT_IDS), "conditional_fit_id": E79_ID,
+        "reservation_keys": [PILOT_RESERVATION_KEY, E79_RESERVATION_KEY],
+        "added_fit_slots": 0, "estimator_fit_calls_before_rebind": 0,
+        "fit_starts_before_rebind": [], "terminal_fit_ids_before_rebind": [],
+        "ledger_sha256_before_rebind": active["reservation_checkpoint_ledger_sha256"],
+        "ledger_snapshot_before_rebind": active["reservation_checkpoint_snapshot"],
+        "caps_unchanged": True, "recipe_gates_populations_unchanged": True,
+    }
+    if any(event.get(key) != value for key, value in expected.items()):
+        raise ContrastPilotError("Prefit source rebind changed authorization or lacks zero-start proof")
+    if record.get("status") != "PASS_REBOUND_NO_NEW_SLOTS":
+        raise ContrastPilotError("Prefit rebind status is not passing")
+    return record
+
+
+def rebind_prefit_amendment() -> dict[str, Any]:
+    base, active = _validate_successor_freeze(require_rebind=False)
+    events, snapshot = _ledger_snapshot()
+    if offset.sha256_file(LEDGER) != active["reservation_checkpoint_ledger_sha256"] or snapshot != active["reservation_checkpoint_snapshot"]:
+        raise ContrastPilotError("Live ledger moved after successor freeze and before source rebind")
+    if (_git("status", "--porcelain")
+            or _git("merge-base", "--is-ancestor", active["source_commit"], "HEAD") != ""):
+        raise ContrastPilotError("Commit successor freeze and keep its source commit in ancestry before rebind")
+    own = [event for event in events if event.get("fit_id") in (*FIT_IDS, E79_ID)]
+    if any(event.get("event") in {"FIT_STARTED", "FIT_SAVED", "FIT_FAILED"} for event in own):
+        raise ContrastPilotError("A fit event appeared before the source rebind")
+    amendment = [event for event in events if event.get("event") == "BUDGET_CAP_AMENDMENT" and event.get("amendment_id") == AMENDMENT_ID]
+    reservations = [event for event in events if event.get("event") == "CARD_FITS_RESERVED" and event.get("reservation_key") in {PILOT_RESERVATION_KEY, E79_RESERVATION_KEY}]
+    if (len(amendment) != 1 or len(reservations) != 2
+            or amendment[0].get("freeze_signature") != base["freeze_signature"]
+            or any(item.get("freeze_signature") != base["freeze_signature"] for item in reservations)):
+        raise ContrastPilotError("Existing reservation lineage is not the expected predecessor freeze")
+    existing = [event for event in events if event.get("event") == "PREFIT_SOURCE_REBIND" and event.get("card_id") == CARD_ID]
+    if existing:
+        return _verify_prefit_rebind(base, active)
+    event = {
+        "event": "PREFIT_SOURCE_REBIND", "batch_id": "optimization_v3_research_next_v1",
+        "card_id": CARD_ID, "amendment_id": AMENDMENT_ID, "prefit_amendment_id": PREFIT_REBIND_ID,
+        "prior_freeze_signature": base["freeze_signature"], "freeze_signature": active["freeze_signature"],
+        "prior_source_commit": base["source_commit"], "source_commit": active["source_commit"],
+        "fit_ids": list(FIT_IDS), "conditional_fit_id": E79_ID,
+        "reservation_keys": [PILOT_RESERVATION_KEY, E79_RESERVATION_KEY],
+        "ledger_sha256_before_rebind": offset.sha256_file(LEDGER),
+        "ledger_snapshot_before_rebind": snapshot,
+        "fit_starts_before_rebind": [], "terminal_fit_ids_before_rebind": [],
+        "estimator_fit_calls_before_rebind": 0, "added_fit_slots": 0,
+        "caps_unchanged": True, "recipe_gates_populations_unchanged": True,
+        "reason": "Narrow pre-fit callback signature/validation repair; existing reservations remain the sole source of fit slots.",
+    }
+    if event["ledger_sha256_before_rebind"] != active["reservation_checkpoint_ledger_sha256"]:
+        raise ContrastPilotError("Ledger prefix changed before append-only source rebind")
+    persisted_event = offset._append_ledger(event, path=LEDGER, official=True)
+    record = {"status": "PASS_REBOUND_NO_NEW_SLOTS", "event": persisted_event,
+              "event_sha256": _sha_obj(persisted_event), "ledger_sha256_after_rebind": offset.sha256_file(LEDGER),
+              "active_freeze_signature": active["freeze_signature"], "added_fit_slots": 0}
+    _atomic_json(RUN_ROOT / "PREFIT_AMENDMENT.json", record)
+    _atomic_json(PREFIT_AMENDMENT_REPORT, record)
+    return record
+
+
+def load_freeze() -> dict[str, Any]:
+    base, active = _validate_successor_freeze(require_rebind=True)
+    if offset.sha256_file(RECIPE) != base["recipe_sha256"]:
         raise ContrastPilotError("Frozen recipe changed")
-    if offset.sha256_file(PROTOCOL) != freeze_data["protocol_sha256"] or offset.sha256_file(ERROR_AUDIT) != freeze_data["error_audit_sha256"]:
+    if offset.sha256_file(PROTOCOL) != base["protocol_sha256"] or offset.sha256_file(ERROR_AUDIT) != base["error_audit_sha256"]:
         raise ContrastPilotError("Frozen protocol or root error audit changed")
-    if _source_hashes() != freeze_data["source_hashes"]:
-        raise ContrastPilotError("Frozen source hashes changed")
-    return freeze_data
+    if active["source_hashes"] != _source_hashes():
+        raise ContrastPilotError("Active source hashes changed")
+    return active
 
 
-def _check_ledger(*, allow_current: str | None = None) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+def _check_ledger(*, allow_current: str | None = None,
+                  freeze_signature: str | None = None) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     freeze_data = load_freeze()
+    base_freeze = _read_base_freeze()
+    if freeze_signature is not None and freeze_signature != freeze_data["freeze_signature"]:
+        raise ContrastPilotError("Budget callback received a different freeze signature")
     events, snapshot = _ledger_snapshot()
     prefix_bytes = int(freeze_data["pre_reservation_ledger_bytes"])
     with LEDGER.open("rb") as stream:
@@ -403,15 +606,15 @@ def _check_ledger(*, allow_current: str | None = None) -> tuple[list[dict[str, A
     amendment, pilot, e79 = amendments[0], pilot_res[0], e79_res[0]
     if (amendment.get("card_id") != CARD_ID or amendment.get("prior_global_cap") != 132 or amendment.get("global_cap") != 137
             or amendment.get("prior_effective_caps") != BASE_CAPS or amendment.get("effective_caps") != NEW_CAPS
-            or amendment.get("freeze_signature") != freeze_data["freeze_signature"]
-            or amendment.get("source_commit") != freeze_data["source_commit"]):
+            or amendment.get("freeze_signature") != base_freeze["freeze_signature"]
+            or amendment.get("source_commit") != base_freeze["source_commit"]):
         raise ContrastPilotError("Live budget amendment differs from freeze")
     if (pilot.get("fit_ids") != list(FIT_IDS) or pilot.get("fits") != 4 or pilot.get("category") != "pilot"
-            or pilot.get("effective_category_cap") != 84 or pilot.get("freeze_signature") != freeze_data["freeze_signature"]):
+            or pilot.get("effective_category_cap") != 84 or pilot.get("freeze_signature") != base_freeze["freeze_signature"]):
         raise ContrastPilotError("Pilot fit reservation differs from frozen four-ID order")
     if (e79.get("fit_ids") != [E79_ID] or e79.get("fits") != 1 or e79.get("category") != "continuation"
             or e79.get("effective_category_cap") != 50 or e79.get("stage") != "CONDITIONAL_E79_AFTER_SOL_REVIEW"
-            or e79.get("freeze_signature") != freeze_data["freeze_signature"]):
+            or e79.get("freeze_signature") != base_freeze["freeze_signature"]):
         raise ContrastPilotError("Conditional E79 reservation differs from protocol")
     released = [e for e in events if e.get("event") == "RESERVATION_UNUSED_RELEASED" and e.get("reservation_key") == E79_RESERVATION_KEY]
     if len(released) > 1 or (released and (released[0].get("unused_fits") != 1 or released[0].get("fit_ids") != [E79_ID])):
@@ -1050,7 +1253,8 @@ def run_synthetic_lifecycle(temp_root: Path) -> dict[str, Any]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("command", choices=["preflight", "freeze", "reserve", "run-all", "predictions",
-                                              "verify-prelabel", "score", "synthetic"])
+                                              "verify-prelabel", "score", "prepare-prefit-amendment",
+                                              "rebind-prefit-amendment", "synthetic"])
     parser.add_argument("--temp-root", type=Path)
     args = parser.parse_args(argv)
     try:
@@ -1061,6 +1265,8 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "predictions": result = build_predictions()
         elif args.command == "verify-prelabel": result = verify_prelabel()
         elif args.command == "score": result = score()
+        elif args.command == "prepare-prefit-amendment": result = prepare_prefit_amendment()
+        elif args.command == "rebind-prefit-amendment": result = rebind_prefit_amendment()
         else:
             if args.temp_root is None:
                 raise ContrastPilotError("synthetic requires --temp-root under the system temporary directory")
