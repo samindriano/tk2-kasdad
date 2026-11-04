@@ -58,13 +58,13 @@ def _write_once(path: Path, value: dict[str, Any]) -> None:
 
 
 def complete_receipt() -> dict[str, Any]:
-    trained = _read_json(TRAINED_STATE_FREEZE_PATH)
+    trained = _read_json(TRAINED_FREEZE_PATH)
     if trained.get("status") != "TRAINED_STATE_FROZEN_BEFORE_TEST_FEATURES":
         raise InferenceReceiptError("C10 trained-state freeze is not committed and ready")
     current_head = subprocess.check_output(["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True).strip()
     freeze_commit = subprocess.check_output(
         ["git", "-C", str(ROOT), "log", "-1", "--format=%H", "--",
-         TRAINED_STATE_FREEZE_PATH.relative_to(ROOT).as_posix()], text=True
+         TRAINED_FREEZE_PATH.relative_to(ROOT).as_posix()], text=True
     ).strip()
     is_ancestor = subprocess.run(
         ["git", "-C", str(ROOT), "merge-base", "--is-ancestor", freeze_commit, current_head],
@@ -186,7 +186,7 @@ def complete_receipt() -> dict[str, Any]:
         "original_inference_error": "TypeError: array_digest() got an unexpected keyword argument 'dtype'",
         "original_inference_was_repeated": False,
         "saved_csv_and_npz_reused": True,
-        "trained_state_freeze_sha256": file_sha(TRAINED_STATE_FREEZE_PATH),
+        "trained_state_freeze_sha256": file_sha(TRAINED_FREEZE_PATH),
         "model_sha256": file_sha(MODEL_PATH),
         "fit_receipt_sha256": file_sha(FIT_RECEIPT_PATH),
         "fit_recovery_sha256": file_sha(FIT_RECOVERY_PATH),
@@ -213,7 +213,7 @@ def complete_receipt() -> dict[str, Any]:
         "schema_version": 1,
         "status": "C10_E79_INFERENCE_BUILT_PENDING_INDEPENDENT_QA",
         "fit_id": FIT_ID,
-        "trained_state_freeze_sha256": file_sha(TRAINED_STATE_FREEZE_PATH),
+        "trained_state_freeze_sha256": file_sha(TRAINED_FREEZE_PATH),
         "fit_receipt_sha256": file_sha(REPORT / "FIT_RECEIPT.json"),
         "test_sha256": file_sha(TEST_PATH),
         "test_rows": int(len(test)),

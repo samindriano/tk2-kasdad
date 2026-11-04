@@ -70,7 +70,7 @@ def verify_saved_outputs() -> dict[str, Any]:
         raise RecoveredOutputError("Independent QA receipt already exists")
     recipe = _read_json(RECIPE_PATH)
     prefit = _read_json(PREFIT_FREEZE_PATH)
-    trained = _read_json(TRAINED_STATE_FREEZE_PATH)
+    trained = _read_json(TRAINED_FREEZE_PATH)
     fit_receipt = _read_json(FIT_RECEIPT_PATH)
     fit_recovery = _read_json(FIT_RECOVERY_PATH)
     build = _read_json(INFERENCE_BUILD_PATH)
@@ -92,7 +92,7 @@ def verify_saved_outputs() -> dict[str, Any]:
     head = subprocess.check_output(["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True).strip()
     trained_commit = subprocess.check_output(
         ["git", "-C", str(ROOT), "log", "-1", "--format=%H", "--",
-         TRAINED_STATE_FREEZE_PATH.relative_to(ROOT).as_posix()], text=True
+         TRAINED_FREEZE_PATH.relative_to(ROOT).as_posix()], text=True
     ).strip()
     if subprocess.run(["git", "-C", str(ROOT), "merge-base", "--is-ancestor", trained_commit, head],
                       check=False).returncode != 0:
