@@ -1,0 +1,95 @@
+{
+  "canonical_sha256": "c30ea9bd306dfedf00d3cd9aa9541b1be6a418bbffb90483b8be3a5b7fbc06a9",
+  "input_hashes": {
+    "oof_bundle_sha256": "25d1d2b91348a57d33b3b0e5ce78da29840d115b75e24f9502cc83c1b63ef351",
+    "train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c"
+  },
+  "missing_decision_rule": "original A02 pA >= selected threshold",
+  "new_estimator_fits": 0,
+  "new_preprocessing_fits": 0,
+  "policy_id": "CLS_A02_MISSING_TEMPORAL_DECISION_V1",
+  "present_decision_rule": "frozen MIX50 probability >= 0.50",
+  "resource_gate": {
+    "available_physical_ram_bytes": 7146414080,
+    "documented_safety_reserve_bytes": 2147483648,
+    "estimate_note": "Conservative incremental allowance for 20,903-row NumPy threshold arrays and line-streamed 50,608-row Train ID/label lookup; not a measured peak. A separate 2 GiB safety reserve is retained; the hard start floor is 4 GiB available.",
+    "estimated_incremental_peak_bytes": 268435456,
+    "minimum_available_ram_bytes": 4294967296,
+    "project_job_limit": 1,
+    "required_available_ram_bytes": 4294967296,
+    "status": "PASS",
+    "threadpool_thread_limit": 2
+  },
+  "schema_version": 1,
+  "selection": {
+    "selection_best_macro_f1": 0.8219407679596171,
+    "selection_candidate_count": 1375,
+    "selection_confusion": {
+      "class_0": 14176,
+      "class_1": 6727,
+      "confusion_matrix": [
+        [
+          12697,
+          1479
+        ],
+        [
+          1737,
+          4990
+        ]
+      ],
+      "f1_0": 0.8875917511359664,
+      "f1_1": 0.7562897847832677,
+      "false_negatives": 1737,
+      "false_positives": 1479,
+      "macro_f1": 0.8219407679596171,
+      "rows": 20903
+    },
+    "selection_macro_f1_at_threshold": 0.8219407679596171,
+    "status": "SELECTED",
+    "support": {
+      "class_0": 14176,
+      "class_1": 6727,
+      "full_each_class_min": 100,
+      "full_rows_min": 1000,
+      "rows": 20903,
+      "selector_consumed": true,
+      "status": "SUPPORTED",
+      "varying_each_class_min": 30,
+      "varying_missing_class_0": 888,
+      "varying_missing_class_1": 487,
+      "varying_missing_rows": 1375,
+      "varying_rows_min": 200
+    },
+    "threshold": 0.53230976129477,
+    "threshold_operator": ">=",
+    "threshold_selector_consumed": true,
+    "tie_candidate_count": 1,
+    "tie_rule": "among scores within 1e-12 of best, choose closest to 0.50; then lower threshold",
+    "tie_tolerance": 1e-12
+  },
+  "selection_cycle_values": [
+    68,
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79
+  ],
+  "selection_cycles_sha256": "7cd88c40d75c801956476789377059a889cb27679007278aea8ee77dd58fdaec",
+  "selection_ids_sha256": "59a83bebcd3aa63527621cff9bb8235859856a571cd2a69530edbb4b96510ba1",
+  "selection_missing_a02_probability_sha256": "8f08bf5f3574451d691696fd32040eac32f5e3bc661bd2ba79dad9526897db0a",
+  "selection_missing_sha256": "76cd4b38d97d93cebc434ab34041cf5643620bb1aeb96b28873af8bffbd014fa",
+  "selection_present_mix50_probability_sha256": "5401b928409b617fcadfc00fc41aa8ab7686ead825ebbc6363d0841c043418a5",
+  "selection_rows": 20903,
+  "selection_target_sha256": "5f3d0f0ea4c4bceab380c3f96457146c20753334ad3fea9ed7ae5e7e5203b5fa",
+  "source_commit": "4a9cf4cfbc0b3030473733507841238d958ad92e",
+  "stage": "FINAL_STITCHED_E79",
+  "threshold": 0.53230976129477,
+  "threshold_operator": ">="
+}

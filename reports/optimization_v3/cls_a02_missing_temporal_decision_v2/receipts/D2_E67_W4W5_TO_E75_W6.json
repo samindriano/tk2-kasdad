@@ -1,0 +1,91 @@
+{
+  "canonical_sha256": "5be2faaf4cbf5a21cfcc039158f022530411df2ca4abff80cb710c2b128a6986",
+  "input_hashes": {
+    "oof_bundle_sha256": "25d1d2b91348a57d33b3b0e5ce78da29840d115b75e24f9502cc83c1b63ef351",
+    "train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c"
+  },
+  "missing_decision_rule": "original A02 pA >= selected threshold",
+  "new_estimator_fits": 0,
+  "new_preprocessing_fits": 0,
+  "policy_id": "CLS_A02_MISSING_TEMPORAL_DECISION_V1",
+  "present_decision_rule": "frozen MIX50 probability >= 0.50",
+  "resource_gate": {
+    "available_physical_ram_bytes": 7158247424,
+    "documented_safety_reserve_bytes": 2147483648,
+    "estimate_note": "Conservative incremental allowance for 20,903-row NumPy threshold arrays and line-streamed 50,608-row Train ID/label lookup; not a measured peak. A separate 2 GiB safety reserve is retained; the hard start floor is 4 GiB available.",
+    "estimated_incremental_peak_bytes": 268435456,
+    "minimum_available_ram_bytes": 4294967296,
+    "project_job_limit": 1,
+    "required_available_ram_bytes": 4294967296,
+    "status": "PASS",
+    "threadpool_thread_limit": 2
+  },
+  "schema_version": 1,
+  "selection": {
+    "selection_best_macro_f1": 0.8230010353304034,
+    "selection_candidate_count": 850,
+    "selection_confusion": {
+      "class_0": 8185,
+      "class_1": 4227,
+      "confusion_matrix": [
+        [
+          7235,
+          950
+        ],
+        [
+          1016,
+          3211
+        ]
+      ],
+      "f1_0": 0.8803845217814553,
+      "f1_1": 0.7656175488793514,
+      "false_negatives": 1016,
+      "false_positives": 950,
+      "macro_f1": 0.8230010353304034,
+      "rows": 12412
+    },
+    "selection_macro_f1_at_threshold": 0.8230010353304034,
+    "status": "SELECTED",
+    "support": {
+      "class_0": 8185,
+      "class_1": 4227,
+      "full_each_class_min": 100,
+      "full_rows_min": 1000,
+      "rows": 12412,
+      "selector_consumed": true,
+      "status": "SUPPORTED",
+      "varying_each_class_min": 30,
+      "varying_missing_class_0": 533,
+      "varying_missing_class_1": 316,
+      "varying_missing_rows": 849,
+      "varying_rows_min": 200
+    },
+    "threshold": 0.5645535840306972,
+    "threshold_operator": ">=",
+    "threshold_selector_consumed": true,
+    "tie_candidate_count": 1,
+    "tie_rule": "among scores within 1e-12 of best, choose closest to 0.50; then lower threshold",
+    "tie_tolerance": 1e-12
+  },
+  "selection_cycle_values": [
+    68,
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75
+  ],
+  "selection_cycles_sha256": "c009840cf1d9aa62e62e0a033c97b69f154d8dff9bcb75ab31999e71e03326f8",
+  "selection_ids_sha256": "1dd901bc3a8db9f837914960276c4d2ff766d2fc658fc8d0d0df615c0eb7f2e7",
+  "selection_missing_a02_probability_sha256": "0f48a7c9e75d84fe30b39f603ee7e280f936faf85822da3427fdccbba8410bd0",
+  "selection_missing_sha256": "9a76e763225a225d521422d529ff890f58e1cd40237992eb0deefb99c6942d21",
+  "selection_present_mix50_probability_sha256": "538bd9e43ea4645efce6e1db0383b72294f844ee2d35d000ecd2ff675fc19a47",
+  "selection_rows": 12412,
+  "selection_target_sha256": "40cdb6e7010dd8b98f10b03e30792f4ca08610eec6f42be2245369f917143153",
+  "source_commit": "4a9cf4cfbc0b3030473733507841238d958ad92e",
+  "stage": "D2_E67_W4W5_TO_E75_W6",
+  "threshold": 0.5645535840306972,
+  "threshold_operator": ">="
+}
