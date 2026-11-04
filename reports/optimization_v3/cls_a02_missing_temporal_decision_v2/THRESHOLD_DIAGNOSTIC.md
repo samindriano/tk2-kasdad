@@ -79,3 +79,7 @@ The one exploratory CSV applies the selected missing-stream threshold `0.5323097
 - Builder duplicate scan and independent duplicate scan each examined 22 full Test classification vectors and found no exact label-vector duplicate; each ignored 14 non-classification CSVs.
 - Builder QA is `PASS_LOCAL_E79_QA`; independent receipt is `E79_INDEPENDENT_QA.json` with status `PASS_INDEPENDENT_E79_QA` (SHA-256 `742a85c57458ad2b702e00b3b478d82b91a189e6113846737ad2b8e2337f1ec3`). It independently verified the seven input hashes, threshold/formula replay, ordered IDs, present-label invariance, binary schema, and duplicate scan.
 - This is a frozen-policy exploratory artifact, not a new validation result or champion decision. No Kaggle submission was performed.
+
+## Subsequent root upload confirmation
+
+The statements above about no Kaggle submission describe the producer-stage checkpoint. Sol subsequently uploaded this exact frozen CSV once: submission **58001282**, status **COMPLETE**, public Macro F1 **0.83225**. See [root upload result](SOL_UPLOAD/RESULT.md) and its saved Kaggle receipt for the later authoritative upload state. The local evaluation and exploratory verdict above remain unchanged.
