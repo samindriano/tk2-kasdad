@@ -398,6 +398,7 @@ def preflight() -> dict[str, Any]:
                 matrices_for_origin[f"{label}_{arm.lower()}"] = matrix
             arm_audits[arm.lower()] = {
                 **audit,
+                "fit_resource_estimate": _fit_memory_estimate(fit_matrix),
                 "fit": {"shape": list(fit_matrix.shape), "sha256": sha256_csr(fit_matrix),
                         "file_sha256": sha256_file(_cache_path(origin, f"fit_{arm.lower()}"))},
                 "score": {"shape": list(score_matrix.shape), "sha256": sha256_csr(score_matrix),
@@ -445,6 +446,13 @@ def preflight() -> dict[str, Any]:
         del matrices_for_origin, state, documents, all_docs
         gc.collect()
     after = _resource_snapshot(0)
+    estimate_rows = [origins[f"E{o}"]["moments"][arm.lower()]["fit_resource_estimate"]["estimated_incremental_bytes"]
+                     for o in ORIGINS for arm in ARMS]
+    fit_resource_estimates_pass = all(
+        before["projected_rss_bytes"] + estimate <= MAX_RSS
+        and before["available_ram_bytes"] - estimate >= RUNNING_FREE_MIN
+        for estimate in estimate_rows
+    )
     result = {
         "schema_version": 1, "card_id": CARD_ID, "status": "PASS_TARGET_FREE_PREFLIGHT",
         "source_commit": _git("rev-parse", "HEAD"), "source_hashes": source_hashes,
@@ -454,6 +462,8 @@ def preflight() -> dict[str, Any]:
         "origins": origins,
         "runtime_seconds": float(time.perf_counter() - start),
         "resource_before": before, "resource_after": after,
+        "fit_resource_estimates_pass": fit_resource_estimates_pass,
+        "fit_resource_estimate_basis": "max(1 GiB, 4 * CSR matrix bytes + 256 MiB) per fit; dynamic guard repeats immediately before each fit",
         "prelabel_predictions_created": False, "query_labels_read": False,
         "test_or_sample_access": False,
         "interpretation_limit": "Target-free shape, lineage, tokenization, bag/length preservation and resource diagnostics; not an outcome gate.",
@@ -498,6 +508,13 @@ def _resource_snapshot(estimate_bytes: int) -> dict[str, Any]:
     }
 
 
+def _fit_memory_estimate(matrix: sparse.spmatrix) -> dict[str, int]:
+    x = sparse.csr_matrix(matrix, dtype=np.float64, copy=False)
+    matrix_bytes = int(x.data.nbytes + x.indices.nbytes + x.indptr.nbytes)
+    estimated = max(1024**3, matrix_bytes * 4 + 256 * 1024**2)
+    return {"matrix_bytes": matrix_bytes, "estimated_incremental_bytes": estimated}
+
+
 def _check_fit_resources(*, estimate_bytes: int, initial: bool) -> dict[str, Any]:
     snap = _resource_snapshot(estimate_bytes)
     if initial and snap["available_ram_bytes"] < INITIAL_FREE_MIN:
@@ -523,6 +540,8 @@ def freeze() -> dict[str, Any]:
     preflight = _read_json(PREFLIGHT_REPORT)
     if preflight.get("status") != "PASS_TARGET_FREE_PREFLIGHT" or preflight.get("query_labels_read") is not False:
         raise MomentsPilotError("Target-free preflight is not PASS/label-closed")
+    if preflight.get("fit_resource_estimates_pass") is not True:
+        raise MomentsPilotError("Target-free per-fit memory estimates do not meet frozen RAM/RSS limits")
     source_hashes = _source_hashes()
     if source_hashes != preflight.get("source_hashes"):
         raise MomentsPilotError("Code/recipe/test files changed after target-free preflight")
@@ -1167,7 +1186,7 @@ def run_fits() -> list[dict[str, Any]]:
                 raise MomentsPilotError(f"E{origin} frozen BAG_LR offset changed before fit")
             if sha256_file(TRAIN) != freeze_data["input_sha256"]:
                 raise MomentsPilotError("Official Train changed immediately before fit")
-            memory_estimate = max(1024**3, int((fit_matrix.data.nbytes + fit_matrix.indices.nbytes + fit_matrix.indptr.nbytes) * 4 + 256 * 1024**2))
+            memory_estimate = _fit_memory_estimate(fit_matrix)["estimated_incremental_bytes"]
             resource = _check_fit_resources(estimate_bytes=memory_estimate, initial=(order_index == 0))
             if resource["process_rss_bytes"] > MAX_RSS:
                 raise MomentsPilotError(f"RESOURCE_BLOCK_BEFORE_FIT: process RSS exceeds 6 GiB: {resource['process_rss_bytes']}")

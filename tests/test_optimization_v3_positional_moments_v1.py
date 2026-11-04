@@ -147,3 +147,10 @@ def test_wrong_origin_and_tampered_freeze_are_rejected():
     from scripts import verify_optimization_v3_positional_moments_v1 as verifier
     with pytest.raises(verifier.VerificationError, match="signature"):
         verifier._verify_freeze(ROOT, {"freeze_signature": "tampered", "source_hashes": {}})
+
+
+def test_fit_memory_estimate_uses_frozen_sparse_matrix_rule():
+    matrix = sparse.csr_matrix([[1.0, 0.0], [0.0, 1.0]], dtype=np.float64)
+    estimate = runner._fit_memory_estimate(matrix)
+    assert estimate["matrix_bytes"] == matrix.data.nbytes + matrix.indices.nbytes + matrix.indptr.nbytes
+    assert estimate["estimated_incremental_bytes"] == 1024**3

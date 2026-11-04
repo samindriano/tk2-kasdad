@@ -51,7 +51,7 @@
     "subgroups": "For supported n>=200, positive>=30, negative>=30 groups over availability, entry_friction, and prefix-only text_load quartiles: Macro F1 harm <=0.01 and positive-recall harm <=0.02; unsupported groups are UNKNOWN, not PASS or FAIL.",
     "tolerance": 1e-12
   },
-  "resources": {"one_job": true, "threads": 2, "max_process_rss_bytes": 6442450944, "initial_free_ram_min_bytes": 4294967296, "running_free_ram_min_bytes": 2147483648},
+  "resources": {"one_job": true, "threads": 2, "max_process_rss_bytes": 6442450944, "initial_free_ram_min_bytes": 4294967296, "running_free_ram_min_bytes": 2147483648, "preflight_incremental_estimate_bytes": "max(1 GiB, 4 * CSR matrix bytes + 256 MiB) per fit", "dynamic_guard": "repeat projected RSS/free RAM checks immediately before each fit"},
   "budget": {
     "baseline_ledger_sha256": "7816f8c64f760347cd4a5c7596a97ef99c0059a352994be00f45bce4297a986c",
     "global_cap": {"before": 137, "after": 142},
