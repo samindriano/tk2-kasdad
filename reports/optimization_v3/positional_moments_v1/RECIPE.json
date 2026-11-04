@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "card_id": "POS_MOMENTS_V1",
+  "status": "FROZEN_RECIPE_PENDING_PREFIT_FREEZE",
+  "input": {
+    "path": "data/raw/classification/Train.csv",
+    "sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "rows": 50608,
+    "feature_scope": "Official Train only; no Test or SampleSubmission access"
+  },
+  "parent": {
+    "pilot_id": "POSITIONAL_TEXT_PILOT_V1",
+    "freeze_signature": "f310d0340ea4402677ca9e86aa29c43b1536ded902c0f6a6f52cb53bd333c292",
+    "bag_channel": "Frozen C2_B prefix-only TF-IDF vectorizer, unigram tokenization, BAG_LR coefficients and original fit/score base matrices",
+    "reused_prediction": "Original POS_BAG_OFFSET pP; A02 predictions through explicit non-target array keys only"
+  },
+  "feature_definition": {
+    "channels": ["B", "B*m1", "B*m2"],
+    "tokenization": "Frozen C2_B vectorizer build_preprocessor/build_tokenizer; all token occurrences, including out-of-vocabulary tokens, determine position indices",
+    "position": "For n>1 and zero-based i, u=2*i/(n-1)-1; h1=u; h2=(3*u^2-1)/2 minus the mean over every document token. For n<=1, h1=h2=0.",
+    "bag_weight": "a_t=(1+log(c_t))*frozen_IDF_t over known unigram tokens; B_t=a_t/L2(a)",
+    "moments": "m1_t and m2_t are means over positions for occurrences of known token t; OOV tokens have no feature column but remain in position and h2-centering calculations.",
+    "normalization": "Concatenate [B,B*m1,B*m2], then L2-normalize the entire row once. Zero when no known unigram exists.",
+    "shuffled_control": "Apply deterministic_order_shuffle to token order with seed 42; preserve bag and token count; rebuild h1/h2."
+  },
+  "fits": [
+    {"id": "POS_MOMENTS_V1_E67_REAL", "origin": 67, "fit_rows": 29705, "query_rows": 20903, "query_cycles": "68-79", "arm": "REAL"},
+    {"id": "POS_MOMENTS_V1_E67_SHUFFLED", "origin": 67, "fit_rows": 29705, "query_rows": 20903, "query_cycles": "68-79", "arm": "SHUFFLED"},
+    {"id": "POS_MOMENTS_V1_E75_REAL", "origin": 75, "fit_rows": 42117, "query_rows": 8491, "query_cycles": "76-79", "arm": "REAL"},
+    {"id": "POS_MOMENTS_V1_E75_SHUFFLED", "origin": 75, "fit_rows": 42117, "query_rows": 8491, "query_cycles": "76-79", "arm": "SHUFFLED"}
+  ],
+  "learner": {
+    "fixed_offset": "z0 = original BAG_LR intercept + original Xbase @ beta, float64 logit",
+    "learned_parameters": "gamma only; no new intercept",
+    "objective": "SUM logistic loss(y,z0+W*gamma) + ||gamma||^2/(2*C)",
+    "optimizer": "scipy.optimize.minimize, L-BFGS-B, initialized at zero",
+    "C": 1.0,
+    "options": {"maxiter": 2000, "ftol": 1e-12, "gtol": 1e-6, "maxls": 50},
+    "acceptance": "Optimizer success, finite objective/gradient/coefficients, final objective <= zero-gamma objective + 1e-8; no retry or rescue."
+  },
+  "policy": {
+    "present": "0.5*expit(z0+W*gamma)+0.5*A02",
+    "missing": "Original pP exactly",
+    "threshold": 0.5,
+    "deployment_candidate": "REAL only; shuffled is matched control"
+  },
+  "gates": {
+    "primary_gain_vs_MIX50": "REAL fixed-policy Macro F1 gain >= 0.0005 on E67 H12 and E75 W6",
+    "matched_shuffled": "REAL fixed-policy Macro F1 >= SHUFFLED fixed-policy Macro F1 on E67 H12 and E75 W6",
+    "E67_subwindows": "REAL fixed-policy Macro F1 harm <= 0.003 vs MIX50 on W4, W5, W6",
+    "subgroups": "For supported n>=200, positive>=30, negative>=30 groups over availability, entry_friction, and prefix-only text_load quartiles: Macro F1 harm <=0.01 and positive-recall harm <=0.02; unsupported groups are UNKNOWN, not PASS or FAIL.",
+    "tolerance": 1e-12
+  },
+  "resources": {"one_job": true, "threads": 2, "max_process_rss_bytes": 6442450944, "initial_free_ram_min_bytes": 4294967296, "running_free_ram_min_bytes": 2147483648},
+  "budget": {
+    "baseline_ledger_sha256": "7816f8c64f760347cd4a5c7596a97ef99c0059a352994be00f45bce4297a986c",
+    "global_cap": {"before": 137, "after": 142},
+    "pilot_cap": {"before": 84, "after": 88},
+    "continuation_cap": {"before": 50, "after": 51},
+    "pilot_fit_count": 4,
+    "conditional_e79_reserved": false
+  },
+  "interpretation": "Adaptive temporal Train diagnostic; E67/E75 overlap on cycles 76-79. No causal or public-score claim. E79 requires separate Sol review."
+}
