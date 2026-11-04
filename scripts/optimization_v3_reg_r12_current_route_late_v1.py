@@ -152,6 +152,15 @@ def _json(path: Path) -> dict[str, Any]:
     return value
 
 
+def _namespace_has_outputs(path: Path) -> bool:
+    """Treat an empty namespace directory as no output; block files or contents."""
+    if not path.exists():
+        return False
+    if not path.is_dir():
+        return True
+    return next(path.iterdir(), None) is not None
+
+
 def _write_exclusive(path: Path, payload: bytes) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
@@ -614,7 +623,7 @@ def _preflight() -> dict[str, Any]:
             "threads_per_job": THREADS,
             "repeats_retries_seed_grid_or_extra_control_fits": False,
         },
-        "namespace_empty_before_fit": not RUN_DIR.exists(),
+        "namespace_empty_before_fit": not _namespace_has_outputs(RUN_DIR),
         "main_checkout_write": False,
     }
 
@@ -817,7 +826,7 @@ def _verify_protocol(protocol: Mapping[str, Any]) -> dict[str, Any]:
 
 
 def freeze_protocol() -> dict[str, Any]:
-    if RUN_DIR.exists() or REPORT_DIR.exists():
+    if _namespace_has_outputs(RUN_DIR) or _namespace_has_outputs(REPORT_DIR):
         raise GateError("New namespace already contains run/report outputs; refusing to overwrite")
     if PROTOCOL_PATH.exists() or PREFLIGHT_PATH.exists():
         raise GateError("Protocol or preflight already exists; refusing to rewrite")

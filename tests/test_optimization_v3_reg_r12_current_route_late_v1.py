@@ -86,6 +86,18 @@ def test_independent_feature_group_verifier_matches_frozen_prefit_rule() -> None
     verifier._verify_feature_group_preflight(frame, cycles, {"feature_group_preflight": receipt})
 
 
+def test_empty_namespace_directory_is_not_treated_as_existing_output(tmp_path) -> None:
+    empty_dir = tmp_path / "empty"
+    empty_dir.mkdir()
+    assert runner._namespace_has_outputs(empty_dir) is False
+    (empty_dir / "saved.npz").write_bytes(b"artifact")
+    assert runner._namespace_has_outputs(empty_dir) is True
+    assert runner._namespace_has_outputs(tmp_path / "not-a-directory") is False
+    file_path = tmp_path / "output-path-is-a-file"
+    file_path.write_bytes(b"artifact")
+    assert runner._namespace_has_outputs(file_path) is True
+
+
 def _write_target_csv(path, rows: list[list[str]]) -> None:
     with path.open("w", newline="", encoding="utf-8") as stream:
         writer = csv.writer(stream)
