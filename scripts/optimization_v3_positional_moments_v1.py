@@ -1592,7 +1592,8 @@ def _synthetic_lifecycle(temp_root: Path, prefix_path: Path, *, source_commit: s
     if offset.ledger_snapshot(offset._ledger_events(temp_ledger)) != NEW_PRE_FIT_SNAPSHOT:
         raise MomentsPilotError("Synthetic temp-ledger reserve did not bind expected fit-count/cap signatures")
     docs_fit = ["alpha beta alpha", "beta gamma", "gamma alpha", "delta beta", "alpha delta", "beta beta gamma", "gamma delta", "alpha gamma"]
-    docs_score = ["alpha beta", "gamma delta", "unseen omega", "", "beta alpha gamma", "delta delta"]
+    docs_score = ["alpha beta", "gamma delta", "unseen omega", "", "beta alpha gamma", "delta delta",
+                  "alpha alpha", "gamma", "unknown beta", "beta gamma", "café alpha", "omega delta"]
     from sklearn.feature_extraction.text import TfidfVectorizer
     from src.models.classification_models import _TFIDF_PARAMS
     vectorizer = TfidfVectorizer(**{**_TFIDF_PARAMS, "min_df": 1, "max_df": 1.0, "max_features": 50})
@@ -1651,9 +1652,9 @@ def _synthetic_lifecycle(temp_root: Path, prefix_path: Path, *, source_commit: s
     if sum(item["optimizer_calls"] for item in results) != 4:
         raise MomentsPilotError("Synthetic exact-four optimizer count mismatch")
 
-    present = np.asarray([True, True, False, False, True, True], dtype=bool)
-    p_a02 = np.asarray([0.4, 0.6, 0.91, 0.12, 0.33, 0.66], dtype=np.float64)
-    p_old = np.asarray([0.45, 0.55, 0.8, 0.2, 0.5, 0.5], dtype=np.float64)
+    present = np.asarray([True, True, False, False, True, True, False, True, True, False, True, True], dtype=bool)
+    p_a02 = np.asarray([0.4, 0.6, 0.91, 0.12, 0.33, 0.66, 0.22, 0.7, 0.3, 0.84, 0.61, 0.48], dtype=np.float64)
+    p_old = np.asarray([0.45, 0.55, 0.8, 0.2, 0.5, 0.5, 0.6, 0.4, 0.65, 0.35, 0.52, 0.44], dtype=np.float64)
     candidate_outputs: dict[str, np.ndarray] = {}
     probability_outputs: dict[str, np.ndarray] = {}
     for fit_id in FIT_IDS:
@@ -1680,11 +1681,11 @@ def _synthetic_lifecycle(temp_root: Path, prefix_path: Path, *, source_commit: s
             matrix, gamma, score_z0, p_a02, p_old, present,
             probability_outputs[fit_id], candidate_outputs[fit_id], expected_mix))
     # Synthetic metric/gate path exercises the same all-view scoring helper with supported/unsupported groups.
-    synthetic_y = np.asarray([0, 1, 1, 0, 0, 1], dtype=np.int8)
+    synthetic_y = np.asarray([0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], dtype=np.int8)
     synthetic_bundle = {
-        "score_cycles": np.asarray([68, 69, 70, 71, 72, 73], dtype=np.int64),
-        "present_mask": present, "entry_friction": np.asarray([0, 1, 0, 1, 0, 1], dtype=np.int8),
-        "text_load_group": np.asarray([0, 1, 2, 3, 0, 1], dtype=np.int8),
+        "score_cycles": np.arange(68, 80, dtype=np.int64),
+        "present_mask": present, "entry_friction": np.asarray([0, 1] * 6, dtype=np.int8),
+        "text_load_group": np.asarray([0, 1, 2, 3] * 3, dtype=np.int8),
         "prob_candidate_real": candidate_outputs[FIT_IDS[0]],
         "prob_candidate_shuffled": candidate_outputs[FIT_IDS[1]],
         "prob_mix50": candidate_outputs[FIT_IDS[0]], "prob_q_real": candidate_outputs[FIT_IDS[0]],
@@ -1692,7 +1693,7 @@ def _synthetic_lifecycle(temp_root: Path, prefix_path: Path, *, source_commit: s
         "prob_a02": p_a02, "prob_bag": p_old,
     }
     score_probe, gates_probe = _score_origin(67, synthetic_bundle, synthetic_y)
-    if set(score_probe["views"]) != {"H12_E67", "W4"} or not gates_probe:
+    if set(score_probe["views"]) != {"H12_E67", "W4", "W5", "W6"} or not gates_probe:
         raise MomentsPilotError("Synthetic scoring/gate path did not exercise temporal views")
     wrong_sig_rejected = False
     try:
