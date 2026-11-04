@@ -647,7 +647,9 @@ def _verify_official(
         }
     if not all(checks.values()):
         raise VerifyError(f"Independent Test inference differed from saved bundle: {checks}")
-    submission = pd.read_csv(csv_path, dtype={"record_id": "string"})
+    submission = pd.read_csv(
+        csv_path, dtype={"record_id": "string"}, float_precision="round_trip",
+    )
     labels = pd.to_numeric(submission.threat_rank, errors="coerce").to_numpy(dtype=np.float64)
     if (submission.columns.tolist() != ["record_id", "threat_rank"]
             or len(submission) != TEST_ROWS

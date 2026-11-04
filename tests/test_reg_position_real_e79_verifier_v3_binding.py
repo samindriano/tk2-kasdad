@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import hashlib
+from pathlib import Path
 
+import numpy as np
+import pandas as pd
 import pytest
 
 from scripts.reg_position_real_e79_verifier_v3_binding import (
@@ -105,3 +108,20 @@ def test_historical_adapter_commit_requires_ancestry_and_matching_blobs() -> Non
             ORIGINAL_V2_COMMIT, "a" * 40, hashes, lambda _a, _b: True,
             lambda _commit, path: b"tampered" if path == ORIGINAL_V2_ADAPTER_FILES[0] else blobs[path],
         )
+
+
+def test_submission_csv_round_trip_parser_recovers_exact_float64(tmp_path: Path) -> None:
+    expected = np.asarray([34.996797583053876, 52.125, 0.0], dtype=np.float64)
+    path = tmp_path / "submission.csv"
+    pd.DataFrame({
+        "record_id": ["a", "b", "c"],
+        "threat_rank": expected,
+    }).to_csv(path, index=False, float_format="%.17g", lineterminator="\n")
+
+    default = pd.read_csv(path).threat_rank.to_numpy(dtype=np.float64)
+    round_trip = pd.read_csv(path, float_precision="round_trip").threat_rank.to_numpy(
+        dtype=np.float64,
+    )
+
+    assert not np.array_equal(default, expected)
+    assert np.array_equal(round_trip, expected)
