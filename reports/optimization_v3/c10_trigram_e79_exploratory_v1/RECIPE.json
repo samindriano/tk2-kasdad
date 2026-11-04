@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "benchmark_id": "C10_TRIGRAM_E79_EXPLORATORY_V1",
+  "status": "AUTHORIZED_EXPLORATORY_BENCHMARK_ONLY",
+  "historical_pilot": {
+    "card_id": "C10",
+    "verdict": "RETIRE",
+    "freeze_signature": "415f00250a3d73abd6de9b6816784294f9a126816e15cb61ea3519fe00068045",
+    "recipe_sha256": "4972507c76f59011475ee53cf0ed8f7b42bc4bb2dc83fedadb0113b430022c7b",
+    "primary": {
+      "baseline_sparse25_macro_f1": 0.8239724981677496,
+      "c10_macro_f1": 0.8243153443310582,
+      "gain_vs_sparse25": 0.00034284616330859663,
+      "required_gain": 0.0005,
+      "rows": 9064
+    },
+    "h12": {
+      "baseline_sparse25_macro_f1": 0.8029655654017788,
+      "c10_macro_f1": 0.8038436922708422,
+      "gain_vs_sparse25": 0.0008781268690634114,
+      "rows": 38588
+    },
+    "historical_verdict_immutable": true
+  },
+  "population": {
+    "train_path": "data/raw/classification/Train.csv",
+    "train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "rows": 50608,
+    "cycles": [47, 79],
+    "target": "artifact_signal",
+    "record_id": "identity and alignment only; excluded from model features"
+  },
+  "model": {
+    "class": "src.models.optimization_v3_batch1_c10.SeparateTrigramSparseClassifier",
+    "feature_allowlist": [
+      "impact_load", "entry_friction", "cycle_code", "scope_pressure", "text_load",
+      "scope_trace", "org_spread", "module_spread", "telemetry_flag", "org_code",
+      "module_code", "pattern_code", "signal_stream"
+    ],
+    "structured_preprocessing": "unchanged HYBRID_FEATURES fit-only processor, scaler, and one-hot encoder",
+    "word_tfidf": {
+      "ngram_range": [1, 2], "min_df": 3, "max_df": 0.995, "max_features": 20000,
+      "sublinear_tf": true, "lowercase": true, "strip_accents": "unicode", "dtype": "numpy.float64"
+    },
+    "separate_trigram_tfidf": {
+      "ngram_range": [3, 3], "min_df": 3, "max_df": 0.995, "max_features": 10000,
+      "sublinear_tf": true, "lowercase": true, "strip_accents": "unicode", "dtype": "numpy.float64"
+    },
+    "lightgbm": {
+      "objective": "binary", "learning_rate": 0.05, "n_estimators": 400,
+      "num_leaves": 15, "min_child_samples": 50, "reg_lambda": 3.0, "reg_alpha": 0.0,
+      "n_jobs": 2, "verbosity": -1, "random_state": 42,
+      "deterministic": true, "force_col_wise": true,
+      "early_stopping": false
+    }
+  },
+  "reused_sparse25_fulltrain_state": {
+    "manifest": "reports/optimization_v3/kaggle/v3_cls_sparse25.json",
+    "manifest_sha256": "6e7c2cb50fe6d0ee4767a44c40f152b6538b933fab6cf7082659b16d791f7d1e",
+    "prediction_bundle": "experiments/runs/optimization_v3_inference/v3_cls_sparse25.npz",
+    "prediction_bundle_sha256": "31ef6945ae74a14b1e4ff46220667ac3a08de3401120257e7932745c927d6103",
+    "train_fit_rows_each": 50608,
+    "components": {
+      "C2_B": {
+        "state_sha256": "6c3e3025ad190a1651a008fc7d895aa710c507046a1b19c004e8d5b08de9a4fb",
+        "prediction_sha256": "49758d1c61d68847a21b0e9dd7f5765513320dedc7359c47f715441725e6fb70"
+      },
+      "CB_MISSING": {
+        "state_sha256": "0344642b1c62f570ffa07d4241fef74897f2ff6b658ac467a712f00b51321c23",
+        "prediction_sha256": "0779620b5f5b436fbce03e4270e3ea06045eb9f9cd89c831aea4adddd0a482bf"
+      },
+      "SPARSE_BINARY": {
+        "state_sha256": "350140b0dd43b89882f0aedd583c37e0c228f115b8d811d7e09c6d49dcd767ea",
+        "prediction_sha256": "5d978dfa2ebd0808d2451fbd48a13c05a0311ae4531e8186f072057e422ca2c2"
+      }
+    },
+    "source_commit": "75ff5bd10187679a2468030bd5791b6b7a5961fe",
+    "no_component_refits": true
+  },
+  "fixed_policy": {
+    "present_stream": "0.75 * verified Sparse25 C2_B probability + 0.25 * new C10 raw probability",
+    "missing_stream": "verified Sparse25 E79 CB_MISSING probability bit-exact",
+    "threshold": 0.5,
+    "comparison_only": "MIX50 is a later benchmark reference, not a replacement route or validation baseline",
+    "no_blend_or_threshold_search": true
+  },
+  "budget": {
+    "fit_id": "C10_TRIGRAM_E79_EXPLORATORY_V1_FULLTRAIN_LGBM",
+    "max_learned_units": 6,
+    "preprocessing_units": [
+      "structured_selected_preprocessor", "standard_scaler", "one_hot_encoder",
+      "word_tfidf", "trigram_tfidf"
+    ],
+    "predictor_units": ["lightgbm_classifier"],
+    "official_predictor_fits": 1,
+    "retry_count": 0,
+    "separate_from_historical_ledgers": true
+  },
+  "resources": {
+    "production_jobs": 1,
+    "threads_max": 2,
+    "initial_available_ram_min_bytes": 4294967296,
+    "projected_available_ram_reserve_bytes": 2147483648,
+    "process_rss_max_bytes": 6442450944
+  },
+  "boundaries": {
+    "fit_population": "official Train only",
+    "test_features": "not read before committed trained-state freeze",
+    "test_labels": "never read",
+    "sample_submission": "never opened",
+    "kaggle": "no API, CLI, browser, or upload from this lane",
+    "historical_c10_verdict": "remains RETIRE; this full-Train run is an exploratory benchmark, not a validation pass"
+  },
+  "outputs": {
+    "csv": "submissions/optimization_v3/c10_trigram_e79_exploratory_v1/c10_trigram_e79_exploratory.csv",
+    "run_dir": "experiments/runs/optimization_v3_c10_trigram_e79_exploratory_v1",
+    "report_dir": "reports/optimization_v3/c10_trigram_e79_exploratory_v1"
+  }
+}
