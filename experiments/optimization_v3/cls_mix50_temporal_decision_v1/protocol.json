@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "experiment_id": "CLS_MIX50_TEMPORAL_DECISION_V1",
-  "prefit_revision": "R4",
+  "prefit_revision": "R5",
   "status": "PREFIT_ONLY_PENDING_ROOT_REVIEW",
   "superseded_unapproved_prefit_attempts": [
     "reports/optimization_v3/cls_mix50_temporal_decision_v1/PREFIT_FREEZE_R1_SUPERSEDED.json",
@@ -9,7 +9,9 @@
     "reports/optimization_v3/cls_mix50_temporal_decision_v1/PREFIT_FREEZE_R2_SUPERSEDED.json",
     "reports/optimization_v3/cls_mix50_temporal_decision_v1/PREFIT_SYNTHETIC_QA_R2_SUPERSEDED.json",
     "reports/optimization_v3/cls_mix50_temporal_decision_v1/PREFIT_FREEZE_R3_SUPERSEDED.json",
-    "reports/optimization_v3/cls_mix50_temporal_decision_v1/PREFIT_SYNTHETIC_QA_R3_SUPERSEDED.json"
+    "reports/optimization_v3/cls_mix50_temporal_decision_v1/PREFIT_SYNTHETIC_QA_R3_SUPERSEDED.json",
+    "reports/optimization_v3/cls_mix50_temporal_decision_v1/PREFIT_FREEZE_R4.json",
+    "reports/optimization_v3/cls_mix50_temporal_decision_v1/PREFIT_SYNTHETIC_QA_R4.json"
   ],
   "purpose": "Evaluate whether a past-only, per-recipe scalar decision threshold transfers on saved OOF predictions from the exact current MIX50 policy.",
   "scope": {
@@ -98,15 +100,28 @@
     "probability_metrics": "Do not claim AUC, average precision, log loss, or Brier changes; probabilities are unchanged by thresholding."
   },
   "durability_and_resume": {
-    "prefit_freeze": "reports/optimization_v3/cls_mix50_temporal_decision_v1/PREFIT_FREEZE_R4.json",
-    "synthetic_qa": "reports/optimization_v3/cls_mix50_temporal_decision_v1/PREFIT_SYNTHETIC_QA_R4.json",
+    "prefit_freeze": "reports/optimization_v3/cls_mix50_temporal_decision_v1/PREFIT_FREEZE_R5.json",
+    "synthetic_qa": "reports/optimization_v3/cls_mix50_temporal_decision_v1/PREFIT_SYNTHETIC_QA_R5.json",
     "root_approval_file": "reports/optimization_v3/cls_mix50_temporal_decision_v1/ROOT_PREFIT_PASS.json",
-    "approval_must_bind": ["prefit_commit", "prefit_freeze_sha256", "protocol_sha256", "script_sha256", "tests_sha256", "scope"],
+    "approval_must_bind": ["prefit_commit", "prefit_freeze_file_sha256", "prefit_freeze_receipt_sha256", "protocol_sha256", "script_sha256", "tests_sha256", "research_next_contract_sha256", "scope"],
+    "prefit_commit_validation": "The reviewed source commit must exist and be an ancestor of current HEAD. For script, protocol, tests, and src/models/research_next_contract.py, bind the on-disk file SHA-256 plus the Git blob OID and SHA-256 of committed blob bytes. Verify committed and current blobs still match; all other frozen source/input hashes must also match. Descendant report-only commits are allowed.",
+    "freeze_digest_contract": "prefit_freeze_file_sha256 hashes the exact on-disk JSON bytes; prefit_freeze_receipt_sha256 is the canonical receipt_sha256 inside that JSON. They are distinct required approval fields.",
+    "resource_gate": {
+      "minimum_available_physical_ram_bytes": 4294967296,
+      "estimated_incremental_peak_bytes": 268435456,
+      "documented_safety_reserve_bytes": 2147483648,
+      "required_available_ram_bytes": 4294967296,
+      "estimate_note": "Conservative incremental allowance for 20,903-row NumPy threshold arrays and line-streamed 50,608-row Train ID/label lookup; not a measured peak.",
+      "maximum_project_jobs": 1,
+      "maximum_threadpool_threads": 2,
+      "reservation_order": "Check available RAM before appending RESERVE; a low-memory block leaves the selection ledger unchanged. Reuse of a complete durable receipt consumes no new selection or resource reservation."
+    },
     "run_directory": "experiments/runs/optimization_v3_cls_mix50_temporal_decision_v1",
-    "immutable_receipts": "Create with O_EXCL, flush and fsync. Reuse only exact hash-bound receipts; never overwrite.",
-    "ledger": "Separate append-only stage ledger; max three learned selections. A reserved stage without its durable receipt blocks resume; do not repeat selection automatically.",
+    "immutable_receipts": "Create with O_EXCL, flush and fsync. On selection resume, replay current IDs, cycles, probability/missing-mask hashes, source hashes, reservation ID, and recipe version against the receipt. Reuse only exact hash-bound receipts; never overwrite.",
+    "ledger": "Separate append-only stage ledger; max three reservations. Each RESERVE has a canonical unique reservation_id and passing resource-gate receipt; COMPLETE must reference that reservation_id and the exact SHA-256 of the persisted selection receipt. Verify the complete-event digest on every resume. A reserved stage without its durable receipt blocks resume; do not repeat selection automatically.",
+    "evaluation_receipt_resume": "Before reusing an evaluation receipt, verify evaluation ID, exact cycle values/range, row count, ordered record-ID digest, threshold receipt digest/value, frozen source hashes, current probability/missing/group input hashes, Train file hash, and target-label digest read only after the durable threshold receipt exists.",
     "record_ids": "Unicode arrays only; object arrays prohibited.",
     "csv": "One versioned local candidate at most; duplicate label-vector scan required. No upload by this script."
   },
-  "review_boundary": "Do not run official selector stages until the root creates a matching ROOT_PREFIT_PASS.json after independent code and metric-boundary review."
+  "review_boundary": "Do not run official selector stages until the root creates a matching ROOT_PREFIT_PASS.json after independent code and metric-boundary review. Validate the approval against the exact R5 freeze file/receipt digests and reviewed source commit; report-only commits may follow that source commit."
 }
