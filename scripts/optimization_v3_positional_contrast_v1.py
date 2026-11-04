@@ -28,6 +28,9 @@ from scipy.special import expit
 
 from src.models.positional_contrast_v1 import contrast_block, expand_contrast_coefficients
 from scripts import optimization_v3_positional_bag_offset_v1 as offset
+from scripts.verify_optimization_v3_positional_bag_offset_v1 import (
+    verify_prelabel_outputs as verify_parent_prelabel_outputs,
+)
 from scripts.verify_optimization_v3_positional_contrast_v1 import (
     verify_prelabel_outputs,
     verify_scored_results,
@@ -235,7 +238,7 @@ def _verify_parent_inputs() -> dict[str, Any]:
         raise ContrastPilotError("Official Classification Train hash mismatch")
     legacy = _ORIGINAL_VERIFY(include_current_code=False)
     bag_freeze = _parent_freeze()
-    old_prelabel = verify_prelabel_outputs(ROOT, BAG_ROOT, bag_freeze)
+    old_prelabel = verify_parent_prelabel_outputs(ROOT, BAG_ROOT, bag_freeze)
     if old_prelabel.get("status") != "PASS" or old_prelabel.get("query_labels_read") is not False:
         raise ContrastPilotError("Original POS_BAG frozen pP prelabel verification is not PASS/closed")
     identity = offset._read_identity_frame()
