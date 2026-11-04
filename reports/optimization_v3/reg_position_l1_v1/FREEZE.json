@@ -1,0 +1,309 @@
+{
+  "accounting": {
+    "isolated_ledger": "experiments/runs/reg_position_l1_v1/fit_ledger.jsonl",
+    "pilot_cap": 6,
+    "pilot_fit_starts": 6,
+    "retries": 0,
+    "shared_main_ledger_written": false
+  },
+  "boundaries": {
+    "classification_targets_or_probabilities_read": false,
+    "kaggle_accessed": false,
+    "pilot_preprocessor_fits": 0,
+    "query_targets_used_for_fit": false,
+    "r06_refit": false,
+    "test_or_sample_accessed": false
+  },
+  "branch": "codex/regression-position-research",
+  "card_id": "REG_POSITION_L1_V1",
+  "fit_ids_order": [
+    "REG_POSITION_L1_V1_E67_BAG",
+    "REG_POSITION_L1_V1_E67_REAL",
+    "REG_POSITION_L1_V1_E67_SHUFFLED",
+    "REG_POSITION_L1_V1_E75_BAG",
+    "REG_POSITION_L1_V1_E75_REAL",
+    "REG_POSITION_L1_V1_E75_SHUFFLED"
+  ],
+  "freeze_signature": "1982463561610456c516d3ac3c913f0be38aca6bd2955e2813960f3e50e03ca5",
+  "input_hashes": {
+    "main/data/raw/regression/Train.csv": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+    "main/experiments/optimization_v3/batch1/R06/recipe_revision_02.json": "6814978b3228fb741429dbd6b8af6d2c6caa8044eff0e079bbeb50066643b788",
+    "main/experiments/runs/optimization_v3_batch1/R06/R06_fit55.npz": "ed52cf9c8958b693e49e4c2999015babe35aa8f350fea28eb313e492f19e5dd6",
+    "main/experiments/runs/optimization_v3_batch1/R06/R06_fit67.npz": "4bda0ac6838388ea46ca768e0998f7b0f9a9a1b6defb2b1e5399f6ff83154804",
+    "main/experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit59.npz": "6d55cd7fa59662d54816ed4be16470a437af615b5e6544ec0ab15ce10dbcf849",
+    "main/experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit63.npz": "f6480ec474dbd9229b401eade141ff51a4bf911f68b10df14336b0a9b997c0c9",
+    "main/experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit71.npz": "47c97efd70dba87b8fd4187e31e85122d325528688553f7c9e8e6a81dcf58894",
+    "main/experiments/runs/optimization_v3_expanded_benchmark_v1_recovery_v2/R06/R06_fit75.npz": "61ef463a5bf5ee06f3c68162b8a7f874664b2736161979342731de98b5e09abb",
+    "main/experiments/runs/optimization_v3_research_next_v1/POSITIONAL_TEXT_PILOT_V1/E67/matrices/fit_base.npz": "1f6ebc9bff046c463fcc1b644f6100bec471d805b1583a30595c93458bb25e6f",
+    "main/experiments/runs/optimization_v3_research_next_v1/POSITIONAL_TEXT_PILOT_V1/E67/matrices/fit_position.npz": "dda3479ad23442e16e549dbf863592ff77471ac44e69f2370c29e53060a83f78",
+    "main/experiments/runs/optimization_v3_research_next_v1/POSITIONAL_TEXT_PILOT_V1/E67/matrices/fit_shuffled_position.npz": "d253394e162c8a84fea99f9f3bb273c338012106c38157a1ff8ba3f92c79c63e",
+    "main/experiments/runs/optimization_v3_research_next_v1/POSITIONAL_TEXT_PILOT_V1/E67/matrices/score_base.npz": "fb2cbd4be457eac308e5de449821dde0fdfb69bf7f45faa94b9959e1ea703e4b",
+    "main/experiments/runs/optimization_v3_research_next_v1/POSITIONAL_TEXT_PILOT_V1/E67/matrices/score_position.npz": "9540fa76b0b56502c24c00674bed5d849d48e5f94d217fb1ac0c2c073f1f5379",
+    "main/experiments/runs/optimization_v3_research_next_v1/POSITIONAL_TEXT_PILOT_V1/E67/matrices/score_shuffled_position.npz": "e22b3f39e1e6bef5139967344a449d2639d4565c36145b9967dbedac9076fb44",
+    "main/experiments/runs/optimization_v3_research_next_v1/POSITIONAL_TEXT_PILOT_V1/E67/predictions_E67.npz": "2f22c68aca959baad6cd4244e05f96b702b4b89dfdc83f82c8edde6cf465d444",
+    "main/experiments/runs/optimization_v3_research_next_v1/POSITIONAL_TEXT_PILOT_V1/E75/matrices/fit_base.npz": "f6dbc38d188d261d8c585135cd5b41cd8ff339d234a3e19815b0fb725c8823db",
+    "main/experiments/runs/optimization_v3_research_next_v1/POSITIONAL_TEXT_PILOT_V1/E75/matrices/fit_position.npz": "15a6282670cf6b9f2240ed0ae5886fe3f2148089b1db774abe8d915c3251ef9f",
+    "main/experiments/runs/optimization_v3_research_next_v1/POSITIONAL_TEXT_PILOT_V1/E75/matrices/fit_shuffled_position.npz": "3d723ffbd259051dbf671f3025f0fb8a8de94ed56aad95d51816b22e8a79ae7c",
+    "main/experiments/runs/optimization_v3_research_next_v1/POSITIONAL_TEXT_PILOT_V1/E75/matrices/score_base.npz": "f4ae9dd45c918683a60aebcf37a450cf77606a149d4f7b2b25877e8c413414d3",
+    "main/experiments/runs/optimization_v3_research_next_v1/POSITIONAL_TEXT_PILOT_V1/E75/matrices/score_position.npz": "a582bebda02f52bc3ea8d310d1f092cd710a90e48b82c048cfcbcf1769d8b8cb",
+    "main/experiments/runs/optimization_v3_research_next_v1/POSITIONAL_TEXT_PILOT_V1/E75/matrices/score_shuffled_position.npz": "ae84857d5a6663012318e851347778623022d18c7b1ef1167206cbf5b5c3c12b",
+    "main/experiments/runs/optimization_v3_research_next_v1/POSITIONAL_TEXT_PILOT_V1/E75/predictions_E75.npz": "83e5beb9b10be4d395df4a2292cb464625f356e5e77a76a232b92f007c1b1306",
+    "main/experiments/runs/optimization_v3_research_next_v1/POSITIONAL_TEXT_PILOT_V1/MATRIX_MANIFEST_E67.json": "d8d672c26771944bc2bb6eee907e9bef903959fbc62d9f5df3aaab7f7cb28028",
+    "main/experiments/runs/optimization_v3_research_next_v1/POSITIONAL_TEXT_PILOT_V1/MATRIX_MANIFEST_E75.json": "67ec3f9bd376f5f4dad2afbd5e13ee5fd8316126fa3894ef676fa40077166fc5",
+    "main/experiments/runs/optimization_v3_research_next_v1/RNBR_IMPACT_MATCH_V2_1/text_space_replays/E67/receipt.json": "e1e7507f97a05b3ff0e6173ab99ec62a8b7279264fceed039bcad68802065bbf",
+    "main/experiments/runs/optimization_v3_research_next_v1/RNBR_IMPACT_MATCH_V2_1/text_space_replays/E67/text_state.json": "f644721ba9e91e5e6f575ca6057081fb62db99bc65d45a0782e098ad74122507",
+    "main/experiments/runs/optimization_v3_research_next_v1/RNBR_IMPACT_MATCH_V2_1/text_space_replays/E67/vectorizer.joblib": "ace9912c4bb927fe0bb9487d2cc1b9f1bd5e55f38f80db0b2e24bf9ac031f821",
+    "main/experiments/runs/optimization_v3_research_next_v1/RNBR_IMPACT_MATCH_V2_1/text_space_replays/E75/receipt.json": "3b4fe8032e1f7c762bcb5bab2bba1ba88eff4546c0737d7dec2f2e3c9abc6d1f",
+    "main/experiments/runs/optimization_v3_research_next_v1/RNBR_IMPACT_MATCH_V2_1/text_space_replays/E75/text_state.json": "7afebfa725734f5a092720ece2d71c4b25d364a507da92ae43f9502642ed7075",
+    "main/experiments/runs/optimization_v3_research_next_v1/RNBR_IMPACT_MATCH_V2_1/text_space_replays/E75/vectorizer.joblib": "9d99aaf5fd226597ba62c2487e406d7d7e9c2fde124c38539e2bdc0593836980",
+    "main/experiments/runs/optimization_v3_research_next_v1/RNBR_PILOT_OFFICIAL_V1/bundles/RNBR_PILOT_E75_OBSERVED/arrays.npz": "b613d08cc0a9573d8dd459b81a09c8f13f3d294ba7062ac27c1f1dfca748a31f",
+    "main/experiments/runs/optimization_v3_research_next_v1/RNBR_PILOT_OFFICIAL_V1/recovered_bundles/RNBR_PILOT_E67_OBSERVED/arrays.npz": "debe03d84dac1a23772471cb3aacef62226b278cede588a7de83a343b3bf83e4",
+    "main/reports/optimization_v3/rnbr_postpublic_v1/audit.json": "3c06735dcb5d1712c8df002727e24b2a6d17e810208ddc0c25bcadedacfd915c",
+    "main/src/models/optimization_v3_batch1_r06.py": "37869d6125d48fc4afb2a3c439cbb19d5586f35f1cd3a501b762e42530fcd970"
+  },
+  "official_train_sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+  "origins": {
+    "67": {
+      "baseline_member": "baseline_prediction; final mapped R06",
+      "candidate_member_excluded": "prediction and raw_candidate",
+      "donor_final_r06_prediction_sha256": "17c1385bd69cbe3445bdbb80dd85dc669601d3f9647e00d88d60e60ea84e768f",
+      "donor_residual_sha256": "764b7a0b6c7cacabe0b105ebc28c922648ebd14bcad75509d72be27beca9bf0c",
+      "fit_cutoff_range": [
+        56,
+        67
+      ],
+      "fit_row_ids_sha256": "8274b196dc2c89081155863ea12213333f9123cf48cff893adde97fedc4b08ed",
+      "fit_rows": 16482,
+      "fit_rows_source_positions_sha256": "d7df0a28e4f9c6bcf3f30f02d035499051fd1376ee03436a37d3f8490e665a44",
+      "fit_source_cutoff_counts": {
+        "55": 3722,
+        "59": 6124,
+        "63": 6636
+      },
+      "input_reconstruction": {
+        "fit_source_rows": 16482,
+        "position_features": {
+          "REAL": 17025,
+          "SHUFFLED": 17025
+        },
+        "position_reconstruction": {
+          "REAL": {
+            "fit": {
+              "arm": "REAL",
+              "cached_logical_sha256": "5f39ce0dd3f0127d478e9e2e98fb07543e791ac6377b1dcd697ca709a0e3947d",
+              "equal_atol_1e-12": true,
+              "includes_missing": true,
+              "rebuilt_logical_sha256": "5f39ce0dd3f0127d478e9e2e98fb07543e791ac6377b1dcd697ca709a0e3947d",
+              "rows": 64
+            },
+            "query": {
+              "arm": "REAL",
+              "cached_logical_sha256": "ef6f156c1ea85bba69c57125e84dcf4218e082f07bdf2630a2187edfc7dc39d3",
+              "equal_atol_1e-12": true,
+              "includes_missing": true,
+              "rebuilt_logical_sha256": "ef6f156c1ea85bba69c57125e84dcf4218e082f07bdf2630a2187edfc7dc39d3",
+              "rows": 64
+            }
+          },
+          "SHUFFLED": {
+            "fit": {
+              "arm": "SHUFFLED",
+              "cached_logical_sha256": "9f895a07f0445c8eef5916afcad11c267c873aa7ba327553d2f2af28c45f43ce",
+              "equal_atol_1e-12": true,
+              "includes_missing": true,
+              "rebuilt_logical_sha256": "9f895a07f0445c8eef5916afcad11c267c873aa7ba327553d2f2af28c45f43ce",
+              "rows": 64
+            },
+            "query": {
+              "arm": "SHUFFLED",
+              "cached_logical_sha256": "3b89a9d7b07eee0285443ed95c5acf3d9c8be91c9076dabe1402440a05046c2a",
+              "equal_atol_1e-12": true,
+              "includes_missing": true,
+              "rebuilt_logical_sha256": "3b89a9d7b07eee0285443ed95c5acf3d9c8be91c9076dabe1402440a05046c2a",
+              "rows": 64
+            }
+          }
+        },
+        "prefix_quartile_edges": {
+          "impact_load": [
+            75.9658,
+            110.5078,
+            134.6432
+          ],
+          "text_load": [
+            27.1406,
+            31.2684,
+            36.1952
+          ]
+        },
+        "query_source_rows": 20903,
+        "unigram_features": 5675
+      },
+      "matrix_manifest_sha256": "d8d672c26771944bc2bb6eee907e9bef903959fbc62d9f5df3aaab7f7cb28028",
+      "origin": 67,
+      "query_final_r06_prediction_sha256": "828ccdb30b31f371ca594410a824e6a2783be37c64ceccdda49ee02fa218b7b3",
+      "query_row_ids_sha256": "d16962cea5ce6420561117b2f10b268341b8ccfe8cfc4b3f62390f4f58a112ce",
+      "query_rows": 20903,
+      "query_rows_source_positions_sha256": "eb13d7757b7abef8e90ab5a7f7ecc5050f4556e927827d1896ebd5c5314314b6"
+    },
+    "75": {
+      "baseline_member": "baseline_prediction; final mapped R06",
+      "candidate_member_excluded": "prediction and raw_candidate",
+      "donor_final_r06_prediction_sha256": "14dfaeb69dbd641845666663dc8d796fbb07f16053c47c04a3c32d6924f0a1f1",
+      "donor_residual_sha256": "bbcf4f0f3bda3ad6caac945803cbe7f05c87dbaaf408fda0eb6870db42422760",
+      "fit_cutoff_range": [
+        56,
+        75
+      ],
+      "fit_row_ids_sha256": "f80ba0eac0b575f2275d408e96002827ec063e681e79f3f56b4fe1d3a768925e",
+      "fit_rows": 28045,
+      "fit_rows_source_positions_sha256": "eddfa7e2ae1d3ecddbd9debf7d5bd81914d69e691bacb19046c27d7632807911",
+      "fit_source_cutoff_counts": {
+        "55": 3722,
+        "59": 6124,
+        "63": 6636,
+        "67": 4608,
+        "71": 6955
+      },
+      "input_reconstruction": {
+        "fit_source_rows": 28045,
+        "position_features": {
+          "REAL": 17169,
+          "SHUFFLED": 17169
+        },
+        "position_reconstruction": {
+          "REAL": {
+            "fit": {
+              "arm": "REAL",
+              "cached_logical_sha256": "19484ddd43f64368c02b07dc325e7a35422ebbeabb7195b75dac8b307bd1e4f0",
+              "equal_atol_1e-12": true,
+              "includes_missing": true,
+              "rebuilt_logical_sha256": "19484ddd43f64368c02b07dc325e7a35422ebbeabb7195b75dac8b307bd1e4f0",
+              "rows": 64
+            },
+            "query": {
+              "arm": "REAL",
+              "cached_logical_sha256": "f1087333fbd72cff56dd7894b1dae48ed68c8c9555d691d5ecc55f0b6d2f204e",
+              "equal_atol_1e-12": true,
+              "includes_missing": true,
+              "rebuilt_logical_sha256": "f1087333fbd72cff56dd7894b1dae48ed68c8c9555d691d5ecc55f0b6d2f204e",
+              "rows": 64
+            }
+          },
+          "SHUFFLED": {
+            "fit": {
+              "arm": "SHUFFLED",
+              "cached_logical_sha256": "b2e3e90f5ce9c1981c75893449af976aacc6c2a4a733e9776a26746148f7a325",
+              "equal_atol_1e-12": true,
+              "includes_missing": true,
+              "rebuilt_logical_sha256": "b2e3e90f5ce9c1981c75893449af976aacc6c2a4a733e9776a26746148f7a325",
+              "rows": 64
+            },
+            "query": {
+              "arm": "SHUFFLED",
+              "cached_logical_sha256": "815e4ce6252300749209324ec7e6c94c136e125408b2e790761acfec6501ff8d",
+              "equal_atol_1e-12": true,
+              "includes_missing": true,
+              "rebuilt_logical_sha256": "815e4ce6252300749209324ec7e6c94c136e125408b2e790761acfec6501ff8d",
+              "rows": 64
+            }
+          }
+        },
+        "prefix_quartile_edges": {
+          "impact_load": [
+            75.9658,
+            110.5078,
+            134.6432
+          ],
+          "text_load": [
+            27.0965,
+            31.4194,
+            36.6066
+          ]
+        },
+        "query_source_rows": 8491,
+        "unigram_features": 5723
+      },
+      "matrix_manifest_sha256": "67ec3f9bd376f5f4dad2afbd5e13ee5fd8316126fa3894ef676fa40077166fc5",
+      "origin": 75,
+      "query_final_r06_prediction_sha256": "1fe5e09dcf7c80b6b70ba7236ebeca7de7265230c85a1d56c78667901d7032dc",
+      "query_row_ids_sha256": "3d53539427605cc78d5478bc71143cfbc07cf3e8120be15c4358c5278d1c8c38",
+      "query_rows": 8491,
+      "query_rows_source_positions_sha256": "56ce75432afddf4b55d01753871a788ab8afb3af3a28c1045025ba142035934e"
+    }
+  },
+  "parameter_source": {
+    "base": "COMMON_PARAMETERS",
+    "path": "src/models/regression_research_tabular.py",
+    "resolved_sha256": "191fbc6947ef5dad10c262ee4d87e68cb377374d4259a800c754b32a157a9b89",
+    "set": "PARAMETER_SETS['regularized']"
+  },
+  "parameters": {
+    "boosting_type": "gbdt",
+    "class_weight": null,
+    "colsample_bytree": 1.0,
+    "deterministic": true,
+    "force_col_wise": true,
+    "importance_type": "split",
+    "learning_rate": 0.05,
+    "max_depth": -1,
+    "min_child_samples": 80,
+    "min_child_weight": 0.001,
+    "min_split_gain": 0.0,
+    "n_estimators": 400,
+    "n_jobs": 2,
+    "num_leaves": 15,
+    "objective": "regression_l1",
+    "random_state": 42,
+    "reg_alpha": 0.0,
+    "reg_lambda": 3.0,
+    "subsample": 1.0,
+    "subsample_for_bin": 200000,
+    "subsample_freq": 0,
+    "verbosity": -1
+  },
+  "policy": {
+    "alpha": 0.25,
+    "delta_cap": 5.0,
+    "position_suffix_normalize": false,
+    "query_target_open_before_all_saved": false,
+    "rank_map_after_residual": false,
+    "target_range": [
+      0.0,
+      100.0
+    ],
+    "unigram_normalize_once": true
+  },
+  "readiness_audit_sha256": "9630268eca89a31b4d0b81e77712c3a646058ebd2e468a58ecec9c7e22e69d3b",
+  "readiness_summary": {
+    "new_fits": 0,
+    "shared_ledger_written": false,
+    "status": "ZERO_FIT_READINESS_PASS"
+  },
+  "schema_version": 1,
+  "source_commit_before_freeze": "ab59af981a104d6fce2bfc4ad23841921f7855ae",
+  "source_hashes": {
+    "worktree/reports/optimization_v3/reg_position_l1_v1/RECIPE.json": "7d6303c02d8e4b3aa5343b0070697d1dd2d6172638e283c3c473f98b2f2b2552",
+    "worktree/reports/optimization_v3/regression_position_frontier_v1/PROTOCOL.md": "0577f8ab0f4b3e578362aa34d2f428b90688044b08abd052ff4b18141f8e4c6c",
+    "worktree/reports/optimization_v3/regression_position_frontier_v1/READINESS_AND_ERROR_AUDIT.json": "9630268eca89a31b4d0b81e77712c3a646058ebd2e468a58ecec9c7e22e69d3b",
+    "worktree/scripts/reg_position_l1_v1.py": "1a6763fc5bdc70c2469e177333b19b267d43f2fda80f3115edb0cddc1bd5f8b7",
+    "worktree/scripts/regression_position_frontier_audit.py": "a48f46a33978ced4d19cbc32ec6a1a0b1078fb323bf6f86df7390bef923fdac8",
+    "worktree/scripts/verify_reg_position_l1_v1.py": "313896de6da0905d6eba5d2b1e66831095badf01377af03f9c2b54854691921a",
+    "worktree/src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+    "worktree/src/models/optimization_v3_positional_text_pilot_v1.py": "390d9585a91440cc83314d2fa58acfebf374371032308937489019c2bd242c36",
+    "worktree/src/models/reg_position_l1_v1.py": "d340217ed2527209407f0b97e8ac25de1c83c9e3f702fca60ecdefb9d5379302",
+    "worktree/src/models/regression_research_tabular.py": "674d7e52c485583729b8fe999dc133c39aae8dd85abd005a598e2caea9af99f9",
+    "worktree/tests/test_reg_position_l1_v1.py": "7c7255b67ae72dc321c2f64c7cf6f765f4496930b59ce83f4611976d2c06ec00"
+  },
+  "status": "FROZEN_BEFORE_OFFICIAL_FITS",
+  "versions": {
+    "joblib": "1.5.3",
+    "lightgbm": "4.6.0",
+    "matplotlib": "3.10.5",
+    "numpy": "2.4.2",
+    "pandas": "2.3.3",
+    "python": "3.13.5",
+    "scikit_learn": "1.8.0",
+    "scipy": "1.18.0"
+  }
+}
