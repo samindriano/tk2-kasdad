@@ -172,11 +172,16 @@ def _load_a02(origin: int, *, include_groups: bool = False) -> tuple[dict[str, A
     if include_groups:
         safe_keys.extend(["entry_friction", "text_load_group"])
     values = _load_named_npz(path, safe_keys)
-    if offset.sha256_array(values["prediction"]) != metadata["diagnostics"]["candidate_probability_sha256"]:
+    prediction_sha = hashlib.sha256(np.asarray(values["prediction"], dtype="<f8").tobytes(order="C")).hexdigest()
+    rows_sha = hashlib.sha256(np.asarray(values["score_rows"], dtype="<i8").tobytes(order="C")).hexdigest()
+    ids_payload = json.dumps(values["score_record_ids"].astype(str).tolist(), separators=(",", ":"),
+                             ensure_ascii=False).encode("utf-8")
+    ids_sha = hashlib.sha256(ids_payload).hexdigest()
+    if prediction_sha != metadata["diagnostics"]["candidate_probability_sha256"]:
         raise ContrastPilotError(f"A02 E{origin} selected probability array hash mismatch")
-    if offset.sha256_array(values["score_rows"]) != metadata["score_row_positions_sha256"]:
+    if rows_sha != metadata["score_row_positions_sha256"]:
         raise ContrastPilotError(f"A02 E{origin} selected row-index hash mismatch")
-    if offset.sha256_array(values["score_record_ids"]) != metadata["score_record_ids_sha256"]:
+    if ids_sha != metadata["score_record_ids_sha256"]:
         raise ContrastPilotError(f"A02 E{origin} selected ID hash mismatch")
     if not np.isfinite(values["prediction"]).all() or ((values["prediction"] < 0) | (values["prediction"] > 1)).any():
         raise ContrastPilotError(f"A02 E{origin} probabilities are invalid")

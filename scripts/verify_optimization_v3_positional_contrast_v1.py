@@ -87,11 +87,16 @@ def _safe_a02(root: Path, origin: int, *, groups: bool = False) -> tuple[dict[st
             or receipt.get("test_data_used") is not False):
         raise AssertionError(f"A02 E{origin} source-boundary receipt mismatch")
     expected = meta["diagnostics"]["candidate_probability_sha256"]
-    if offset.sha256_array(arrays["prediction"]) != expected:
+    prediction_sha = hashlib.sha256(np.asarray(arrays["prediction"], dtype="<f8").tobytes(order="C")).hexdigest()
+    rows_sha = hashlib.sha256(np.asarray(arrays["score_rows"], dtype="<i8").tobytes(order="C")).hexdigest()
+    ids_payload = json.dumps(arrays["score_record_ids"].astype(str).tolist(), separators=(",", ":"),
+                             ensure_ascii=False).encode("utf-8")
+    ids_sha = hashlib.sha256(ids_payload).hexdigest()
+    if prediction_sha != expected:
         raise AssertionError(f"A02 E{origin} candidate probability array differs")
-    if offset.sha256_array(arrays["score_rows"]) != meta["score_row_positions_sha256"]:
+    if rows_sha != meta["score_row_positions_sha256"]:
         raise AssertionError(f"A02 E{origin} row-index array differs")
-    if offset.sha256_array(arrays["score_record_ids"]) != meta["score_record_ids_sha256"]:
+    if ids_sha != meta["score_record_ids_sha256"]:
         raise AssertionError(f"A02 E{origin} row-ID array differs")
     return {"meta": meta, "receipt": receipt}, arrays
 
@@ -372,8 +377,8 @@ def verify_prelabel_outputs(root: Path, run_root: Path,
                 or not np.array_equal(output["prob_real_blend"][~present], p_p[~present])
                 or not np.array_equal(output["prob_shuffled_blend"][~present], p_p[~present])):
             raise AssertionError(f"E{origin} fixed missing route is not exact original pP")
-        if offset.sha256_array(p_a) != a02_info["meta"]["diagnostics"]["candidate_probability_sha256"]:
-            raise AssertionError(f"E{origin} A02 safe probability hash mismatch")
+        if not np.array_equal(p_a, a02["prediction"]):
+            raise AssertionError(f"E{origin} A02 safe probability values differ after metadata lineage check")
         origins_verified[key] = {
             "score_rows": int(len(score_rows)), "score_rows_sha256": offset.sha256_array(score_rows),
             "score_record_ids_sha256": offset.sha256_array(ids), "query_labels_read": False,
