@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN_BEFORE_CSV_CONSTRUCTION",
+  "policy_id": "MIX50_PRESENT_A02_MISSING",
+  "candidate_formula": "present=0.5*pP+0.5*pA; missing=pA",
+  "baseline_formula": "present=0.5*pP+0.5*pA; missing=pP",
+  "threshold": 0.5,
+  "threshold_operator": ">=",
+  "base_commit": "8223c26fc5b3e53e4e45e641837d5c8309f7464a",
+  "source_hashes": {
+    "scripts/optimization_v3_cls_mix50_a02_missing_e79_v1.py": "21ce5edf7abfd72a417c9556e74b7e27a1e08c467da78ef2b7dc88eea8fa60ea",
+    "tests/test_optimization_v3_cls_mix50_a02_missing_e79_v1.py": "63aa63571e80c4d53baef1a7e32a28f7e19794e729f95305fdf0741acbfc8855",
+    "scripts/prepare_optimization_v3_posoffset_a02_endgame_e79.py": "9ce4ad459e3516240c8e1e1f950d5751742001ccb99f2ed19f818a858b23297d",
+    "scripts/optimization_v3_cls_mix50_temporal_decision_v1.py": "fa8ed546073914dec1035568dd18ce8462935db96334744eaad481e38deca27f",
+    "reports/optimization_v3/posoffset_a02_endgame_v1/RECIPE.json": "055ae069117a030338f26f8ab3e142fcf1ec478e396f2b38dc35c6c69717e0b0",
+    "reports/optimization_v3/posoffset_a02_endgame_v1/E79_SELECTED_MANIFEST.json": "bc1f1f12eb9bcf7ef6fd16373ef9deb8d767732cd66a3484b0b314309b1796a9",
+    "reports/optimization_v3/posoffset_a02_endgame_v1/E79_INDEPENDENT_QA.json": "bc2e9256db70ac57b1de0c9221d804ce9c016663388a21b020536a2b34e6a1f2",
+    "reports/optimization_v3/posoffset_a02_endgame_v1/FREEZE_SUCCESSOR_01.json": "3a770b525060d58f503bbfaacd43f74f20e1869017893a4ee8f51f597e778a1d",
+    "reports/optimization_v3/cls_mix50_a02_missing_e79_v1/SYNTHETIC_QA.json": "f1ac2f9e80dc113eb374dfc307daaec337f98dc4db4540783ab66da35cf086fa"
+  },
+  "input_hashes": {
+    "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/test_predictions.npz": "ffc55aa2d18b75438257f3cf0aa205baa3f4c2922180e2b3688b36c352c00271",
+    "submissions/optimization_v3/posoffset_a02_endgame_v1/classification_mix50_e79.csv": "48dcbd3f51fa4567e8f3f3a6838efdfaa50f4c2129e628e1b597436918c46ce7",
+    "data/raw/classification/Train.csv": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "data/raw/classification/Test.csv": "4e6c381d582ed24f92d17f620f4f0ad25e2e0def29eb57a91a5482867f6afe3c"
+  },
+  "bundle_keys": [
+    "record_ids",
+    "missing_mask",
+    "posoffset_probability",
+    "a02_probability"
+  ],
+  "output_csv": "submissions/optimization_v3/cls_mix50_a02_missing_e79_v1/classification_mix50_present_a02_missing_e79.csv",
+  "duplicate_scan": {
+    "root": "submissions",
+    "vector_width": 29421,
+    "alignment": "compare labels by official record_id; ignore CSV row order"
+  },
+  "data_access_boundary": {
+    "saved_probability_bundle_only_for_predictions": true,
+    "official_Test_fields_read_after_prefit_commit": [
+      "record_id",
+      "signal_stream"
+    ],
+    "Test_labels_read": false,
+    "SampleSubmission_read": false,
+    "new_model_inference": 0,
+    "new_fits": 0,
+    "Kaggle_upload": false
+  },
+  "selection": {
+    "new_threshold_fit": false,
+    "new_model_or_preprocessing_fit": false,
+    "new_predictions": false
+  }
+}
