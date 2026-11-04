@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "benchmark_id": "CLS_BIGRAM_POSITION_REAL_E79_V1",
+  "status": "AUTHORIZED_EXPLORATORY_BENCHMARK_ONLY",
+  "authorization": {
+    "user_confirmation": "Ya, otorisasi satu benchmark E79",
+    "scope": "one new full-Train REAL bigram gamma fit and Test inference; no Kaggle upload"
+  },
+  "input": {
+    "train_path": "data/raw/classification/Train.csv",
+    "train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "fit_rows": 50608,
+    "fit_cycles": [47, 79],
+    "target": "artifact_signal",
+    "record_id": "identity and row alignment only; never a model feature"
+  },
+  "reused_full_train_state": {
+    "checkpoint": "reports/optimization_v3/a02_cgeom_benchmark_v1/E79_TRAINED_FREEZE.json",
+    "required_components": [
+      "A02 C2_B structured state, scaler, OHE, and C2_B LogisticRegression",
+      "A02 E79 fitted TF-IDF/vectorizer state",
+      "original C2_B plus unigram-position gamma",
+      "C1_B structured state and HGB missing-stream fallback",
+      "frozen A02 E79 Test probabilities and routed POS_BAG_OFFSET probabilities"
+    ],
+    "all_component_fit_population": "50,608 official Classification Train rows",
+    "no_component_refits": true
+  },
+  "features": {
+    "source": "src.models.optimization_v3_bigram_position_readiness_v1.build_bigram_blocks",
+    "tokenizer": "the exact saved full-Train A02 C2_B TfidfVectorizer preprocessor and tokenizer",
+    "pair_sequence": "all adjacent normalized token pairs; OOV pairs remain in the sequence and define positions",
+    "position_bins": "floor(3*j/n_pair), with zero-based pair occurrence j",
+    "feature": "exact frozen bigram-vocabulary phrase, original IDF, (1+log(count))*IDF, one whole-row L2 normalization",
+    "new_fit_arm": "REAL only; no E79 BAG or SHUFFLED estimator fit"
+  },
+  "model": {
+    "fixed_offset": "C2_B bag intercept + C2_B bag matrix @ saved coefficients + original full-Train unigram-position matrix @ saved gamma",
+    "new_parameters": "one REAL bigram-position gamma vector, initialized to zero; no new intercept",
+    "objective": "sum(logaddexp(0, -(2*y-1)*(z_original + X_real@gamma))) + dot(gamma,gamma)/2",
+    "C": 1.0,
+    "optimizer": "scipy.optimize.minimize, L-BFGS-B, jac=True, maxiter=2000, ftol=1e-12, gtol=1e-6, maxls=50",
+    "acceptance": "optimizer success, finite gamma/loss/gradient, final objective <= zero-gamma objective + 1e-8",
+    "retry_count": 0
+  },
+  "inference_policy": {
+    "present_stream": "0.5*expit(z_original + X_real@gamma) + 0.5*original_A02_E79_probability",
+    "missing_stream": "exact saved full-Train C1_B HGB probability",
+    "present_rows_without_known_bigram": "exact original MIX50 probability",
+    "threshold": 0.5,
+    "rule": "probability >= 0.50"
+  },
+  "budget": {
+    "ledger_path": "experiments/runs/optimization_v3_research_next_v1/budget.jsonl",
+    "one_new_fit_only": true,
+    "fit_id": "CLS_BIGRAM_POSITION_REAL_E79_V1_GAMMA",
+    "category": "pilot",
+    "cap_amendment": "one new slot, append-only, no released-slot reuse"
+  },
+  "resource_policy": {
+    "jobs": 1,
+    "threads": 2,
+    "rss_ceiling_bytes": 6442450944,
+    "initial_free_ram_min_bytes": 4294967296,
+    "free_ram_reserve_bytes": 2147483648
+  },
+  "boundaries": {
+    "fit_labels": "read only after the unique durable FIT_STARTED ledger event; full official Train only",
+    "test": "feature inference only after the trained-state freeze is committed",
+    "test_labels": "never read",
+    "sample_submission": "not required and not opened",
+    "upload": "not authorized"
+  },
+  "output": {
+    "csv_path": "submissions/optimization_v3/bigram_position_real_e79_v1/classification_bigram_position_real_e79.csv",
+    "status": "exploratory candidate for Sol review; not submitted"
+  }
+}
