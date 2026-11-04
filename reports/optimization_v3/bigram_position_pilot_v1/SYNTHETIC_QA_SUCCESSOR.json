@@ -1,0 +1,123 @@
+{
+  "fit_count": 6,
+  "fit_ids": [
+    "CLS_BIGRAM_POSITION_PILOT_V1_E67_BAG",
+    "CLS_BIGRAM_POSITION_PILOT_V1_E67_REAL",
+    "CLS_BIGRAM_POSITION_PILOT_V1_E67_SHUFFLED",
+    "CLS_BIGRAM_POSITION_PILOT_V1_E75_BAG",
+    "CLS_BIGRAM_POSITION_PILOT_V1_E75_REAL",
+    "CLS_BIGRAM_POSITION_PILOT_V1_E75_SHUFFLED"
+  ],
+  "fit_records": [
+    {
+      "fit_id": "CLS_BIGRAM_POSITION_PILOT_V1_E67_BAG",
+      "gamma_sha256": "2305dc80e0bd4d66678aae32359686c21f51fe4ea2357718f6872bf9134b4ad8",
+      "optimizer_success": true
+    },
+    {
+      "fit_id": "CLS_BIGRAM_POSITION_PILOT_V1_E67_REAL",
+      "gamma_sha256": "ca0b0cbc80db4f6213eb274ca5529eb361158a50255b287cbf3a0ae4bbd477d0",
+      "optimizer_success": true
+    },
+    {
+      "fit_id": "CLS_BIGRAM_POSITION_PILOT_V1_E67_SHUFFLED",
+      "gamma_sha256": "83e25a6753e2a486aa2b62a29d172d4009c3221e9936b7799b0505ec85872b7a",
+      "optimizer_success": true
+    },
+    {
+      "fit_id": "CLS_BIGRAM_POSITION_PILOT_V1_E75_BAG",
+      "gamma_sha256": "2305dc80e0bd4d66678aae32359686c21f51fe4ea2357718f6872bf9134b4ad8",
+      "optimizer_success": true
+    },
+    {
+      "fit_id": "CLS_BIGRAM_POSITION_PILOT_V1_E75_REAL",
+      "gamma_sha256": "ca0b0cbc80db4f6213eb274ca5529eb361158a50255b287cbf3a0ae4bbd477d0",
+      "optimizer_success": true
+    },
+    {
+      "fit_id": "CLS_BIGRAM_POSITION_PILOT_V1_E75_SHUFFLED",
+      "gamma_sha256": "83e25a6753e2a486aa2b62a29d172d4009c3221e9936b7799b0505ec85872b7a",
+      "optimizer_success": true
+    }
+  ],
+  "ledger_snapshot": {
+    "active_reservations": 6,
+    "active_reservations_by_category": {
+      "continuation": 0,
+      "control_replay": 0,
+      "pilot": 6,
+      "technical_retry": 0
+    },
+    "effective_category_caps": {
+      "continuation": 0,
+      "control_replay": 0,
+      "pilot": 6,
+      "technical_retry": 0
+    },
+    "event_rows": 15,
+    "fit_failed": 0,
+    "fit_pending": 0,
+    "fit_saved": 6,
+    "fit_starts": 6,
+    "global_cap": 6
+  },
+  "missing_and_no_known_route_exact": true,
+  "production_ledger_sha256_after": "ca8bb8081c001384fef0ea6ad30f1f4b7cb4c236acfdfd5a7f4051bf1cb1b528",
+  "production_ledger_sha256_before": "ca8bb8081c001384fef0ea6ad30f1f4b7cb4c236acfdfd5a7f4051bf1cb1b528",
+  "query_labels_read": false,
+  "resume": "durable receipt -> FIT_SAVED without refit",
+  "status": "PASS",
+  "synthetic_gate_paths": [
+    {
+      "gate": "synthetic_minimum_boundary",
+      "minimum": 0.0005,
+      "pass": true,
+      "tolerance": 1e-12,
+      "value": 0.0005
+    },
+    {
+      "gate": "synthetic_minimum_reject",
+      "minimum": 0.0005,
+      "pass": false,
+      "tolerance": 1e-12,
+      "value": 0.0004
+    },
+    {
+      "gate": "synthetic_maximum_boundary",
+      "maximum": 0.003,
+      "pass": true,
+      "tolerance": 1e-12,
+      "value": 0.003
+    },
+    {
+      "gate": "synthetic_maximum_reject",
+      "maximum": 0.003,
+      "pass": false,
+      "tolerance": 1e-12,
+      "value": 0.0031
+    }
+  ],
+  "synthetic_metric": {
+    "average_precision": 0.5,
+    "confusion_matrix": [
+      [
+        1,
+        1
+      ],
+      [
+        2,
+        0
+      ]
+    ],
+    "macro_f1": 0.2,
+    "n": 4,
+    "negative": 2,
+    "positive": 2,
+    "positive_f1": 0.0,
+    "positive_recall": 0.0,
+    "precision": 0.0,
+    "roc_auc": 0.25
+  },
+  "temporary_root": "C:\\Users\\Sam\\AppData\\Local\\Temp\\kasdad-bigram-pilot-successor-synthetic-v2-20261104",
+  "unicode_ids_persisted": true
+}
