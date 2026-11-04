@@ -101,11 +101,7 @@ def disposition(card: dict) -> tuple[str, str]:
         bucket = "Positive but below frozen margin"
     else:
         bucket = "Negative/near-null for frozen recipe"
-    blockers = card.get("pilot_blockers") or {}
-    failed = blockers.get("failed_predeclared_checks") or []
     reason = DESCRIPTIONS[cid][1]
-    if failed:
-        reason += " Failed checks: " + ", ".join(str(x).replace("gate.checks.", "").replace("verification.gate_checks.", "" ) for x in failed[:3]) + "."
     return bucket, reason
 
 
@@ -126,6 +122,7 @@ def main() -> None:
         "",
         "Generated from `reports/optimization_v3/batch1/batch_ledger.json` (the compact authoritative registry); mechanism notes are checked against `postscreen_review/CARD_REVIEW.md`. This is a new retrospective label only; historical verdicts are copied unchanged.",
         f"Source SHA-256: registry `{registry_sha}`; card review `{review_sha}`.",
+        "Failure explanations use the reviewed numeric gate/result and actual supported-group evidence; generic recursively collected `False` flags are not treated as failed gates. Recipe/state flags such as an OOF target-cache-opened marker are provenance annotations, not performance failures.",
         "",
         "**Gain convention:** Classification Macro-F1 gain = candidate − baseline; Regression MAE gain = baseline − candidate. Standard pilot primary/H12 are W1+W4 (n=9,064)/H12 (n=38,588); LATE uses W4+W6 (n=13,441)/H12_L (n=20,903); CACHE_SIX uses saved six-origin rows. Do not rank different profiles, horizons, or task metrics together. Primary and H12 can reuse overlapping labels.",
         "",
@@ -162,7 +159,7 @@ def main() -> None:
         "| CGEOM / joint positional / POS_MOMENTS / bigram / REAL contrast | Later experimental families with their own local gates; historical failures remain unchanged. | CGEOM ref 57955748 .82884; JointPos ref 57955761 .82911; Moments ref 57976581 .82979; Bigram ref 57981852 .83064; Contrast ref 57987123 .82935. | All below MIX50 .83144 by .00020–.00260. They are real public observations; no public-label significance or private-score inference. |",
         "| R06 / R22 / R21 / R11 | R22 qualified internal continuation vs champion: primary gain .039699, H12 .124873. R06 has strong local aggregate but later missing-W1 subgroup harm .395556 on n=392 exceeded .25; R22/R06 primary and H12 rankings vary. | R06 ref 57874821 MAE 11.16620; R22 ref 57871993 11.30535; R21 ref 57874835 11.29314; R11 ref 57874829 11.39469. | R06 is best among these public scores; R22's internal qualification does not imply public superiority. The guard encodes a different risk objective from pooled public MAE. |",
         "| Research Next N04_DIAGNOSTIC density weighting | Pooled primary gain +.026578 vs R22 and +.013904 vs shuffled control; H12 +.012444/+ .002635. Across six windows, gains were positive in 4/6 vs R22 and 3/6 vs shuffle; H12 missing-stream harm vs R22 +.038067. | No public submission in snapshot. | Diagnostic-only: positive pooled signal with mixed windows/subgroup risk; evidence against equating gate failure with zero predictive value, but not qualified for continuation. |",
-        "| R12 current route / RNBR / positional L1 / direct position | R12 posthoc present-only route has local gains +.285422 primary and +.306170 H12 vs legacy after exact missing fallback; this was selected after outcomes. RNBR continuation passed its bounded local gates but had an inherited H12_L loss vs R06. Direct-position local signs vary by origin and its W5/W6 guard failed (see finding below). | R12 current-R06-route ref 57987865 11.18673; RNBR ref 57926493 11.19115; positional L1 ref 57975981 11.24513; direct-position ref 57988146 11.14400. | These are public observations, not common validation denominators. Direct-position is publicly positive vs R06; local recipe/baseline equivalence is under the separate REG audit. R12 upload-to-posthoc-policy identity is UNKNOWN in this lane. |",
+        "| R12 current route / RNBR / positional L1 / direct position | R12 posthoc present-only route has local gains +.285422 primary and +.306170 H12 vs legacy after exact missing fallback; this was selected after outcomes. RNBR continuation passed its bounded local gates but had an inherited H12_L loss vs R06. Direct-position pilot included E67 H12 and E75 W6; the E75 W6 gain was negative and E71 W5 was not executed. | R12 current-R06-route ref 57987865 11.18673; RNBR ref 57926493 11.19115; positional L1 ref 57975981 11.24513; direct-position ref 57988146 11.14400. | These are public observations, not common validation denominators. Direct-position is publicly positive vs R06; local recipe/baseline equivalence is under the separate REG audit. R12 upload-to-posthoc-policy identity is UNKNOWN in this lane. |",
         "",
         "**Later research checkpoint:** Research Next N00–N06 found no candidate eligible for the original continuation queue; N04_DIAGNOSTIC showed positive pooled primary/H12 average gains but mixed windows and missing-stream harm, and remained diagnostic-only. This supports neither blanket rejection nor automatic reopening. See `../research_next_v1/CAMPAIGN_SUMMARY.md`.",
         "",
