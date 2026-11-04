@@ -26,6 +26,8 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from threadpoolctl import threadpool_limits
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 SOURCE_ROOT = Path(r"C:\Users\Sam\OneDrive\Documents\KASDAD\TP 2")
 DATA_ROOT = SOURCE_ROOT / "data/raw/regression"
 TRAIN_PATH = DATA_ROOT / "Train.csv"
