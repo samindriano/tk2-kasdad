@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "card_id": "CLS_BIGRAM_POSITION_PILOT_V1",
+  "status": "FAIL",
+  "failure": "AssertionError: E67 parent prediction file hash mismatch",
+  "verifier_path": "scripts/verify_optimization_v3_bigram_position_pilot_v1.py",
+  "verifier_sha256": "9474c63ed24c9a119be7ffd9ac94991fa821bc6888ca9c2771f8fdfba43b1e8f",
+  "freeze_signature": "57eb673e044fb810353d792d5ae7ded61bec9cd2ef3e0f2dd37ebf400ac5fd04",
+  "query_labels_read": false,
+  "test_opened": false,
+  "sample_submission_opened": false,
+  "kaggle_accessed": false,
+  "diagnosis": "The frozen parent_prediction_sha256 is emitted by _load_anchor from POS_CONTRAST_V1, but the legacy verifier compared it to the POS_BAG_OFFSET_V1 prediction file. Both POS_CONTRAST files match the frozen hashes; POS_BAG lineage is verified separately."
+}
