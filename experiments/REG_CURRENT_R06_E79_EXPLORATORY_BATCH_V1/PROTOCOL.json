@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "namespace": "REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1",
+  "status": "EXPLORATORY_ONLY_PRIOR_LOCAL_GATES_FAILED",
+  "authorization": "Bounded user-authorized two-candidate full-Train E79 inference benchmark. This is a new exploratory benchmark and does not revise or retroactively pass earlier gates.",
+  "historical_decisions_preserved": {
+    "REG_R12_CURRENT_ROUTE_LATE_V1": "FAIL_CLOSE_RESCUE",
+    "REG_POSITION_DIRECT_L1_V1": "historical development gates remain unchanged and failed",
+    "R06_public_reference": "R06_ORIGINAL public MAE 11.16620; receipt-linked final mapped prediction"
+  },
+  "anchor": {
+    "candidate": "R06_ORIGINAL",
+    "public_mae_as_reported": 11.16620,
+    "manifest": "reports/submissions/optimization_v3_expanded_v1/R06_ORIGINAL/manifest.json",
+    "manifest_sha256": "3f77e4ac148ada5fb79e5e2c16e7975e77726f4bfcc42a29f9234f801c697d67",
+    "csv": "submissions/optimization_v3_expanded_v1/r06_original.csv",
+    "csv_sha256": "4a72b13e0d6ac93e18adee23010bb15ddf15fcb2a9543dc903154d5af60ee64f",
+    "prediction_archive": "experiments/runs/optimization_v3_expanded_submissions_v1/R06_ORIGINAL/predictions.npz",
+    "prediction_archive_sha256": "ce034e82a7063ec5dd873b1126d60731dd291d3852c57936c7aa1ee449a81eba",
+    "fit_state": "experiments/runs/optimization_v3_expanded_submissions_v1/R06_ORIGINAL/fit_state.json",
+    "fit_state_sha256": "6227dae63e73ee4cf282729bac0221dc558cc08111975adf54f7348cee3f9f0a",
+    "train_sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+    "test_sha256": "4e6c381d582ed24f92d17f620f4f0ad25e2e0def29eb57a91a5482867f6afe3c",
+    "sample_sha256": "63a51f4b7dfbb0eec9800099407abd8be14d25ec18a533cd39dc854ffc190a32",
+    "final_prediction_digest": "eb032101ec3b363e5e2f12d7f34f5b272b7e39cb9cad8fca001350384b857c3e",
+    "source_commit": "c72dd1eaa9c2567d17349895e8c857cdc2e0486e",
+    "execution_head": "62eb622d8b9bc491ed72aa553349dddd5635070f",
+    "mapping": "Use manifest-bound final prediction, already mapped once by average-tie rank50 per complete Test cycle; never use raw_candidate as the baseline."
+  },
+  "data": {
+    "train_path": "data/raw/regression/Train.csv",
+    "test_path": "data/raw/regression/Test.csv",
+    "sample_path": "data/raw/regression/SampleSubmission.csv",
+    "train_rows": 50608,
+    "train_cycles": [47, 79],
+    "test_rows": 29421,
+    "test_cycles": [80, 91],
+    "target": "threat_rank",
+    "test_label_boundary": "Test labels are never read. Test features are opened only after each candidate's trained-state freeze and independent prelabel pass."
+  },
+  "fit_order_and_cap": {
+    "predictors": 2,
+    "preprocessing_max": 8,
+    "learned_units_total_max": 10,
+    "jobs": 1,
+    "threads_per_fit": 2,
+    "retries": 0,
+    "seeds_or_policy_grid": false,
+    "r06_or_anchor_refit": false,
+    "candidate_A_order": ["A_TFIDF", "A_STRUCTURED", "A_SCALER", "A_OHE", "A_R12_RANKER"],
+    "candidate_B_order": ["B_SHARED_WORD_TFIDF", "B_STRUCTURED", "B_SCALER", "B_OHE", "B_DIRECT_POSITION_REAL_REGRESSOR"],
+    "unit_reconciliation": "Candidate A: one ranker plus four preprocessing units. Candidate B: one regressor plus one full-Train shared word TF-IDF state and three structured preprocessing units. Position and unigram blocks are transforms from that one exact shared state. Total: two predictors plus eight preprocessing units. Any additional learned call blocks the batch."
+  },
+  "candidate_A": {
+    "id": "R12_CURRENT_ROUTE_REAL_E79",
+    "recipe_source": "experiments/REG_R12_CURRENT_ROUTE_LATE_V1/PROTOCOL.json and src/models/optimization_v3_reg_r12_current_route_late_v1.py",
+    "training": "All official Train rows through cycle 79; stable same-cycle LambdaRank groups; grades clip(floor(threat_rank/10),0,9); exact saved R12 parameters; no validation or early stopping.",
+    "preprocessing": "Exact R12 word TF-IDF and structured processor, scaler, and OHE recipe fit on all Train rows.",
+    "policy": "present: clip(0.75*CURRENT_R06_E79_final_mapped + 0.25*100*averageRank(raw_R12 within complete Test cycle)/complete_cycle_n,0,100); missing signal_stream: exact CURRENT_R06_E79 final mapped prediction.",
+    "csv": "submissions/reg_current_r06_e79_exploratory_v1/r12_current_route_e79.csv"
+  },
+  "candidate_B": {
+    "id": "DIRECT_POSITION_REAL_E79",
+    "recipe_source": "reports/optimization_v3/reg_position_direct_l1_v1/RECIPE.json, scripts/reg_position_direct_l1_v1.py, and src/models/optimization_v3_positional_text_pilot_v1.py",
+    "training": "All official Train rows through cycle 79, direct threat_rank target, exact REAL-only L1 recipe and original regularized LightGBM parameters; no BAG/SHUFFLED arm or parameter change.",
+    "features": "Exact structured features plus L2 unigram bag, original three-third REAL position block built with shared IDF, and missing-text indicator. One full-Train target-free word TF-IDF state is used for both text blocks; no additional fit for position transforms.",
+    "policy": "aux_rank50=0.5*raw_aux+0.5*100*averageRank(raw_aux within complete Test cycle)/complete_cycle_n; present: clip(0.75*CURRENT_R06_E79_final_mapped+0.25*aux_rank50,0,100); missing signal_stream: exact CURRENT_R06_E79 final mapped prediction. Rank the full cycle before applying missing mask.",
+    "csv": "submissions/reg_current_r06_e79_exploratory_v1/direct_position_real_e79.csv"
+  },
+  "reuse_audit": {
+    "R12_E79_exact_model_or_csv": "not found; R12 origin71/origin75 pilot bundles are not the full-Train E79 model",
+    "DIRECT_POSITION_REAL_E79_exact_model_or_csv": "not found; the existing REG_POSITION_REAL_E79 residual head has a different target and feature recipe and is not reusable",
+    "full_train_text_position_cache": "no verified matching full-Train target-free cache; one full-Train shared vectorizer fit is counted in candidate B",
+    "R06_current_E79": "exact receipt-bound R06_ORIGINAL CSV and prediction/state artifacts are reused; no R06 fit"
+  },
+  "resource_policy": {
+    "minimum_available_ram_gib": 4.0,
+    "minimum_projected_reserve_gib": 2.0,
+    "maximum_job_rss_gib": 6.0,
+    "block_without_lowering": true,
+    "serial_candidates": ["A", "B"],
+    "no_user_process_termination": true
+  },
+  "boundaries": {
+    "development_outcomes_used_to_change_recipe": false,
+    "test_labels_read": false,
+    "kaggle_accessed_by_REG_lane": false,
+    "upload_performed_by_REG_lane": false,
+    "only_ROOT_uploads": true,
+    "source_and_old_gate_receipts_mutated": false,
+    "push_merge_rebase": false
+  }
+}
