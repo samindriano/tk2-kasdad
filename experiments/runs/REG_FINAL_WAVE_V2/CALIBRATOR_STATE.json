@@ -1,0 +1,133 @@
+{
+  "base_csv": {
+    "archive_prediction_sha256": "fde81b7d9d66c6c428920264151f33aac20331affe9b3185199af923be6abb55",
+    "csv_matches_archive_bit_exact": true,
+    "float_parser": "pandas float_precision=round_trip",
+    "missing_rows": 1062,
+    "missing_rows_exact_r06_fallback": true,
+    "ordered_ids_sha256": "3829aa0b7fa41cd268e6131e79221c4970e33e64bb9b3a12f525d796f19fb41e",
+    "prediction_sha256": "0ca5a761bd64d333370e0cf980cf3c65251ed1d0b02933baccadd635969164c0",
+    "rows": 29421
+  },
+  "baseline": "CURRENT_DIRECT_POSITION",
+  "candidate": "CURRENT_DIRECT_AFFINE_L1_E79",
+  "created_utc": "2026-11-04T18:08:13.376301+00:00",
+  "fit_rows": 20903,
+  "freeze_signature": "a493888fe8cfe3bcd21769b9e249c2d482a702a32e4d6ee558062f3e5c18c4f0",
+  "intercept": 2.169196428141562,
+  "objective": "in-sample L1 fit loss only; not validation",
+  "one_job_gate": {
+    "inspected_python_shell_processes": 2,
+    "markers": [
+      "optimization_v3",
+      "c10_trigram",
+      "reg_position",
+      "reg_final_wave",
+      "lightgbm",
+      "lgbm",
+      "train.py",
+      "fit.py"
+    ],
+    "other_active_project_jobs": 0,
+    "status": "PASS"
+  },
+  "resource_gate": {
+    "available_bytes_before_fit": 6502285312,
+    "concurrent_jobs": 1,
+    "estimate_observed": false,
+    "estimated_peak_bytes": 536870912,
+    "minimum_available_bytes": 4294967296,
+    "reserve_bytes": 2147483648,
+    "status": "PASS",
+    "threads": 2
+  },
+  "reviewed_commit": "5b536d370fab70948c66d7801d5f9aed08ddd534",
+  "slope": 0.9744451489746011,
+  "solver": {
+    "constraint_csr_bytes": 1672244,
+    "constraint_nnz": 125418,
+    "constraint_shape": [
+      41806,
+      20905
+    ],
+    "fallback": false,
+    "fallback_reason": null,
+    "history_rows": 20903,
+    "intercept": 2.169196428141562,
+    "iterations": 20905,
+    "objective_l1_sum": 225686.60580351832,
+    "slope": 0.9744451489746011,
+    "solver": "scipy.optimize.linprog(method='highs')",
+    "solver_message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+    "solver_seconds": 24.52084539999487,
+    "solver_status": 0,
+    "success": true
+  },
+  "solver_wall_seconds": 24.64930469999672,
+  "status": "FIT_SAVED",
+  "support": {
+    "B_test_ids_sha256": "3829aa0b7fa41cd268e6131e79221c4970e33e64bb9b3a12f525d796f19fb41e",
+    "E67_W6_used": false,
+    "E67_used_cycles": [
+      68,
+      75
+    ],
+    "E75_used_cycles": [
+      76,
+      79
+    ],
+    "base_csv": {
+      "archive_prediction_sha256": "fde81b7d9d66c6c428920264151f33aac20331affe9b3185199af923be6abb55",
+      "csv_matches_archive_bit_exact": true,
+      "float_parser": "pandas float_precision=round_trip",
+      "missing_rows": 1062,
+      "missing_rows_exact_r06_fallback": true,
+      "ordered_ids_sha256": "3829aa0b7fa41cd268e6131e79221c4970e33e64bb9b3a12f525d796f19fb41e",
+      "prediction_sha256": "0ca5a761bd64d333370e0cf980cf3c65251ed1d0b02933baccadd635969164c0",
+      "rows": 29421
+    },
+    "current_direct_oof_sha256": "292c6ea4d595ac575911f1960615c745917cc89eae70dc38ac86ac155ac9c6a5",
+    "cycle_counts": {
+      "68": 577,
+      "69": 1079,
+      "70": 1605,
+      "71": 1689,
+      "72": 1811,
+      "73": 1880,
+      "74": 1814,
+      "75": 1957,
+      "76": 1822,
+      "77": 2335,
+      "78": 2146,
+      "79": 2188
+    },
+    "cycles_sha256": "a2083269d1f696dabfa35aae026c94a0ced6a04d1cccf6a36d4a7b16af46314b",
+    "duplicate_check": {
+      "affine_identity_previously_uploaded": false,
+      "base_csv_sha256": "49ae7f668aea99e433c2bec72ed5ff51126fb12d888c3185ec048730d767ea6f",
+      "base_identity_previously_uploaded": true,
+      "base_ref": 57988146,
+      "scores_used_for_selection": false
+    },
+    "ids_sha256": "d16962cea5ce6420561117b2f10b268341b8ccfe8cfc4b3f62390f4f58a112ce",
+    "rows": 20903,
+    "rows_sha256": "eb13d7757b7abef8e90ab5a7f7ecc5050f4556e927827d1896ebd5c5314314b6",
+    "strict_temporal_prefixes": true,
+    "target_read_audit": {
+      "fit_target_rows_parsed": 0,
+      "path": "data/raw/regression/Train.csv",
+      "physical_rows": 50608,
+      "query_cycles_sha256": "a2083269d1f696dabfa35aae026c94a0ced6a04d1cccf6a36d4a7b16af46314b",
+      "query_record_ids_sha256": "d16962cea5ce6420561117b2f10b268341b8ccfe8cfc4b3f62390f4f58a112ce",
+      "query_rows_source_positions_sha256": "eb13d7757b7abef8e90ab5a7f7ecc5050f4556e927827d1896ebd5c5314314b6",
+      "query_target_rows_parsed": 20903,
+      "query_target_values_sha256": "b7c22d8af92d0290ffd96615afedf5e3f6451e8bc204e9297368db33c40c9796",
+      "selected_cycle_max": 79,
+      "selected_cycle_min": 68,
+      "sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082"
+    },
+    "targets_sha256": "b7c22d8af92d0290ffd96615afedf5e3f6451e8bc204e9297368db33c40c9796",
+    "test_features_or_labels_read_in_this_run": false,
+    "unique_ids": 20903
+  }
+}
