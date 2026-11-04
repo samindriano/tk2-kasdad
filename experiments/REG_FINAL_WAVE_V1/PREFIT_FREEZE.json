@@ -1,0 +1,194 @@
+{
+  "base_head": "78a46b4a2bf2a69fe88e49f8e2b001c2ef699443",
+  "branch": "codex/reg-position-failure-mechanism-v1",
+  "budgets": {
+    "calibrator_fits_max": 1,
+    "concurrent_jobs": 1,
+    "estimated_peak_bytes": 536870912,
+    "lp_calls_max": 1,
+    "min_available_ram_bytes": 4294967296,
+    "min_rows": 5000,
+    "no_retry_after_lp_started": true,
+    "preprocessing_fits": 0,
+    "required_rows": 20903,
+    "reserved_ram_bytes": 2147483648,
+    "synthetic_lp_calls": 1,
+    "threads": 2
+  },
+  "candidate_A": {
+    "composite_decomposition_prohibited": true,
+    "fit_units_used": 0,
+    "r06_test_archive_members": [
+      "champion",
+      "raw_candidate",
+      "rank_mapped_candidate",
+      "cycle_code",
+      "prediction"
+    ],
+    "r16_inventory": [
+      "R16_fit55.json",
+      "R16_fit55.npz",
+      "R16_fit67.json",
+      "R16_fit67.npz",
+      "pilot_engine_report.json"
+    ],
+    "reason": "BLOCKED_EXACT_FULLTRAIN_NONLGB_COMPONENTS_UNAVAILABLE",
+    "required_missing_components": [
+      "full-Train Ridge prediction",
+      "full-Train sparseRank50 prediction"
+    ],
+    "status": "SKIP_A"
+  },
+  "candidate_B": {
+    "base_csv_sha256": "49ae7f668aea99e433c2bec72ed5ff51126fb12d888c3185ec048730d767ea6f",
+    "base_ordered_ids_sha256": "3829aa0b7fa41cd268e6131e79221c4970e33e64bb9b3a12f525d796f19fb41e",
+    "base_uploaded_previously_ref": 57988146,
+    "baseline": "CURRENT_DIRECT_POSITION",
+    "identity": "CURRENT_DIRECT_AFFINE_L1_E79",
+    "missing_policy": "transform all rows including 1,062 former exact-R06 fallback rows; known tail risk",
+    "new_affine_identity_uploaded": false,
+    "oof_support": "E67 only cycles 68-75 plus E75 only cycles 76-79; unique physical rows and record IDs exactly 20,903",
+    "recipe": "R17 scipy.optimize.linprog(method='highs'): minimize sum(abs(y-a-b*p)), b>=0; apply clip(a+b*p,0,100) to every row of the existing B CSV",
+    "target_read": "Train threat_rank only on the 20,903 already-scored OOF rows; no fit-prefix labels parsed",
+    "test_inference": "transform existing B CSV only; no Test.csv, SampleSubmission.csv, new model.predict, refit, or external data",
+    "validation_claim": null
+  },
+  "created_utc": "2026-11-04T17:32:38.496505+00:00",
+  "duplicate_check": {
+    "affine_identity_previously_uploaded": false,
+    "base_csv_sha256": "49ae7f668aea99e433c2bec72ed5ff51126fb12d888c3185ec048730d767ea6f",
+    "base_identity_previously_uploaded": true,
+    "base_ref": 57988146,
+    "scores_used_for_selection": false
+  },
+  "input_hashes": {
+    "base_archive": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\runs\\REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1\\inference_B.npz",
+      "sha256": "e29b1eabb1692729749b25d88b7cf86d1bdf44c34ce74ab964b124074f5817f2"
+    },
+    "base_csv": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\submissions\\reg_current_r06_e79_exploratory_v1\\direct_position_real_e79.csv",
+      "sha256": "49ae7f668aea99e433c2bec72ed5ff51126fb12d888c3185ec048730d767ea6f"
+    },
+    "base_manifest": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\reports\\optimization_v3\\REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1\\INFERENCE_MANIFEST_B.json",
+      "sha256": "d2bd7dea17feab1740ca4630bb5cf7ace62caf8746051b3322cc38d168674484"
+    },
+    "base_prelabel": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\reports\\optimization_v3\\REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1\\PRELABEL_PASS_B.json",
+      "sha256": "a4771eacfe808e5645977008827ebc9552c288dbed5910606649e3d4670716c3"
+    },
+    "base_qa": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\reports\\optimization_v3\\REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1\\CSV_QA_B.json",
+      "sha256": "bc19efcbbf57ae0e621fe1b338f00e1726380ed9a736947f6bf760b8a9fa67c8"
+    },
+    "base_trained_freeze": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\reports\\optimization_v3\\REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1\\TRAINED_STATE_FREEZE_B.json",
+      "sha256": "3364e75a8c791cebbd9fd4e2693149fa1429e7e5ef19f68bb1cadb6828b51218"
+    },
+    "base_upload_events": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\reports\\optimization_v3\\reg_current_r06_e79_sol_uploads_v1\\B\\UPLOAD_EVENTS.jsonl",
+      "sha256": "156738202b84d944847fc4eaec80a73a71276a08f212ee7ff2c0392e7a8c958c"
+    },
+    "direct_E67": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-regression-frontier\\experiments\\runs\\reg_position_direct_l1_v1\\predictions\\REG_POSITION_DIRECT_L1_V1_E67_REAL.npz",
+      "sha256": "116d4c51f43f96a9597b8d1c6a63af10adf022f21ac7c797f92666c7feea425f"
+    },
+    "direct_E67_receipt": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-regression-frontier\\experiments\\runs\\reg_position_direct_l1_v1\\predictions\\REG_POSITION_DIRECT_L1_V1_E67_REAL.json",
+      "sha256": "d057b0783b311aec6afae52e1ac63dc984bd72f7cbb76210d7893d85bfdf089d"
+    },
+    "direct_E75": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-regression-frontier\\experiments\\runs\\reg_position_direct_l1_v1\\predictions\\REG_POSITION_DIRECT_L1_V1_E75_REAL.npz",
+      "sha256": "da8e99eacfa9cb6ba3cfdac776a5e410b390e6ac90618ba22edea144c577ba39"
+    },
+    "direct_E75_receipt": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-regression-frontier\\experiments\\runs\\reg_position_direct_l1_v1\\predictions\\REG_POSITION_DIRECT_L1_V1_E75_REAL.json",
+      "sha256": "b140894cd293afacff9121e39e49e4af4d584bd7083e7f9ff23d4372e302e489"
+    },
+    "direct_freeze": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-regression-frontier\\experiments\\runs\\reg_position_direct_l1_v1\\FREEZE_V4.json",
+      "sha256": "8294ec5197f115bf11fae1a90dacda91fcc1ad789134e228357384d958994097"
+    },
+    "direct_prelabel": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-regression-frontier\\reports\\optimization_v3\\reg_position_direct_l1_v1\\PRELABEL_VERIFICATION.json",
+      "sha256": "7aaf6e4585d29fb92678542c61ea4b7d94256508733f9a5c25161b6c3f90d914"
+    },
+    "direct_source": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-regression-frontier\\scripts\\reg_position_direct_l1_v1.py",
+      "sha256": "6f6dbf8b32dc5fc2ba8952aa77c9f157a2d9df7ea48e4683ab3c21508dacdc92"
+    },
+    "query_reader": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\scripts\\reg_position_failure_mechanism_v1.py",
+      "sha256": "664ad522782e7ea84679aede04c8d9376cc94c05e3138ee90fc054fc974a2bb6"
+    },
+    "r06_archive": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\experiments\\runs\\optimization_v3_expanded_submissions_v1\\R06_ORIGINAL\\predictions.npz",
+      "sha256": "ce034e82a7063ec5dd873b1126d60731dd291d3852c57936c7aa1ee449a81eba"
+    },
+    "r06_csv": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\submissions\\optimization_v3_expanded_v1\\r06_original.csv",
+      "sha256": "4a72b13e0d6ac93e18adee23010bb15ddf15fcb2a9543dc903154d5af60ee64f"
+    },
+    "r06_manifest": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\reports\\submissions\\optimization_v3_expanded_v1\\R06_ORIGINAL\\manifest.json",
+      "sha256": "3f77e4ac148ada5fb79e5e2c16e7975e77726f4bfcc42a29f9234f801c697d67"
+    },
+    "r06_state": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\experiments\\runs\\optimization_v3_expanded_submissions_v1\\R06_ORIGINAL\\fit_state.json",
+      "sha256": "6227dae63e73ee4cf282729bac0221dc558cc08111975adf54f7348cee3f9f0a"
+    },
+    "r16_fit55_json": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\experiments\\runs\\optimization_v3_batch1\\R16\\R16_fit55.json",
+      "sha256": "68319eb49a3487440acf35368a1b8b8146c9f429860917be17ce02d37400c9d3"
+    },
+    "r16_fit55_npz": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\experiments\\runs\\optimization_v3_batch1\\R16\\R16_fit55.npz",
+      "sha256": "7a3329d3d8f78deb2d00e7baf72709989ac15628d36d353939fe7e8b349e88cf"
+    },
+    "r16_fit67_json": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\experiments\\runs\\optimization_v3_batch1\\R16\\R16_fit67.json",
+      "sha256": "7895e53c6ff2c8e04c678038653fd367bbf08ffe2fe784434e04bcd2cbfa7f2e"
+    },
+    "r16_fit67_npz": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\experiments\\runs\\optimization_v3_batch1\\R16\\R16_fit67.npz",
+      "sha256": "b165c410b217e05046483eafda7db773752cf96120e166dee476ed42c8e5ce54"
+    },
+    "r16_pilot": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\experiments\\runs\\optimization_v3_batch1\\R16\\pilot_engine_report.json",
+      "sha256": "4f6c9ed51c993aa64bcf16c110c09029b856eed1d19ea07c1c1b1df2d3915517"
+    },
+    "r17_source": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\src\\models\\optimization_v3_batch1_r17.py",
+      "sha256": "1d5d74cdf8215b8df654f5492cfa9ba396873e2bcbf58075550d9da1f331619d"
+    }
+  },
+  "namespace": "KASDAD_REG_FINAL_WAVE_V1",
+  "output_paths": {
+    "csv": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\submissions\\reg_final_wave_v1\\current_direct_affine_l1_e79.csv",
+    "csv_qa": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\reports\\optimization_v3\\REG_FINAL_WAVE_V1\\CSV_QA.json",
+    "ledger": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\runs\\REG_FINAL_WAVE_V1\\fit_ledger.jsonl",
+    "manifest": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\reports\\optimization_v3\\REG_FINAL_WAVE_V1\\INFERENCE_MANIFEST.json",
+    "receipt": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\runs\\REG_FINAL_WAVE_V1\\FIT_RECEIPT.json",
+    "state": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\runs\\REG_FINAL_WAVE_V1\\CALIBRATOR_STATE.json"
+  },
+  "review_path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\REG_FINAL_WAVE_V1\\INDEPENDENT_REVIEW.json",
+  "review_required": true,
+  "schema_version": 1,
+  "scientific_status": "EXPLORATORY_ONLY_IN_SAMPLE_CALIBRATION_UNVALIDATED",
+  "signature": "2322485a40e57a11ba33021cbc6a35d56a0114ceb89a6334682b697183ebe723",
+  "signature_method": "SHA-256 canonical JSON integrity seal",
+  "source_hashes": {
+    "protocol_doc": "f0a36986eb1c0caa3158c0bdf1ec44546ba02b973033c0aa89c9873b9a1780a8",
+    "query_reader": "664ad522782e7ea84679aede04c8d9376cc94c05e3138ee90fc054fc974a2bb6",
+    "r17_source": "1d5d74cdf8215b8df654f5492cfa9ba396873e2bcbf58075550d9da1f331619d",
+    "script": "6122908e5a087c046db38ccf001ca093b18c38e5c987934e78875a343ec021aa",
+    "synthetic_qa": "0b522962dc973befb1255313a73ae2bd443e8b8a182e23fedbbb0d064c00a86b"
+  },
+  "train": {
+    "access_rule": "hash and parse selected rows only in run mode after independent review",
+    "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\data\\raw\\regression\\Train.csv",
+    "sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082"
+  },
+  "worktree": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1"
+}
