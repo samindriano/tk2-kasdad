@@ -1,0 +1,252 @@
+{
+  "baseline_checks": {
+    "archive_prediction_dimension": true,
+    "archive_prediction_dtype": true,
+    "archive_prediction_finite": true,
+    "archive_prediction_range": true,
+    "archive_prediction_rows": true,
+    "csv_archive_prediction_delta": true,
+    "csv_ids_present_unique": true,
+    "csv_prediction_finite": true,
+    "csv_prediction_range": true,
+    "csv_rows": true,
+    "csv_schema": true,
+    "cycle_array_dtype": true,
+    "cycle_array_rows": true,
+    "cycle_domain_80_to_91": true,
+    "inference_manifest_contract_match": true,
+    "legacy_raw_manifest_digest": true,
+    "structured_digest_separately_recorded": true
+  },
+  "baseline_hash_contract": {
+    "checks": {
+      "legacy_raw_differs_from_structured_digest": true,
+      "manifest_digest_is_string": true,
+      "manifest_matches_legacy_raw_le_f8": true
+    },
+    "legacy_raw_le_f8_sha256": "eb032101ec3b363e5e2f12d7f34f5b272b7e39cb9cad8fca001350384b857c3e",
+    "manifest_contract": "sha256(final.astype('<f8').tobytes())",
+    "manifest_prediction_sha256": "eb032101ec3b363e5e2f12d7f34f5b272b7e39cb9cad8fca001350384b857c3e",
+    "status": "PASS_LEGACY_RAW_LE_F8_CONTRACT",
+    "structured_array_sha256": "c9e2f8b5abb4a68acc8845191d3e550cb6787c22cce09070def1ed8bea2f25b6",
+    "structured_contract": "sha256(canonical({shape,dtype}) + contiguous_array_bytes)"
+  },
+  "baseline_max_csv_archive_abs_delta": 2.842170943040401e-14,
+  "baseline_metadata_checks": {
+    "candidate": true,
+    "csv_columns": true,
+    "csv_file_hash": true,
+    "csv_path": true,
+    "csv_rows": true,
+    "manifest_status": true,
+    "prediction_archive_file_hash": true,
+    "prediction_path": true,
+    "sample_input_hash": true,
+    "sample_rows": true,
+    "test_input_hash": true,
+    "test_rows": true
+  },
+  "continuation_binding": {
+    "adapter_id": "REG_POSITION_REAL_E79_ZERO_FIT_INFERENCE_V2",
+    "authorization_binding_sha256": "29edbcf5d2015b5cdfee9af6dfb3e073735b8da700017b44b097fb9570b01ca3",
+    "checks": {
+      "adapter_files": true,
+      "adapter_id": true,
+      "authorization_binding_signature": true,
+      "continuation_signature": true,
+      "fit_artifact:REAL_POSITION_RESIDUAL_L1_E79": true,
+      "fit_artifact:WORD_TFIDF_FULL_TRAIN": true,
+      "fit_receipt:REAL_POSITION_RESIDUAL_L1_E79": true,
+      "fit_receipt:WORD_TFIDF_FULL_TRAIN": true,
+      "fit_starts_added": true,
+      "fit_starts_after": true,
+      "fit_starts_before": true,
+      "freeze_signature": true,
+      "no_upload": true,
+      "original_source:reports/optimization_v3/reg_position_real_e79_benchmark_v1/BENCHMARK_AUTHORIZATION.md": true,
+      "original_source:scripts/reg_position_real_e79_benchmark_v1.py": true,
+      "original_source:scripts/verify_reg_position_real_e79_benchmark_v1.py": true,
+      "original_source:src/models/classification_models.py": true,
+      "original_source:src/models/optimization_v3_positional_text_pilot_v1.py": true,
+      "original_source:src/models/reg_position_l1_v1.py": true,
+      "original_source:src/models/regression_research_tabular.py": true,
+      "original_source_hash_inventory": true,
+      "original_worktree_commit": true,
+      "output_root": true,
+      "preflight_sha256": true,
+      "r06_source:experiments/runs/optimization_v3_expanded_submissions_v1/R06_ORIGINAL/predictions.npz": true,
+      "r06_source:reports/submissions/optimization_v3_expanded_v1/R06_ORIGINAL/manifest.json": true,
+      "r06_source:submissions/optimization_v3_expanded_v1/r06_original.csv": true,
+      "r06_source_hash_inventory": true,
+      "source_root": true,
+      "test_features_opened_after_baseline_gate": true,
+      "test_labels_read": true,
+      "trained_freeze_sha256": true,
+      "worktree_root": true
+    },
+    "continuation_signature": "78d22c6a97e5d33a30c602c17d945b9a001e9235785ef77e1355657210378e5b",
+    "fit_starts": 2,
+    "fit_starts_added": 0,
+    "historical_adapter_commit": {
+      "current_head": "ee3e22851e1484c307fa42aa3674ce8c7fa1fd88",
+      "git_blob_hashes": {
+        "reports/optimization_v3/reg_position_real_e79_benchmark_v1/INFERENCE_CONTINUATION_AUTHORIZATION_V2.md": "858d3730b0dbacb7e4efd0ad316ef05dda514639785ac0120470e88d2129521b",
+        "scripts/reg_position_real_e79_hash_compat_v2.py": "c78f4ba24daac572042e989aa199826238d7050e2a436e14828ef2d0af7e34e8",
+        "scripts/reg_position_real_e79_inference_v2.py": "e0b473e79ed1d3974bb2f660d3d046b26d2440b3da930f5a14df490aa449a667",
+        "scripts/verify_reg_position_real_e79_benchmark_v2.py": "bc3a1b9595c4bf1cbeac98d2ea0af6b4f46a6e064e77e1a79407c52fc0054d01",
+        "tests/test_reg_position_real_e79_hash_compat_v2.py": "0046c87ffd49ef913d23c200ef557e39630ce60cac96e9b6760d0ec084dbe61c"
+      },
+      "manifest_adapter_hashes": {
+        "reports/optimization_v3/reg_position_real_e79_benchmark_v1/INFERENCE_CONTINUATION_AUTHORIZATION_V2.md": "858d3730b0dbacb7e4efd0ad316ef05dda514639785ac0120470e88d2129521b",
+        "scripts/reg_position_real_e79_hash_compat_v2.py": "c78f4ba24daac572042e989aa199826238d7050e2a436e14828ef2d0af7e34e8",
+        "scripts/reg_position_real_e79_inference_v2.py": "e0b473e79ed1d3974bb2f660d3d046b26d2440b3da930f5a14df490aa449a667",
+        "scripts/verify_reg_position_real_e79_benchmark_v2.py": "bc3a1b9595c4bf1cbeac98d2ea0af6b4f46a6e064e77e1a79407c52fc0054d01",
+        "tests/test_reg_position_real_e79_hash_compat_v2.py": "0046c87ffd49ef913d23c200ef557e39630ce60cac96e9b6760d0ec084dbe61c"
+      },
+      "recorded_commit": "9b35affa261449aa63ed057b7bd77abe2ed29caf",
+      "recorded_commit_is_ancestor": true
+    },
+    "original_manifest_integrity": {
+      "checks": {
+        "embedded_manifest_signature_matches_expected": true,
+        "embedded_manifest_signature_valid": true,
+        "manifest_file_hash_matches_expected": true
+      },
+      "manifest_file_sha256": "15fe5c6446b7ca2eb3b24fe72e9b4a85c51a6c4847495b192af7e76143474802",
+      "manifest_sha256": "85b6df507792a6698acc3ab255ab0a1815c5f93748fb53f8cd951d22871ff663"
+    },
+    "source_hash_binding": {
+      "actual_file_hashes": {
+        "reports/optimization_v3/reg_position_real_e79_benchmark_v1/BENCHMARK_AUTHORIZATION.md": "117e55a50f2135fffc9b0a4f9573e6e9a9d05d086d682487f66ceea19b88db81",
+        "scripts/reg_position_real_e79_benchmark_v1.py": "6c32309c3d88720212592f851d9120b5bb389e681f7bfb33361cbdd998fd6aeb",
+        "scripts/verify_reg_position_real_e79_benchmark_v1.py": "f690f760276f10382db8298c8667043a4b8c83470beba254715c2c3d7becf15a",
+        "src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+        "src/models/optimization_v3_positional_text_pilot_v1.py": "390d9585a91440cc83314d2fa58acfebf374371032308937489019c2bd242c36",
+        "src/models/reg_position_l1_v1.py": "d340217ed2527209407f0b97e8ac25de1c83c9e3f702fca60ecdefb9d5379302",
+        "src/models/regression_research_tabular.py": "674d7e52c485583729b8fe999dc133c39aae8dd85abd005a598e2caea9af99f9"
+      },
+      "checks": {
+        "actual_file_hashes_exact": true,
+        "expected_inventory_is_sha256_map": true,
+        "freeze_inventory_exact": true,
+        "observed_result_keys_exact": true,
+        "observed_result_values_are_booleans": true,
+        "observed_results_all_true": true,
+        "preflight_inventory_exact": true
+      },
+      "freeze_inventory": {
+        "reports/optimization_v3/reg_position_real_e79_benchmark_v1/BENCHMARK_AUTHORIZATION.md": "117e55a50f2135fffc9b0a4f9573e6e9a9d05d086d682487f66ceea19b88db81",
+        "scripts/reg_position_real_e79_benchmark_v1.py": "6c32309c3d88720212592f851d9120b5bb389e681f7bfb33361cbdd998fd6aeb",
+        "scripts/verify_reg_position_real_e79_benchmark_v1.py": "f690f760276f10382db8298c8667043a4b8c83470beba254715c2c3d7becf15a",
+        "src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+        "src/models/optimization_v3_positional_text_pilot_v1.py": "390d9585a91440cc83314d2fa58acfebf374371032308937489019c2bd242c36",
+        "src/models/reg_position_l1_v1.py": "d340217ed2527209407f0b97e8ac25de1c83c9e3f702fca60ecdefb9d5379302",
+        "src/models/regression_research_tabular.py": "674d7e52c485583729b8fe999dc133c39aae8dd85abd005a598e2caea9af99f9"
+      },
+      "observed_boolean_results": {
+        "reports/optimization_v3/reg_position_real_e79_benchmark_v1/BENCHMARK_AUTHORIZATION.md": true,
+        "scripts/reg_position_real_e79_benchmark_v1.py": true,
+        "scripts/verify_reg_position_real_e79_benchmark_v1.py": true,
+        "src/models/classification_models.py": true,
+        "src/models/optimization_v3_positional_text_pilot_v1.py": true,
+        "src/models/reg_position_l1_v1.py": true,
+        "src/models/regression_research_tabular.py": true
+      },
+      "pinned_inventory": {
+        "reports/optimization_v3/reg_position_real_e79_benchmark_v1/BENCHMARK_AUTHORIZATION.md": "117e55a50f2135fffc9b0a4f9573e6e9a9d05d086d682487f66ceea19b88db81",
+        "scripts/reg_position_real_e79_benchmark_v1.py": "6c32309c3d88720212592f851d9120b5bb389e681f7bfb33361cbdd998fd6aeb",
+        "scripts/verify_reg_position_real_e79_benchmark_v1.py": "f690f760276f10382db8298c8667043a4b8c83470beba254715c2c3d7becf15a",
+        "src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+        "src/models/optimization_v3_positional_text_pilot_v1.py": "390d9585a91440cc83314d2fa58acfebf374371032308937489019c2bd242c36",
+        "src/models/reg_position_l1_v1.py": "d340217ed2527209407f0b97e8ac25de1c83c9e3f702fca60ecdefb9d5379302",
+        "src/models/regression_research_tabular.py": "674d7e52c485583729b8fe999dc133c39aae8dd85abd005a598e2caea9af99f9"
+      },
+      "preflight_inventory": {
+        "reports/optimization_v3/reg_position_real_e79_benchmark_v1/BENCHMARK_AUTHORIZATION.md": "117e55a50f2135fffc9b0a4f9573e6e9a9d05d086d682487f66ceea19b88db81",
+        "scripts/reg_position_real_e79_benchmark_v1.py": "6c32309c3d88720212592f851d9120b5bb389e681f7bfb33361cbdd998fd6aeb",
+        "scripts/verify_reg_position_real_e79_benchmark_v1.py": "f690f760276f10382db8298c8667043a4b8c83470beba254715c2c3d7becf15a",
+        "src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+        "src/models/optimization_v3_positional_text_pilot_v1.py": "390d9585a91440cc83314d2fa58acfebf374371032308937489019c2bd242c36",
+        "src/models/reg_position_l1_v1.py": "d340217ed2527209407f0b97e8ac25de1c83c9e3f702fca60ecdefb9d5379302",
+        "src/models/regression_research_tabular.py": "674d7e52c485583729b8fe999dc133c39aae8dd85abd005a598e2caea9af99f9"
+      }
+    }
+  },
+  "design_sha256": "476a61ac366d39221373ebccdcc3947787d6391ca600ec9457046a15ecf54638",
+  "duplicate_vector_scan": {
+    "candidate_record_id_value_pairs_sha256": "52a2b967e24bef49d6b0d2e63949a2b63037416ad35576db99e197e4e565d154",
+    "candidate_value_vector_sha256": "b351511dad89bca34abcfbd7a3f028ead89fd1b5e350880eaec3073ca4d0472b",
+    "files_scanned": 29,
+    "same_ordered_value_vectors": [],
+    "same_record_id_value_pairs": [],
+    "schema_compatible_files": 14
+  },
+  "exact_r06_missing_fallback": true,
+  "fit_starts_added_by_verifier": 0,
+  "fit_starts_total": 2,
+  "historical_v2_schema_mismatch": {
+    "corrected_by": "v3 independently separates recorded booleans, pinned inventories, and actual file hashes",
+    "field": "inference_continuation.original_frozen_source_hashes",
+    "original_manifest_rewritten": false,
+    "stored_form": "per-file boolean result map",
+    "v2_verifier_expected_form": "pinned SHA-256 inventory"
+  },
+  "kaggle_accessed": false,
+  "missing_text_rows": 1062,
+  "model_predictions_recomputed": true,
+  "numeric_csv_roundtrip_exact": true,
+  "policy_formula_recomputed": true,
+  "prediction_range": [
+    0.0,
+    100.0
+  ],
+  "qa_report_signature": "fcd171c4d93fa5bab4fc54892e78d26431d64d2a2c5de36222b5761ded8c64bc",
+  "source_and_state_hashes": true,
+  "status": "PASS_INDEPENDENT_INFERENCE_VERIFICATION_V3",
+  "test_labels_read": false,
+  "test_order_matches_sample_and_r06": true,
+  "test_rows": 29421,
+  "unique_test_ids": 29421,
+  "v3_attestation": {
+    "adapter_id": "REG_POSITION_REAL_E79_INDEPENDENT_VERIFIER_V3",
+    "canonical_signature": "7ca98388457b1c91f265a07a474481d9d578a3d151b99a0da73f8818e9acede8",
+    "git_head": "ee3e22851e1484c307fa42aa3674ce8c7fa1fd88",
+    "historical_v2_commit": {
+      "current_head": "ee3e22851e1484c307fa42aa3674ce8c7fa1fd88",
+      "git_blob_hashes": {
+        "reports/optimization_v3/reg_position_real_e79_benchmark_v1/INFERENCE_CONTINUATION_AUTHORIZATION_V2.md": "858d3730b0dbacb7e4efd0ad316ef05dda514639785ac0120470e88d2129521b",
+        "scripts/reg_position_real_e79_hash_compat_v2.py": "c78f4ba24daac572042e989aa199826238d7050e2a436e14828ef2d0af7e34e8",
+        "scripts/reg_position_real_e79_inference_v2.py": "e0b473e79ed1d3974bb2f660d3d046b26d2440b3da930f5a14df490aa449a667",
+        "scripts/verify_reg_position_real_e79_benchmark_v2.py": "bc3a1b9595c4bf1cbeac98d2ea0af6b4f46a6e064e77e1a79407c52fc0054d01",
+        "tests/test_reg_position_real_e79_hash_compat_v2.py": "0046c87ffd49ef913d23c200ef557e39630ce60cac96e9b6760d0ec084dbe61c"
+      },
+      "manifest_adapter_hashes": {
+        "reports/optimization_v3/reg_position_real_e79_benchmark_v1/INFERENCE_CONTINUATION_AUTHORIZATION_V2.md": "858d3730b0dbacb7e4efd0ad316ef05dda514639785ac0120470e88d2129521b",
+        "scripts/reg_position_real_e79_hash_compat_v2.py": "c78f4ba24daac572042e989aa199826238d7050e2a436e14828ef2d0af7e34e8",
+        "scripts/reg_position_real_e79_inference_v2.py": "e0b473e79ed1d3974bb2f660d3d046b26d2440b3da930f5a14df490aa449a667",
+        "scripts/verify_reg_position_real_e79_benchmark_v2.py": "bc3a1b9595c4bf1cbeac98d2ea0af6b4f46a6e064e77e1a79407c52fc0054d01",
+        "tests/test_reg_position_real_e79_hash_compat_v2.py": "0046c87ffd49ef913d23c200ef557e39630ce60cac96e9b6760d0ec084dbe61c"
+      },
+      "recorded_commit": "9b35affa261449aa63ed057b7bd77abe2ed29caf",
+      "recorded_commit_is_ancestor": true
+    },
+    "original_inference_manifest_file_sha256": "15fe5c6446b7ca2eb3b24fe72e9b4a85c51a6c4847495b192af7e76143474802",
+    "original_inference_manifest_sha256": "85b6df507792a6698acc3ab255ab0a1815c5f93748fb53f8cd951d22871ff663",
+    "qa_status": "PASS_INDEPENDENT_INFERENCE_VERIFICATION",
+    "source_file_hashes": {
+      "reports/optimization_v3/reg_position_real_e79_benchmark_v1/VERIFIER_V3_AUTHORIZATION.md": "37e5cc8a9cbb5b880ed7a03e7945ff4de2392e790d42269271a6271d67e5536a",
+      "scripts/reg_position_real_e79_verifier_v3_binding.py": "c61e65be9828c8a7650e138f4432018a462bec74175b6f5f015d8fa23d760053",
+      "scripts/verify_reg_position_real_e79_benchmark_v3.py": "5b4d2216ab3e15f1d6ab64b677c3ea0dc4aa9011815cf7dcb48239e45039a55a",
+      "tests/test_reg_position_real_e79_verifier_v3_binding.py": "013a5e291df8affe4801c8467da6a71dfe49979af5eea1bcddd20c29cdd20945"
+    },
+    "source_inventory_checks": {
+      "actual_file_hashes_exact": true,
+      "expected_inventory_is_sha256_map": true,
+      "freeze_inventory_exact": true,
+      "observed_result_keys_exact": true,
+      "observed_result_values_are_booleans": true,
+      "observed_results_all_true": true,
+      "preflight_inventory_exact": true
+    }
+  }
+}
