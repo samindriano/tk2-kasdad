@@ -1,0 +1,160 @@
+{
+  "anchor_verification": {
+    "candidate": "R06_ORIGINAL",
+    "csv_archive_max_abs_delta": 0.0,
+    "csv_sha256": "4a72b13e0d6ac93e18adee23010bb15ddf15fcb2a9543dc903154d5af60ee64f",
+    "execution_head": "62eb622d8b9bc491ed72aa553349dddd5635070f",
+    "final_prediction_digest": "eb032101ec3b363e5e2f12d7f34f5b272b7e39cb9cad8fca001350384b857c3e",
+    "final_prediction_member": "prediction",
+    "fit_cycles": [
+      47,
+      79
+    ],
+    "fit_rows": 50608,
+    "fit_state_sha256": "6227dae63e73ee4cf282729bac0221dc558cc08111975adf54f7348cee3f9f0a",
+    "manifest_sha256": "3f77e4ac148ada5fb79e5e2c16e7975e77726f4bfcc42a29f9234f801c697d67",
+    "prediction_archive_sha256": "ce034e82a7063ec5dd873b1126d60731dd291d3852c57936c7aa1ee449a81eba",
+    "public_mae_as_reported": 11.1662,
+    "raw_candidate_member_used": false,
+    "source_commit": "c72dd1eaa9c2567d17349895e8c857cdc2e0486e",
+    "status": "PASS_EXACT_PUBLIC_R06_E79_ANCHOR"
+  },
+  "boundaries": {
+    "candidate_outcomes_used_to_select_recipe": false,
+    "kaggle_accessed": false,
+    "official_test_features_loaded": false,
+    "official_test_ids_loaded": false,
+    "r06_refit": false,
+    "test_labels_loaded": false
+  },
+  "input_sha256": {
+    "current_r06_e79_final_csv": "4a72b13e0d6ac93e18adee23010bb15ddf15fcb2a9543dc903154d5af60ee64f",
+    "current_r06_e79_fit_state": "6227dae63e73ee4cf282729bac0221dc558cc08111975adf54f7348cee3f9f0a",
+    "current_r06_e79_manifest": "3f77e4ac148ada5fb79e5e2c16e7975e77726f4bfcc42a29f9234f801c697d67",
+    "current_r06_e79_prediction_archive": "ce034e82a7063ec5dd873b1126d60731dd291d3852c57936c7aa1ee449a81eba",
+    "official_regression_sample_submission": "63a51f4b7dfbb0eec9800099407abd8be14d25ec18a533cd39dc854ffc190a32",
+    "official_regression_test": "4e6c381d582ed24f92d17f620f4f0ad25e2e0def29eb57a91a5482867f6afe3c",
+    "official_regression_train": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+    "r06_public_receipt_registry": "43bad588c27488a22398197ecac424b8d99a198a8c570ebc3deb3b9058863758"
+  },
+  "learned_units_max": 10,
+  "learned_units_plan": [
+    {
+      "candidate": "A",
+      "id": "A_TFIDF",
+      "kind": "preprocessing"
+    },
+    {
+      "candidate": "A",
+      "id": "A_STRUCTURED",
+      "kind": "preprocessing"
+    },
+    {
+      "candidate": "A",
+      "id": "A_SCALER",
+      "kind": "preprocessing"
+    },
+    {
+      "candidate": "A",
+      "id": "A_OHE",
+      "kind": "preprocessing"
+    },
+    {
+      "candidate": "A",
+      "id": "A_R12_RANKER",
+      "kind": "predictor"
+    },
+    {
+      "candidate": "B",
+      "id": "B_SHARED_WORD_TFIDF",
+      "kind": "preprocessing"
+    },
+    {
+      "candidate": "B",
+      "id": "B_STRUCTURED",
+      "kind": "preprocessing"
+    },
+    {
+      "candidate": "B",
+      "id": "B_SCALER",
+      "kind": "preprocessing"
+    },
+    {
+      "candidate": "B",
+      "id": "B_OHE",
+      "kind": "preprocessing"
+    },
+    {
+      "candidate": "B",
+      "id": "B_DIRECT_POSITION_REAL_REGRESSOR",
+      "kind": "predictor"
+    }
+  ],
+  "namespace": "REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1",
+  "predictor_fits_max": 2,
+  "predictor_fits_planned": 2,
+  "preprocessing_fits_max": 8,
+  "preprocessing_fits_planned": 8,
+  "resource_preflight": {
+    "A_estimated_peak_gib": 2.678786188364029,
+    "A_sparse_design_upper_gib": 0.10719654709100723,
+    "A_word_ngram_occurrence_upper_bound": 3879014,
+    "B_bag_ngram_occurrence_upper_bound": 3879014,
+    "B_estimated_peak_gib": 2.7957966029644012,
+    "B_position_unigram_occurrence_upper_bound": 1963109,
+    "B_sparse_design_upper_gib": 0.1364491507411003,
+    "estimate_method": "2.25GiB fixed/LightGBM allowance plus four copies of CSR design upper bound; word counts include every analyzer occurrence before pruning; structured bound is 65 nonzeros per row.",
+    "fit_cycles": [
+      47,
+      79
+    ],
+    "fit_rows": 50608,
+    "jobs": 1,
+    "max_job_rss_gib": 6.0,
+    "minimum_available_ram_gib": 4.0,
+    "minimum_projected_reserve_gib": 2.0,
+    "predictor_fits_performed": 0,
+    "snapshot": {
+      "available_gib": 4.606437683105469,
+      "total_gib": 31.292400360107422
+    },
+    "status": "FAIL",
+    "structured_nnz_upper_bound": 3289520,
+    "threads_per_fit": 2
+  },
+  "schema_version": 1,
+  "signature": "c44c4bbc2a1e650203dc5db52e524a6a784541158cebe7b740a64ba5bf2cc69d",
+  "signature_method": "SHA-256 canonical JSON",
+  "source_commit": "751d007b5c34005bd833fa4002b6a1655b081ea0",
+  "source_sha256": {
+    "experiments/REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1/PROTOCOL.json": "4042b49c2c9257a2d109912649958105cfc73e86aecd4d7cfd21f6672e36bf75",
+    "reports/optimization_v3/REG_R12_CURRENT_ROUTE_LATE_V1/RESULTS.json": "dd85eb6c0ff673e8e16e45f3704e96b38567329131496564d21067239ccc33db",
+    "reports/optimization_v3/positional_text_pilot_v1/RECIPE.json": "179b746cabdd9e3a8b522ce346dc84978a17886709cca08ad92fecc04e381592",
+    "reports/optimization_v3/reg_position_direct_l1_v1/RECIPE.json": "77e80d58818ed3e8e671c9deba150cd54c0e0cfb8649f6fe02faa272cf804ee6",
+    "scripts/optimization_v3_reg_current_r06_e79_exploratory_v1.py": "04f7cb4f4a2d3f7b69fdca1d4d20de609134f7a46eb7c0a72d0d62e91ee9d6ff",
+    "scripts/reg_position_direct_l1_v1.py": "6f6dbf8b32dc5fc2ba8952aa77c9f157a2d9df7ea48e4683ab3c21508dacdc92",
+    "scripts/verify_optimization_v3_reg_current_r06_e79_exploratory_v1.py": "7fdf0646f803181093c22356fcf9c94c7ec6f9b7e1fb569486fcc8020f66abc5",
+    "src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+    "src/models/optimization_v2_regression.py": "b235cfd93c8cc0a207cfcea79892b925f9dfdfe515491a459d6ca1b6142cb590",
+    "src/models/optimization_v3_batch1_r12.py": "e0dfe4cf08fcd817e79b69827f7f16f9a154a2a328d16e7912b8f8b74e2d5a8d",
+    "src/models/optimization_v3_positional_text_pilot_v1.py": "390d9585a91440cc83314d2fa58acfebf374371032308937489019c2bd242c36",
+    "src/models/optimization_v3_reg_r12_current_route_late_v1.py": "601a6e743ca3d0a7bf5a4b7a48ae3df0fe74fa7d16daf9a5c1957474238ac570",
+    "src/models/positional_text_features.py": "d4ef29f5b8942e04f221cdad5e9d93f7a96f76f485cae8bdc80fbbc8557cb24e",
+    "src/models/reg_position_l1_v1.py": "d340217ed2527209407f0b97e8ac25de1c83c9e3f702fca60ecdefb9d5379302",
+    "src/models/regression_research_tabular.py": "674d7e52c485583729b8fe999dc133c39aae8dd85abd005a598e2caea9af99f9",
+    "src/models/regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+    "src/models/regression_round2_models.py": "5cb195cc4a1b7894e670d9df117052eb9ac776630ff47d0469b83598880146df",
+    "src/models/round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4"
+  },
+  "status": "BLOCKED_RESOURCE",
+  "train_feature_only": {
+    "ordered_cycle_sha256": "aaab6bad073428b6349891065188a7955def5b0ec987a2a85086693817127c24",
+    "ordered_record_ids_sha256": "969ec25bd179c784d8aab2b4ffe3275363a6041e5cdfbac21805b809af404a30",
+    "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\data\\raw\\regression\\Train.csv",
+    "rows": 50608,
+    "sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082",
+    "target_values_loaded": false,
+    "test_features_loaded": false,
+    "test_labels_loaded": false
+  }
+}
