@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "status": "STOPPED_PRELABEL_INVALID_FALLBACK_CACHE_COMPARISON",
+  "recorded_at_utc": "2026-11-05T05:44:12Z",
+  "attempt": {
+    "command": "python scripts/evaluate_optimization_v3_cls_pos_frequency_ridge_v1.py --prepare-predictions",
+    "stage": "E67 target-free saved-prediction replay",
+    "source_freeze": "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R4.json",
+    "source_freeze_commit": "cab69181b5c7dc4961fe60050a57e739aca7bd0c",
+    "source_freeze_file_sha256": "46fec3f862f6d77e681534b89ac7963e1e1aa1c7ff6408cd62598dd6622dd403",
+    "source_freeze_signature": "27c1d36f9b4209ebbe1c795d821d5cb09622e2f63e575861662ec85f18f074be",
+    "shared_os_lock_acquired": true,
+    "initial_resource_gates_passed": true,
+    "initial_ram_values_recorded": false
+  },
+  "observed_error": {
+    "exception": "EvaluationError",
+    "message": "E67 HGB fallback does not match saved pilot cache",
+    "script_line": 732,
+    "temp_log_sha256": "ab6dcd8f6ff1f903ce759ed4c8009f22f2a7f2c9e42d06c266a677eb41ab6217",
+    "temp_log_bytes": 714
+  },
+  "subsequent_target_free_cache_audit": {
+    "scope": "allowlisted probability, availability, ordered identity arrays only",
+    "query_labels_or_target_members_accessed": false,
+    "E67": {
+      "missing_rows": 1375,
+      "raw_bag_lr_equals_hgb_missing": false,
+      "pos_hgb_equals_pilot_hgb_full_vector": true,
+      "pos_routed_bag_equals_pilot_routed_bag_full_vector": true,
+      "routed_bag_missing_equals_hgb": true,
+      "routed_bag_present_equals_raw_bag_lr": true,
+      "routed_vs_raw_difference_count": 1375
+    },
+    "E75": {
+      "missing_rows": 526,
+      "raw_bag_lr_equals_hgb_missing": false,
+      "pos_hgb_equals_pilot_hgb_full_vector": true,
+      "pos_routed_bag_equals_pilot_routed_bag_full_vector": true,
+      "routed_bag_missing_equals_hgb": true,
+      "routed_bag_present_equals_raw_bag_lr": true,
+      "routed_vs_raw_difference_count": 526
+    },
+    "finding": "The producer stores prob_bag as raw LogisticRegression output and prob_route_bag as availability-routed output. R4 incorrectly compared raw prob_bag on missing rows to the separate HGB fallback."
+  },
+  "boundary": {
+    "target_keys_loaded": [],
+    "query_target_labels_read": false,
+    "test_or_samplesubmission_accessed": false,
+    "matrices_loaded": false,
+    "prediction_npz_created": false,
+    "prediction_manifest_created": false,
+    "new_model_fits": 0,
+    "kaggle_accessed": false
+  },
+  "supersession": "Preserve R4 freeze and failed attempt as historical evidence. R5 changes only cache-field semantics/allowlisting and binds this receipt; scientific recipe and gates remain unchanged."
+}
