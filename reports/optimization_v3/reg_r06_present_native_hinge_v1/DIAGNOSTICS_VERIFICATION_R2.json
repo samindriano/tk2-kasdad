@@ -1,0 +1,180 @@
+{
+  "all_row_native_control_lineage": {
+    "diagnostic_states": {
+      "R06_HINGE_D1": {
+        "fit_input_sha256": "2188eae777dba15fe4b3a9164283390e8c47a1752f5966f218d8d1b5846c7340",
+        "state_sha256": "abd8af36222a26fd91b70f41caf819eb1d0d15ed72fdcbd626427690550a4f82"
+      },
+      "R06_HINGE_D2": {
+        "fit_input_sha256": "031115c258584c086b43671549051f730791ea57c92ed797c9df7bb2a39b5781",
+        "state_sha256": "49310b6318eead2fed80205e8a326ed31d483fba5940d4d4c6a49f3301cdbd5f"
+      }
+    },
+    "final_started": false,
+    "prior_native_lp_starts_already_consumed": 2,
+    "root_source_pass_sha256": "044484845d08fe672c377a03079498a8e9646227d0adae3ebeea0981b2b4cf91"
+  },
+  "csv_created": false,
+  "diagnostics_sha256": "e12a9871acfd758cc36bddfd5606e26ad21cc0459b0ecda6b2aad84027b6cba6",
+  "experiment_id": "REG_R06_PRESENT_NATIVE_HINGE_V1_R2",
+  "exploratory_gate": {
+    "each_window_harm_vs_transported_primary_le": 0.02,
+    "pass": false,
+    "pooled_gain_vs_primary_min": 0.0,
+    "supported_group_harm_vs_primary_le": 0.25
+  },
+  "final_fit_started": false,
+  "fit_population_ids_sha256": "c0d853eee519872070ab645c452489918c6e6a6595bc4c631d47f1b5edd95fd1",
+  "fit_replays": {
+    "R06_PRESENT_HINGE_D1": {
+      "coefficients": {
+        "intercept": 1.9169704816196553,
+        "knot": 50.0,
+        "slope_high": 0.9535179031385488,
+        "slope_low": 0.990515779279634
+      },
+      "fit_input_sha256": "58d5e6214a1b2cf8ffcf1a3001e17a874c20d7b31878a72cb4b0069f089aec29",
+      "fit_record_id_sha256": "7e0f24f2dbf90f1d1e4a625f586d33e61c654996aa786b9957454234e526a115",
+      "fit_rows": 4608,
+      "fit_state_sha256": "466fb1b0fa16afcf37e1b6f45c6b009284a64f6285d20613943822dcc02c5d6d",
+      "max_primal_violation_replayed": 1.5681900222830336e-14,
+      "objective_replayed": 51426.83812867272,
+      "slack_sum_replayed": 51426.83812867272,
+      "solver_method": "highs",
+      "solver_slacks_sha256": "1dd121f94934d467c40f558d5754f102265d001e0f2790d73444899bbea7ad46",
+      "solver_status": 0,
+      "solver_success": true,
+      "threads": 2
+    },
+    "R06_PRESENT_HINGE_D2": {
+      "coefficients": {
+        "intercept": 1.997221954373134,
+        "knot": 50.0,
+        "slope_high": 0.9559617423918413,
+        "slope_low": 0.9974148103981457
+      },
+      "fit_input_sha256": "43dce357dbc192b333d4cbf190fdd44273ce9485901cdc01b07c1bc9462c6d6a",
+      "fit_record_id_sha256": "23a1b395435f3edd7ff59af81c46057fd248c570b661707520d49ff072f9d22f",
+      "fit_rows": 11563,
+      "fit_state_sha256": "84f1544ddb52eae9bae35cb81d2b34ba95444c8a4a50ab7a2ce683ae8a6eb548",
+      "max_primal_violation_replayed": 1.9241552795534744e-14,
+      "objective_replayed": 129348.76412607823,
+      "slack_sum_replayed": 129348.76412607823,
+      "solver_method": "highs",
+      "solver_slacks_sha256": "34b37b5139f45f1fdc1b880d65001bcb6407e5ec63c8085790188129dc56a717",
+      "solver_status": 0,
+      "solver_success": true,
+      "threads": 2
+    }
+  },
+  "identity_preflight_sha256": "d654dc5cd067de7a7cbfc473bffa8199ae0273cf543cf427f17ffc4cc768dfa2",
+  "independent_metrics_sha256": "bebc017ddd2e05aeb7ee338496b184c81ce871265ba0a7c313f7b3f5ae782c33",
+  "kaggle_accessed": false,
+  "ledger_sequence": [
+    {
+      "event": "RESERVE",
+      "fit_id": "R06_PRESENT_HINGE_D1"
+    },
+    {
+      "event": "LP_STARTED",
+      "fit_id": "R06_PRESENT_HINGE_D1"
+    },
+    {
+      "event": "LP_COMPLETE",
+      "fit_id": "R06_PRESENT_HINGE_D1"
+    },
+    {
+      "event": "RESERVE",
+      "fit_id": "R06_PRESENT_HINGE_D2"
+    },
+    {
+      "event": "LP_STARTED",
+      "fit_id": "R06_PRESENT_HINGE_D2"
+    },
+    {
+      "event": "LP_COMPLETE",
+      "fit_id": "R06_PRESENT_HINGE_D2"
+    }
+  ],
+  "ledger_sha256": "405402973a9e0c2bbc3e24a6cc760d2b9c94724450b28d893ef198d4e4e3be0f",
+  "mechanism_gate": {
+    "comparator": "saved all-row native R2C hinge on the same score rows",
+    "each_window_gain_strictly_greater_than": 0.0,
+    "pass": false,
+    "window_gains": {
+      "D1": 0.0001414870027289794,
+      "D2": -0.0037380906298807304
+    }
+  },
+  "official_lp_starts": 2,
+  "prefit_freeze_sha256": "05a476dec7abca43c7e1eef935c686106fe03bb395a5edec7ce598c978e97df8",
+  "qualification_gate": {
+    "each_window_gain_vs_transported_primary_min": 0.0,
+    "max_supported_availability_or_tail_harm_vs_primary_le": 0.25,
+    "pass": false,
+    "pooled_gain_vs_primary_min": 0.005
+  },
+  "r4_comparator_lineage": {
+    "diagnostic_fit_ids": [
+      "HINGE_D1",
+      "HINGE_D2"
+    ],
+    "root_source_pass_sha256": "adbeaac6a53afd095eb53ffe372eb89de9ec1f3e47dd7794ecafb163ff394bac"
+  },
+  "root_review_eligible": false,
+  "root_source_pass_sha256": "294fcc9906939543971d1fb98c6c57ddf32fa5ed7566e2f01e4c4c86dc0625bc",
+  "row_cache_audit": {
+    "cycle_counts": {
+      "68": 577,
+      "69": 1079,
+      "70": 1605,
+      "71": 1689,
+      "72": 1811,
+      "73": 1880,
+      "74": 1814,
+      "75": 1957,
+      "76": 1822,
+      "77": 2335,
+      "78": 2146,
+      "79": 2188
+    },
+    "excluded_missing_fit_rows": {
+      "R06_PRESENT_HINGE_D1": 342,
+      "R06_PRESENT_HINGE_D2": 849
+    },
+    "missing_rows": 1375,
+    "present_fit_rows": {
+      "R06_PRESENT_HINGE_D1": 4608,
+      "R06_PRESENT_HINGE_D2": 11563
+    },
+    "r06_prediction_sha256": "1a12aa93eb82e09ae145e2950e5ef83c96532a34cf1fb76d5ebb56cbc3e92d39",
+    "r06_source_counts": {
+      "67": 12412,
+      "75": 8491
+    },
+    "rows": 20903,
+    "target_values_loaded": false,
+    "targets_member_seen_but_not_loaded": true,
+    "test_labels_read": false,
+    "unique_physical_rows": 20903,
+    "unique_record_ids": 20903
+  },
+  "schema_version": 1,
+  "score_identity_hashes": {
+    "candidate_prediction_sha256": {
+      "D1": "004ff9916bb50be5a597d866c7fb51feea061faa12a1639a4b11663f7fe5557c",
+      "D2": "17fc9466c6985f1a3a3a864aca3fa9fdef417c03b06f874cefc5e5c8e37fb38a"
+    },
+    "pooled_score_record_id_sha256": "b594af09c3a74075c91a082b5d509c030f430d1d6d1d87ba4a59c9dffca365a4",
+    "score_record_id_sha256": {
+      "D1": "dc721799df8e14ac25e7455d8735de0a8728970ead50482d97e0f0be73d58fb8",
+      "D2": "e0f03c4f5bb0c1ae3aa7d2dff20cda1148a6b0f4dab998a1723e1c1df0032d82"
+    }
+  },
+  "signature": "b8388b6bc2af29a83c20f9e0cf50ba2523babb1f429c0b07ddbdc8048d62a4cd",
+  "source_verification_sha256": "a150b9d4815572ecc445b4679c9ad9cec34b17c785d4f8e30c30709b5f9d6e13",
+  "status": "PASS_INDEPENDENT_POSTFIT_REPLAY",
+  "test_labels_read": false,
+  "test_or_sample_accessed": false,
+  "train_csv_reopened": false
+}

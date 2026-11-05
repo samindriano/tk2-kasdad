@@ -1,0 +1,1613 @@
+{
+  "base_or_preprocessing_fits": 0,
+  "csv_created": false,
+  "experiment_id": "REG_R06_PRESENT_NATIVE_HINGE_V1_R2",
+  "exploratory_gate": {
+    "each_window_harm_vs_transported_primary_le": 0.02,
+    "pass": false,
+    "pooled_gain_vs_primary_min": 0.0,
+    "supported_group_harm_vs_primary_le": 0.25
+  },
+  "final_fit_not_a_holdout_claim": true,
+  "final_fit_requires_separate_root_approval": true,
+  "final_fit_started": false,
+  "fit_states": {
+    "R06_PRESENT_HINGE_D1": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\runs\\reg_r06_present_native_hinge_v1\\R2\\fits\\R06_PRESENT_HINGE_D1.json",
+      "sha256": "466fb1b0fa16afcf37e1b6f45c6b009284a64f6285d20613943822dcc02c5d6d"
+    },
+    "R06_PRESENT_HINGE_D2": {
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\runs\\reg_r06_present_native_hinge_v1\\R2\\fits\\R06_PRESENT_HINGE_D2.json",
+      "sha256": "84f1544ddb52eae9bae35cb81d2b34ba95444c8a4a50ab7a2ce683ae8a6eb548"
+    }
+  },
+  "full_direct_model_comparison_is_separate_from_primary_gate": true,
+  "full_oof_final_coefficients_used_in_temporal_diagnostic_gates": false,
+  "identity_preflight_sha256": "d654dc5cd067de7a7cbfc473bffa8199ae0273cf543cf427f17ffc4cc768dfa2",
+  "kaggle_accessed": false,
+  "mechanism_gate": {
+    "comparator": "saved all-row native R2C hinge on the same score rows",
+    "each_window_gain_strictly_greater_than": 0.0,
+    "pass": false,
+    "window_gains": {
+      "D1": 0.0001414870027289794,
+      "D2": -0.0037380906298807304
+    }
+  },
+  "official_lp_starts": 2,
+  "pooled_unique": {
+    "all_required_groups_supported": true,
+    "all_scored_cycles_supported": true,
+    "availability_and_tail_groups": {
+      "availability_missing": {
+        "candidate_gain_vs_primary": -0.0,
+        "candidate_harm_vs_primary": 0.0,
+        "metrics": {
+          "all_row_native_hinge": {
+            "mae": 13.536770652572127,
+            "mean_error_prediction_minus_target": 3.503834475123054,
+            "n": 1033,
+            "p90_absolute_error": 26.228339103627558,
+            "status": "MEASURED"
+          },
+          "matching_r4_hinge_on_direct": {
+            "mae": 13.536770652572127,
+            "mean_error_prediction_minus_target": 3.503834475123054,
+            "n": 1033,
+            "p90_absolute_error": 26.228339103627558,
+            "status": "MEASURED"
+          },
+          "present_native_hinge": {
+            "mae": 13.536770652572127,
+            "mean_error_prediction_minus_target": 3.503834475123054,
+            "n": 1033,
+            "p90_absolute_error": 26.228339103627558,
+            "status": "MEASURED"
+          },
+          "raw_r06": {
+            "mae": 13.536770652572127,
+            "mean_error_prediction_minus_target": 3.503834475123054,
+            "n": 1033,
+            "p90_absolute_error": 26.228339103627558,
+            "status": "MEASURED"
+          },
+          "transported_r4_hinge_on_r06": {
+            "mae": 13.536770652572127,
+            "mean_error_prediction_minus_target": 3.503834475123054,
+            "n": 1033,
+            "p90_absolute_error": 26.228339103627558,
+            "status": "MEASURED"
+          }
+        },
+        "n": 1033,
+        "status": "MEASURED",
+        "support_rule": "n >= 200 for availability_missing",
+        "supported": true
+      },
+      "availability_present": {
+        "candidate_gain_vs_primary": -0.002445572286358555,
+        "candidate_harm_vs_primary": 0.002445572286358555,
+        "metrics": {
+          "all_row_native_hinge": {
+            "mae": 10.38631806574965,
+            "mean_error_prediction_minus_target": -0.2104833998172934,
+            "n": 14920,
+            "p90_absolute_error": 23.294844695829624,
+            "status": "MEASURED"
+          },
+          "matching_r4_hinge_on_direct": {
+            "mae": 10.42351077951788,
+            "mean_error_prediction_minus_target": -0.17661456857134128,
+            "n": 14920,
+            "p90_absolute_error": 23.54736098957225,
+            "status": "MEASURED"
+          },
+          "present_native_hinge": {
+            "mae": 10.388374657674849,
+            "mean_error_prediction_minus_target": -0.17475079759523324,
+            "n": 14920,
+            "p90_absolute_error": 23.344195617136688,
+            "status": "MEASURED"
+          },
+          "raw_r06": {
+            "mae": 10.449440075083405,
+            "mean_error_prediction_minus_target": -1.4202341790080448,
+            "n": 14920,
+            "p90_absolute_error": 23.514977364418698,
+            "status": "MEASURED"
+          },
+          "transported_r4_hinge_on_r06": {
+            "mae": 10.38592908538849,
+            "mean_error_prediction_minus_target": -0.15983502842418204,
+            "n": 14920,
+            "p90_absolute_error": 23.36250366711269,
+            "status": "MEASURED"
+          }
+        },
+        "n": 14920,
+        "status": "MEASURED",
+        "support_rule": "n >= 200 for availability_present",
+        "supported": true
+      },
+      "target_ge_95": {
+        "candidate_gain_vs_primary": -0.026073205515985798,
+        "candidate_harm_vs_primary": 0.026073205515985798,
+        "metrics": {
+          "all_row_native_hinge": {
+            "mae": 6.7934229775370545,
+            "mean_error_prediction_minus_target": -6.458053840116643,
+            "n": 808,
+            "p90_absolute_error": 16.729848727060947,
+            "status": "MEASURED"
+          },
+          "matching_r4_hinge_on_direct": {
+            "mae": 6.805929335174122,
+            "mean_error_prediction_minus_target": -6.376983278733478,
+            "n": 808,
+            "p90_absolute_error": 16.898609675507196,
+            "status": "MEASURED"
+          },
+          "present_native_hinge": {
+            "mae": 6.740086120546172,
+            "mean_error_prediction_minus_target": -6.383390680154176,
+            "n": 808,
+            "p90_absolute_error": 16.686930848889038,
+            "status": "MEASURED"
+          },
+          "raw_r06": {
+            "mae": 6.6928364113236585,
+            "mean_error_prediction_minus_target": -6.194687313188266,
+            "n": 808,
+            "p90_absolute_error": 16.860572303191592,
+            "status": "MEASURED"
+          },
+          "transported_r4_hinge_on_r06": {
+            "mae": 6.714012915030186,
+            "mean_error_prediction_minus_target": -6.364812634690909,
+            "n": 808,
+            "p90_absolute_error": 16.58861522519331,
+            "status": "MEASURED"
+          }
+        },
+        "n": 808,
+        "status": "MEASURED",
+        "support_rule": "n >= 200 for target_ge_95",
+        "supported": true
+      },
+      "target_le_5": {
+        "candidate_gain_vs_primary": -0.12749345042744942,
+        "candidate_harm_vs_primary": 0.12749345042744942,
+        "metrics": {
+          "all_row_native_hinge": {
+            "mae": 9.717188142806025,
+            "mean_error_prediction_minus_target": 9.692912131278453,
+            "n": 804,
+            "p90_absolute_error": 20.35520179724845,
+            "status": "MEASURED"
+          },
+          "matching_r4_hinge_on_direct": {
+            "mae": 9.600565602774129,
+            "mean_error_prediction_minus_target": 9.56060235108149,
+            "n": 804,
+            "p90_absolute_error": 20.4875071230807,
+            "status": "MEASURED"
+          },
+          "present_native_hinge": {
+            "mae": 9.657676510235898,
+            "mean_error_prediction_minus_target": 9.630405138893185,
+            "n": 804,
+            "p90_absolute_error": 20.35233440626719,
+            "status": "MEASURED"
+          },
+          "raw_r06": {
+            "mae": 8.017795779926207,
+            "mean_error_prediction_minus_target": 7.811891661854976,
+            "n": 804,
+            "p90_absolute_error": 19.519509166132448,
+            "status": "MEASURED"
+          },
+          "transported_r4_hinge_on_r06": {
+            "mae": 9.530183059808449,
+            "mean_error_prediction_minus_target": 9.495888120080282,
+            "n": 804,
+            "p90_absolute_error": 20.30446647607217,
+            "status": "MEASURED"
+          }
+        },
+        "n": 804,
+        "status": "MEASURED",
+        "support_rule": "n >= 200 for target_le_5",
+        "supported": true
+      }
+    },
+    "full_rows": {
+      "metrics": {
+        "all_row_native_hinge": {
+          "mae": 10.590318411903205,
+          "mean_error_prediction_minus_target": 0.03002875243077155,
+          "n": 15953,
+          "p90_absolute_error": 23.67949918077124,
+          "status": "MEASURED"
+        },
+        "matching_r4_hinge_on_direct": {
+          "mae": 10.625102796622187,
+          "mean_error_prediction_minus_target": 0.06170448503213845,
+          "n": 15953,
+          "p90_absolute_error": 23.90629081166752,
+          "status": "MEASURED"
+        },
+        "present_native_hinge": {
+          "mae": 10.592241833925641,
+          "mean_error_prediction_minus_target": 0.0634475717846949,
+          "n": 15953,
+          "p90_absolute_error": 23.700305014658838,
+          "status": "MEASURED"
+        },
+        "raw_r06": {
+          "mae": 10.649353100003221,
+          "mean_error_prediction_minus_target": -1.1013873840655621,
+          "n": 15953,
+          "p90_absolute_error": 23.926424878058494,
+          "status": "MEASURED"
+        },
+        "transported_r4_hinge_on_r06": {
+          "mae": 10.58995461907499,
+          "mean_error_prediction_minus_target": 0.0773975044639452,
+          "n": 15953,
+          "p90_absolute_error": 23.748866547584697,
+          "status": "MEASURED"
+        }
+      },
+      "n": 15953,
+      "status": "MEASURED",
+      "support_rule": "n >= 1 for full rows",
+      "supported": true
+    },
+    "gain_vs_all_row_native_mechanism": -0.0019234220224362275,
+    "gain_vs_transported_r4_primary": -0.002287214850651864,
+    "harm_vs_transported_r4_primary": 0.002287214850651864,
+    "max_supported_group_harm_vs_primary": 0.17940563113332608,
+    "missing_rows": 1033,
+    "n": 15953,
+    "per_cycle": {
+      "72": {
+        "metrics": {
+          "all_row_native_hinge": {
+            "mae": 11.444754131854856,
+            "mean_error_prediction_minus_target": -1.1504775604000963,
+            "n": 1811,
+            "p90_absolute_error": 24.596008279254168,
+            "status": "MEASURED"
+          },
+          "matching_r4_hinge_on_direct": {
+            "mae": 11.436785428985996,
+            "mean_error_prediction_minus_target": -1.1841086412821242,
+            "n": 1811,
+            "p90_absolute_error": 24.922496456131583,
+            "status": "MEASURED"
+          },
+          "present_native_hinge": {
+            "mae": 11.44915501681218,
+            "mean_error_prediction_minus_target": -1.192775529202628,
+            "n": 1811,
+            "p90_absolute_error": 24.617132908092575,
+            "status": "MEASURED"
+          },
+          "raw_r06": {
+            "mae": 11.60604450563973,
+            "mean_error_prediction_minus_target": -2.207103853384958,
+            "n": 1811,
+            "p90_absolute_error": 24.97281768255274,
+            "status": "MEASURED"
+          },
+          "transported_r4_hinge_on_r06": {
+            "mae": 11.442657028049801,
+            "mean_error_prediction_minus_target": -1.1330222671207786,
+            "n": 1811,
+            "p90_absolute_error": 24.673194189478856,
+            "status": "MEASURED"
+          }
+        },
+        "n": 1811,
+        "status": "MEASURED",
+        "support_rule": "n >= 50 for cycle_72",
+        "supported": true
+      },
+      "73": {
+        "metrics": {
+          "all_row_native_hinge": {
+            "mae": 11.67666242625272,
+            "mean_error_prediction_minus_target": -0.9194194855547348,
+            "n": 1880,
+            "p90_absolute_error": 25.45469067946236,
+            "status": "MEASURED"
+          },
+          "matching_r4_hinge_on_direct": {
+            "mae": 11.669394180827519,
+            "mean_error_prediction_minus_target": -0.9728082648902302,
+            "n": 1880,
+            "p90_absolute_error": 25.79726393887516,
+            "status": "MEASURED"
+          },
+          "present_native_hinge": {
+            "mae": 11.674730658612377,
+            "mean_error_prediction_minus_target": -0.9619188242135054,
+            "n": 1880,
+            "p90_absolute_error": 25.506865736836264,
+            "status": "MEASURED"
+          },
+          "raw_r06": {
+            "mae": 11.732812649038378,
+            "mean_error_prediction_minus_target": -1.9740385371409375,
+            "n": 1880,
+            "p90_absolute_error": 26.056743917923793,
+            "status": "MEASURED"
+          },
+          "transported_r4_hinge_on_r06": {
+            "mae": 11.677372982386437,
+            "mean_error_prediction_minus_target": -0.9006428499751659,
+            "n": 1880,
+            "p90_absolute_error": 25.491531324069534,
+            "status": "MEASURED"
+          }
+        },
+        "n": 1880,
+        "status": "MEASURED",
+        "support_rule": "n >= 50 for cycle_73",
+        "supported": true
+      },
+      "74": {
+        "metrics": {
+          "all_row_native_hinge": {
+            "mae": 11.611094993806157,
+            "mean_error_prediction_minus_target": -0.5676677824182,
+            "n": 1814,
+            "p90_absolute_error": 25.415092219217517,
+            "status": "MEASURED"
+          },
+          "matching_r4_hinge_on_direct": {
+            "mae": 11.612985046158288,
+            "mean_error_prediction_minus_target": -0.5784881355476814,
+            "n": 1814,
+            "p90_absolute_error": 25.51261606658525,
+            "status": "MEASURED"
+          },
+          "present_native_hinge": {
+            "mae": 11.612300348188542,
+            "mean_error_prediction_minus_target": -0.609241431878171,
+            "n": 1814,
+            "p90_absolute_error": 25.3850649235406,
+            "status": "MEASURED"
+          },
+          "raw_r06": {
+            "mae": 11.715969941017983,
+            "mean_error_prediction_minus_target": -1.6106924741112518,
+            "n": 1814,
+            "p90_absolute_error": 25.73567780318048,
+            "status": "MEASURED"
+          },
+          "transported_r4_hinge_on_r06": {
+            "mae": 11.603137978819163,
+            "mean_error_prediction_minus_target": -0.5484542434584234,
+            "n": 1814,
+            "p90_absolute_error": 25.415811529641132,
+            "status": "MEASURED"
+          }
+        },
+        "n": 1814,
+        "status": "MEASURED",
+        "support_rule": "n >= 50 for cycle_74",
+        "supported": true
+      },
+      "75": {
+        "metrics": {
+          "all_row_native_hinge": {
+            "mae": 10.905983568123023,
+            "mean_error_prediction_minus_target": -0.04047933956598872,
+            "n": 1957,
+            "p90_absolute_error": 22.613269424892145,
+            "status": "MEASURED"
+          },
+          "matching_r4_hinge_on_direct": {
+            "mae": 10.928319478929092,
+            "mean_error_prediction_minus_target": -0.06883843575206121,
+            "n": 1957,
+            "p90_absolute_error": 22.61650072278061,
+            "status": "MEASURED"
+          },
+          "present_native_hinge": {
+            "mae": 10.90211000227842,
+            "mean_error_prediction_minus_target": -0.07904061026291785,
+            "n": 1957,
+            "p90_absolute_error": 22.648283547132465,
+            "status": "MEASURED"
+          },
+          "raw_r06": {
+            "mae": 10.8920350139778,
+            "mean_error_prediction_minus_target": -1.0541064462835497,
+            "n": 1957,
+            "p90_absolute_error": 23.349596340051686,
+            "status": "MEASURED"
+          },
+          "transported_r4_hinge_on_r06": {
+            "mae": 10.903447301451893,
+            "mean_error_prediction_minus_target": -0.018069699535202863,
+            "n": 1957,
+            "p90_absolute_error": 22.647330179535015,
+            "status": "MEASURED"
+          }
+        },
+        "n": 1957,
+        "status": "MEASURED",
+        "support_rule": "n >= 50 for cycle_75",
+        "supported": true
+      },
+      "76": {
+        "metrics": {
+          "all_row_native_hinge": {
+            "mae": 10.052266610885036,
+            "mean_error_prediction_minus_target": 1.2601121664304367,
+            "n": 1822,
+            "p90_absolute_error": 23.753943273965906,
+            "status": "MEASURED"
+          },
+          "matching_r4_hinge_on_direct": {
+            "mae": 10.126252786046653,
+            "mean_error_prediction_minus_target": 1.3139088578532576,
+            "n": 1822,
+            "p90_absolute_error": 23.98755691718688,
+            "status": "MEASURED"
+          },
+          "present_native_hinge": {
+            "mae": 10.062433893825744,
+            "mean_error_prediction_minus_target": 1.3606045002255602,
+            "n": 1822,
+            "p90_absolute_error": 23.686200511208124,
+            "status": "MEASURED"
+          },
+          "raw_r06": {
+            "mae": 10.009457558538411,
+            "mean_error_prediction_minus_target": 0.0628663490170803,
+            "n": 1822,
+            "p90_absolute_error": 23.44535652134367,
+            "status": "MEASURED"
+          },
+          "transported_r4_hinge_on_r06": {
+            "mae": 10.059408177628839,
+            "mean_error_prediction_minus_target": 1.3343278521650588,
+            "n": 1822,
+            "p90_absolute_error": 23.71249556695157,
+            "status": "MEASURED"
+          }
+        },
+        "n": 1822,
+        "status": "MEASURED",
+        "support_rule": "n >= 50 for cycle_76",
+        "supported": true
+      },
+      "77": {
+        "metrics": {
+          "all_row_native_hinge": {
+            "mae": 9.694580157840296,
+            "mean_error_prediction_minus_target": 0.3665770899147948,
+            "n": 2335,
+            "p90_absolute_error": 23.609474287627496,
+            "status": "MEASURED"
+          },
+          "matching_r4_hinge_on_direct": {
+            "mae": 9.69382118602627,
+            "mean_error_prediction_minus_target": 0.39816463840476746,
+            "n": 2335,
+            "p90_absolute_error": 23.534089522674048,
+            "status": "MEASURED"
+          },
+          "present_native_hinge": {
+            "mae": 9.695141102926788,
+            "mean_error_prediction_minus_target": 0.4623962378966508,
+            "n": 2335,
+            "p90_absolute_error": 23.713398890216975,
+            "status": "MEASURED"
+          },
+          "raw_r06": {
+            "mae": 9.790902989278793,
+            "mean_error_prediction_minus_target": -0.8415003606427214,
+            "n": 2335,
+            "p90_absolute_error": 23.447977094026758,
+            "status": "MEASURED"
+          },
+          "transported_r4_hinge_on_r06": {
+            "mae": 9.691796806399601,
+            "mean_error_prediction_minus_target": 0.43475332059710287,
+            "n": 2335,
+            "p90_absolute_error": 23.73354366594317,
+            "status": "MEASURED"
+          }
+        },
+        "n": 2335,
+        "status": "MEASURED",
+        "support_rule": "n >= 50 for cycle_77",
+        "supported": true
+      },
+      "78": {
+        "metrics": {
+          "all_row_native_hinge": {
+            "mae": 9.979197000287119,
+            "mean_error_prediction_minus_target": -0.7631142085196507,
+            "n": 2146,
+            "p90_absolute_error": 22.561106920183484,
+            "status": "MEASURED"
+          },
+          "matching_r4_hinge_on_direct": {
+            "mae": 10.081120294027755,
+            "mean_error_prediction_minus_target": -0.6663210306430059,
+            "n": 2146,
+            "p90_absolute_error": 22.964489639109033,
+            "status": "MEASURED"
+          },
+          "present_native_hinge": {
+            "mae": 9.970856658224202,
+            "mean_error_prediction_minus_target": -0.6660446602323838,
+            "n": 2146,
+            "p90_absolute_error": 22.582717074946487,
+            "status": "MEASURED"
+          },
+          "raw_r06": {
+            "mae": 10.129507605450975,
+            "mean_error_prediction_minus_target": -2.0020878930068973,
+            "n": 2146,
+            "p90_absolute_error": 23.00129912287295,
+            "status": "MEASURED"
+          },
+          "transported_r4_hinge_on_r06": {
+            "mae": 9.972220153277185,
+            "mean_error_prediction_minus_target": -0.6940880577979351,
+            "n": 2146,
+            "p90_absolute_error": 22.566711923682604,
+            "status": "MEASURED"
+          }
+        },
+        "n": 2146,
+        "status": "MEASURED",
+        "support_rule": "n >= 50 for cycle_78",
+        "supported": true
+      },
+      "79": {
+        "metrics": {
+          "all_row_native_hinge": {
+            "mae": 9.824409128501207,
+            "mean_error_prediction_minus_target": 1.7759601583129332,
+            "n": 2188,
+            "p90_absolute_error": 22.018279264405614,
+            "status": "MEASURED"
+          },
+          "matching_r4_hinge_on_direct": {
+            "mae": 9.908555828216228,
+            "mean_error_prediction_minus_target": 1.941514988939518,
+            "n": 2188,
+            "p90_absolute_error": 22.016258626089396,
+            "status": "MEASURED"
+          },
+          "present_native_hinge": {
+            "mae": 9.838030657436489,
+            "mean_error_prediction_minus_target": 1.8789600746157054,
+            "n": 2188,
+            "p90_absolute_error": 22.011123773942156,
+            "status": "MEASURED"
+          },
+          "raw_r06": {
+            "mae": 9.784049431519076,
+            "mean_error_prediction_minus_target": 0.5801410083667088,
+            "n": 2188,
+            "p90_absolute_error": 21.93776609605583,
+            "status": "MEASURED"
+          },
+          "transported_r4_hinge_on_r06": {
+            "mae": 9.835613619462352,
+            "mean_error_prediction_minus_target": 1.8525188728709914,
+            "n": 2188,
+            "p90_absolute_error": 22.029417603980775,
+            "status": "MEASURED"
+          }
+        },
+        "n": 2188,
+        "status": "MEASURED",
+        "support_rule": "n >= 50 for cycle_79",
+        "supported": true
+      }
+    },
+    "present_only": {
+      "metrics": {
+        "all_row_native_hinge": {
+          "mae": 10.38631806574965,
+          "mean_error_prediction_minus_target": -0.2104833998172934,
+          "n": 14920,
+          "p90_absolute_error": 23.294844695829624,
+          "status": "MEASURED"
+        },
+        "matching_r4_hinge_on_direct": {
+          "mae": 10.42351077951788,
+          "mean_error_prediction_minus_target": -0.17661456857134128,
+          "n": 14920,
+          "p90_absolute_error": 23.54736098957225,
+          "status": "MEASURED"
+        },
+        "present_native_hinge": {
+          "mae": 10.388374657674849,
+          "mean_error_prediction_minus_target": -0.17475079759523324,
+          "n": 14920,
+          "p90_absolute_error": 23.344195617136688,
+          "status": "MEASURED"
+        },
+        "raw_r06": {
+          "mae": 10.449440075083405,
+          "mean_error_prediction_minus_target": -1.4202341790080448,
+          "n": 14920,
+          "p90_absolute_error": 23.514977364418698,
+          "status": "MEASURED"
+        },
+        "transported_r4_hinge_on_r06": {
+          "mae": 10.38592908538849,
+          "mean_error_prediction_minus_target": -0.15983502842418204,
+          "n": 14920,
+          "p90_absolute_error": 23.36250366711269,
+          "status": "MEASURED"
+        }
+      },
+      "n": 14920,
+      "status": "MEASURED",
+      "support_rule": "n >= 1 for present rows",
+      "supported": true
+    },
+    "present_rows": 14920,
+    "rows": 15953,
+    "unique_rows": 15953
+  },
+  "prefit_freeze_sha256": "05a476dec7abca43c7e1eef935c686106fe03bb395a5edec7ce598c978e97df8",
+  "qualification_gate": {
+    "each_window_gain_vs_transported_primary_min": 0.0,
+    "max_supported_availability_or_tail_harm_vs_primary_le": 0.25,
+    "pass": false,
+    "pooled_gain_vs_primary_min": 0.005
+  },
+  "raw_r06_comparison": {
+    "gate_role": "diagnostic_only",
+    "reported_in_full_present_tail_and_cycle_summaries": true
+  },
+  "root_review_eligible": false,
+  "root_source_pass_sha256": "294fcc9906939543971d1fb98c6c57ddf32fa5ed7566e2f01e4c4c86dc0625bc",
+  "schema_version": 2,
+  "signature": "1a35770f8ddd0163a7c0eacb31428f8379f70977d59849dc1c33ebb61cc0d1d0",
+  "source_commit": "fe4ab08aa0e71206b1b7adc3a0a6905b0e71dd4d",
+  "source_hashes": {
+    "direct_identity_helpers_v3": "16dbce9befde26347f697346394962c51fdf9c1c77fed43374320b76bb95f3df",
+    "final_wave_helpers_v2": "67d6b2238ca82d35d0017d116dbe18a44b4864fee5affe65963d27764f15fa9f",
+    "handoff": "3ba22814805f3e93f4ee4549cb2b375f9189d618ff2396d26beacdf6d50b2509",
+    "hinge_core_r1": "f51d428fce23cf45575d8bbdc3241cc2a5c976b840665aca33b62b1a9687fb99",
+    "hinge_solver_r4": "dcf35a80bf50e9e83a234b08c7b3cc1b32cdec5e54e89236fb221fa33352225d",
+    "protocol": "6f3fa2e16d92a703948bf7d308f7b54f241d401b3df37e69708e5ce01f178664",
+    "runner": "75b1c6356d1796bd73703b00cd7eea22d86d3f65d42ef8364ba1d854b4e74b25",
+    "tests": "9bba9e0dc4a9d93d18bd63b1e735aa902ba16bd6d6d97ed3e3ee8e2b1f15c3ea",
+    "verifier": "c3f46742a92ab78bbbeded9a0fc03edaa07b773a78444e2cf5c63282ef73417d"
+  },
+  "status": "TWO_DIAGNOSTICS_COMPLETE_PENDING_ROOT_REVIEW",
+  "test_labels_read": false,
+  "test_or_sample_accessed": false,
+  "train_target_audit": {
+    "selected_rows": 20903,
+    "source_path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\runs\\reg_monotone_hinge_p50_v1\\FINAL_APPLICATION_R1\\fit_inputs\\HINGE_FINAL.npz",
+    "source_sha256": "e75f70cccd1bb231499060b84155af876173214d984461e39e4c1364e4c5b2bf",
+    "target_array_sha256": "b86ae6e236181a6a6e0cf28cabcb3209bbf8017febcb6624755f539a1169a8a5",
+    "target_values_loaded_after_root_pass": true,
+    "test_labels_read": false,
+    "train_csv_reopened": false
+  },
+  "unknown_unsupported_groups_block_scientific_pass": true,
+  "windows": {
+    "D1": {
+      "all_required_groups_supported": true,
+      "all_scored_cycles_supported": true,
+      "availability_and_tail_groups": {
+        "availability_missing": {
+          "candidate_gain_vs_primary": -0.0,
+          "candidate_harm_vs_primary": 0.0,
+          "metrics": {
+            "all_row_native_hinge": {
+              "mae": 13.98004810757736,
+              "mean_error_prediction_minus_target": 3.006064352174271,
+              "n": 507,
+              "p90_absolute_error": 27.161487770005678,
+              "status": "MEASURED"
+            },
+            "matching_r4_hinge_on_direct": {
+              "mae": 13.98004810757736,
+              "mean_error_prediction_minus_target": 3.006064352174271,
+              "n": 507,
+              "p90_absolute_error": 27.161487770005678,
+              "status": "MEASURED"
+            },
+            "present_native_hinge": {
+              "mae": 13.98004810757736,
+              "mean_error_prediction_minus_target": 3.006064352174271,
+              "n": 507,
+              "p90_absolute_error": 27.161487770005678,
+              "status": "MEASURED"
+            },
+            "raw_r06": {
+              "mae": 13.98004810757736,
+              "mean_error_prediction_minus_target": 3.006064352174271,
+              "n": 507,
+              "p90_absolute_error": 27.161487770005678,
+              "status": "MEASURED"
+            },
+            "transported_r4_hinge_on_r06": {
+              "mae": 13.98004810757736,
+              "mean_error_prediction_minus_target": 3.006064352174271,
+              "n": 507,
+              "p90_absolute_error": 27.161487770005678,
+              "status": "MEASURED"
+            }
+          },
+          "n": 507,
+          "status": "MEASURED",
+          "support_rule": "n >= 200 for availability_missing",
+          "supported": true
+        },
+        "availability_present": {
+          "candidate_gain_vs_primary": -0.002991190870883287,
+          "candidate_harm_vs_primary": 0.002991190870883287,
+          "metrics": {
+            "all_row_native_hinge": {
+              "mae": 11.214410764224828,
+              "mean_error_prediction_minus_target": -0.9266808836976398,
+              "n": 6955,
+              "p90_absolute_error": 24.371584949072215,
+              "status": "MEASURED"
+            },
+            "matching_r4_hinge_on_direct": {
+              "mae": 11.217148982789796,
+              "mean_error_prediction_minus_target": -0.9606713458746504,
+              "n": 6955,
+              "p90_absolute_error": 24.625504324682502,
+              "status": "MEASURED"
+            },
+            "present_native_hinge": {
+              "mae": 11.214258963216288,
+              "mean_error_prediction_minus_target": -0.9708763380548149,
+              "n": 6955,
+              "p90_absolute_error": 24.3649621480391,
+              "status": "MEASURED"
+            },
+            "raw_r06": {
+              "mae": 11.295015382419145,
+              "mean_error_prediction_minus_target": -2.0441430076595535,
+              "n": 6955,
+              "p90_absolute_error": 24.847139828868354,
+              "status": "MEASURED"
+            },
+            "transported_r4_hinge_on_r06": {
+              "mae": 11.211267772345405,
+              "mean_error_prediction_minus_target": -0.9057433371510236,
+              "n": 6955,
+              "p90_absolute_error": 24.413918930257555,
+              "status": "MEASURED"
+            }
+          },
+          "n": 6955,
+          "status": "MEASURED",
+          "support_rule": "n >= 200 for availability_present",
+          "supported": true
+        },
+        "target_ge_95": {
+          "candidate_gain_vs_primary": -0.07579187008215804,
+          "candidate_harm_vs_primary": 0.07579187008215804,
+          "metrics": {
+            "all_row_native_hinge": {
+              "mae": 7.956384573798946,
+              "mean_error_prediction_minus_target": -7.827266233201304,
+              "n": 374,
+              "p90_absolute_error": 19.34970796919548,
+              "status": "MEASURED"
+            },
+            "matching_r4_hinge_on_direct": {
+              "mae": 7.945749021923675,
+              "mean_error_prediction_minus_target": -7.75803776074242,
+              "n": 374,
+              "p90_absolute_error": 19.71964524281679,
+              "status": "MEASURED"
+            },
+            "present_native_hinge": {
+              "mae": 7.899823061168355,
+              "mean_error_prediction_minus_target": -7.755172689523312,
+              "n": 374,
+              "p90_absolute_error": 19.337966536736726,
+              "status": "MEASURED"
+            },
+            "raw_r06": {
+              "mae": 7.651983683340625,
+              "mean_error_prediction_minus_target": -7.3403094951426695,
+              "n": 374,
+              "p90_absolute_error": 19.365661480161346,
+              "status": "MEASURED"
+            },
+            "transported_r4_hinge_on_r06": {
+              "mae": 7.824031191086197,
+              "mean_error_prediction_minus_target": -7.670622543943801,
+              "n": 374,
+              "p90_absolute_error": 19.212570728240536,
+              "status": "MEASURED"
+            }
+          },
+          "n": 374,
+          "status": "MEASURED",
+          "support_rule": "n >= 200 for target_ge_95",
+          "supported": true
+        },
+        "target_le_5": {
+          "candidate_gain_vs_primary": -0.17940563113332608,
+          "candidate_harm_vs_primary": 0.17940563113332608,
+          "metrics": {
+            "all_row_native_hinge": {
+              "mae": 9.440082047312421,
+              "mean_error_prediction_minus_target": 9.401673248135491,
+              "n": 362,
+              "p90_absolute_error": 19.179655458467007,
+              "status": "MEASURED"
+            },
+            "matching_r4_hinge_on_direct": {
+              "mae": 9.175405494018761,
+              "mean_error_prediction_minus_target": 9.10962280407317,
+              "n": 362,
+              "p90_absolute_error": 18.57533770703017,
+              "status": "MEASURED"
+            },
+            "present_native_hinge": {
+              "mae": 9.35395750950651,
+              "mean_error_prediction_minus_target": 9.31247434061986,
+              "n": 362,
+              "p90_absolute_error": 19.08905528307601,
+              "status": "MEASURED"
+            },
+            "raw_r06": {
+              "mae": 7.73368345341955,
+              "mean_error_prediction_minus_target": 7.571607030379481,
+              "n": 362,
+              "p90_absolute_error": 17.937868085575808,
+              "status": "MEASURED"
+            },
+            "transported_r4_hinge_on_r06": {
+              "mae": 9.174551878373183,
+              "mean_error_prediction_minus_target": 9.12250885012242,
+              "n": 362,
+              "p90_absolute_error": 19.006296085122997,
+              "status": "MEASURED"
+            }
+          },
+          "n": 362,
+          "status": "MEASURED",
+          "support_rule": "n >= 200 for target_le_5",
+          "supported": true
+        }
+      },
+      "full_rows": {
+        "metrics": {
+          "all_row_native_hinge": {
+            "mae": 11.402319921699997,
+            "mean_error_prediction_minus_target": -0.6594734547795136,
+            "n": 7462,
+            "p90_absolute_error": 24.633640278446798,
+            "status": "MEASURED"
+          },
+          "matching_r4_hinge_on_direct": {
+            "mae": 11.404872094055849,
+            "mean_error_prediction_minus_target": -0.6911544604671452,
+            "n": 7462,
+            "p90_absolute_error": 24.843074261006624,
+            "status": "MEASURED"
+          },
+          "present_native_hinge": {
+            "mae": 11.402178434697268,
+            "mean_error_prediction_minus_target": -0.7006660820984832,
+            "n": 7462,
+            "p90_absolute_error": 24.616960115873052,
+            "status": "MEASURED"
+          },
+          "raw_r06": {
+            "mae": 11.477447919494354,
+            "mean_error_prediction_minus_target": -1.7010104518520288,
+            "n": 7462,
+            "p90_absolute_error": 25.01474115445571,
+            "status": "MEASURED"
+          },
+          "transported_r4_hinge_on_r06": {
+            "mae": 11.39939047804932,
+            "mean_error_prediction_minus_target": -0.6399584941480855,
+            "n": 7462,
+            "p90_absolute_error": 24.690618292050452,
+            "status": "MEASURED"
+          }
+        },
+        "n": 7462,
+        "status": "MEASURED",
+        "support_rule": "n >= 1 for full rows",
+        "supported": true
+      },
+      "gain_vs_all_row_native_mechanism": 0.0001414870027289794,
+      "gain_vs_transported_r4_primary": -0.0027879566479480644,
+      "harm_vs_transported_r4_primary": 0.0027879566479480644,
+      "missing_rows": 507,
+      "n": 7462,
+      "per_cycle": {
+        "72": {
+          "metrics": {
+            "all_row_native_hinge": {
+              "mae": 11.444754131854856,
+              "mean_error_prediction_minus_target": -1.1504775604000963,
+              "n": 1811,
+              "p90_absolute_error": 24.596008279254168,
+              "status": "MEASURED"
+            },
+            "matching_r4_hinge_on_direct": {
+              "mae": 11.436785428985996,
+              "mean_error_prediction_minus_target": -1.1841086412821242,
+              "n": 1811,
+              "p90_absolute_error": 24.922496456131583,
+              "status": "MEASURED"
+            },
+            "present_native_hinge": {
+              "mae": 11.44915501681218,
+              "mean_error_prediction_minus_target": -1.192775529202628,
+              "n": 1811,
+              "p90_absolute_error": 24.617132908092575,
+              "status": "MEASURED"
+            },
+            "raw_r06": {
+              "mae": 11.60604450563973,
+              "mean_error_prediction_minus_target": -2.207103853384958,
+              "n": 1811,
+              "p90_absolute_error": 24.97281768255274,
+              "status": "MEASURED"
+            },
+            "transported_r4_hinge_on_r06": {
+              "mae": 11.442657028049801,
+              "mean_error_prediction_minus_target": -1.1330222671207786,
+              "n": 1811,
+              "p90_absolute_error": 24.673194189478856,
+              "status": "MEASURED"
+            }
+          },
+          "n": 1811,
+          "status": "MEASURED",
+          "support_rule": "n >= 50 for cycle_72",
+          "supported": true
+        },
+        "73": {
+          "metrics": {
+            "all_row_native_hinge": {
+              "mae": 11.67666242625272,
+              "mean_error_prediction_minus_target": -0.9194194855547348,
+              "n": 1880,
+              "p90_absolute_error": 25.45469067946236,
+              "status": "MEASURED"
+            },
+            "matching_r4_hinge_on_direct": {
+              "mae": 11.669394180827519,
+              "mean_error_prediction_minus_target": -0.9728082648902302,
+              "n": 1880,
+              "p90_absolute_error": 25.79726393887516,
+              "status": "MEASURED"
+            },
+            "present_native_hinge": {
+              "mae": 11.674730658612377,
+              "mean_error_prediction_minus_target": -0.9619188242135054,
+              "n": 1880,
+              "p90_absolute_error": 25.506865736836264,
+              "status": "MEASURED"
+            },
+            "raw_r06": {
+              "mae": 11.732812649038378,
+              "mean_error_prediction_minus_target": -1.9740385371409375,
+              "n": 1880,
+              "p90_absolute_error": 26.056743917923793,
+              "status": "MEASURED"
+            },
+            "transported_r4_hinge_on_r06": {
+              "mae": 11.677372982386437,
+              "mean_error_prediction_minus_target": -0.9006428499751659,
+              "n": 1880,
+              "p90_absolute_error": 25.491531324069534,
+              "status": "MEASURED"
+            }
+          },
+          "n": 1880,
+          "status": "MEASURED",
+          "support_rule": "n >= 50 for cycle_73",
+          "supported": true
+        },
+        "74": {
+          "metrics": {
+            "all_row_native_hinge": {
+              "mae": 11.611094993806157,
+              "mean_error_prediction_minus_target": -0.5676677824182,
+              "n": 1814,
+              "p90_absolute_error": 25.415092219217517,
+              "status": "MEASURED"
+            },
+            "matching_r4_hinge_on_direct": {
+              "mae": 11.612985046158288,
+              "mean_error_prediction_minus_target": -0.5784881355476814,
+              "n": 1814,
+              "p90_absolute_error": 25.51261606658525,
+              "status": "MEASURED"
+            },
+            "present_native_hinge": {
+              "mae": 11.612300348188542,
+              "mean_error_prediction_minus_target": -0.609241431878171,
+              "n": 1814,
+              "p90_absolute_error": 25.3850649235406,
+              "status": "MEASURED"
+            },
+            "raw_r06": {
+              "mae": 11.715969941017983,
+              "mean_error_prediction_minus_target": -1.6106924741112518,
+              "n": 1814,
+              "p90_absolute_error": 25.73567780318048,
+              "status": "MEASURED"
+            },
+            "transported_r4_hinge_on_r06": {
+              "mae": 11.603137978819163,
+              "mean_error_prediction_minus_target": -0.5484542434584234,
+              "n": 1814,
+              "p90_absolute_error": 25.415811529641132,
+              "status": "MEASURED"
+            }
+          },
+          "n": 1814,
+          "status": "MEASURED",
+          "support_rule": "n >= 50 for cycle_74",
+          "supported": true
+        },
+        "75": {
+          "metrics": {
+            "all_row_native_hinge": {
+              "mae": 10.905983568123023,
+              "mean_error_prediction_minus_target": -0.04047933956598872,
+              "n": 1957,
+              "p90_absolute_error": 22.613269424892145,
+              "status": "MEASURED"
+            },
+            "matching_r4_hinge_on_direct": {
+              "mae": 10.928319478929092,
+              "mean_error_prediction_minus_target": -0.06883843575206121,
+              "n": 1957,
+              "p90_absolute_error": 22.61650072278061,
+              "status": "MEASURED"
+            },
+            "present_native_hinge": {
+              "mae": 10.90211000227842,
+              "mean_error_prediction_minus_target": -0.07904061026291785,
+              "n": 1957,
+              "p90_absolute_error": 22.648283547132465,
+              "status": "MEASURED"
+            },
+            "raw_r06": {
+              "mae": 10.8920350139778,
+              "mean_error_prediction_minus_target": -1.0541064462835497,
+              "n": 1957,
+              "p90_absolute_error": 23.349596340051686,
+              "status": "MEASURED"
+            },
+            "transported_r4_hinge_on_r06": {
+              "mae": 10.903447301451893,
+              "mean_error_prediction_minus_target": -0.018069699535202863,
+              "n": 1957,
+              "p90_absolute_error": 22.647330179535015,
+              "status": "MEASURED"
+            }
+          },
+          "n": 1957,
+          "status": "MEASURED",
+          "support_rule": "n >= 50 for cycle_75",
+          "supported": true
+        }
+      },
+      "present_only": {
+        "metrics": {
+          "all_row_native_hinge": {
+            "mae": 11.214410764224828,
+            "mean_error_prediction_minus_target": -0.9266808836976398,
+            "n": 6955,
+            "p90_absolute_error": 24.371584949072215,
+            "status": "MEASURED"
+          },
+          "matching_r4_hinge_on_direct": {
+            "mae": 11.217148982789796,
+            "mean_error_prediction_minus_target": -0.9606713458746504,
+            "n": 6955,
+            "p90_absolute_error": 24.625504324682502,
+            "status": "MEASURED"
+          },
+          "present_native_hinge": {
+            "mae": 11.214258963216288,
+            "mean_error_prediction_minus_target": -0.9708763380548149,
+            "n": 6955,
+            "p90_absolute_error": 24.3649621480391,
+            "status": "MEASURED"
+          },
+          "raw_r06": {
+            "mae": 11.295015382419145,
+            "mean_error_prediction_minus_target": -2.0441430076595535,
+            "n": 6955,
+            "p90_absolute_error": 24.847139828868354,
+            "status": "MEASURED"
+          },
+          "transported_r4_hinge_on_r06": {
+            "mae": 11.211267772345405,
+            "mean_error_prediction_minus_target": -0.9057433371510236,
+            "n": 6955,
+            "p90_absolute_error": 24.413918930257555,
+            "status": "MEASURED"
+          }
+        },
+        "n": 6955,
+        "status": "MEASURED",
+        "support_rule": "n >= 1 for present rows",
+        "supported": true
+      },
+      "present_rows": 6955,
+      "raw_r06_gain_vs_candidate": 0.0752694847970865
+    },
+    "D2": {
+      "all_required_groups_supported": true,
+      "all_scored_cycles_supported": true,
+      "availability_and_tail_groups": {
+        "availability_missing": {
+          "candidate_gain_vs_primary": -0.0,
+          "candidate_harm_vs_primary": 0.0,
+          "metrics": {
+            "all_row_native_hinge": {
+              "mae": 13.109505120846551,
+              "mean_error_prediction_minus_target": 3.98362430845962,
+              "n": 526,
+              "p90_absolute_error": 25.867485610034585,
+              "status": "MEASURED"
+            },
+            "matching_r4_hinge_on_direct": {
+              "mae": 13.109505120846551,
+              "mean_error_prediction_minus_target": 3.98362430845962,
+              "n": 526,
+              "p90_absolute_error": 25.867485610034585,
+              "status": "MEASURED"
+            },
+            "present_native_hinge": {
+              "mae": 13.109505120846551,
+              "mean_error_prediction_minus_target": 3.98362430845962,
+              "n": 526,
+              "p90_absolute_error": 25.867485610034585,
+              "status": "MEASURED"
+            },
+            "raw_r06": {
+              "mae": 13.109505120846551,
+              "mean_error_prediction_minus_target": 3.98362430845962,
+              "n": 526,
+              "p90_absolute_error": 25.867485610034585,
+              "status": "MEASURED"
+            },
+            "transported_r4_hinge_on_r06": {
+              "mae": 13.109505120846551,
+              "mean_error_prediction_minus_target": 3.98362430845962,
+              "n": 526,
+              "p90_absolute_error": 25.867485610034585,
+              "status": "MEASURED"
+            }
+          },
+          "n": 526,
+          "status": "MEASURED",
+          "support_rule": "n >= 200 for availability_missing",
+          "supported": true
+        },
+        "availability_present": {
+          "candidate_gain_vs_primary": -0.0019691407414246243,
+          "candidate_harm_vs_primary": 0.0019691407414246243,
+          "metrics": {
+            "all_row_native_hinge": {
+              "mae": 9.663231472165867,
+              "mean_error_prediction_minus_target": 0.41489682622009666,
+              "n": 7965,
+              "p90_absolute_error": 22.33464596911614,
+              "status": "MEASURED"
+            },
+            "matching_r4_hinge_on_direct": {
+              "mae": 9.730509686767574,
+              "mean_error_prediction_minus_target": 0.5080200687349381,
+              "n": 7965,
+              "p90_absolute_error": 22.55856141746577,
+              "status": "MEASURED"
+            },
+            "present_native_hinge": {
+              "mae": 9.667216422264838,
+              "mean_error_prediction_minus_target": 0.5204222261205723,
+              "n": 7965,
+              "p90_absolute_error": 22.392277443876523,
+              "status": "MEASURED"
+            },
+            "raw_r06": {
+              "mae": 9.711087750849872,
+              "mean_error_prediction_minus_target": -0.8754399664190632,
+              "n": 7965,
+              "p90_absolute_error": 22.502100979520716,
+              "status": "MEASURED"
+            },
+            "transported_r4_hinge_on_r06": {
+              "mae": 9.665247281523413,
+              "mean_error_prediction_minus_target": 0.49148854812260784,
+              "n": 7965,
+              "p90_absolute_error": 22.389171326386936,
+              "status": "MEASURED"
+            }
+          },
+          "n": 7965,
+          "status": "MEASURED",
+          "support_rule": "n >= 200 for availability_present",
+          "supported": true
+        },
+        "target_ge_95": {
+          "candidate_gain_vs_primary": 0.016771910953483626,
+          "candidate_harm_vs_primary": -0.016771910953483626,
+          "metrics": {
+            "all_row_native_hinge": {
+              "mae": 5.791239482140864,
+              "mean_error_prediction_minus_target": -5.278133482942305,
+              "n": 434,
+              "p90_absolute_error": 14.224973933606417,
+              "status": "MEASURED"
+            },
+            "matching_r4_hinge_on_direct": {
+              "mae": 5.8236884069613755,
+              "mean_error_prediction_minus_target": -5.186857987785681,
+              "n": 434,
+              "p90_absolute_error": 14.461254461943609,
+              "status": "MEASURED"
+            },
+            "present_native_hinge": {
+              "mae": 5.740681475862536,
+              "mean_error_prediction_minus_target": -5.201255953186302,
+              "n": 434,
+              "p90_absolute_error": 14.113866542339789,
+              "status": "MEASURED"
+            },
+            "raw_r06": {
+              "mae": 5.866290144654659,
+              "mean_error_prediction_minus_target": -5.207446078047836,
+              "n": 434,
+              "p90_absolute_error": 14.505609917613507,
+              "status": "MEASURED"
+            },
+            "transported_r4_hinge_on_r06": {
+              "mae": 5.75745338681602,
+              "mean_error_prediction_minus_target": -5.239529441002933,
+              "n": 434,
+              "p90_absolute_error": 14.140363837364935,
+              "status": "MEASURED"
+            }
+          },
+          "n": 434,
+          "status": "MEASURED",
+          "support_rule": "n >= 200 for target_ge_95",
+          "supported": true
+        },
+        "target_le_5": {
+          "candidate_gain_vs_primary": -0.08497713953259023,
+          "candidate_harm_vs_primary": 0.08497713953259023,
+          "metrics": {
+            "all_row_native_hinge": {
+              "mae": 9.944139288889023,
+              "mean_error_prediction_minus_target": 9.931438094395537,
+              "n": 442,
+              "p90_absolute_error": 22.93264999365938,
+              "status": "MEASURED"
+            },
+            "matching_r4_hinge_on_direct": {
+              "mae": 9.94877365564617,
+              "mean_error_prediction_minus_target": 9.92995664071274,
+              "n": 442,
+              "p90_absolute_error": 23.32377801269956,
+              "status": "MEASURED"
+            },
+            "present_native_hinge": {
+              "mae": 9.906423746127388,
+              "mean_error_prediction_minus_target": 9.890791901279933,
+              "n": 442,
+              "p90_absolute_error": 22.989133842097225,
+              "status": "MEASURED"
+            },
+            "raw_r06": {
+              "mae": 8.250485060911295,
+              "mean_error_prediction_minus_target": 8.008685862294183,
+              "n": 442,
+              "p90_absolute_error": 21.064207156901066,
+              "status": "MEASURED"
+            },
+            "transported_r4_hinge_on_r06": {
+              "mae": 9.821446606594797,
+              "mean_error_prediction_minus_target": 9.80168743167473,
+              "n": 442,
+              "p90_absolute_error": 22.938873369793615,
+              "status": "MEASURED"
+            }
+          },
+          "n": 442,
+          "status": "MEASURED",
+          "support_rule": "n >= 200 for target_le_5",
+          "supported": true
+        }
+      },
+      "full_rows": {
+        "metrics": {
+          "all_row_native_hinge": {
+            "mae": 9.876721042205443,
+            "mean_error_prediction_minus_target": 0.6359721595916652,
+            "n": 8491,
+            "p90_absolute_error": 22.8432284622998,
+            "status": "MEASURED"
+          },
+          "matching_r4_hinge_on_direct": {
+            "mae": 9.93983150967719,
+            "mean_error_prediction_minus_target": 0.7233266086118881,
+            "n": 8491,
+            "p90_absolute_error": 23.027214936919904,
+            "status": "MEASURED"
+          },
+          "present_native_hinge": {
+            "mae": 9.880459132835323,
+            "mean_error_prediction_minus_target": 0.734960477835369,
+            "n": 8491,
+            "p90_absolute_error": 22.86373217855308,
+            "status": "MEASURED"
+          },
+          "raw_r06": {
+            "mae": 9.921612722775233,
+            "mean_error_prediction_minus_target": -0.5744309205368127,
+            "n": 8491,
+            "p90_absolute_error": 22.97444156389859,
+            "status": "MEASURED"
+          },
+          "transported_r4_hinge_on_r06": {
+            "mae": 9.878611976316016,
+            "mean_error_prediction_minus_target": 0.7078191817272798,
+            "n": 8491,
+            "p90_absolute_error": 22.848995202602836,
+            "status": "MEASURED"
+          }
+        },
+        "n": 8491,
+        "status": "MEASURED",
+        "support_rule": "n >= 1 for full rows",
+        "supported": true
+      },
+      "gain_vs_all_row_native_mechanism": -0.0037380906298807304,
+      "gain_vs_transported_r4_primary": -0.0018471565193074468,
+      "harm_vs_transported_r4_primary": 0.0018471565193074468,
+      "missing_rows": 526,
+      "n": 8491,
+      "per_cycle": {
+        "76": {
+          "metrics": {
+            "all_row_native_hinge": {
+              "mae": 10.052266610885036,
+              "mean_error_prediction_minus_target": 1.2601121664304367,
+              "n": 1822,
+              "p90_absolute_error": 23.753943273965906,
+              "status": "MEASURED"
+            },
+            "matching_r4_hinge_on_direct": {
+              "mae": 10.126252786046653,
+              "mean_error_prediction_minus_target": 1.3139088578532576,
+              "n": 1822,
+              "p90_absolute_error": 23.98755691718688,
+              "status": "MEASURED"
+            },
+            "present_native_hinge": {
+              "mae": 10.062433893825744,
+              "mean_error_prediction_minus_target": 1.3606045002255602,
+              "n": 1822,
+              "p90_absolute_error": 23.686200511208124,
+              "status": "MEASURED"
+            },
+            "raw_r06": {
+              "mae": 10.009457558538411,
+              "mean_error_prediction_minus_target": 0.0628663490170803,
+              "n": 1822,
+              "p90_absolute_error": 23.44535652134367,
+              "status": "MEASURED"
+            },
+            "transported_r4_hinge_on_r06": {
+              "mae": 10.059408177628839,
+              "mean_error_prediction_minus_target": 1.3343278521650588,
+              "n": 1822,
+              "p90_absolute_error": 23.71249556695157,
+              "status": "MEASURED"
+            }
+          },
+          "n": 1822,
+          "status": "MEASURED",
+          "support_rule": "n >= 50 for cycle_76",
+          "supported": true
+        },
+        "77": {
+          "metrics": {
+            "all_row_native_hinge": {
+              "mae": 9.694580157840296,
+              "mean_error_prediction_minus_target": 0.3665770899147948,
+              "n": 2335,
+              "p90_absolute_error": 23.609474287627496,
+              "status": "MEASURED"
+            },
+            "matching_r4_hinge_on_direct": {
+              "mae": 9.69382118602627,
+              "mean_error_prediction_minus_target": 0.39816463840476746,
+              "n": 2335,
+              "p90_absolute_error": 23.534089522674048,
+              "status": "MEASURED"
+            },
+            "present_native_hinge": {
+              "mae": 9.695141102926788,
+              "mean_error_prediction_minus_target": 0.4623962378966508,
+              "n": 2335,
+              "p90_absolute_error": 23.713398890216975,
+              "status": "MEASURED"
+            },
+            "raw_r06": {
+              "mae": 9.790902989278793,
+              "mean_error_prediction_minus_target": -0.8415003606427214,
+              "n": 2335,
+              "p90_absolute_error": 23.447977094026758,
+              "status": "MEASURED"
+            },
+            "transported_r4_hinge_on_r06": {
+              "mae": 9.691796806399601,
+              "mean_error_prediction_minus_target": 0.43475332059710287,
+              "n": 2335,
+              "p90_absolute_error": 23.73354366594317,
+              "status": "MEASURED"
+            }
+          },
+          "n": 2335,
+          "status": "MEASURED",
+          "support_rule": "n >= 50 for cycle_77",
+          "supported": true
+        },
+        "78": {
+          "metrics": {
+            "all_row_native_hinge": {
+              "mae": 9.979197000287119,
+              "mean_error_prediction_minus_target": -0.7631142085196507,
+              "n": 2146,
+              "p90_absolute_error": 22.561106920183484,
+              "status": "MEASURED"
+            },
+            "matching_r4_hinge_on_direct": {
+              "mae": 10.081120294027755,
+              "mean_error_prediction_minus_target": -0.6663210306430059,
+              "n": 2146,
+              "p90_absolute_error": 22.964489639109033,
+              "status": "MEASURED"
+            },
+            "present_native_hinge": {
+              "mae": 9.970856658224202,
+              "mean_error_prediction_minus_target": -0.6660446602323838,
+              "n": 2146,
+              "p90_absolute_error": 22.582717074946487,
+              "status": "MEASURED"
+            },
+            "raw_r06": {
+              "mae": 10.129507605450975,
+              "mean_error_prediction_minus_target": -2.0020878930068973,
+              "n": 2146,
+              "p90_absolute_error": 23.00129912287295,
+              "status": "MEASURED"
+            },
+            "transported_r4_hinge_on_r06": {
+              "mae": 9.972220153277185,
+              "mean_error_prediction_minus_target": -0.6940880577979351,
+              "n": 2146,
+              "p90_absolute_error": 22.566711923682604,
+              "status": "MEASURED"
+            }
+          },
+          "n": 2146,
+          "status": "MEASURED",
+          "support_rule": "n >= 50 for cycle_78",
+          "supported": true
+        },
+        "79": {
+          "metrics": {
+            "all_row_native_hinge": {
+              "mae": 9.824409128501207,
+              "mean_error_prediction_minus_target": 1.7759601583129332,
+              "n": 2188,
+              "p90_absolute_error": 22.018279264405614,
+              "status": "MEASURED"
+            },
+            "matching_r4_hinge_on_direct": {
+              "mae": 9.908555828216228,
+              "mean_error_prediction_minus_target": 1.941514988939518,
+              "n": 2188,
+              "p90_absolute_error": 22.016258626089396,
+              "status": "MEASURED"
+            },
+            "present_native_hinge": {
+              "mae": 9.838030657436489,
+              "mean_error_prediction_minus_target": 1.8789600746157054,
+              "n": 2188,
+              "p90_absolute_error": 22.011123773942156,
+              "status": "MEASURED"
+            },
+            "raw_r06": {
+              "mae": 9.784049431519076,
+              "mean_error_prediction_minus_target": 0.5801410083667088,
+              "n": 2188,
+              "p90_absolute_error": 21.93776609605583,
+              "status": "MEASURED"
+            },
+            "transported_r4_hinge_on_r06": {
+              "mae": 9.835613619462352,
+              "mean_error_prediction_minus_target": 1.8525188728709914,
+              "n": 2188,
+              "p90_absolute_error": 22.029417603980775,
+              "status": "MEASURED"
+            }
+          },
+          "n": 2188,
+          "status": "MEASURED",
+          "support_rule": "n >= 50 for cycle_79",
+          "supported": true
+        }
+      },
+      "present_only": {
+        "metrics": {
+          "all_row_native_hinge": {
+            "mae": 9.663231472165867,
+            "mean_error_prediction_minus_target": 0.41489682622009666,
+            "n": 7965,
+            "p90_absolute_error": 22.33464596911614,
+            "status": "MEASURED"
+          },
+          "matching_r4_hinge_on_direct": {
+            "mae": 9.730509686767574,
+            "mean_error_prediction_minus_target": 0.5080200687349381,
+            "n": 7965,
+            "p90_absolute_error": 22.55856141746577,
+            "status": "MEASURED"
+          },
+          "present_native_hinge": {
+            "mae": 9.667216422264838,
+            "mean_error_prediction_minus_target": 0.5204222261205723,
+            "n": 7965,
+            "p90_absolute_error": 22.392277443876523,
+            "status": "MEASURED"
+          },
+          "raw_r06": {
+            "mae": 9.711087750849872,
+            "mean_error_prediction_minus_target": -0.8754399664190632,
+            "n": 7965,
+            "p90_absolute_error": 22.502100979520716,
+            "status": "MEASURED"
+          },
+          "transported_r4_hinge_on_r06": {
+            "mae": 9.665247281523413,
+            "mean_error_prediction_minus_target": 0.49148854812260784,
+            "n": 7965,
+            "p90_absolute_error": 22.389171326386936,
+            "status": "MEASURED"
+          }
+        },
+        "n": 7965,
+        "status": "MEASURED",
+        "support_rule": "n >= 1 for present rows",
+        "supported": true
+      },
+      "present_rows": 7965,
+      "raw_r06_gain_vs_candidate": 0.04115358993990981
+    }
+  }
+}
