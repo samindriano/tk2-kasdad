@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "decision": "USER_AUTHORIZED_WORKLOAD_SPECIFIC_LOWER_RAM_FLOORS",
+  "user_instruction": "turunin lagi dong, terlalu banyak ngambil 4gb batasnya. saya jadi gabisa ngapa2in ini",
+  "date_local": "2026-11-05",
+  "unit": "bytes; GiB = 1024^3",
+  "resource_floors_are_not_memory_allocations": true,
+  "workloads": {
+    "saved_prediction_evaluation": {
+      "minimum_available_bytes": 1610612736,
+      "incremental_estimate_bytes": 536870912,
+      "minimum_projected_free_bytes": 805306368,
+      "minimum_actual_free_at_boundary_bytes": 805306368
+    },
+    "small_calibration_lp": {
+      "minimum_available_bytes": 2147483648,
+      "incremental_estimate_bytes": 536870912,
+      "minimum_projected_free_bytes": 1073741824,
+      "minimum_actual_free_at_boundary_bytes": 1073741824
+    },
+    "new_sparse_positional_gamma_fit": {
+      "minimum_available_bytes": 2147483648,
+      "incremental_estimate_bytes": 1073741824,
+      "minimum_projected_free_bytes": 1073741824,
+      "minimum_actual_free_at_boundary_bytes": 1073741824
+    },
+    "large_tfidf_boosting_fit": {
+      "minimum_available_bytes": null,
+      "minimum_projected_free_bytes": 1073741824,
+      "rule": "Require a per-job justified additional memory estimate plus 1GiB available reserve; no universal4GiB floor and no assumption a heavy model fits within the small-job budgets."
+    }
+  },
+  "evidence": {
+    "cls_gamma_pre_optimizer_process_rss_MiB": [
+      239.56,
+      273.16
+    ],
+    "cls_gamma_actual_peak_unknown": true,
+    "largest_cls_query_sparse_payload_MiB": 43.85,
+    "four_copies_of_largest_query_payload_MiB": 175.4,
+    "reg_lp_additional_estimate_MiB": 512,
+    "estimates_are_not_measured_peaks": true
+  },
+  "guards": [
+    "Fresh memory check while holding shared OS lock before allocations/reservations/target access/fit.",
+    "Available >= workload initial floor AND available - justified additional estimate >= projected reserve.",
+    "Serial origins/batches; release large arrays after each origin.",
+    "Check actual available memory at load/stage boundaries; stop resumably if below workload reserve.",
+    "Keep OS lock/temp path, one heavy job, two threads; no killing other apps or polling while idle.",
+    "Capture process RSS and OS peak working set when supported; mark sampled metrics accurately.",
+    "Never retry consumed fits or change model/scientific gates to work around a resource stop."
+  ],
+  "scope": [
+    "Apply through versioned technical source/freezes to currently unstarted stages.",
+    "Preserve earlier resource policies/freezes/failed preflight receipts as history.",
+    "No changes to model recipe, performance gates, threshold, donor mapping, data/label boundaries or fit allowance.",
+    "This policy is not itself permission for an unapproved fit, evaluation or submission."
+  ]
+}
