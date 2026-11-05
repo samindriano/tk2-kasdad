@@ -11,6 +11,8 @@ from scripts.evaluate_optimization_v3_cls_pos_frequency_ridge_v1 import (
     metrics_missing_threshold,
     read_allowlisted_members,
     row_metadata,
+    sha256_array,
+    validate_ordered_row_identity,
 )
 
 
@@ -95,3 +97,32 @@ def test_row_metadata_binds_ordered_ids_and_cycles():
     assert meta["cycle_min"] == 68
     assert meta["cycle_max"] == 69
     assert len(meta["record_ids_sha256"]) == 64
+
+
+def test_row_metadata_uses_historical_object_string_digest_schema():
+    rows = np.asarray([4, 5, 6], dtype=np.int64)
+    ids = np.asarray(["x", "y", "z"], dtype="U1")
+    cycles = np.asarray([68, 68, 69], dtype=np.int64)
+    historical_digest = sha256_array(ids.astype(object))
+    assert sha256_array(ids.astype(str)) != historical_digest
+    assert row_metadata(rows, ids, cycles)["record_ids_sha256"] == historical_digest
+
+
+@pytest.mark.parametrize(
+    "rows,ids,cycles",
+    [
+        (np.asarray([5, 4, 6]), np.asarray(["y", "x", "z"]), np.asarray([68, 68, 69])),
+        (np.asarray([4, 5, 6]), np.asarray(["x", "Q", "z"]), np.asarray([68, 68, 69])),
+        (np.asarray([4, 4, 6]), np.asarray(["x", "y", "z"]), np.asarray([68, 68, 69])),
+        (np.asarray([4, 5, 6]), np.asarray(["x", "x", "z"]), np.asarray([68, 68, 69])),
+        (np.asarray([4, 5, 6]), np.asarray(["x", "y", "z"]), np.asarray([69, 68, 69])),
+    ],
+)
+def test_ordered_row_identity_rejects_row_id_or_cycle_changes(rows, ids, cycles):
+    expected_rows = np.asarray([4, 5, 6], dtype=np.int64)
+    expected_ids = np.asarray(["x", "y", "z"], dtype="U1")
+    expected_cycles = np.asarray([68, 68, 69], dtype=np.int64)
+    with pytest.raises(EvaluationError, match="Ordered physical rows"):
+        validate_ordered_row_identity(
+            rows, ids, cycles, expected_rows, expected_ids, expected_cycles
+        )

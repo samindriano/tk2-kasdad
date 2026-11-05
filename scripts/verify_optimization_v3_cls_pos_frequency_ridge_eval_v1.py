@@ -18,12 +18,12 @@ import joblib
 from scipy import sparse
 from scipy.special import expit
 
+ROOT = Path(__file__).resolve().parents[1]
 import sys
 sys.path.insert(0, str(ROOT))
 from src.models.optimization_v3_positional_text_pilot_v1 import sha256_csr
 
-ROOT = Path(__file__).resolve().parents[1]
-FREEZE = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R1.json"
+FREEZE = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R3.json"
 PRED = "experiments/runs/optimization_v3_cls_pos_frequency_ridge_eval_v1/predictions_r1.npz"
 PRED_MANIFEST = "reports/optimization_v3/cls_pos_frequency_ridge_v1/PREDICTIONS_MANIFEST_R1.json"
 RESULTS = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_RESULTS_R1.json"

@@ -30,13 +30,16 @@ from src.models.optimization_v3_positional_text_pilot_v1 import sha256_csr
 from src.models.pos_frequency_ridge_v1 import canonical_sha256, sha256_array
 
 REL_FREEZE_R1 = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R1.json"
-REL_FREEZE = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R2.json"
+REL_FREEZE_R2 = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R2.json"
+REL_FREEZE = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R3.json"
 REL_PREDICTIONS = "experiments/runs/optimization_v3_cls_pos_frequency_ridge_eval_v1/predictions_r1.npz"
 REL_PREDICTION_MANIFEST = "reports/optimization_v3/cls_pos_frequency_ridge_v1/PREDICTIONS_MANIFEST_R1.json"
 REL_RESULTS = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_RESULTS_R1.json"
 REL_REPORT = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_REPORT_R1.md"
 REL_SOURCE_QA_R1 = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_SOURCE_QA_R1.json"
-REL_SOURCE_QA = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_SOURCE_QA_R2.json"
+REL_SOURCE_QA_R2 = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_SOURCE_QA_R2.json"
+REL_SOURCE_QA = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_SOURCE_QA_R3.json"
+R2_FREEZE_COMMIT = "648ee016b63afddedebedd0888e889005d3b45f3"
 
 TRAIN_REL = "data/raw/classification/Train.csv"
 TRAIN_SHA256 = "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c"
@@ -195,7 +198,9 @@ def expected_input_paths() -> list[str]:
             rels.add(str(manifest["matrices"][key]["path"]))
     rels.update(SOURCE_FILES)
     rels.add(REL_FREEZE_R1)
+    rels.add(REL_FREEZE_R2)
     rels.add(REL_SOURCE_QA_R1)
+    rels.add(REL_SOURCE_QA_R2)
     rels.add(REL_SOURCE_QA)
     rels.add("reports/optimization_v3/posoffset_a02_endgame_v1/RECIPE.json")
     rels.add("experiments/runs/optimization_v3_cls_pos_frequency_ridge_v1/BUDGET_LEDGER.jsonl")
@@ -216,6 +221,16 @@ def source_preflight() -> dict[str, Any]:
     if (prior_claim != canonical_sha256(prior_body)
             or prior_freeze.get("status") != "FROZEN_BEFORE_QUERY_TARGET_LOAD"):
         raise EvaluationError("Prior committed R1 source-freeze lineage is invalid")
+    prior_r2 = read_json(path(REL_FREEZE_R2))
+    prior_r2_body = dict(prior_r2)
+    prior_r2_claim = prior_r2_body.pop("freeze_sha256", None)
+    if (prior_r2_claim != canonical_sha256(prior_r2_body)
+            or prior_r2.get("status") != "FROZEN_BEFORE_QUERY_TARGET_LOAD"
+            or prior_r2.get("freeze_round") != "R2"):
+        raise EvaluationError("Prior R2 source-freeze lineage is invalid")
+    prior_r2_commit = require_committed(REL_FREEZE_R2)
+    if prior_r2_commit != R2_FREEZE_COMMIT:
+        raise EvaluationError("Committed R2 source-freeze checkpoint differs from the recorded parent")
     source_hashes: dict[str, str] = {}
     for rel in SOURCE_FILES:
         file_path = path(rel)
@@ -248,6 +263,10 @@ def source_preflight() -> dict[str, Any]:
     return {
         "status": "PASS_TARGET_FREE_EVALUATOR_SOURCE_PREFLIGHT",
         "source_hashes": source_hashes, "input_hashes": input_hashes,
+        "parent_freeze": {
+            "path": REL_FREEZE_R2, "freeze_sha256": file_sha256(path(REL_FREEZE_R2)),
+            "commit": prior_r2_commit,
+        },
         "a02_allowlist": list(A02_KEYS), "pos_bundle_allowlist": list(POS_KEYS),
         "pilot_bundle_allowlist": list(PILOT_KEYS),
         "query_label_arrays_materialized": False, "query_labels_scored": False,
@@ -262,10 +281,17 @@ def build_source_freeze(*, synthetic_qa: Mapping[str, Any]) -> dict[str, Any]:
     body: dict[str, Any] = {
         "schema_version": 1, "status": "FROZEN_BEFORE_QUERY_TARGET_LOAD",
         "campaign_id": "CLS_POS_FREQUENCY_RIDGE_V1_EVALUATION_R1",
-        "freeze_round": "R2",
-        "supersedes_freeze": REL_FREEZE_R1,
-        "supersession_reason": "R1 stopped before archive access because its commit-check argument shadowed the commit-validation function",
+        "freeze_round": "R3",
+        "supersedes_freeze": REL_FREEZE_R2,
+        "supersession_reason": (
+            "R2 prelabel replay exposed a dtype-sensitive record-ID digest mismatch: the frozen matrix "
+            "builder hashed pandas string-converted object arrays while the evaluator hashed Unicode arrays. "
+            "Ordered ID values match exactly; R3 preserves the digest guard using the historical object-string "
+            "schema and adds an explicit ordered identity validator."
+        ),
         "source_preparation_parent_commit": git_text("rev-parse", "HEAD"),
+        "parent_freeze_sha256": preflight["parent_freeze"]["freeze_sha256"],
+        "parent_freeze_commit": preflight["parent_freeze"]["commit"],
         "frozen_at_utc": datetime.now(timezone.utc).isoformat(),
         "source_hashes": preflight["source_hashes"], "input_hashes": preflight["input_hashes"],
         "raw_file_hashing_only": {
@@ -340,7 +366,13 @@ def verify_source_freeze(*, require_frozen_commit: bool) -> tuple[dict[str, Any]
         raise EvaluationError("Evaluation source freeze signature mismatch")
     if freeze.get("status") != "FROZEN_BEFORE_QUERY_TARGET_LOAD":
         raise EvaluationError("Evaluation source freeze status is not pre-label")
+    if (freeze.get("freeze_round") != "R3"
+            or freeze.get("supersedes_freeze") != REL_FREEZE_R2):
+        raise EvaluationError("Evaluation source freeze is not the committed R3 repair checkpoint")
     current = source_preflight()
+    if (freeze.get("parent_freeze_sha256") != current["parent_freeze"]["freeze_sha256"]
+            or freeze.get("parent_freeze_commit") != current["parent_freeze"]["commit"]):
+        raise EvaluationError("R3 freeze does not bind the verified R2 parent checkpoint")
     if current["source_hashes"] != freeze.get("source_hashes"):
         raise EvaluationError("Evaluator source or frozen predecessor source changed")
     if current["input_hashes"] != freeze.get("input_hashes"):
@@ -452,9 +484,34 @@ def row_metadata(rows: np.ndarray, ids: np.ndarray, cycles: np.ndarray) -> dict[
     return {
         "rows": int(len(rows)), "cycle_min": int(cycles.min()), "cycle_max": int(cycles.max()),
         "row_indices_sha256": sha256_array(rows.astype(np.int64)),
-        "record_ids_sha256": sha256_array(ids.astype(str)),
+        # Matrix manifests hash pandas StringDtype -> astype(str) -> object arrays.
+        # Preserve that historical dtype in the digest while callers separately
+        # enforce elementwise exact ordered Unicode ID equality.
+        "record_ids_sha256": sha256_array(ids.astype(object)),
         "cycles_sha256": sha256_array(cycles.astype(np.int64)),
     }
+
+
+def validate_ordered_row_identity(rows: np.ndarray, ids: np.ndarray, cycles: np.ndarray,
+                                  expected_rows: np.ndarray, expected_ids: np.ndarray,
+                                  expected_cycles: np.ndarray) -> None:
+    """Require exact ordered row/ID/cycle equality and unique physical identities."""
+    rows = np.asarray(rows, dtype=np.int64)
+    ids = np.asarray(ids).astype(str)
+    cycles = np.asarray(cycles, dtype=np.int64)
+    expected_rows = np.asarray(expected_rows, dtype=np.int64)
+    expected_ids = np.asarray(expected_ids).astype(str)
+    expected_cycles = np.asarray(expected_cycles, dtype=np.int64)
+    if (rows.ndim != 1 or ids.ndim != 1 or cycles.ndim != 1 or len(rows) == 0
+            or rows.shape != ids.shape or rows.shape != cycles.shape
+            or expected_rows.shape != rows.shape or expected_ids.shape != rows.shape
+            or expected_cycles.shape != rows.shape):
+        raise EvaluationError("Ordered row identity vectors are empty or misaligned")
+    if (len(np.unique(rows)) != len(rows) or len(np.unique(ids)) != len(ids)
+            or not np.array_equal(rows, expected_rows)
+            or not np.array_equal(ids, expected_ids)
+            or not np.array_equal(cycles, expected_cycles)):
+        raise EvaluationError("Ordered physical rows, record IDs, or cycles differ from the frozen population")
 
 
 def verify_four_fit_ledger() -> dict[str, Any]:
@@ -558,16 +615,16 @@ def prepare_predictions() -> dict[str, Any]:
                                            & (cycles_train <= expected["cycle_last"]))
             expected_ids = ids_train[expected_rows]
             expected_cycles = cycles_train[expected_rows]
-            if (len(expected_rows) != expected["rows"] or not np.array_equal(rows, expected_rows)
-                    or not np.array_equal(ids, expected_ids) or not np.array_equal(cycles, expected_cycles)):
+            if len(expected_rows) != expected["rows"]:
                 raise EvaluationError(f"E{origin} A02 query rows/IDs/cycles differ from official Train")
+            validate_ordered_row_identity(rows, ids, cycles, expected_rows, expected_ids, expected_cycles)
             for source_name, source_rows, source_ids, source_cycles in (
                 ("POS_BAG", pos["score_rows"], pos["score_record_ids"].astype(str), pos["score_cycles"]),
                 ("POSITIONAL_PILOT", pilot["score_rows"], pilot["score_record_ids"].astype(str), pilot["score_cycles"]),
             ):
-                if (not np.array_equal(source_rows.astype(np.int64), rows)
-                        or not np.array_equal(source_ids, ids)
-                        or not np.array_equal(source_cycles.astype(np.int64), cycles)):
+                try:
+                    validate_ordered_row_identity(source_rows, source_ids, source_cycles, rows, ids, cycles)
+                except EvaluationError as exc:
                     raise EvaluationError(f"E{origin} {source_name} ordered query identity differs")
             if row_metadata(rows, ids, cycles) != manifest.get("score_row_metadata"):
                 raise EvaluationError(f"E{origin} current query IDs/cycles differ from matrix manifest")
