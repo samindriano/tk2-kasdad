@@ -24,6 +24,9 @@ from typing import Any, Iterable
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
+SCRIPT_DIR = ROOT / "scripts"
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
 AUDIT = ROOT.parent / "tk2-simplification-audit-v1"
 OUT = ROOT / "reports/optimization_v3/cls_simple_present_threshold_v1"
 RUN = ROOT / "experiments/runs/cls_simple_present_threshold_v1"
@@ -1001,7 +1004,7 @@ def main(argv: list[str] | None = None) -> int:
         value = freeze_sources(args.train_csv, args.cache)
     elif args.command == "preflight":
         value = source_preflight(args.train_csv, args.cache)
-        import scripts.verify_cls_simple_present_threshold_v1 as verifier
+        import verify_cls_simple_present_threshold_v1 as verifier
         value["independent_verifier"] = verifier.verify_source_preflight()
         value["status"] = "PASS_SOURCE_READY"
         if READY.exists():
@@ -1012,7 +1015,7 @@ def main(argv: list[str] | None = None) -> int:
         write_json_exclusive(READY, ready)
         value = ready
     elif args.command == "self-check":
-        import scripts.verify_cls_simple_present_threshold_v1 as verifier
+        import verify_cls_simple_present_threshold_v1 as verifier
         value = verifier.run_synthetic_self_check()
     elif args.command == "fit":
         value = fit_stage(args.stage, args.train_csv, args.cache, args.release)

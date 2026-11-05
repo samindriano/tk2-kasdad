@@ -3,14 +3,19 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
+import sys
 import zipfile
 from pathlib import Path
 
 import numpy as np
 import pytest
 
-from scripts import cls_simple_present_threshold_v1 as producer
-from scripts import verify_cls_simple_present_threshold_v1 as verifier
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT / "scripts") not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT / "scripts"))
+
+import cls_simple_present_threshold_v1 as producer
+import verify_cls_simple_present_threshold_v1 as verifier
 
 
 def _balanced_fixture():
@@ -152,6 +157,7 @@ def test_real_cli_freeze_preflight_and_independent_verifier_are_target_free(tmp_
     verifier_checks = {
         "OUT": out, "FREEZE": out / "SOURCE_FREEZE.json", "PREFLIGHT": out / "SOURCE_PREFLIGHT.json",
         "CACHE": cache, "EXPECTED_ROWS": {67: 12, 75: 4}, "EXPECTED_SCORE_ROWS": 8,
+        "EXPECTED_STAGE_ROWS": {"D1": (4, 4), "D2": (8, 4)},
         "OFFICIAL_TRAIN_ROWS": 33, "CACHE_SHA256": hashlib.sha256(cache.read_bytes()).hexdigest(),
     }
     for name, value in checks.items():
