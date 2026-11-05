@@ -1,0 +1,101 @@
+{
+  "adapter_freeze": {
+    "adapter_source_sha256": "7fdddf5fc829fc1636b597519cf4e2f70bd6892e5dedf1e4a06f15d78d79c356",
+    "fit_ids": [
+      "E67_ONE_SIDED",
+      "E67_GLOBAL_STRENGTH",
+      "E75_ONE_SIDED",
+      "E75_GLOBAL_STRENGTH"
+    ],
+    "fit_ledger_sha256": "7a811b98647b1778d58213416c76d966d482664e9c8c5025449f898de77e495a",
+    "freeze_signature": "953a291dc8873412eec3a0adbe3c8ba6a8d0ce474b95436802c49b9097e3f06f",
+    "identity_preflight_sha256": "fd87e44da5b04fd92d50b93838d060ac54fb477b7aec1cf9430ec59644827149",
+    "new_fits_started": 0,
+    "original_source_freeze_sha256": "6b7941fb753ec745953a6906097fd48c31daee7ce3abbd2ba87cff0ea67b6843",
+    "path": "experiments/optimization_v3/cls_pos_one_sided_ridge_v1/EVALUATION_ADAPTER_FREEZE_V2.json",
+    "sha256": "64162fdada31d99fe04473014e57e9d5f9292fcf060b73209f46ac174071ec0c"
+  },
+  "automatic_resume_authorized": false,
+  "campaign_id": "CLS_POS_ONE_SIDED_RIDGE_V1",
+  "checkpoint_revision": 2,
+  "checkpoint_signature": "72f70cbcf8aeba21ab3df33688d06b60d0424df28c3f2f7cfe9d18ad305f47e0",
+  "evaluation_state": {
+    "error_happened_before_target_read": true,
+    "evaluation_report_exists": false,
+    "evaluation_results_exists": false,
+    "last_error": "NameError: TRAIN_REL is not defined in the frozen evaluator's read_query_labels_after_manifest_commit, before Train path construction/file open.",
+    "prior_attempt_preserved": true,
+    "query_label_reads": 0,
+    "scores_generated": false
+  },
+  "execution_stopped_per_root_instruction": true,
+  "new_fits_started": 0,
+  "prediction_checkpoint": {
+    "archive_gitignored": true,
+    "archive_path": "experiments/runs/optimization_v3_cls_pos_one_sided_ridge_v1/predictions.npz",
+    "archive_sha256": "a916a65fe6974501b3a2777a8a9bfae08049a917e5d1a0d9d3b7eb8fd4b479c1",
+    "execution_provenance_path": "reports/optimization_v3/cls_pos_one_sided_ridge_v1/ADAPTER_PREDICTION_EXECUTION_V2.json",
+    "execution_provenance_sha256": "adacade856167970b74f616b3fc3e83740d990a19c9c7ac46704f2a6994dc8f2",
+    "manifest_commit": "87045edda44c8762ffd5bb996908717938334986",
+    "manifest_path": "reports/optimization_v3/cls_pos_one_sided_ridge_v1/PREDICTIONS_MANIFEST.json",
+    "manifest_sha256": "b0eb1254f2b7ef5afd71a0e1083f1bf0c45ec02de8dcc51c84b79eb1fd834043",
+    "maximum_numeric_difference": 0.0,
+    "target_free_verification_status": "PASS_INDEPENDENT_TARGET_FREE_PREDICTION_REPLAY"
+  },
+  "prior_draft_signature": "af62514b580181b44e163fb79e4d738ef07fe13c998bad6aa5ea9121a7d71209",
+  "prohibited": [
+    "new/repeated fits",
+    "prediction regeneration",
+    "source/recipe/threshold/metric changes",
+    "Test/SampleSubmission/E79/CSV/Kaggle/push",
+    "lowering the RAM floor",
+    "active polling/scheduler"
+  ],
+  "query_label_reads": 0,
+  "recorded_at_asia_jakarta": "2026-11-05T16:59:31.957738+07:00",
+  "recorded_at_utc": "2026-11-05T09:59:31.957738+00:00",
+  "repository": {
+    "branch": "main",
+    "head": "7cd93d80176d3dc21b3872299a5cb8a8da4334c6",
+    "root": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2"
+  },
+  "resource_gate": {
+    "action": "No active waiting or polling, and do not lower the 1.5 GiB floor. Stop after this checkpoint. On later explicit resume, run only if a fresh sample passes.",
+    "available_bytes": 1611563008,
+    "available_gib": 1.5009,
+    "decision": "STOPPED_AFTER_CHECKPOINT_PER_ROOT; this single sample barely clears the floor by 950272 bytes, but do not resume in this turn. A later explicit root/human resume must take a fresh gate and lock check.",
+    "margin_over_floor_bytes": 950272,
+    "measured_at_utc": "2026-11-05T09:59:31.957738+00:00",
+    "minimum_available_bytes": 1610612736,
+    "minimum_available_gib": 1.5,
+    "pass": true,
+    "total_bytes": 33599959040
+  },
+  "resume_sequence": [
+    "On resume, take one fresh available-bytes sample and proceed only if >= 1610612736 bytes; let the existing function obtain the shared lock and do not add an outer lock around it.",
+    "Verify the committed EVALUATION_TRAIN_REL_BINDING_ROOT_PASS.json, adapter freeze V2, source/input hashes, original four fit receipts/artifacts/ledger, committed prediction manifest, ignored local prediction archive hash, and committed prediction execution receipt.",
+    "Call adapter.verify_adapter_freeze(); call adapter.install_frozen_arm_binding(); assert EVAL.TRAIN_REL is absent or exactly RUNNER.TRAIN_REL, then set EVAL.TRAIN_REL = RUNNER.TRAIN_REL (exact value data/raw/classification/Train.csv) in memory only.",
+    "Call original EVAL.evaluate_results() once. It acquires its own shared lock and retains the original manifest-before-label and Train identity/hash guards; do not regenerate predictions or fits.",
+    "Independently call V.verify_results() under the shared lock/resource gate because that verifier does not acquire the lock itself.",
+    "Write immutable results execution provenance binding this root pass, adapter source/freeze, original source freeze/preflight, four fits/ledger, prediction archive/manifest, result/report hashes, resource receipts, zero new fits, and explicit Test/Kaggle=false; commit results, report, and provenance locally. Do not push."
+  ],
+  "root_pass": {
+    "commit": "2ca58da92e43eef6708f5cea200b23d1e8062334",
+    "frozen_evaluator_sha256": "2445459e845acedb35ebe33bf679b4d506e35a84b4cb9dfa654d57d8823a1cf8",
+    "manifest_sha256": "b0eb1254f2b7ef5afd71a0e1083f1bf0c45ec02de8dcc51c84b79eb1fd834043",
+    "path": "reports/optimization_v3/cls_pos_one_sided_ridge_v1/EVALUATION_TRAIN_REL_BINDING_ROOT_PASS.json",
+    "prediction_sha256": "a916a65fe6974501b3a2777a8a9bfae08049a917e5d1a0d9d3b7eb8fd4b479c1",
+    "prior_adapter_root_pass_sha256": "eda8cc866b551c8b1f1d763d88a5c02329a6c0d1ed95a0515adf758c33f383fe",
+    "runtime_binding": {
+      "exact_value": "data/raw/classification/Train.csv",
+      "field": "EVAL.TRAIN_REL",
+      "source": "RUNNER.TRAIN_REL"
+    },
+    "sha256": "fb3af651733f71ee33412796a095cc06e440e454dec6a9a90ad4f87cc5296c27",
+    "status": "AUTHORIZED_EVALUATION_ONLY_RUNTIME_BINDING"
+  },
+  "schema_version": 1,
+  "scores_generated": false,
+  "status": "PRESTART_RESOURCE_BLOCKED_EVALUATION",
+  "tracked_worktree_clean_before_checkpoint": true
+}
