@@ -29,12 +29,14 @@ from scipy.special import expit
 from src.models.optimization_v3_positional_text_pilot_v1 import sha256_csr
 from src.models.pos_frequency_ridge_v1 import canonical_sha256, sha256_array
 
-REL_FREEZE = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R1.json"
+REL_FREEZE_R1 = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R1.json"
+REL_FREEZE = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R2.json"
 REL_PREDICTIONS = "experiments/runs/optimization_v3_cls_pos_frequency_ridge_eval_v1/predictions_r1.npz"
 REL_PREDICTION_MANIFEST = "reports/optimization_v3/cls_pos_frequency_ridge_v1/PREDICTIONS_MANIFEST_R1.json"
 REL_RESULTS = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_RESULTS_R1.json"
 REL_REPORT = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_REPORT_R1.md"
-REL_SOURCE_QA = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_SOURCE_QA_R1.json"
+REL_SOURCE_QA_R1 = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_SOURCE_QA_R1.json"
+REL_SOURCE_QA = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_SOURCE_QA_R2.json"
 
 TRAIN_REL = "data/raw/classification/Train.csv"
 TRAIN_SHA256 = "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c"
@@ -192,6 +194,8 @@ def expected_input_paths() -> list[str]:
         for key in ("score_base", "score_position"):
             rels.add(str(manifest["matrices"][key]["path"]))
     rels.update(SOURCE_FILES)
+    rels.add(REL_FREEZE_R1)
+    rels.add(REL_SOURCE_QA_R1)
     rels.add(REL_SOURCE_QA)
     rels.add("reports/optimization_v3/posoffset_a02_endgame_v1/RECIPE.json")
     rels.add("experiments/runs/optimization_v3_cls_pos_frequency_ridge_v1/BUDGET_LEDGER.jsonl")
@@ -206,6 +210,12 @@ def expected_input_paths() -> list[str]:
 
 
 def source_preflight() -> dict[str, Any]:
+    prior_freeze = read_json(path(REL_FREEZE_R1))
+    prior_body = dict(prior_freeze)
+    prior_claim = prior_body.pop("freeze_sha256", None)
+    if (prior_claim != canonical_sha256(prior_body)
+            or prior_freeze.get("status") != "FROZEN_BEFORE_QUERY_TARGET_LOAD"):
+        raise EvaluationError("Prior committed R1 source-freeze lineage is invalid")
     source_hashes: dict[str, str] = {}
     for rel in SOURCE_FILES:
         file_path = path(rel)
@@ -252,6 +262,9 @@ def build_source_freeze(*, synthetic_qa: Mapping[str, Any]) -> dict[str, Any]:
     body: dict[str, Any] = {
         "schema_version": 1, "status": "FROZEN_BEFORE_QUERY_TARGET_LOAD",
         "campaign_id": "CLS_POS_FREQUENCY_RIDGE_V1_EVALUATION_R1",
+        "freeze_round": "R2",
+        "supersedes_freeze": REL_FREEZE_R1,
+        "supersession_reason": "R1 stopped before archive access because its commit-check argument shadowed the commit-validation function",
         "source_preparation_parent_commit": git_text("rev-parse", "HEAD"),
         "frozen_at_utc": datetime.now(timezone.utc).isoformat(),
         "source_hashes": preflight["source_hashes"], "input_hashes": preflight["input_hashes"],
@@ -319,7 +332,7 @@ def run_synthetic_evaluator_qa() -> dict[str, Any]:
     return qa
 
 
-def verify_source_freeze(*, require_committed: bool) -> tuple[dict[str, Any], str | None]:
+def verify_source_freeze(*, require_frozen_commit: bool) -> tuple[dict[str, Any], str | None]:
     freeze = read_json(path(REL_FREEZE))
     body = dict(freeze)
     claimed = body.pop("freeze_sha256", None)
@@ -332,7 +345,7 @@ def verify_source_freeze(*, require_committed: bool) -> tuple[dict[str, Any], st
         raise EvaluationError("Evaluator source or frozen predecessor source changed")
     if current["input_hashes"] != freeze.get("input_hashes"):
         raise EvaluationError("Evaluation input file hashes changed after source freeze")
-    freeze_commit = require_committed(REL_FREEZE) if require_committed else None
+    freeze_commit = require_committed(REL_FREEZE) if require_frozen_commit else None
     return freeze, freeze_commit
 
 
@@ -473,7 +486,7 @@ def verify_four_fit_ledger() -> dict[str, Any]:
 
 
 def prepare_predictions() -> dict[str, Any]:
-    freeze, freeze_commit = verify_source_freeze(require_committed=True)
+    freeze, freeze_commit = verify_source_freeze(require_frozen_commit=True)
     resource = resource_snapshot(estimated_additional_bytes=512 * 1024**2)
     if not resource["minimum_4gib_pass"] or not resource["projected_2gib_reserve_pass"]:
         raise EvaluationError(f"RAM gate failed before target-free prediction replay: {resource}")
@@ -909,7 +922,7 @@ def load_labels_after_manifest_commit(pred_manifest: Mapping[str, Any],
 
 
 def evaluate() -> dict[str, Any]:
-    freeze, freeze_commit = verify_source_freeze(require_committed=True)
+    freeze, freeze_commit = verify_source_freeze(require_frozen_commit=True)
     manifest_commit = require_committed(REL_PREDICTION_MANIFEST)
     pred_manifest = read_json(path(REL_PREDICTION_MANIFEST))
     if pred_manifest.get("source_freeze_sha256") != file_sha256(path(REL_FREEZE)):
