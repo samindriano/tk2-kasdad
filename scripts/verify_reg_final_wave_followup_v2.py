@@ -25,9 +25,12 @@ if str(ROOT) not in sys.path:
 REPORT_DIR = ROOT / "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2"
 EXPERIMENT_DIR = ROOT / "experiments/REG_FINAL_WAVE_FOLLOWUP_V2"
 RUN_DIR = ROOT / "experiments/runs/REG_FINAL_WAVE_FOLLOWUP_V2"
-PREFIT_FREEZE = EXPERIMENT_DIR / "PREFIT_FREEZE.json"
-IDENTITY_PREFLIGHT = REPORT_DIR / "IDENTITY_PREFLIGHT.json"
-SYNTHETIC_QA = REPORT_DIR / "SYNTHETIC_QA.json"
+PRIOR_FREEZE = EXPERIMENT_DIR / "PREFIT_FREEZE.json"
+PREFIT_FREEZE = EXPERIMENT_DIR / "PREFIT_FREEZE_R2.json"
+PRIOR_BLOCKER = REPORT_DIR / "SOURCE_PREPARATION_BLOCKED.json"
+PRIOR_SYNTHETIC_QA = REPORT_DIR / "SYNTHETIC_QA.json"
+IDENTITY_PREFLIGHT = REPORT_DIR / "IDENTITY_PREFLIGHT_R2.json"
+SYNTHETIC_QA = REPORT_DIR / "SYNTHETIC_QA_R2.json"
 DIAGNOSTICS = REPORT_DIR / "DIAGNOSTICS.json"
 ROOT_SOURCE_PASS = EXPERIMENT_DIR / "ROOT_SOURCE_PASS.json"
 ROOT_PRODUCTION_PASS = EXPERIMENT_DIR / "ROOT_PRODUCTION_PASS.json"
@@ -42,6 +45,7 @@ OUTPUTS = {
 }
 MANIFESTS = {"A": REPORT_DIR / "MANIFEST_A.json", "B": REPORT_DIR / "MANIFEST_B.json"}
 EXPERIMENT = "REG_FINAL_WAVE_FOLLOWUP_V2"
+EXPECTED_BRANCH = "codex/reg-position-failure-mechanism-v1"
 FIT_IDS = ("D1_GLOBAL", "D1_RECENCY_H8", "D2_GLOBAL", "D2_RECENCY_H8", "FINAL_RECENCY_H8")
 DIAGNOSTIC_FIT_IDS = FIT_IDS[:4]
 
@@ -50,7 +54,7 @@ SOURCE_RELATIVE = {
     "verifier": "scripts/verify_reg_final_wave_followup_v2.py",
     "tests": "tests/test_reg_final_wave_followup_v2.py",
     "protocol": "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2/PROTOCOL.md",
-    "synthetic_qa": "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2/SYNTHETIC_QA.json",
+    "synthetic_qa": "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2/SYNTHETIC_QA_R2.json",
     "v2_identity_helpers": "scripts/reg_final_wave_v2.py",
     "r17_lp_helper": "src/models/optimization_v3_batch1_r17.py",
     "selected_row_reader": "scripts/reg_position_failure_mechanism_v1.py",
@@ -100,11 +104,128 @@ def _verify_signed(value: dict[str, Any]) -> dict[str, Any]:
     return body
 
 
+def _repo_path(path: str) -> str:
+    return path.replace("\\", "/").removeprefix("./")
+
+
+def _is_report_only_path(path: str) -> bool:
+    normalized = _repo_path(path)
+    pinned = {_repo_path(rel) for rel in SOURCE_RELATIVE.values()}
+    prefix = "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2/"
+    return (normalized.startswith(prefix) and normalized not in pinned
+            and Path(normalized).suffix.casefold() in {".md", ".txt"})
+
+
+def _is_known_generated_path(path: str) -> bool:
+    normalized = _repo_path(path)
+    exp_prefix = "experiments/REG_FINAL_WAVE_FOLLOWUP_V2/"
+    report_prefix = "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2/"
+    exp_names = {"PREFIT_FREEZE.json", "PREFIT_FREEZE_R2.json",
+                 "ROOT_SOURCE_PASS.json", "ROOT_PRODUCTION_PASS.json"}
+    report_names = {"SOURCE_PREPARATION_BLOCKED.json", "SOURCE_PREPARATION_BLOCKED_R2.json",
+                    "IDENTITY_PREFLIGHT.json", "IDENTITY_PREFLIGHT_R2.json",
+                    "DIAGNOSTICS.json", "PRODUCTION_RESULT.json", "FINAL_APPLICATION_FREEZE.json",
+                    "MANIFEST_A.json", "MANIFEST_B.json"}
+    return ((normalized.startswith(exp_prefix) and Path(normalized).name in exp_names)
+            or (normalized.startswith(report_prefix) and Path(normalized).name in report_names))
+
+
+def _git_output(*args: str) -> str:
+    try:
+        return subprocess.run(["git", "-C", str(ROOT), *args], check=True, text=True,
+                              capture_output=True).stdout.strip()
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise VerificationError(f"Unable to read source checkpoint from git: {exc}") from exc
+
+
+def _is_ancestor(ancestor: str, descendant: str) -> bool:
+    try:
+        result = subprocess.run(["git", "-C", str(ROOT), "merge-base", "--is-ancestor",
+                                 ancestor, descendant], text=True, capture_output=True, check=False)
+    except OSError as exc:
+        raise VerificationError(f"Unable to verify commit ancestry: {exc}") from exc
+    if result.returncode == 0:
+        return True
+    if result.returncode == 1:
+        return False
+    raise VerificationError(f"Git ancestry query failed: {result.stderr.strip()}")
+
+
+def _validate_live_source_checkpoint(freeze: dict[str, Any]) -> dict[str, Any]:
+    branch = _git_output("branch", "--show-current")
+    head = _git_output("rev-parse", "HEAD")
+    source_commit = str(freeze.get("source_commit", ""))
+    if branch != freeze.get("branch") or not source_commit or not _is_ancestor(source_commit, head):
+        raise VerificationError("Frozen source commit is not an ancestor on the frozen branch")
+    descendant = _git_output("diff", "--name-only", f"{source_commit}..{head}", "--").splitlines()
+    working = (_git_output("diff", "--name-only", "HEAD", "--").splitlines()
+               + _git_output("diff", "--cached", "--name-only", "--").splitlines())
+    non_report = [path for path in descendant + working if not _is_report_only_path(path)]
+    if non_report:
+        raise VerificationError(f"Checkpoint includes executable/non-report changes: {sorted(set(non_report))}")
+    untracked = _git_output("ls-files", "--others", "--exclude-standard").splitlines()
+    unexpected = [path for path in untracked
+                  if not _is_known_generated_path(path) and not _is_report_only_path(path)]
+    if unexpected:
+        raise VerificationError(f"Unexpected untracked files beside frozen source: {unexpected}")
+    return {"source_commit": source_commit, "live_head": head, "branch": branch,
+            "report_only_descendant_paths": descendant}
+
+
+def _verify_successor_lineage(body: dict[str, Any], qa_body: dict[str, Any]) -> dict[str, Any]:
+    prior_freeze = _read_json(PRIOR_FREEZE)
+    prior_freeze_body = _verify_signed(prior_freeze)
+    prior_blocker = _read_json(PRIOR_BLOCKER)
+    prior_blocker_body = _verify_signed(prior_blocker)
+    prior_qa = _read_json(PRIOR_SYNTHETIC_QA)
+    prior_qa_body = _verify_signed(prior_qa)
+    freeze_sha = _sha_file(PRIOR_FREEZE)
+    blocker_sha = _sha_file(PRIOR_BLOCKER)
+    if (freeze_sha != "564c1dcfbab9370f14dfb7d5698c7961a144da026c5b6e5eaf180f9f43c312e0"
+            or blocker_sha != "2d0bdae1de295b24aabc49ae4a39d9d7021556b2d810b9e4d3f915bf175ef26f"
+            or prior_blocker.get("receipt_sha256") != "e12f319a45d94b781edfc4fad484e7a0636126a7582c7a6c3206edc4755cb033"
+            or prior_freeze_body.get("experiment_id") != EXPERIMENT
+            or prior_freeze_body.get("status") != "PREFIT_FROZEN_IDENTITY_ONLY"
+            or prior_freeze_body.get("official_labels_accessed") is not False
+            or prior_freeze_body.get("official_lp_starts") != 0
+            or prior_blocker_body.get("source_commit") != prior_freeze_body.get("source_commit")
+            or prior_blocker_body.get("status") != "BLOCKED_RAM_IDENTITY_PREFLIGHT"
+            or prior_blocker_body.get("prefit_freeze_sha256") != freeze_sha
+            or prior_blocker_body.get("official_target_rows_parsed") != 0
+            or prior_blocker_body.get("official_labels_accessed") is not False
+            or prior_blocker_body.get("official_lp_starts") != 0
+            or prior_blocker_body.get("candidate_csvs_created") is not False
+            or prior_blocker_body.get("kaggle_upload") is not False
+            or prior_qa_body.get("experiment_id") != EXPERIMENT
+            or prior_qa_body.get("status") != "PASS_SYNTHETIC_ONLY"
+            or prior_qa_body.get("official_labels_accessed") is not False
+            or prior_qa_body.get("official_lp_starts") != 0
+            or prior_qa_body.get("test_or_sample_accessed") is not False):
+        raise VerificationError("Preserved R1 freeze/blocker lineage or zero-fit boundary changed")
+    expected = {
+        "freeze_path": str(PRIOR_FREEZE.relative_to(ROOT).as_posix()),
+        "freeze_sha256": freeze_sha,
+        "blocker_report_path": str(PRIOR_BLOCKER.relative_to(ROOT).as_posix()),
+        "blocker_report_sha256": blocker_sha,
+        "blocker_receipt_sha256": prior_blocker["receipt_sha256"],
+        "prior_official_lp_starts": 0,
+    }
+    if (body.get("successor_of") != expected or body.get("prior_official_lp_starts") != 0
+            or qa_body.get("qa_revision") != "R2"
+            or qa_body.get("predecessor") != {**expected,
+                "synthetic_qa_path": str(PRIOR_SYNTHETIC_QA.relative_to(ROOT).as_posix()),
+                "synthetic_qa_sha256": _sha_file(PRIOR_SYNTHETIC_QA)}):
+        raise VerificationError("R2 freeze/QA does not bind its exact R1 predecessor artifacts")
+    return expected
+
+
 def verify_prefit() -> dict[str, Any]:
     freeze = _read_json(PREFIT_FREEZE)
     body = _verify_signed(freeze)
     if body.get("experiment_id") != EXPERIMENT or body.get("status") != "PREFIT_FROZEN_IDENTITY_ONLY":
         raise VerificationError("Prefit freeze has wrong experiment/status")
+    if body.get("branch") != EXPECTED_BRANCH:
+        raise VerificationError("Prefit freeze branch differs from the expected isolated branch")
     source_hashes = body.get("source_hashes", {})
     if set(source_hashes) != set(SOURCE_RELATIVE):
         raise VerificationError("Source hash set differs from the V2 contract")
@@ -128,6 +249,7 @@ def verify_prefit() -> dict[str, Any]:
             or qa_body.get("official_lp_starts") != 0
             or qa_body.get("test_or_sample_accessed") is not False):
         raise VerificationError("Synthetic QA does not preserve the zero-official-access boundary")
+    _verify_successor_lineage(body, qa_body)
     preflight = _read_json(IDENTITY_PREFLIGHT)
     preflight_body = _verify_signed(preflight)
     if (preflight_body.get("status") != "PASS_IDENTITY_ONLY_PREFIT"
@@ -143,15 +265,16 @@ def verify_prefit() -> dict[str, Any]:
         raise VerificationError("Identity preflight source commit differs from freeze")
     if body.get("official_labels_accessed") is not False or body.get("official_lp_starts") != 0:
         raise VerificationError("Prefit freeze reports official access or LP starts")
-    try:
-        current_head = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "HEAD"],
-                                      check=True, text=True, capture_output=True).stdout.strip()
-        current_branch = subprocess.run(["git", "-C", str(ROOT), "branch", "--show-current"],
-                                        check=True, text=True, capture_output=True).stdout.strip()
-    except (OSError, subprocess.CalledProcessError) as exc:
-        raise VerificationError(f"Unable to verify current git source identity: {exc}") from exc
-    if current_head != body.get("source_commit") or current_branch != body.get("branch"):
-        raise VerificationError("Current branch/HEAD differs from the frozen source identity")
+    checkpoint = _validate_live_source_checkpoint(body)
+    preflight_checkpoint = preflight_body.get("source_checkpoint")
+    if (not isinstance(preflight_checkpoint, dict)
+            or preflight_checkpoint.get("source_commit") != body.get("source_commit")
+            or preflight_checkpoint.get("branch") != EXPECTED_BRANCH
+            or not preflight_checkpoint.get("live_head")
+            or not _is_ancestor(preflight_checkpoint["live_head"], checkpoint["live_head"])
+            or any(not _is_report_only_path(path)
+                   for path in preflight_checkpoint.get("report_only_descendant_paths", []))):
+        raise VerificationError("Identity preflight checkpoint is not an ancestor report-only checkpoint")
     support = body.get("support_identity", {})
     required_support_fields = {"rows_sha256", "ids_sha256", "origins_sha256",
                                "original_bundle_indices_sha256", "cycles_sha256",

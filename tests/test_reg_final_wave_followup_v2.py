@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -30,6 +31,54 @@ def _freeze(tmp_path):
     path.write_text("synthetic-freeze", encoding="utf-8")
     return path, {"source_commit": "synthetic-commit", "source_hashes": {"runner": "a"},
                   "input_hashes": {"synthetic": {"sha256": "b"}}}
+
+
+def _install_checkpoint(monkeypatch, *, head="synthetic-commit", descendant_paths=(),
+                        working_paths=(), staged_paths=(), untracked=(), ancestor=True,
+                        frozen_sources=None):
+    def fake_git(*args):
+        if args == ("branch", "--show-current"):
+            return reg.BRANCH
+        if args == ("rev-parse", "HEAD"):
+            return head
+        if len(args) >= 3 and args[:2] == ("diff", "--name-only"):
+            if args[2].startswith("synthetic-commit.."):
+                return "\n".join(descendant_paths)
+            if args[2] == "HEAD":
+                return "\n".join(working_paths)
+        if args == ("diff", "--cached", "--name-only", "--"):
+            return "\n".join(staged_paths)
+        if args == ("ls-files", "--others", "--exclude-standard"):
+            return "\n".join(untracked)
+        raise AssertionError(f"Unexpected git call: {args}")
+
+    monkeypatch.setattr(reg, "git", fake_git)
+    monkeypatch.setattr(reg, "_commit_is_ancestor", lambda ancestor, descendant: (
+        ancestor == "synthetic-commit" and descendant == head))
+    monkeypatch.setattr(reg, "source_hashes", lambda: frozen_sources or {"runner": "a"})
+    monkeypatch.setattr(reg, "verify_snapshot", lambda _expected: None)
+
+
+def _install_independent_checkpoint(monkeypatch, *, head="synthetic-commit", descendant_paths=()):
+    def fake_git(*args):
+        if args == ("branch", "--show-current"):
+            return reg.BRANCH
+        if args == ("rev-parse", "HEAD"):
+            return head
+        if len(args) >= 3 and args[:2] == ("diff", "--name-only"):
+            if args[2].startswith("synthetic-commit.."):
+                return "\n".join(descendant_paths)
+            if args[2] == "HEAD":
+                return ""
+        if args == ("diff", "--cached", "--name-only", "--"):
+            return ""
+        if args == ("ls-files", "--others", "--exclude-standard"):
+            return ""
+        raise AssertionError(f"Unexpected independent git call: {args}")
+
+    monkeypatch.setattr(independent, "_git_output", fake_git)
+    monkeypatch.setattr(independent, "_is_ancestor", lambda ancestor, descendant: (
+        ancestor == "synthetic-commit" and descendant in {"synthetic-commit", head}))
 
 
 def test_h8_formula_and_mean_one():
@@ -126,6 +175,7 @@ def test_recovery_after_state_publish_does_not_refit(tmp_path, monkeypatch):
     monkeypatch.setattr(reg, "LEDGER", ledger)
     monkeypatch.setattr(reg, "RUN_DIR", run_dir)
     monkeypatch.setattr(reg, "PREFIT_FREEZE", prefit)
+    monkeypatch.setattr(reg, "validate_live_source_checkpoint", lambda _freeze: {"status": "PASS"})
     monkeypatch.setattr(reg, "resource_snapshot", lambda: {"status": "PASS", "available_physical_ram_bytes_measured": 9})
     monkeypatch.setattr(reg.v2, "one_job_gate", lambda: {"status": "PASS"})
     monkeypatch.setattr(reg, "_verify_root_source_pass", lambda _freeze: ({"verdict": "PASS"}, "pass-sha"))
@@ -167,6 +217,7 @@ def test_reservation_without_start_resumes_same_bound_slot(tmp_path, monkeypatch
     monkeypatch.setattr(reg, "LEDGER", ledger)
     monkeypatch.setattr(reg, "RUN_DIR", run_dir)
     monkeypatch.setattr(reg, "PREFIT_FREEZE", prefit)
+    monkeypatch.setattr(reg, "validate_live_source_checkpoint", lambda _freeze: {"status": "PASS"})
     monkeypatch.setattr(reg, "resource_snapshot", lambda: {"status": "PASS", "available_physical_ram_bytes_measured": 9})
     monkeypatch.setattr(reg.v2, "one_job_gate", lambda: {"status": "PASS"})
     monkeypatch.setattr(reg, "_verify_root_source_pass", lambda _freeze: ({"verdict": "PASS"}, "pass-sha"))
@@ -184,6 +235,161 @@ def test_reservation_without_start_resumes_same_bound_slot(tmp_path, monkeypatch
     events = reg.read_ledger(ledger)
     assert [event["event"] for event in events] == ["RESERVE", "LP_STARTED", "LP_COMPLETE"]
     assert {event["reservation_id"] for event in events} == {"same-reservation"}
+
+
+def test_report_only_descendant_is_accepted(monkeypatch):
+    report = "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2/ROOT_REVIEW_R2.md"
+    _install_checkpoint(monkeypatch, head="report-descendant", descendant_paths=(report,))
+    result = reg.validate_live_source_checkpoint({
+        "source_commit": "synthetic-commit", "source_hashes": {"runner": "a"},
+        "input_hashes": {"synthetic": {"sha256": "b"}},
+    })
+    assert result["live_head"] == "report-descendant"
+    assert result["report_only_descendant_paths"] == [report]
+
+
+def test_nonancestor_checkpoint_is_rejected(monkeypatch):
+    _install_checkpoint(monkeypatch, head="unrelated-commit", ancestor=False)
+    monkeypatch.setattr(reg, "_commit_is_ancestor", lambda _ancestor, _descendant: False)
+    with pytest.raises(reg.GateError, match="not an ancestor"):
+        reg.validate_live_source_checkpoint({
+            "source_commit": "synthetic-commit", "source_hashes": {"runner": "a"},
+            "input_hashes": {"synthetic": {"sha256": "b"}},
+        })
+
+
+def test_executable_mutation_is_rejected(monkeypatch):
+    _install_checkpoint(monkeypatch, head="report-descendant",
+                        descendant_paths=("scripts/reg_final_wave_followup_v2.py",))
+    with pytest.raises(reg.GateError, match="non-report source changes"):
+        reg.validate_live_source_checkpoint({
+            "source_commit": "synthetic-commit", "source_hashes": {"runner": "a"},
+            "input_hashes": {"synthetic": {"sha256": "b"}},
+        })
+    _install_checkpoint(monkeypatch, head="report-descendant")
+    with pytest.raises(reg.GateError, match="bytes changed"):
+        reg.validate_live_source_checkpoint({
+            "source_commit": "synthetic-commit", "source_hashes": {"runner": "old-bytes"},
+            "input_hashes": {"synthetic": {"sha256": "b"}},
+        })
+
+
+def test_independent_verifier_accepts_report_only_descendant(monkeypatch):
+    report = "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2/ROOT_REVIEW_R2.md"
+    _install_independent_checkpoint(monkeypatch, head="report-descendant", descendant_paths=(report,))
+    result = independent._validate_live_source_checkpoint({
+        "source_commit": "synthetic-commit", "branch": reg.BRANCH,
+    })
+    assert result["live_head"] == "report-descendant"
+    assert result["report_only_descendant_paths"] == [report]
+
+
+def test_independent_verifier_rejects_executable_descendant(monkeypatch):
+    _install_independent_checkpoint(monkeypatch, head="report-descendant",
+                                    descendant_paths=("scripts/verify_reg_final_wave_followup_v2.py",))
+    with pytest.raises(independent.VerificationError, match="executable/non-report"):
+        independent._validate_live_source_checkpoint({
+            "source_commit": "synthetic-commit", "branch": reg.BRANCH,
+        })
+
+
+def test_report_only_descendant_reuses_completed_fit_without_refit(tmp_path, monkeypatch):
+    ledger = tmp_path / "ledger.jsonl"
+    run_dir = tmp_path / "run"
+    prefit, freeze = _freeze(tmp_path)
+    monkeypatch.setattr(reg, "LEDGER", ledger)
+    monkeypatch.setattr(reg, "RUN_DIR", run_dir)
+    monkeypatch.setattr(reg, "PREFIT_FREEZE", prefit)
+    head = {"value": "synthetic-commit"}
+    report = "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2/ROOT_REVIEW_R2.md"
+    _install_checkpoint(monkeypatch, frozen_sources=freeze["source_hashes"])
+
+    def fake_git(*args):
+        if args == ("branch", "--show-current"):
+            return reg.BRANCH
+        if args == ("rev-parse", "HEAD"):
+            return head["value"]
+        if len(args) >= 3 and args[:2] == ("diff", "--name-only"):
+            if args[2].startswith("synthetic-commit.."):
+                return report if head["value"] == "report-descendant" else ""
+            if args[2] == "HEAD":
+                return ""
+        if args == ("diff", "--cached", "--name-only", "--"):
+            return ""
+        if args == ("ls-files", "--others", "--exclude-standard"):
+            return ""
+        raise AssertionError(f"Unexpected git call: {args}")
+
+    monkeypatch.setattr(reg, "git", fake_git)
+    monkeypatch.setattr(reg, "_commit_is_ancestor", lambda ancestor, descendant: (
+        ancestor == "synthetic-commit" and descendant in {"synthetic-commit", "report-descendant"}))
+    monkeypatch.setattr(reg, "source_hashes", lambda: freeze["source_hashes"])
+    monkeypatch.setattr(reg, "verify_snapshot", lambda _expected: None)
+    monkeypatch.setattr(reg, "resource_snapshot", lambda **_kwargs: {"status": "PASS"})
+    monkeypatch.setattr(reg.v2, "one_job_gate", lambda: {"status": "PASS"})
+    monkeypatch.setattr(reg, "_verify_root_source_pass", lambda _freeze: ({"verdict": "PASS"}, "pass-sha"))
+    calls = []
+
+    def fake_solver(y, p, threads=2):
+        calls.append(1)
+        return {"success": True, "status": 0, "message": "synthetic", "intercept": 0.0,
+                "slope": 2.0, "objective_l1_sum": 0.0}
+
+    monkeypatch.setattr(reg, "solve_nonnegative_l1", fake_solver)
+    y, p, cycles, row_id = _fit_inputs()
+    first = reg._record_or_reuse_fit("D1_GLOBAL", y, p, cycles, None, row_id, freeze, "pass-sha")
+    assert first["status"] == "LP_COMPLETE"
+    head["value"] = "report-descendant"
+    reused = reg._record_or_reuse_fit("D1_GLOBAL", y, p, cycles, None, row_id, freeze, "pass-sha")
+    assert reused["status"] == "LP_COMPLETE"
+    assert len(calls) == 1
+    assert len(reg.read_ledger(ledger)) == 3
+
+
+def test_identity_preflight_reuses_receipt_after_fresh_gates(tmp_path, monkeypatch):
+    freeze_path = tmp_path / "PREFIT_FREEZE_R2.json"
+    freeze_path.write_text("frozen", encoding="utf-8")
+    preflight_path = tmp_path / "IDENTITY_PREFLIGHT_R2.json"
+    support = {"rows_sha256": "rows", "row_counts": {"unique_oof": 1}}
+    body = {
+        "experiment_id": reg.EXPERIMENT, "status": "PREFIT_FROZEN_IDENTITY_ONLY",
+        "source_commit": "synthetic-commit", "branch": reg.BRANCH,
+        "source_hashes": {"runner": "a"}, "input_hashes": {"synthetic": {"sha256": "b"}},
+        "support_identity": support, "successor_of": {"freeze_sha256": "prior"},
+        "global_affine_reference": {"mae": 1.0},
+    }
+    frozen = reg.sign_body(body)
+    monkeypatch.setattr(reg, "PREFIT_FREEZE", freeze_path)
+    monkeypatch.setattr(reg, "IDENTITY_PREFLIGHT", preflight_path)
+    monkeypatch.setattr(reg, "verify_prefit_freeze", lambda: frozen)
+    monkeypatch.setattr(reg, "identity_inputs", lambda: {"row_counts": {"unique_oof": 1}})
+    monkeypatch.setattr(reg, "diagnostic_support", lambda _identity: {"D1": {}})
+    monkeypatch.setattr(reg, "production_support", lambda _identity: {"E79": {}})
+    monkeypatch.setattr(reg, "validate_live_source_checkpoint", lambda _body: {
+        "source_commit": "synthetic-commit", "live_head": "synthetic-commit", "branch": reg.BRANCH,
+        "report_only_descendant_paths": []})
+    resource_gates = iter((
+        {"status": "PASS", "available_physical_ram_bytes_measured": 10},
+        {"status": "PASS", "available_physical_ram_bytes_measured": 9},
+    ))
+    process_calls, lock_calls = [], []
+    monkeypatch.setattr(reg, "resource_snapshot", lambda **_kwargs: next(resource_gates))
+    monkeypatch.setattr(reg.v2, "one_job_gate", lambda: process_calls.append(1) or {"status": "PASS"})
+    monkeypatch.setattr(reg, "shared_lock_probe", lambda: lock_calls.append(1) or {"status": "AVAILABLE"})
+    actual_sha = reg.file_sha256
+    monkeypatch.setattr(reg, "file_sha256", lambda path: reg.TRAIN_SHA256 if Path(path) == reg.TRAIN else actual_sha(path))
+
+    first = reg.identity_preflight()
+    first_sha = first["receipt_sha256"]
+    first_file_sha = actual_sha(preflight_path)
+    monkeypatch.setattr(reg, "write_json_once", lambda *_args, **_kwargs: pytest.fail("receipt rewrite attempted"))
+    second = reg.identity_preflight()
+
+    assert second["receipt_reused"] is True
+    assert second["receipt_sha256"] == first_sha
+    assert second["fresh_resource_gate"]["available_physical_ram_bytes_measured"] == 9
+    assert actual_sha(preflight_path) == first_file_sha
+    assert len(process_calls) == len(lock_calls) == 2
 
 
 def test_prediction_and_subgroup_risk_audits():

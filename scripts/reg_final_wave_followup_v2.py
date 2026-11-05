@@ -40,9 +40,14 @@ EXPERIMENT_DIR = ROOT / "experiments/REG_FINAL_WAVE_FOLLOWUP_V2"
 RUN_DIR = ROOT / "experiments/runs/REG_FINAL_WAVE_FOLLOWUP_V2"
 SUBMISSION_DIR = ROOT / "submissions/reg_final_wave_followup_v2"
 PROTOCOL = REPORT_DIR / "PROTOCOL.md"
-SYNTHETIC_QA = REPORT_DIR / "SYNTHETIC_QA.json"
-PREFIT_FREEZE = EXPERIMENT_DIR / "PREFIT_FREEZE.json"
-IDENTITY_PREFLIGHT = REPORT_DIR / "IDENTITY_PREFLIGHT.json"
+PRIOR_SYNTHETIC_QA = REPORT_DIR / "SYNTHETIC_QA.json"
+SYNTHETIC_QA = REPORT_DIR / "SYNTHETIC_QA_R2.json"
+PRIOR_PREFIT_FREEZE = EXPERIMENT_DIR / "PREFIT_FREEZE.json"
+PREFIT_FREEZE = EXPERIMENT_DIR / "PREFIT_FREEZE_R2.json"
+PRIOR_BLOCKER_REPORT = REPORT_DIR / "SOURCE_PREPARATION_BLOCKED.json"
+BLOCKER_REPORT = REPORT_DIR / "SOURCE_PREPARATION_BLOCKED_R2.json"
+IDENTITY_PREFLIGHT = REPORT_DIR / "IDENTITY_PREFLIGHT_R2.json"
+PRIOR_PREFLIGHT = REPORT_DIR / "IDENTITY_PREFLIGHT.json"
 ROOT_SOURCE_PASS = EXPERIMENT_DIR / "ROOT_SOURCE_PASS.json"
 ROOT_PRODUCTION_PASS = EXPERIMENT_DIR / "ROOT_PRODUCTION_PASS.json"
 LEDGER = RUN_DIR / "lp_ledger.jsonl"
@@ -87,6 +92,9 @@ DIAGNOSTIC_FIT_IDS = FIT_IDS[:4]
 # Shared with other authorized KASDAD compute lanes. Advisory OS locking releases
 # automatically on process exit; the lock file is never deleted to infer liveness.
 SHARED_JOB_LOCK = Path(tempfile.gettempdir()) / "kasdad_single_heavy_job.lock"
+PRIOR_PREFIT_FREEZE_SHA256 = "564c1dcfbab9370f14dfb7d5698c7961a144da026c5b6e5eaf180f9f43c312e0"
+PRIOR_BLOCKER_REPORT_SHA256 = "2d0bdae1de295b24aabc49ae4a39d9d7021556b2d810b9e4d3f915bf175ef26f"
+PRIOR_BLOCKER_RECEIPT_SHA256 = "e12f319a45d94b781edfc4fad484e7a0636126a7582c7a6c3206edc4755cb033"
 
 SOURCE_FILES = {
     "runner": SCRIPT,
@@ -262,6 +270,91 @@ def git(*args: str) -> str:
                           stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.strip()
 
 
+def _repo_path(path: str) -> str:
+    return path.replace("\\", "/").removeprefix("./")
+
+
+def _is_report_only_path(path: str) -> bool:
+    normalized = _repo_path(path)
+    pinned = set()
+    for value in SOURCE_FILES.values():
+        try:
+            pinned.add(_repo_path(str(value.resolve().relative_to(ROOT))))
+        except ValueError:
+            # Some pinned historical dependencies live in neighboring checkouts.
+            continue
+    prefix = "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2/"
+    return (normalized.startswith(prefix) and normalized not in pinned
+            and Path(normalized).suffix.casefold() in {".md", ".txt"})
+
+
+def _is_known_generated_path(path: str) -> bool:
+    normalized = _repo_path(path)
+    experiment = "experiments/REG_FINAL_WAVE_FOLLOWUP_V2/"
+    reports = "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2/"
+    known_experiment_names = {
+        "PREFIT_FREEZE.json", "PREFIT_FREEZE_R2.json",
+        "ROOT_SOURCE_PASS.json", "ROOT_PRODUCTION_PASS.json",
+    }
+    known_report_names = {
+        "SOURCE_PREPARATION_BLOCKED.json", "SOURCE_PREPARATION_BLOCKED_R2.json",
+        "IDENTITY_PREFLIGHT.json", "IDENTITY_PREFLIGHT_R2.json",
+        "DIAGNOSTICS.json", "PRODUCTION_RESULT.json", "FINAL_APPLICATION_FREEZE.json",
+        "MANIFEST_A.json", "MANIFEST_B.json",
+    }
+    return ((normalized.startswith(experiment) and Path(normalized).name in known_experiment_names)
+            or (normalized.startswith(reports) and Path(normalized).name in known_report_names))
+
+
+def _commit_is_ancestor(ancestor: str, descendant: str) -> bool:
+    try:
+        result = subprocess.run(["git", "-C", str(ROOT), "merge-base", "--is-ancestor",
+                                 ancestor, descendant], text=True, stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE, check=False)
+    except OSError as exc:
+        raise GateError(f"Unable to verify frozen commit ancestry: {exc}") from exc
+    if result.returncode == 0:
+        return True
+    if result.returncode == 1:
+        return False
+    raise GateError(f"Git could not prove frozen commit ancestry: {result.stderr.strip()}")
+
+
+def validate_live_source_checkpoint(freeze_body: Mapping[str, Any]) -> dict[str, Any]:
+    """Accept report-only descendants while enforcing all frozen executable/input bytes."""
+    branch = git("branch", "--show-current")
+    head = git("rev-parse", "HEAD")
+    frozen_commit = str(freeze_body.get("source_commit", ""))
+    if branch != BRANCH:
+        raise GateError(f"Expected isolated branch {BRANCH}; observed {branch!r}")
+    if not frozen_commit or not _commit_is_ancestor(frozen_commit, head):
+        raise GateError("Frozen source commit is not an ancestor of current HEAD")
+
+    descendant_paths = git("diff", "--name-only", f"{frozen_commit}..{head}", "--").splitlines()
+    changed_paths = (git("diff", "--name-only", "HEAD", "--").splitlines()
+                     + git("diff", "--cached", "--name-only", "--").splitlines())
+    non_report_changes = [path for path in descendant_paths + changed_paths
+                          if not _is_report_only_path(path)]
+    if non_report_changes:
+        raise GateError(f"Frozen checkpoint has non-report source changes: {sorted(set(non_report_changes))}")
+
+    untracked = git("ls-files", "--others", "--exclude-standard").splitlines()
+    unexpected_untracked = [path for path in untracked
+                            if not _is_known_generated_path(path) and not _is_report_only_path(path)]
+    if unexpected_untracked:
+        raise GateError(f"Unexpected untracked files beside frozen source: {unexpected_untracked}")
+    expected_sources = dict(freeze_body.get("source_hashes", {}))
+    actual_sources = source_hashes()
+    if expected_sources != actual_sources:
+        changed = [name for name in sorted(set(expected_sources) | set(actual_sources))
+                   if expected_sources.get(name) != actual_sources.get(name)]
+        raise GateError(f"Pinned executable/dependency/protocol/test/QA bytes changed: {changed}")
+    verify_snapshot(freeze_body.get("input_hashes", {}))
+    return {"source_commit": frozen_commit, "live_head": head, "branch": branch,
+            "report_only_descendant_paths": descendant_paths,
+            "pinned_source_hashes_verified": True, "input_hashes_verified": True}
+
+
 def assert_source_checkout(*, allow_new_artifacts: bool = False) -> tuple[str, str]:
     commit = git("rev-parse", "HEAD")
     branch = git("branch", "--show-current")
@@ -273,8 +366,9 @@ def assert_source_checkout(*, allow_new_artifacts: bool = False) -> tuple[str, s
         raise GateError(f"Source must be committed before freeze; tracked changes={tracked_changes + staged_changes}")
     if not allow_new_artifacts:
         untracked = git("ls-files", "--others", "--exclude-standard").splitlines()
-        if untracked:
-            raise GateError(f"Unexpected untracked files before source freeze: {untracked}")
+        unexpected = [path for path in untracked if not _is_known_generated_path(path)]
+        if unexpected:
+            raise GateError(f"Unexpected untracked files before source freeze: {unexpected}")
     return commit, branch
 
 
@@ -344,21 +438,39 @@ class SharedHeavyJobLock:
                 self.stream = None
 
 
-def resource_snapshot() -> dict[str, Any]:
-    gate = v2.resource_gate()
-    # v2.resource_gate measures available physical RAM; peak remains an estimate.
-    available = int(gate["available_bytes_before_fit"])
+def resource_snapshot(*, allow_blocked: bool = False) -> dict[str, Any]:
+    # Measure once so a blocked receipt records the same reading used by the gate.
+    available = int(v2.psutil.virtual_memory().available)
     required = max(MIN_AVAILABLE_RAM, ESTIMATED_PEAK_RAM + RESERVED_RAM)
-    if available < required:
-        raise GateError(f"RAM gate failed: available={available}, required={required}")
-    return {
-        "status": "PASS", "available_physical_ram_bytes_measured": available,
+    status = "PASS" if available >= required else "BLOCKED_RAM"
+    result = {
+        "status": status, "available_physical_ram_bytes_measured": available,
         "minimum_available_ram_bytes": MIN_AVAILABLE_RAM,
         "safety_reserve_bytes": RESERVED_RAM,
         "estimated_incremental_peak_bytes": ESTIMATED_PEAK_RAM,
         "estimated_peak_is_measured": False, "threads": THREADS,
         "single_heavy_job_required": True,
     }
+    if status != "PASS" and not allow_blocked:
+        raise GateError(f"RAM gate failed: available={available}, required={required}")
+    return result
+
+
+def record_resource_blocker(freeze: Mapping[str, Any], resource: Mapping[str, Any]) -> dict[str, Any]:
+    body = {
+        "schema_version": 1, "experiment_id": EXPERIMENT,
+        "status": "BLOCKED_RAM_IDENTITY_PREFLIGHT",
+        "source_commit": freeze["source_commit"], "branch": freeze["branch"],
+        "prefit_freeze_sha256": file_sha256(PREFIT_FREEZE),
+        "prefit_freeze_signature": read_json(PREFIT_FREEZE)["receipt_sha256"],
+        "successor_of": freeze["successor_of"],
+        "resource": dict(resource),
+        "official_target_rows_parsed": 0, "official_labels_accessed": False,
+        "official_lp_starts": 0, "test_csv_or_sample_opened": False,
+        "csv_created": False, "kaggle_upload": False,
+    }
+    write_json_once(BLOCKER_REPORT, body)
+    return read_json(BLOCKER_REPORT)
 
 
 def require_row_support(count: int, minimum: int, label: str) -> None:
@@ -603,24 +715,64 @@ def verify_prefit_freeze() -> dict[str, Any]:
     body = verify_signed(freeze)
     if (body.get("experiment_id") != EXPERIMENT
             or body.get("status") != "PREFIT_FROZEN_IDENTITY_ONLY"
-            or body.get("branch") != BRANCH
-            or body.get("source_hashes") != source_hashes()):
-        raise GateError("Prefit freeze identity or source hashes differ")
-    verify_snapshot(body.get("input_hashes", {}))
-    if git("rev-parse", "HEAD") != body.get("source_commit"):
-        raise GateError("Current HEAD differs from the frozen source commit")
+            or body.get("branch") != BRANCH):
+        raise GateError("Prefit freeze identity or branch differs")
+    if body.get("successor_of") != prior_source_artifact_binding():
+        raise GateError("Successor freeze no longer binds the preserved R1 freeze/blocker")
+    validate_live_source_checkpoint(body)
     return freeze
+
+
+def prior_source_artifact_binding() -> dict[str, Any]:
+    if not PRIOR_PREFIT_FREEZE.is_file() or not PRIOR_BLOCKER_REPORT.is_file():
+        raise GateError("R1 prefit freeze and source-preparation blocker must be preserved")
+    prior_freeze = read_json(PRIOR_PREFIT_FREEZE)
+    prior_freeze_body = verify_signed(prior_freeze)
+    blocker = read_json(PRIOR_BLOCKER_REPORT)
+    blocker_body = verify_signed(blocker)
+    freeze_sha = file_sha256(PRIOR_PREFIT_FREEZE)
+    blocker_sha = file_sha256(PRIOR_BLOCKER_REPORT)
+    if (freeze_sha != PRIOR_PREFIT_FREEZE_SHA256 or blocker_sha != PRIOR_BLOCKER_REPORT_SHA256
+            or blocker.get("receipt_sha256") != PRIOR_BLOCKER_RECEIPT_SHA256
+            or prior_freeze_body.get("experiment_id") != EXPERIMENT
+            or prior_freeze_body.get("official_labels_accessed") is not False
+            or prior_freeze_body.get("official_lp_starts") != 0
+            or blocker_body.get("status") != "BLOCKED_RAM_IDENTITY_PREFLIGHT"
+            or blocker_body.get("source_commit") != prior_freeze_body.get("source_commit")
+            or blocker_body.get("prefit_freeze_sha256") != freeze_sha
+            or blocker_body.get("official_target_rows_parsed") != 0
+            or blocker_body.get("official_labels_accessed") is not False
+            or blocker_body.get("official_lp_starts") != 0
+            or blocker_body.get("candidate_csvs_created") is not False
+            or blocker_body.get("kaggle_upload") is not False):
+        raise GateError("R1 freeze/blocker lineage failed exact receipt or zero-fit checks")
+    return {
+        "freeze_path": str(PRIOR_PREFIT_FREEZE.relative_to(ROOT).as_posix()),
+        "freeze_sha256": freeze_sha,
+        "blocker_report_path": str(PRIOR_BLOCKER_REPORT.relative_to(ROOT).as_posix()),
+        "blocker_report_sha256": blocker_sha,
+        "blocker_receipt_sha256": blocker["receipt_sha256"],
+        "prior_official_lp_starts": 0,
+    }
 
 
 def prepare_freeze() -> dict[str, Any]:
     commit, branch = assert_source_checkout()
     if PREFIT_FREEZE.exists():
         return verify_prefit_freeze()
+    successor = prior_source_artifact_binding()
+    if LEDGER.exists() and read_ledger(LEDGER):
+        raise GateError("R2 LP ledger is nonempty; cannot certify that no old official slots were consumed")
     if not SYNTHETIC_QA.is_file():
         raise GateError("Synthetic QA must exist before prefit freeze")
     qa = read_json(SYNTHETIC_QA)
     qa_body = verify_signed(qa)
+    qa_predecessor = {**successor,
+                      "synthetic_qa_path": str(PRIOR_SYNTHETIC_QA.relative_to(ROOT).as_posix()),
+                      "synthetic_qa_sha256": file_sha256(PRIOR_SYNTHETIC_QA)}
     if (qa_body.get("status") != "PASS_SYNTHETIC_ONLY"
+            or qa_body.get("qa_revision") != "R2"
+            or qa_body.get("predecessor") != qa_predecessor
             or qa_body.get("official_labels_accessed") is not False
             or qa_body.get("official_lp_starts") != 0):
         raise GateError("Synthetic QA does not prove candidate-blind zero-official scope")
@@ -631,6 +783,8 @@ def prepare_freeze() -> dict[str, Any]:
         "status": "PREFIT_FROZEN_IDENTITY_ONLY",
         "source_commit": commit, "branch": branch,
         "source_hashes": source_hashes(), "input_hashes": inputs,
+        "successor_of": successor,
+        "prior_official_lp_starts": successor["prior_official_lp_starts"],
         "synthetic_qa_file_sha256": file_sha256(SYNTHETIC_QA),
         "support_identity": {
             "rows_sha256": array_sha256(identity["oof"]["rows"]),
@@ -658,7 +812,13 @@ def prepare_freeze() -> dict[str, Any]:
 def identity_preflight() -> dict[str, Any]:
     freeze = verify_prefit_freeze()
     body = verify_signed(freeze)
-    resource = resource_snapshot()
+    resource = resource_snapshot(allow_blocked=True)
+    if resource["status"] != "PASS":
+        blocker = record_resource_blocker(body, resource)
+        return {"status": "BLOCKED_RAM_IDENTITY_PREFLIGHT",
+                "receipt_sha256": blocker["receipt_sha256"],
+                "resource": resource, "official_labels_accessed": False,
+                "official_lp_starts": 0}
     process = v2.one_job_gate()
     lock = shared_lock_probe()
     if lock["status"] != "AVAILABLE":
@@ -673,6 +833,8 @@ def identity_preflight() -> dict[str, Any]:
         "status": "PASS_IDENTITY_ONLY_PREFIT",
         "source_commit": body["source_commit"], "freeze_sha256": file_sha256(PREFIT_FREEZE),
         "freeze_signature": freeze["receipt_sha256"],
+        "successor_of": body["successor_of"],
+        "source_checkpoint": validate_live_source_checkpoint(body),
         "source_hashes": body["source_hashes"],
         "source_paths": {name: str(path.resolve()) for name, path in SOURCE_FILES.items()},
         "input_hashes": body["input_hashes"],
@@ -700,6 +862,30 @@ def identity_preflight() -> dict[str, Any]:
                      "No official LP result exists.",
                      "Root SOURCE_PASS and later production authorization are absent."],
     }
+    if IDENTITY_PREFLIGHT.is_file():
+        saved = read_json(IDENTITY_PREFLIGHT)
+        saved_body = verify_signed(saved)
+        if (saved_body.get("status") != "PASS_IDENTITY_ONLY_PREFIT"
+                or saved_body.get("experiment_id") != EXPERIMENT
+                or saved_body.get("source_commit") != body.get("source_commit")
+                or saved_body.get("freeze_sha256") != file_sha256(PREFIT_FREEZE)
+                or saved_body.get("freeze_signature") != freeze.get("receipt_sha256")
+                or saved_body.get("source_hashes") != body.get("source_hashes")
+                or saved_body.get("input_hashes") != body.get("input_hashes")
+                or saved_body.get("support_identity") != body.get("support_identity")
+                or saved_body.get("successor_of") != body.get("successor_of")
+                or saved_body.get("official_target_rows_parsed") != 0
+                or saved_body.get("official_lp_starts") != 0
+                or saved_body.get("test_csv_or_sample_opened") is not False
+                or saved_body.get("csv_created") is not False):
+            raise GateError("Existing identity preflight receipt does not bind this exact freeze")
+        return {"status": saved_body["status"], "receipt_reused": True,
+                "receipt_sha256": saved["receipt_sha256"],
+                "source_commit": saved_body["source_commit"],
+                "fresh_resource_gate": resource, "fresh_process_gate": process,
+                "fresh_shared_lock_probe": lock,
+                "fresh_source_checkpoint": result["source_checkpoint"],
+                "official_labels_accessed": False, "official_lp_starts": 0}
     write_json_once(IDENTITY_PREFLIGHT, result)
     return read_json(IDENTITY_PREFLIGHT)
 
@@ -806,9 +992,7 @@ def _verify_root_source_pass(freeze: Mapping[str, Any]) -> tuple[dict[str, Any],
         raise GateError("ROOT_SOURCE_PASS is absent; no official labels or LP may start")
     approval = read_json(ROOT_SOURCE_PASS)
     validate_source_pass_body(approval, freeze, file_sha256(PREFIT_FREEZE))
-    if (git("branch", "--show-current") != BRANCH
-            or git("rev-parse", "HEAD") != freeze.get("source_commit")):
-        raise GateError("Source PASS branch or frozen commit changed")
+    validate_live_source_checkpoint(freeze)
     return approval, file_sha256(ROOT_SOURCE_PASS)
 
 
@@ -828,8 +1012,8 @@ def _load_official_labels(identity: Mapping[str, Any], freeze: Mapping[str, Any]
                           approval_sha: str) -> tuple[np.ndarray, dict[str, Any]]:
     resource_snapshot()
     _approval, current_sha = _verify_root_source_pass(freeze)
-    if current_sha != approval_sha or git("rev-parse", "HEAD") != freeze.get("source_commit"):
-        raise GateError("Source approval or frozen commit changed before target access")
+    if current_sha != approval_sha:
+        raise GateError("Source approval changed before target access")
     oof = identity["oof"]
     labels, _text_load, parsed_rows, audit = read_scored_query(
         v2.SOURCE, oof["rows"], oof["ids"], oof["cycles"], expected_total_rows=50608)
@@ -867,6 +1051,7 @@ def _record_or_reuse_fit(fit_id: str, y: np.ndarray, p: np.ndarray,
                          freeze: Mapping[str, Any], approval_sha: str) -> dict[str, Any]:
     if fit_id not in FIT_IDS:
         raise GateError(f"LP ID outside frozen allowlist: {fit_id}")
+    validate_live_source_checkpoint(freeze)
     resource_snapshot()
     existing = _ledger_state()
     stage = existing.get(fit_id)
@@ -952,8 +1137,8 @@ def _record_or_reuse_fit(fit_id: str, y: np.ndarray, p: np.ndarray,
     # Recheck durable authorization, source revision, resource, and process status
     # immediately before each unique LP start.
     _approval, current_approval_sha = _verify_root_source_pass(freeze)
-    if current_approval_sha != approval_sha or git("rev-parse", "HEAD") != freeze["source_commit"]:
-        raise GateError("Source authorization/commit changed before LP start")
+    if current_approval_sha != approval_sha:
+        raise GateError("Source authorization changed before LP start")
     resource = resource_snapshot()
     v2.one_job_gate()
     append_jsonl(LEDGER, {"event": "LP_STARTED", "fit_id": fit_id,
@@ -1493,8 +1678,11 @@ def synthetic_qa_body() -> dict[str, Any]:
     if not csv:
         raise GateError("Synthetic CSV exact finite/range round-trip failed")
     return {
-        "schema_version": 1, "experiment_id": EXPERIMENT,
+        "schema_version": 2, "experiment_id": EXPERIMENT, "qa_revision": "R2",
         "status": "PASS_SYNTHETIC_ONLY",
+        "predecessor": {**prior_source_artifact_binding(),
+            "synthetic_qa_path": str(PRIOR_SYNTHETIC_QA.relative_to(ROOT).as_posix()),
+            "synthetic_qa_sha256": file_sha256(PRIOR_SYNTHETIC_QA)},
         "official_labels_accessed": False, "official_lp_starts": 0,
         "test_or_sample_accessed": False, "csv_created": False, "kaggle_upload": False,
         "synthetic_solver_calls": 4,
@@ -1571,7 +1759,10 @@ def main(argv: list[str] | None = None) -> int:
             result = run_production_and_candidates()
         print(json.dumps({"status": result.get("status"), "experiment_id": EXPERIMENT,
                           "fit_starts": result.get("official_lp_starts", 0),
-                          "official_labels_accessed": result.get("official_labels_accessed", False)},
+                          "official_labels_accessed": result.get("official_labels_accessed", False),
+                          "receipt_sha256": result.get("receipt_sha256"),
+                          "receipt_reused": result.get("receipt_reused"),
+                          "resource": result.get("resource")},
                          sort_keys=True))
         return 0
     except Exception as exc:
