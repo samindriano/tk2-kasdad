@@ -484,7 +484,7 @@ def _reconstruct_vectors() -> tuple[dict[str, np.ndarray], dict[str, Any]]:
         ("champion", "raw_candidate", "rank_mapped_candidate", "cycle_code", "prediction"))
     current = _load_npz_allowlist(INPUTS["current_r06_archive"][0],
         ("record_id", "raw", "cycle_code", "missing", "baseline", "prediction"))
-    source_ids = _require_vector(current["record_id"], "record_id")
+    source_ids = _require_vector(current["record_id"], "record_id", finite=False)
     ids = source_ids.astype(str)
     raw_pos = _require_vector(current["raw"], "raw position", finite=True).astype(np.float64)
     cycles = _require_vector(current["cycle_code"], "cycle_code").astype(np.int64)

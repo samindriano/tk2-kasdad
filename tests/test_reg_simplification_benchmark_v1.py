@@ -115,6 +115,11 @@ class SimplificationContractTests(unittest.TestCase):
                          verifier._source_array_sha(numeric, dtype="<f8"))
         self.assertEqual(runner.source_array_sha(string), verifier._source_array_sha(string))
 
+    def test_id_vector_validation_does_not_apply_numeric_finiteness(self) -> None:
+        ids = np.asarray(["record-a", "record-b"])
+        validated = runner._require_vector(ids, "record_id", n=2, finite=False)
+        self.assertEqual(validated.tolist(), ids.tolist())
+
     def test_independent_csv_reader_rejects_noncanonical_numeric_encoding(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "candidate.csv"
