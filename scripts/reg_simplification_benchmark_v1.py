@@ -156,14 +156,13 @@ def array_sha(value: Any, *, dtype: str | None = None) -> str:
 
 
 def source_array_sha(value: Any, *, dtype: str | None = None) -> str:
-    """Match the shape/dtype-prefixed vector digest used by the pinned E79 source."""
+    """Match the raw numeric/canonical-string vector digest used by pinned E79."""
     array = np.asarray(value, dtype=dtype)
-    digest = hashlib.sha256(canonical_bytes({"shape": array.shape, "dtype": str(array.dtype)}))
     if array.dtype.kind in "OUS":
-        digest.update(canonical_bytes(array.astype(str).tolist()))
+        data = canonical_bytes(array.astype(str).tolist())
     else:
-        digest.update(np.ascontiguousarray(array).tobytes(order="C"))
-    return digest.hexdigest()
+        data = np.ascontiguousarray(array).tobytes(order="C")
+    return hashlib.sha256(data).hexdigest()
 
 
 def _read_json(path: Path) -> dict[str, Any]:

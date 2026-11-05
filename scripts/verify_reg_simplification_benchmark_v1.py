@@ -55,16 +55,13 @@ def _canonical_sha(value: Any) -> str:
 
 def _source_array_sha(value: Any, dtype: str | None = None) -> str:
     array = np.asarray(value, dtype=dtype)
-    header = json.dumps({"shape": array.shape, "dtype": str(array.dtype)}, sort_keys=True,
-                        ensure_ascii=False, allow_nan=False, separators=(",", ":")).encode("utf-8")
-    digest = hashlib.sha256(header)
     if array.dtype.kind in "OUS":
         values = json.dumps(array.astype(str).tolist(), sort_keys=True, ensure_ascii=False,
                             allow_nan=False, separators=(",", ":")).encode("utf-8")
-        digest.update(values)
+        payload = values
     else:
-        digest.update(np.ascontiguousarray(array).tobytes(order="C"))
-    return digest.hexdigest()
+        payload = np.ascontiguousarray(array).tobytes(order="C")
+    return hashlib.sha256(payload).hexdigest()
 
 
 def _read_json(path: Path) -> dict[str, Any]:
