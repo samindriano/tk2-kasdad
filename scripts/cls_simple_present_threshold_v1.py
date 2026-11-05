@@ -95,11 +95,22 @@ def ordered_id_hash(values: Iterable[str]) -> str:
 def write_json_exclusive(path: Path, value: Any) -> str:
     path.parent.mkdir(parents=True, exist_ok=True)
     data = (json.dumps(value, sort_keys=True, indent=2, ensure_ascii=False, allow_nan=False) + "\n").encode("utf-8")
-    with path.open("xb") as stream:
-        stream.write(data)
-        stream.flush()
-        os.fsync(stream.fileno())
-    return hashlib.sha256(data).hexdigest()
+    fd, temporary_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(fd, "wb") as stream:
+            stream.write(data)
+            stream.flush()
+            os.fsync(stream.fileno())
+        # A same-volume hard-link publishes the complete file atomically and fails if the
+        # destination already exists; os.replace would silently overwrite frozen evidence.
+        os.link(temporary, path)
+        return hashlib.sha256(data).hexdigest()
+    finally:
+        try:
+            temporary.unlink()
+        except FileNotFoundError:
+            pass
 
 
 def append_ledger(path: Path, event: dict[str, Any]) -> None:
@@ -451,7 +462,12 @@ def source_preflight(train_csv: Path, cache: Path = CACHE) -> dict[str, Any]:
         "frozen_at_utc": datetime.now(timezone.utc).isoformat(),
     }
     if PREFLIGHT.exists():
-        raise FileExistsError(f"Refusing to overwrite target-free preflight: {PREFLIGHT}")
+        previous = json.loads(PREFLIGHT.read_text(encoding="utf-8"))
+        previous_core = {k: v for k, v in previous.items() if k != "frozen_at_utc"}
+        result_core = {k: v for k, v in result.items() if k != "frozen_at_utc"}
+        if canonical_hash(previous_core) != canonical_hash(result_core):
+            raise RuntimeError("Existing target-free preflight conflicts with the current source inventory")
+        return previous
     write_json_exclusive(PREFLIGHT, result)
     return result
 
@@ -850,11 +866,35 @@ def score_stage(stage: str, train_csv: Path, cache: Path, release_path: Path) ->
     if fit_receipt.get("status") != "FROZEN_PREDICTION_THRESHOLD":
         raise RuntimeError(f"{stage} has no supported fitted threshold to score")
     score_result_path = SCORE_DIR / f"{stage}_RESULTS.json"
-    score_events = [e for e in read_ledger(LEDGER) if e.get("stage") == stage and e.get("event") == "SCORED"]
+    frozen_prediction_path = SCORE_DIR / f"{stage}_FROZEN_PREDICTIONS.json"
+    score_events = [e for e in read_ledger(LEDGER) if e.get("stage") == stage and e.get("event") in {"SCORED", "SCORE_RECOVERED"}]
     if score_result_path.exists():
-        if not score_events or sha256_file(score_result_path) != score_events[-1].get("result_sha256"):
-            raise RuntimeError("Existing score receipt is not reconciled with the durable ledger")
-        return json.loads(score_result_path.read_text(encoding="utf-8"))
+        existing = json.loads(score_result_path.read_text(encoding="utf-8"))
+        vectors = _stage_vectors(stage, train_csv, cache)
+        consistent = (
+            existing.get("status") == "SCORED"
+            and existing.get("stage") == stage
+            and existing.get("score_ids_sha256") == ordered_id_hash(vectors["score_ids"])
+            and existing.get("score_rows") == len(vectors["score_ids"])
+            and existing.get("official_train_sha256") == sha256_file(train_csv)
+            and existing.get("oof_cache_sha256") == sha256_file(cache)
+            and existing.get("source_freeze_sha256") == sha256_file(FREEZE)
+            and existing.get("fit_receipt_sha256") == sha256_file(fit_receipt_path)
+            and frozen_prediction_path.exists()
+            and existing.get("frozen_predictions_sha256") == sha256_file(frozen_prediction_path)
+        )
+        if not consistent:
+            raise RuntimeError("Existing score receipt does not match current frozen inputs/predictions")
+        digest = sha256_file(score_result_path)
+        if score_events:
+            if digest != score_events[-1].get("result_sha256"):
+                raise RuntimeError("Existing score receipt conflicts with the durable ledger")
+            return existing
+        append_ledger(LEDGER, {"event_id": f"{stage}:SCORE_RECOVERED", "event": "SCORE_RECOVERED",
+                               "stage": stage, "result_sha256": digest,
+                               "frozen_predictions_sha256": sha256_file(frozen_prediction_path),
+                               "at_utc": datetime.now(timezone.utc).isoformat()})
+        return existing
     vectors = _stage_vectors(stage, train_csv, cache)
     if fit_receipt.get("fit_ids_sha256") != ordered_id_hash(vectors["fit_ids"]):
         raise RuntimeError("Fit receipt and current stage fit IDs differ")
@@ -928,6 +968,11 @@ def score_stage(stage: str, train_csv: Path, cache: Path, release_path: Path) ->
     result = {
         "schema_version": 1, "status": "SCORED", "stage": stage,
         "score_rows": len(y), "score_ids_sha256": ordered_id_hash(vectors["score_ids"]),
+        "official_train_sha256": sha256_file(train_csv),
+        "oof_cache_sha256": sha256_file(cache),
+        "source_freeze_sha256": sha256_file(FREEZE),
+        "fit_receipt_sha256": sha256_file(fit_receipt_path),
+        "frozen_predictions_sha256": sha256_file(pred_path),
         "fit": {
             "threshold": fit_receipt["threshold"],
             "threshold_hex": fit_receipt["threshold_hex"],
@@ -1008,11 +1053,21 @@ def main(argv: list[str] | None = None) -> int:
         value["independent_verifier"] = verifier.verify_source_preflight()
         value["status"] = "PASS_SOURCE_READY"
         if READY.exists():
-            raise FileExistsError(f"Refusing to overwrite source-ready receipt: {READY}")
-        ready = {"status": "PASS", "campaign": value["campaign"], "source_commit": value["source_commit"],
-                 "freeze_sha256": value["source_freeze_sha256"], "preflight_sha256": sha256_file(PREFLIGHT),
-                 "independent_verifier": value["independent_verifier"], "ready_at_utc": datetime.now(timezone.utc).isoformat()}
-        write_json_exclusive(READY, ready)
+            existing = json.loads(READY.read_text(encoding="utf-8"))
+            existing_core = {k: v for k, v in existing.items() if k != "ready_at_utc"}
+            ready_core = {
+                "status": "PASS", "campaign": value["campaign"], "source_commit": value["source_commit"],
+                "freeze_sha256": sha256_file(FREEZE), "preflight_sha256": sha256_file(PREFLIGHT),
+                "independent_verifier": value["independent_verifier"],
+            }
+            if canonical_hash(existing_core) != canonical_hash(ready_core):
+                raise RuntimeError("Existing source-ready receipt conflicts with current verification")
+            ready = existing
+        if not READY.exists():
+            ready = {"status": "PASS", "campaign": value["campaign"], "source_commit": value["source_commit"],
+                     "freeze_sha256": sha256_file(FREEZE), "preflight_sha256": sha256_file(PREFLIGHT),
+                     "independent_verifier": value["independent_verifier"], "ready_at_utc": datetime.now(timezone.utc).isoformat()}
+            write_json_exclusive(READY, ready)
         value = ready
     elif args.command == "self-check":
         import verify_cls_simple_present_threshold_v1 as verifier

@@ -84,6 +84,16 @@ def test_ledger_is_append_only_and_duplicate_event_ids_are_rejected(tmp_path):
         producer.read_ledger(ledger)
 
 
+def test_json_receipt_is_atomic_and_never_overwritten(tmp_path):
+    path = tmp_path / "receipt.json"
+    digest = producer.write_json_exclusive(path, {"status": "FROZEN", "value": 4})
+    before = path.read_bytes()
+    assert hashlib.sha256(before).hexdigest() == digest
+    with pytest.raises(FileExistsError):
+        producer.write_json_exclusive(path, {"status": "MUTATED"})
+    assert path.read_bytes() == before
+
+
 def test_ambiguous_fit_started_blocks_resume_before_read_or_refit(tmp_path, monkeypatch):
     ready_path = tmp_path / "SOURCE_READY.json"
     ready_path.write_text(json.dumps({"status": "PASS"}), encoding="utf-8")
@@ -170,6 +180,10 @@ def test_real_cli_freeze_preflight_and_independent_verifier_are_target_free(tmp_
     capsys.readouterr()
     assert source.main(["--train-csv", str(train), "--cache", str(cache), "preflight"]) == 0
     capsys.readouterr()
+    ready_before = (out / "SOURCE_READY.json").read_bytes()
+    assert source.main(["--train-csv", str(train), "--cache", str(cache), "preflight"]) == 0
+    capsys.readouterr()
+    assert (out / "SOURCE_READY.json").read_bytes() == ready_before
 
     ready = json.loads((out / "SOURCE_READY.json").read_text(encoding="utf-8"))
     receipt = json.loads((out / "SOURCE_PREFLIGHT.json").read_text(encoding="utf-8"))
@@ -216,6 +230,9 @@ def test_synthetic_fit_score_cli_resume_and_pooled_receipts(tmp_path, monkeypatc
         assert producer.main(["--train-csv", str(train), "--cache", str(cache), "fit",
                               "--stage", stage, "--release", str(release)]) == 0
         capsys.readouterr()
+    assert producer.main(["--train-csv", str(train), "--cache", str(cache), "fit",
+                          "--stage", "D1", "--release", str(release)]) == 0
+    capsys.readouterr()
     assert len([e for e in producer.read_ledger(producer.LEDGER) if e["event"] == "FIT_STARTED"]) == 2
 
     original_reader = producer._read_selected_labels
@@ -233,6 +250,9 @@ def test_synthetic_fit_score_cli_resume_and_pooled_receipts(tmp_path, monkeypatc
         assert producer.main(["--train-csv", str(train), "--cache", str(cache), "score",
                               "--stage", stage, "--release", str(release)]) == 0
         capsys.readouterr()
+    assert producer.main(["--train-csv", str(train), "--cache", str(cache), "score",
+                          "--stage", "D1", "--release", str(release)]) == 0
+    capsys.readouterr()
 
     pooled = producer.main(["summarize"])
     capsys.readouterr()
@@ -242,6 +262,8 @@ def test_synthetic_fit_score_cli_resume_and_pooled_receipts(tmp_path, monkeypatc
     events = producer.read_ledger(producer.LEDGER)
     assert {e["event"] for e in events} >= {"FIT_STARTED", "FIT_FROZEN", "SCORE_STARTED", "SCORED", "SUMMARY_CREATED"}
     assert summary["champion_changed"] is False
+    assert len([e for e in events if e["event"] == "FIT_STARTED"]) == 2
+    assert len([e for e in events if e["event"] == "SCORED"]) == 2
 
 
 def test_wrong_origin_and_duplicate_row_cache_vectors_fail_closed(tmp_path):
