@@ -1,0 +1,9 @@
+# Root decision: retire tested frequency-ridge recipe
+
+Root inspected committed EVALUATION_REPORT/RESULTS and independent R9 receipt. Four model fits were saved before this evaluation. Independent metric and row reconstruction passed208comparisons,29394origin-query target occurrences; the decision pool is20903unique rows, not29394independent observations. E67/E75 W6 overlaps. Incident01 remains disclosed: these are reused development labels, never outcome-blind/fresh holdout.
+
+ALIGNED loses to UNIFORM and PERMUTED on BOTH E67H12 and E75W6. Competition gains versus uniformPOS/A02present blend with pA missing at0.50: E67H12 -0.001539784491542684; E75W6 -0.002676615691797002; uniqueE67W4W5+E75W6 -0.0021051191499581456. Subgroup/window harm guards pass, but the mechanism and aggregate improvement gates fail. This is a measured negative result, not rejection solely for a risk guard.
+
+Decision RETIRE_EXACT_MEAN_ONE_DF_WEIGHTED_RIDGE; no E79fit, candidateCSV or Kaggle upload for this recipe. Keep confirmedpublicbest0.83225 unchanged. Historical originalMIX50 uses pP missing; current primary reference uses pA missing, threshold0.50. Operational0.53230976129477 missing threshold is postselected descriptive, not a different prospective gate.
+
+Continue only a smallzero-fit mechanism diagnostic: partition already-fitted coefficients by alignedweight<1 versus>=1 and decompose gamma/logit changes versus uniform. This can reveal whether mean normalization's reduced penalty on frequent tokens dominates score movement; it cannot establish that a proposed alternative generalizes. No query labels/rescoring/newfits or automatic adjacent-parameter rescue. Root decides a single new prospective hypothesis only after that diagnostic, with counterevidence and adaptive-selection limits. REG hinge source remains a separate active lane.
