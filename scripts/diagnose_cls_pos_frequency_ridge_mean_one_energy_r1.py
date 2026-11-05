@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import json
 import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -12,9 +13,11 @@ import numpy as np
 from scipy import sparse
 
 ROOT = Path(__file__).resolve().parents[1]
-FREEZE_REL = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/MEAN_ONE_ENERGY_DIAGNOSTIC_R1_FREEZE.json"
-OUTPUT_JSON_REL = "reports/optimization_v3/cls_pos_frequency_ridge_v1/MEAN_ONE_ENERGY_DIAGNOSTIC_R1.json"
-OUTPUT_MD_REL = "reports/optimization_v3/cls_pos_frequency_ridge_v1/MEAN_ONE_ENERGY_DIAGNOSTIC_R1.md"
+sys.path.insert(0, str(ROOT))
+FREEZE_REL = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/MEAN_ONE_ENERGY_DIAGNOSTIC_R1_1_FREEZE.json"
+PREVIOUS_FREEZE_REL = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/MEAN_ONE_ENERGY_DIAGNOSTIC_R1_FREEZE.json"
+OUTPUT_JSON_REL = "reports/optimization_v3/cls_pos_frequency_ridge_v1/MEAN_ONE_ENERGY_DIAGNOSTIC_R1_1.json"
+OUTPUT_MD_REL = "reports/optimization_v3/cls_pos_frequency_ridge_v1/MEAN_ONE_ENERGY_DIAGNOSTIC_R1_1.md"
 R8_FREEZE_REL = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R8.json"
 R9_ADAPTER_FREEZE_REL = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_VERIFIER_ADAPTER_R9_FREEZE.json"
 PRED_MANIFEST_REL = "reports/optimization_v3/cls_pos_frequency_ridge_v1/PREDICTIONS_MANIFEST_R1.json"
@@ -78,6 +81,7 @@ def selected_input_paths() -> list[str]:
     paths = {
         R8_FREEZE_REL, R9_ADAPTER_FREEZE_REL, PRED_MANIFEST_REL, RESULTS_REL,
         RESULTS_MD_REL, METRIC_VERIFY_REL, INCIDENT_REL, PROTOCOL_REL,
+        PREVIOUS_FREEZE_REL,
         f"{POS_BAG_ROOT}/FREEZE.json",
         f"{POS_BAG_ROOT}/PREDICTIONS_READY.json",
         f"{POS_BAG_ROOT}/PRELABEL_VERIFICATION.json",
@@ -107,7 +111,18 @@ def selected_input_paths() -> list[str]:
 
 def build_freeze() -> dict[str, Any]:
     r8 = read_json(R8_FREEZE_REL)
-    r9 = read_json(R9_ADAPTER_FREEZE_REL)
+    read_json(R9_ADAPTER_FREEZE_REL)
+    previous = read_json(PREVIOUS_FREEZE_REL)
+    previous_body = dict(previous)
+    previous_claim = previous_body.pop("freeze_sha256", None)
+    if (previous_claim != hashlib.sha256(canonical_json(previous_body)).hexdigest()
+            or previous.get("status") != "FROZEN_ADDITIVE_ZERO_FIT_PRE_DIAGNOSTIC"):
+        raise RuntimeError("Prior R1 diagnostic freeze is invalid")
+    old_source_binding = previous.get("source_commits", {}).get(SOURCE_RELS[0], {})
+    old_commit = old_source_binding.get("commit")
+    if (not old_commit
+            or git("rev-parse", f"{old_commit}:{SOURCE_RELS[0]}") != old_source_binding.get("git_blob")):
+        raise RuntimeError("Prior R1 diagnostic source commit does not match its frozen blob")
     selected = selected_input_paths()
     input_hashes: dict[str, str] = {}
     input_commits: dict[str, dict[str, str]] = {}
@@ -150,8 +165,11 @@ def build_freeze() -> dict[str, Any]:
         raise RuntimeError("Current verified result boundary does not match this diagnostic scope")
     body: dict[str, Any] = {
         "schema_version": 1,
-        "diagnostic_id": "CLS_POS_FREQUENCY_RIDGE_MEAN_ONE_ENERGY_R1",
-        "status": "FROZEN_ADDITIVE_ZERO_FIT_PRE_DIAGNOSTIC",
+        "diagnostic_id": "CLS_POS_FREQUENCY_RIDGE_MEAN_ONE_ENERGY_R1_1",
+        "status": "FROZEN_ADDITIVE_ZERO_FIT_PRE_DIAGNOSTIC_R1_1",
+        "supersedes_diagnostic_freeze": PREVIOUS_FREEZE_REL,
+        "supersedes_diagnostic_freeze_sha256": previous_claim,
+        "supersession_reason": "R1.1 adds the repository root to sys.path after R1 stopped before loading numerical arrays or labels; measurement logic and selected inputs are unchanged.",
         "source_commit_at_freeze": git("rev-parse", "HEAD"),
         "parent_r8_freeze_sha256": sha256_file(ROOT / R8_FREEZE_REL),
         "parent_r9_adapter_freeze_sha256": sha256_file(ROOT / R9_ADAPTER_FREEZE_REL),
@@ -201,6 +219,8 @@ def verify_freeze() -> dict[str, Any]:
         raise RuntimeError("Parent R8 freeze changed")
     if sha256_file(ROOT / R9_ADAPTER_FREEZE_REL) != freeze["parent_r9_adapter_freeze_sha256"]:
         raise RuntimeError("Parent R9 verifier freeze changed")
+    if sha256_file(ROOT / PREVIOUS_FREEZE_REL) != freeze["supersedes_diagnostic_freeze_sha256"]:
+        raise RuntimeError("Prior R1 diagnostic freeze changed")
     return freeze
 
 
