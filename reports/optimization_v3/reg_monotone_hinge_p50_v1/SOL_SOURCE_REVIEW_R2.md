@@ -1,0 +1,7 @@
+# Root R2 review — APPROVE_TWO_DIAGNOSTICS
+
+Reviewed source0b0dde30a926faba4ea0b0ba2fa4e657f32ab8a6 and freeze43672ee03262e2d5eef41ea0ec0dc833bf127b3211fbba7922f96633a807869a. Root reran6R2tests, allPASS; these include the full13-case synthetic matrix. Independently checked all source/input byte hashes against freeze and inspected guarded target loading, fixed hinge LP and its primal/slack checks, actual ledger/recovery, causalGLOBALcomparison, unique pooling, metric/risk verifier and official threat_rank CSV schema. Narrow .gitattributes addition applies only new PROTOCOL_R2.md LF bytes, preserving all historical paths.
+
+Issued ROOT_SOURCE_PASS_R2.json SHA256 705a44c87a2ac21e79836ca9b3b4c93bcc531059bb0c1aceaa81744a9c5c2749 for exactlyHINGE_D1/HINGE_D2. Budget3 includes a separately gated final slot; no HINGE_FINAL, CSV or Kaggle authorized now. No source/math/threshold/support/risk-gate change. Source/input and row fingerprints remain frozen; no fresh holdout claim.
+
+Runtime initial minimum2GiB plus1GiB projected/actualreserve follows explicit userpolicy. Shared OSlock/job1/thread2. CLS currently has queryevaluationpriority; root will releaseREGcompute after CLS returns its completion/resourcecheckpoint. Two successful diagnostic LPs plus independent row/metric/objective verification and callback root are next; no user review question needed. Preserve this approval/freeze/diagnostics and any runtime resource stop; no consumedfit retry.
