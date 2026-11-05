@@ -64,6 +64,10 @@ def verify_source_preflight(path: Path) -> dict[str, Any]:
     report = _read_json(path)
     if report.get("campaign_id") != "CLS_POS_FREQUENCY_RIDGE_V1":
         raise VerificationError("Source preflight campaign ID mismatch")
+    if (report.get("schema_version") != 2
+            or report.get("source_preflight_revision") != "R2_SHARED_LOCK_DURABLE_RESUME"
+            or not report.get("shared_job_lock_path")):
+        raise VerificationError("Source preflight does not identify the active R2 lock/resume contract")
     if (report.get("target_values_opened") is not False
             or report.get("test_or_sample_submission_accessed") is not False
             or report.get("kaggle_accessed") is not False

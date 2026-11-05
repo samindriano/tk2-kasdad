@@ -10,6 +10,7 @@ import argparse
 from contextlib import contextmanager
 from datetime import datetime, timezone
 import hashlib
+import io
 import json
 import os
 from pathlib import Path
@@ -58,7 +59,8 @@ PILOT_ACCOUNTING = ROOT / "reports/optimization_v3/positional_text_pilot_v1/FIT_
 SHARED_LEDGER = ROOT / "experiments/runs/optimization_v3_research_next_v1/budget.jsonl"
 RUN_ROOT = ROOT / "experiments/runs/optimization_v3_cls_pos_frequency_ridge_v1"
 LEDGER = RUN_ROOT / "BUDGET_LEDGER.jsonl"
-SOURCE_PREFLIGHT = REPORT_ROOT / "SOURCE_PREFLIGHT.json"
+SOURCE_PREFLIGHT = REPORT_ROOT / "SOURCE_PREFLIGHT_R2.json"
+SHARED_JOB_LOCK = Path(tempfile.gettempdir()) / "kasdad_single_heavy_job.lock"
 SOURCE_FILES = (
     "experiments/optimization_v3/cls_pos_frequency_ridge_v1/protocol.json",
     "src/models/pos_frequency_ridge_v1.py",
@@ -125,6 +127,19 @@ def _atomic_bytes(path: Path, content: bytes) -> None:
 
 def _atomic_json(path: Path, payload: Mapping[str, Any]) -> None:
     _atomic_bytes(path, _canonical_bytes(dict(payload)) + b"\n")
+
+
+def _write_bytes_exclusive(path: Path, content: bytes) -> None:
+    """Durably publish a new immutable artifact without replacing prior bytes."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("xb") as stream:
+        stream.write(content)
+        stream.flush()
+        os.fsync(stream.fileno())
+
+
+def _write_json_exclusive(path: Path, payload: Mapping[str, Any]) -> None:
+    _write_bytes_exclusive(path, _canonical_bytes(dict(payload)) + b"\n")
 
 
 def _append_event(path: Path, event: Mapping[str, Any]) -> None:
@@ -330,8 +345,9 @@ def run_source_preflight() -> dict[str, Any]:
     resource = resource_snapshot()
     resource_ok = all(resource[key] for key in ("initial_ram_pass", "projected_reserve_pass", "rss_pass"))
     result = {
-        "schema_version": 1,
+        "schema_version": 2,
         "campaign_id": CAMPAIGN_ID,
+        "source_preflight_revision": "R2_SHARED_LOCK_DURABLE_RESUME",
         "status": "PASS_SOURCE_AND_IDENTITY_NO_GO_CURRENT_RESOURCE" if not resource_ok else "PASS_SOURCE_AND_IDENTITY_RESOURCE_READY",
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "source_commit": _git("rev-parse", "HEAD"),
@@ -353,10 +369,11 @@ def run_source_preflight() -> dict[str, Any]:
             "modified": False,
         },
         "resource": resource,
+        "shared_job_lock_path": str(SHARED_JOB_LOCK),
         "root_source_pass_present": ROOT_SOURCE_PASS.is_file(),
         "e79_user_authorization": "Ya, otorisasi satu benchmark E79 (not executed in this source-only pass)",
     }
-    _atomic_json(SOURCE_PREFLIGHT, result)
+    _write_json_exclusive(SOURCE_PREFLIGHT, result)
     return result
 
 
@@ -384,7 +401,7 @@ def _require_root_source_pass() -> dict[str, Any]:
                                         str(SOURCE_PREFLIGHT.relative_to(ROOT).as_posix())],
                                        cwd=ROOT, text=True, capture_output=True)
     if preflight_tracked.returncode != 0:
-        raise FrequencyRidgeRunnerError("SOURCE_PREFLIGHT.json must be committed before an official fit")
+        raise FrequencyRidgeRunnerError("SOURCE_PREFLIGHT_R2.json must be committed before an official fit")
     if _git("diff", "--quiet") != "" or _git("diff", "--cached", "--quiet") != "":
         raise FrequencyRidgeRunnerError("Tracked source tree changed after ROOT_SOURCE_PASS")
     return passed
@@ -457,58 +474,117 @@ def _append_campaign_reservation(root_pass: Mapping[str, Any], prior_ledger_hash
     })
 
 
-def _ensure_penalty_map(origin: int, x_fit: sparse.csr_matrix, vocabulary_size: int) -> dict[str, Any]:
+PENALTY_FORMULA = "clip(sqrt(median(df)/df_j),0.5,2.0), normalize mean 1"
+
+
+def _penalty_map_binding(origin: int, x_fit: sparse.csr_matrix, vocabulary_size: int,
+                         fit_rows: np.ndarray, fit_ids: np.ndarray,
+                         root_pass: Mapping[str, Any]) -> dict[str, Any]:
+    return {
+        "schema_version": 2,
+        "campaign_id": CAMPAIGN_ID,
+        "origin": int(origin),
+        "source_commit": root_pass["source_commit"],
+        "source_hashes": root_pass["source_hashes"],
+        "root_source_pass_sha256": _sha_file(ROOT_SOURCE_PASS),
+        "source_preflight_sha256": _sha_file(SOURCE_PREFLIGHT),
+        "train_sha256": TRAIN_SHA256,
+        "fit_rows": int(len(fit_rows)),
+        "fit_row_indices_sha256": sha256_array(np.asarray(fit_rows, dtype=np.int64)),
+        "fit_ids_sha256": sha256_array(np.asarray(fit_ids).astype(str)),
+        "fit_position_sha256": sha256_csr(x_fit),
+        "vocabulary_size": int(vocabulary_size),
+        "seed": 42,
+        "formula": PENALTY_FORMULA,
+    }
+
+
+def _load_validate_penalty_map(artifact: Path, receipt_path: Path,
+                               binding: Mapping[str, Any]) -> dict[str, Any]:
+    if not artifact.is_file() or not receipt_path.is_file():
+        raise FrequencyRidgeRunnerError("Penalty map start has missing durable artifact/receipt; retry is prohibited")
+    receipt = _json(receipt_path)
+    for key, expected in binding.items():
+        if receipt.get(key) != expected:
+            raise FrequencyRidgeRunnerError(f"Penalty map receipt binding mismatch: {key}")
+    if (receipt.get("artifact_path") != artifact.relative_to(ROOT).as_posix()
+            or receipt.get("artifact_sha256") != _sha_file(artifact)):
+        raise FrequencyRidgeRunnerError("Penalty map receipt does not bind the current artifact")
+    with np.load(artifact, allow_pickle=False) as loaded:
+        maps = {name: loaded[name].copy() for name in loaded.files}
+    names = {"document_frequency", "aligned_token_weights", "permuted_token_weights", "permutation"}
+    if set(maps) != names:
+        raise FrequencyRidgeRunnerError("Saved penalty map has unexpected arrays")
+    df = np.asarray(maps["document_frequency"])
+    aligned = np.asarray(maps["aligned_token_weights"], dtype=np.float64)
+    permuted = np.asarray(maps["permuted_token_weights"], dtype=np.float64)
+    permutation = np.asarray(maps["permutation"])
+    size = int(binding["vocabulary_size"])
+    if (df.shape != (size,) or not np.issubdtype(df.dtype, np.integer) or np.any(df <= 0)
+            or aligned.shape != (size,) or permuted.shape != (size,) or permutation.shape != (size,)
+            or not np.isfinite(aligned).all() or not np.isfinite(permuted).all()
+            or not np.array_equal(np.sort(permutation), np.arange(size, dtype=permutation.dtype))
+            or not np.isclose(float(aligned.mean()), 1.0, rtol=0, atol=1e-14)
+            or not np.isclose(float(permuted.mean()), 1.0, rtol=0, atol=1e-14)):
+        raise FrequencyRidgeRunnerError("Saved penalty map arrays fail shape/domain checks")
+    hashes = {
+        "df_sha256": sha256_array(df),
+        "aligned_sha256": sha256_array(aligned),
+        "permuted_sha256": sha256_array(permuted),
+        "permutation_sha256": sha256_array(permutation),
+    }
+    if any(receipt.get(key) != value for key, value in hashes.items()):
+        raise FrequencyRidgeRunnerError("Saved penalty map arrays do not match their receipt hashes")
+    return {**maps, "receipt": receipt}
+
+
+def _ensure_penalty_map(origin: int, x_fit: sparse.csr_matrix, vocabulary_size: int,
+                        *, root_pass: Mapping[str, Any], fit_rows: np.ndarray,
+                        fit_ids: np.ndarray) -> dict[str, Any]:
     artifact = RUN_ROOT / "maps" / f"penalty_map_E{origin}.npz"
     receipt_path = RUN_ROOT / "maps" / f"penalty_map_E{origin}.json"
+    binding = _penalty_map_binding(origin, x_fit, vocabulary_size, fit_rows, fit_ids, root_pass)
     events = _events(LEDGER)
+    starts = [e for e in events if e.get("event") == "PREPROCESSING_MAP_STARTED" and e.get("origin") == origin]
     saved = [e for e in events if e.get("event") == "PREPROCESSING_MAP_SAVED" and e.get("origin") == origin]
-    if saved:
-        if len(saved) != 1 or not artifact.is_file() or not receipt_path.is_file():
-            raise FrequencyRidgeRunnerError(f"E{origin} penalty map has a conflicting durable receipt")
-        receipt = _json(receipt_path)
-        if (receipt.get("artifact_sha256") != _sha_file(artifact)
-                or saved[0].get("receipt_sha256") != _sha_file(receipt_path)):
-            raise FrequencyRidgeRunnerError(f"E{origin} penalty map receipt/hash mismatch")
-        with np.load(artifact, allow_pickle=False) as loaded:
-            maps = {name: loaded[name].copy() for name in loaded.files}
-        if (set(maps) != {"document_frequency", "aligned_token_weights", "permuted_token_weights", "permutation"}
-                or len(maps["document_frequency"]) != int(receipt.get("vocabulary_size", -1))
-                or sha256_array(maps["document_frequency"]) != receipt.get("df_sha256")
-                or sha256_array(maps["aligned_token_weights"]) != receipt.get("aligned_sha256")
-                or sha256_array(maps["permuted_token_weights"]) != receipt.get("permuted_sha256")
-                or sha256_array(maps["permutation"]) != receipt.get("permutation_sha256")
-                or not np.isclose(float(maps["aligned_token_weights"].mean()), 1.0, rtol=0, atol=1e-14)):
-            raise FrequencyRidgeRunnerError(f"E{origin} saved penalty map arrays do not match their receipt")
-        maps["receipt"] = receipt
+    if len(starts) > 1 or len(saved) > 1 or (saved and not starts):
+        raise FrequencyRidgeRunnerError(f"E{origin} penalty map ledger is duplicate or contradictory")
+    if starts:
+        for key, expected in binding.items():
+            if starts[0].get(key) != expected:
+                raise FrequencyRidgeRunnerError(f"E{origin} map start binding mismatch: {key}")
+        maps = _load_validate_penalty_map(artifact, receipt_path, binding)
+        receipt_sha = _sha_file(receipt_path)
+        artifact_sha = _sha_file(artifact)
+        if saved:
+            if (saved[0].get("receipt_sha256") != receipt_sha
+                    or saved[0].get("artifact_sha256") != artifact_sha):
+                raise FrequencyRidgeRunnerError(f"E{origin} terminal map event does not match durable receipt")
+        else:
+            _append_event(LEDGER, {"event": "PREPROCESSING_MAP_SAVED", "campaign_id": CAMPAIGN_ID,
+                                   "origin": origin, "artifact_sha256": artifact_sha,
+                                   "receipt_sha256": receipt_sha,
+                                   "recovered_after_publish": True,
+                                   "recorded_at_utc": datetime.now(timezone.utc).isoformat()})
         return maps
-    if any(e.get("event") == "PREPROCESSING_MAP_STARTED" and e.get("origin") == origin for e in events):
-        raise FrequencyRidgeRunnerError(f"E{origin} map computation has an incomplete start; no silent retry")
-    _append_event(LEDGER, {"event": "PREPROCESSING_MAP_STARTED", "campaign_id": CAMPAIGN_ID,
-                           "origin": origin, "fit_rows": int(x_fit.shape[0]),
-                           "matrix_sha256": sha256_csr(x_fit),
+    if artifact.exists() or receipt_path.exists():
+        raise FrequencyRidgeRunnerError(f"E{origin} unstarted penalty-map output already exists; immutable conflict")
+
+    _append_event(LEDGER, {"event": "PREPROCESSING_MAP_STARTED", **binding,
                            "recorded_at_utc": datetime.now(timezone.utc).isoformat()})
     df = union_document_frequency(x_fit, vocabulary_size)
     result = make_penalty_maps(df)
     if result["aligned_equals_permuted"]:
         raise FrequencyRidgeRunnerError(f"E{origin} alignment diagnostic is degenerate; do not replace seed")
-    artifact.parent.mkdir(parents=True, exist_ok=True)
-    temp = artifact.with_name(artifact.name + f".{os.getpid()}.partial")
-    with temp.open("wb") as stream:
-        np.savez_compressed(stream,
-                            document_frequency=result["document_frequency"],
-                            aligned_token_weights=result["aligned_token_weights"],
-                            permuted_token_weights=result["permuted_token_weights"],
-                            permutation=result["permutation"])
-        stream.flush()
-        os.fsync(stream.fileno())
-    os.replace(temp, artifact)
+    buffer = io.BytesIO()
+    np.savez_compressed(buffer,
+                        document_frequency=result["document_frequency"],
+                        aligned_token_weights=result["aligned_token_weights"],
+                        permuted_token_weights=result["permuted_token_weights"],
+                        permutation=result["permutation"])
+    _write_bytes_exclusive(artifact, buffer.getvalue())
     receipt = {
-        "schema_version": 1,
-        "campaign_id": CAMPAIGN_ID,
-        "origin": origin,
-        "fit_rows": int(x_fit.shape[0]),
-        "vocabulary_size": vocabulary_size,
-        "fit_position_sha256": sha256_csr(x_fit),
+        **binding,
         "df_sha256": result["df_sha256"],
         "aligned_sha256": result["aligned_sha256"],
         "permuted_sha256": result["permuted_sha256"],
@@ -516,12 +592,10 @@ def _ensure_penalty_map(origin: int, x_fit: sparse.csr_matrix, vocabulary_size: 
         "clip_low_count": result["clip_low_count"],
         "clip_high_count": result["clip_high_count"],
         "mean_aligned_weight": float(np.mean(result["aligned_token_weights"])),
-        "seed": 42,
-        "formula": "clip(sqrt(median(df)/df_j),0.5,2.0), normalize mean 1",
         "artifact_path": artifact.relative_to(ROOT).as_posix(),
         "artifact_sha256": _sha_file(artifact),
     }
-    _atomic_json(receipt_path, receipt)
+    _write_json_exclusive(receipt_path, receipt)
     _append_event(LEDGER, {"event": "PREPROCESSING_MAP_SAVED", "campaign_id": CAMPAIGN_ID,
                            "origin": origin, "artifact_sha256": receipt["artifact_sha256"],
                            "receipt_sha256": _sha_file(receipt_path),
@@ -533,6 +607,117 @@ def _fit_paths(fit_id: str) -> tuple[Path, Path]:
     return RUN_ROOT / "units" / f"{fit_id}.npz", RUN_ROOT / "receipts" / f"{fit_id}.json"
 
 
+def _fit_receipt_binding(fit_id: str, origin: int, arm: str,
+                         root_pass: Mapping[str, Any], fit_rows: np.ndarray,
+                         fit_ids: np.ndarray, x_fit: sparse.csr_matrix,
+                         base_fit: sparse.csr_matrix, offset: np.ndarray,
+                         bag_acc: Mapping[str, Any], penalty_map: Mapping[str, Any],
+                         repeated_weights: np.ndarray) -> dict[str, Any]:
+    return {
+        "schema_version": 2,
+        "campaign_id": CAMPAIGN_ID,
+        "fit_id": fit_id,
+        "origin": int(origin),
+        "arm": arm,
+        "fit_kind": "PREDICTOR",
+        "source_commit": root_pass["source_commit"],
+        "source_hashes": root_pass["source_hashes"],
+        "root_source_pass_sha256": _sha_file(ROOT_SOURCE_PASS),
+        "source_preflight_sha256": _sha_file(SOURCE_PREFLIGHT),
+        "train_sha256": TRAIN_SHA256,
+        "fit_rows": int(len(fit_rows)),
+        "fit_row_indices_sha256": sha256_array(np.asarray(fit_rows, dtype=np.int64)),
+        "fit_ids_sha256": sha256_array(np.asarray(fit_ids).astype(str)),
+        "fit_position_sha256": sha256_csr(x_fit),
+        "fit_base_sha256": sha256_csr(base_fit),
+        "fixed_bag_artifact_sha256": bag_acc["artifact_sha256"],
+        "fixed_bag_receipt_sha256": bag_acc["receipt_sha256"],
+        "fixed_bag_offset_sha256": sha256_array(np.asarray(offset, dtype=np.float64)),
+        "penalty_map_receipt_sha256": _sha_file(RUN_ROOT / "maps" / f"penalty_map_E{origin}.json"),
+        "penalty_vector_sha256": sha256_array(np.asarray(repeated_weights, dtype=np.float64)),
+    }
+
+
+def _write_gamma_outputs(artifact_path: Path, receipt_path: Path,
+                         gamma: np.ndarray, receipt_fields: Mapping[str, Any]) -> dict[str, Any]:
+    if artifact_path.exists() or receipt_path.exists():
+        raise FrequencyRidgeRunnerError("Refusing to overwrite an existing gamma artifact or receipt")
+    gamma = np.asarray(gamma, dtype=np.float64)
+    buffer = io.BytesIO()
+    np.savez_compressed(buffer, gamma=gamma)
+    _write_bytes_exclusive(artifact_path, buffer.getvalue())
+    receipt = {
+        **dict(receipt_fields),
+        "gamma_sha256": sha256_array(gamma),
+        "artifact_path": artifact_path.relative_to(ROOT).as_posix(),
+        "artifact_sha256": _sha_file(artifact_path),
+    }
+    _write_json_exclusive(receipt_path, receipt)
+    return receipt
+
+
+def _reconcile_or_validate_fit(fit_id: str, binding: Mapping[str, Any],
+                               expected_gamma_width: int) -> dict[str, Any]:
+    artifact_path, receipt_path = _fit_paths(fit_id)
+    events = _events(LEDGER)
+    starts = [e for e in events if e.get("event") == "FIT_STARTED" and e.get("fit_id") == fit_id]
+    saved = [e for e in events if e.get("event") == "FIT_SAVED" and e.get("fit_id") == fit_id]
+    failed = [e for e in events if e.get("event") == "FIT_FAILED" and e.get("fit_id") == fit_id]
+    if len(starts) > 1 or len(saved) > 1 or len(failed) > 1 or (saved and failed):
+        raise FrequencyRidgeRunnerError(f"Fit ledger contains duplicate/contradictory events: {fit_id}")
+    if not starts:
+        if artifact_path.exists() or receipt_path.exists():
+            raise FrequencyRidgeRunnerError("Unstarted fit has durable output files; immutable conflict")
+        if failed:
+            raise FrequencyRidgeRunnerError(f"Fit failed without its start event: {fit_id}")
+        if fit_resume_decision(events, fit_id, FIT_IDS) != "START_NEW":
+            raise FrequencyRidgeRunnerError(f"Unexpected fit resume state: {fit_id}")
+        return {"status": "START_NEW"}
+    if failed:
+        fit_resume_decision(events, fit_id, FIT_IDS)
+    start = starts[0]
+    for key, expected in binding.items():
+        if start.get(key) != expected:
+            raise FrequencyRidgeRunnerError(f"FIT_STARTED binding differs from current inputs: {key}")
+    if not artifact_path.is_file() or not receipt_path.is_file():
+        raise FrequencyRidgeRunnerError(f"Started fit has missing durable artifact/receipt; retry prohibited: {fit_id}")
+    receipt = _json(receipt_path)
+    for key, expected in binding.items():
+        if receipt.get(key) != expected:
+            raise FrequencyRidgeRunnerError(f"Saved fit receipt binding differs from current inputs: {key}")
+    target_sha = start.get("fit_target_sha256")
+    if not target_sha or receipt.get("fit_target_sha256") != target_sha:
+        raise FrequencyRidgeRunnerError("Saved fit receipt target hash does not match its FIT_STARTED event")
+    if (receipt.get("artifact_path") != artifact_path.relative_to(ROOT).as_posix()
+            or receipt.get("artifact_sha256") != _sha_file(artifact_path)):
+        raise FrequencyRidgeRunnerError("Saved fit receipt does not bind its gamma artifact")
+    with np.load(artifact_path, allow_pickle=False) as archive:
+        if set(archive.files) != {"gamma"}:
+            raise FrequencyRidgeRunnerError("Gamma artifact contains unexpected arrays")
+        gamma = np.asarray(archive["gamma"], dtype=np.float64)
+    if (gamma.shape != (expected_gamma_width,) or not np.isfinite(gamma).all()
+            or receipt.get("gamma_sha256") != sha256_array(gamma)):
+        raise FrequencyRidgeRunnerError("Gamma vector content/shape does not match its durable receipt")
+    receipt_sha = _sha_file(receipt_path)
+    artifact_sha = _sha_file(artifact_path)
+    if saved:
+        if (saved[0].get("receipt_sha256") != receipt_sha
+                or saved[0].get("artifact_sha256") != artifact_sha):
+            raise FrequencyRidgeRunnerError("FIT_SAVED event digests do not match current durable files")
+        status = "ALREADY_SAVED"
+    else:
+        _append_event(LEDGER, {"event": "FIT_SAVED", "campaign_id": CAMPAIGN_ID,
+                               "fit_id": fit_id, "receipt_sha256": receipt_sha,
+                               "artifact_sha256": artifact_sha,
+                               "recovered_after_publish": True,
+                               "recorded_at_utc": datetime.now(timezone.utc).isoformat()})
+        status = "RECOVERED_AFTER_PUBLISH"
+    if fit_resume_decision(_events(LEDGER), fit_id, FIT_IDS) != "RESUME_SAVED":
+        raise FrequencyRidgeRunnerError(f"Fit terminal event did not reconcile to saved: {fit_id}")
+    return {"status": status, "receipt_sha256": receipt_sha,
+            "artifact_sha256": artifact_sha, "receipt": receipt}
+
+
 def _run_one_fit(fit_id: str) -> dict[str, Any]:
     if fit_id not in FIT_IDS:
         raise FrequencyRidgeRunnerError(f"Fit ID is outside the exact four-fit allowance: {fit_id}")
@@ -540,10 +725,9 @@ def _run_one_fit(fit_id: str) -> dict[str, Any]:
     preflight = _json(SOURCE_PREFLIGHT)
     if (preflight.get("train_sha256") != TRAIN_SHA256
             or preflight.get("target_values_opened") is not False
-            or preflight.get("source_hashes") != _source_hashes()):
-        raise FrequencyRidgeRunnerError("Current target-free preflight does not bind the approved source/input")
-        if not preflight.get("prior_shared_ledger_reference", {}).get("matches_checkpoint"):
-            raise FrequencyRidgeRunnerError("Historical shared-ledger reference changed after source preflight")
+            or preflight.get("source_hashes") != _source_hashes()
+            or not preflight.get("prior_shared_ledger_reference", {}).get("matches_checkpoint")):
+        raise FrequencyRidgeRunnerError("Current R2 target-free preflight does not bind the approved source/input")
     protocol = _json(PROTOCOL)
     prior_ledger_hash = _sha_file(SHARED_LEDGER) if SHARED_LEDGER.is_file() else None
     expected_ledger_hash = protocol["historical_evidence"]["prior_shared_ledger_sha256_at_checkpoint"]
@@ -552,8 +736,8 @@ def _run_one_fit(fit_id: str) -> dict[str, Any]:
     if _sha_file(TRAIN) != TRAIN_SHA256:
         raise FrequencyRidgeRunnerError("Official Train file hash changed after root source review")
     _verify_historical_freezes()
-    with _fit_run_lock(RUN_ROOT / "FIT_RUN.lock"):
-        _append_campaign_reservation(root_pass, prior_ledger_hash)
+
+    with _official_fit_slot(root_pass, prior_ledger_hash):
         frame = _read_identity_frame()
         origin = 67 if fit_id.startswith("E67_") else 75
         arm = "ALIGNED" if fit_id.endswith("ALIGNED") else "PERMUTED"
@@ -565,9 +749,7 @@ def _run_one_fit(fit_id: str) -> dict[str, Any]:
         manifest_path = PILOT_ROOT / f"MATRIX_MANIFEST_E{origin}.json"
         manifest = _json(manifest_path)
         _verify_origin_identity_and_files(frame, origin)
-        resource = resource_snapshot(estimated_additional_bytes=2 * 1024**3)
-        if not resource["initial_ram_pass"] or not resource["projected_reserve_pass"] or not resource["rss_pass"]:
-            raise FrequencyRidgeRunnerError(f"Resource gate failed before matrix load/target access: {resource}")
+        _require_resource_pass("before matrix load", estimated_additional_bytes=2 * 1024**3)
         base_fit = _load_csr_from_manifest(manifest, "fit_base")
         augmented_fit = _load_csr_from_manifest(manifest, "fit_position")
         x_fit = augmented_fit[:, base_fit.shape[1]:].tocsr()
@@ -578,35 +760,29 @@ def _run_one_fit(fit_id: str) -> dict[str, Any]:
             raise FrequencyRidgeRunnerError("Frozen unigram block order/width differs from matrix audit")
         if (augmented_fit[:, :base_fit.shape[1]] != base_fit).nnz:
             raise FrequencyRidgeRunnerError("Augmented positional matrix base columns differ from frozen C2_B base")
-        penalty_map = _ensure_penalty_map(origin, x_fit, vocabulary_size)
+
+        expected_ids = frame.iloc[fit_rows]["record_id"].astype(str).to_numpy()
+        if _row_metadata(frame, fit_rows) != manifest["fit_row_metadata"]:
+            raise FrequencyRidgeRunnerError("Fit row IDs/cycles differ from frozen matrix manifest before labels")
+        events = _events(LEDGER)
+        if any(event.get("event") == "FIT_FAILED" for event in events):
+            raise FrequencyRidgeRunnerError("A previous predictor fit failed; stop the campaign for root review")
+        terminal_ids = {event.get("fit_id") for event in events
+                        if event.get("event") in {"FIT_SAVED", "FIT_FAILED"}}
+        pending_ids = {event.get("fit_id") for event in events if event.get("event") == "FIT_STARTED"} - terminal_ids
+        if pending_ids - {fit_id}:
+            raise FrequencyRidgeRunnerError(f"Another predictor fit is still pending: {sorted(pending_ids)}")
+        enforce_fit_cap(events, FIT_IDS)
+
+        penalty_map = _ensure_penalty_map(origin, x_fit, vocabulary_size,
+                                          root_pass=root_pass, fit_rows=fit_rows, fit_ids=expected_ids)
         weights = penalty_map["aligned_token_weights"] if arm == "ALIGNED" else penalty_map["permuted_token_weights"]
         repeated_weights = repeat_token_weights(weights)
         if len(repeated_weights) != x_fit.shape[1]:
             raise FrequencyRidgeRunnerError("Repeated token penalties do not match positional columns")
-        events = _events(LEDGER)
-        if any(event.get("event") == "FIT_FAILED" for event in events):
-            raise FrequencyRidgeRunnerError("A previous predictor fit failed; stop the campaign for root review")
-        decision = fit_resume_decision(events, fit_id, FIT_IDS)
-        artifact_path, receipt_path = _fit_paths(fit_id)
-        if decision == "RESUME_SAVED":
-            if not artifact_path.is_file() or not receipt_path.is_file():
-                raise FrequencyRidgeRunnerError("Ledger says fit is saved but its durable files are missing")
-            receipt = _json(receipt_path)
-            if receipt.get("artifact_sha256") != _sha_file(artifact_path):
-                raise FrequencyRidgeRunnerError("Saved fit receipt does not match its gamma artifact")
-            return {"fit_id": fit_id, "status": "ALREADY_SAVED", "receipt_sha256": _sha_file(receipt_path)}
-        enforce_fit_cap(events, FIT_IDS)
-        terminal_ids = {event.get("fit_id") for event in events
-                        if event.get("event") in {"FIT_SAVED", "FIT_FAILED"}}
-        pending_ids = {event.get("fit_id") for event in events if event.get("event") == "FIT_STARTED"} - terminal_ids
-        if pending_ids:
-            raise FrequencyRidgeRunnerError(f"Another predictor fit is still pending: {sorted(pending_ids)}")
         bag_id = f"POSITIONAL_TEXT_PILOT_V1_E{origin}_BAG_LR"
         accounting = _json(PILOT_ACCOUNTING)
         bag_acc = next(item for item in accounting["fit_units"] if item.get("fit_id") == bag_id)
-        expected_ids = frame.iloc[fit_rows]["record_id"].astype(str).to_numpy()
-        if _row_metadata(frame, fit_rows) != manifest["fit_row_metadata"]:
-            raise FrequencyRidgeRunnerError("Fit row IDs/cycles differ from frozen matrix manifest before labels")
         bag_path = PILOT_ROOT / "units" / f"{bag_id}.joblib"
         bag_unit = joblib.load(bag_path)
         bag = bag_unit.get("estimator")
@@ -617,69 +793,46 @@ def _run_one_fit(fit_id: str) -> dict[str, Any]:
         z0_fit = np.asarray(base_fit @ bag.coef_[0], dtype=np.float64).reshape(-1) + float(bag.intercept_[0])
         if not np.isfinite(z0_fit).all():
             raise FrequencyRidgeRunnerError("Frozen C2_B bag fit-prefix logits are non-finite")
+        binding = _fit_receipt_binding(fit_id, origin, arm, root_pass, fit_rows, expected_ids,
+                                       x_fit, base_fit, z0_fit, bag_acc, penalty_map, repeated_weights)
+        resumed = _reconcile_or_validate_fit(fit_id, binding, x_fit.shape[1])
+        if resumed["status"] != "START_NEW":
+            return {"fit_id": fit_id, **{k: v for k, v in resumed.items() if k != "receipt"}}
+
         y = _read_fit_labels(fit_rows, expected_ids, bag_acc["fit_population"]["fit_target_sha256"])
-        resource = resource_snapshot(estimated_additional_bytes=1024**3)
-        if not resource["initial_ram_pass"] or not resource["projected_reserve_pass"] or not resource["rss_pass"]:
-            raise FrequencyRidgeRunnerError(f"Resource gate failed immediately before predictor fit: {resource}")
-        _append_event(LEDGER, {
-            "event": "FIT_STARTED", "campaign_id": CAMPAIGN_ID, "fit_id": fit_id,
-            "origin": origin, "arm": arm, "fit_consumed_at_start": True,
-            "source_commit": root_pass["source_commit"],
-            "source_hashes": root_pass["source_hashes"],
-            "train_sha256": TRAIN_SHA256,
-            "fit_rows": len(fit_rows), "fit_row_indices_sha256": sha256_array(fit_rows),
-            "fit_ids_sha256": sha256_array(expected_ids), "fit_target_sha256": sha256_array(y),
-            "fit_position_sha256": sha256_csr(x_fit), "fit_base_sha256": sha256_csr(base_fit),
-            "penalty_map_receipt_sha256": _sha_file(RUN_ROOT / "maps" / f"penalty_map_E{origin}.json"),
-            "resource": resource, "recorded_at_utc": datetime.now(timezone.utc).isoformat(),
-        })
+        resource = _require_resource_pass("immediately before predictor fit", estimated_additional_bytes=1024**3)
+        start_event = {"event": "FIT_STARTED", **binding,
+                       "fit_target_sha256": sha256_array(y),
+                       "fit_consumed_at_start": True,
+                       "resource": resource,
+                       "recorded_at_utc": datetime.now(timezone.utc).isoformat()}
+        _append_event(LEDGER, start_event)
         started = time.perf_counter()
+        files_published = False
         try:
             with threadpool_limits(limits=2):
                 gamma, optimizer = fit_weighted_offset(x_fit, z0_fit, y, repeated_weights)
-            artifact_path.parent.mkdir(parents=True, exist_ok=True)
-            temp = artifact_path.with_name(artifact_path.name + f".{os.getpid()}.partial")
-            with temp.open("wb") as stream:
-                np.savez_compressed(stream, gamma=gamma)
-                stream.flush()
-                os.fsync(stream.fileno())
-            os.replace(temp, artifact_path)
-            receipt = {
-                "schema_version": 1, "campaign_id": CAMPAIGN_ID, "fit_id": fit_id,
-                "origin": origin, "arm": arm, "fit_kind": "PREDICTOR",
-                "source_commit": root_pass["source_commit"], "source_hashes": root_pass["source_hashes"],
-                "root_source_pass_sha256": _sha_file(ROOT_SOURCE_PASS),
-                "source_preflight_sha256": _sha_file(SOURCE_PREFLIGHT),
-                "train_sha256": TRAIN_SHA256, "fit_rows": len(fit_rows),
-                "fit_row_indices_sha256": sha256_array(fit_rows),
-                "fit_ids_sha256": sha256_array(expected_ids),
+            receipt_fields = {
+                **binding,
                 "fit_target_sha256": sha256_array(y),
-                "fit_position_sha256": sha256_csr(x_fit),
-                "fit_base_sha256": sha256_csr(base_fit),
-                "fixed_bag_artifact_sha256": bag_acc["artifact_sha256"],
-                "fixed_bag_receipt_sha256": bag_acc["receipt_sha256"],
-                "fixed_bag_offset_sha256": sha256_array(z0_fit),
-                "penalty_map_receipt_sha256": _sha_file(RUN_ROOT / "maps" / f"penalty_map_E{origin}.json"),
-                "penalty_vector_sha256": sha256_array(repeated_weights),
                 "optimizer": optimizer,
-                "gamma_sha256": sha256_array(gamma),
-                "artifact_path": artifact_path.relative_to(ROOT).as_posix(),
-                "artifact_sha256": _sha_file(artifact_path),
                 "elapsed_seconds": float(time.perf_counter() - started),
                 "target_access": "official fit-prefix only; no query/Test labels opened",
             }
-            _atomic_json(receipt_path, receipt)
+            receipt = _write_gamma_outputs(*_fit_paths(fit_id), gamma, receipt_fields)
+            files_published = True
             _append_event(LEDGER, {"event": "FIT_SAVED", "campaign_id": CAMPAIGN_ID,
-                                   "fit_id": fit_id, "receipt_sha256": _sha_file(receipt_path),
+                                   "fit_id": fit_id, "receipt_sha256": _sha_file(_fit_paths(fit_id)[1]),
                                    "artifact_sha256": receipt["artifact_sha256"],
                                    "recorded_at_utc": datetime.now(timezone.utc).isoformat()})
             return {"fit_id": fit_id, "status": "SAVED", "optimizer": optimizer,
-                    "receipt_sha256": _sha_file(receipt_path)}
+                    "receipt_sha256": _sha_file(_fit_paths(fit_id)[1])}
         except Exception as exc:
-            _append_event(LEDGER, {"event": "FIT_FAILED", "campaign_id": CAMPAIGN_ID,
-                                   "fit_id": fit_id, "error_type": type(exc).__name__,
-                                   "error": str(exc),
-                                   "recorded_at_utc": datetime.now(timezone.utc).isoformat()})
+            if not files_published:
+                _append_event(LEDGER, {"event": "FIT_FAILED", "campaign_id": CAMPAIGN_ID,
+                                       "fit_id": fit_id, "error_type": type(exc).__name__,
+                                       "error": str(exc),
+                                       "recorded_at_utc": datetime.now(timezone.utc).isoformat()})
             raise
 
 
@@ -687,10 +840,10 @@ def _run_one_fit(fit_id: str) -> dict[str, Any]:
 def _fit_run_lock(path: Path):
     if not FIT_LOCK.acquire(blocking=False):
         raise FrequencyRidgeRunnerError("Another frequency-ridge operation is active in this process")
-    path.parent.mkdir(parents=True, exist_ok=True)
     stream = None
     unlock = None
     try:
+        path.parent.mkdir(parents=True, exist_ok=True)
         stream = path.open("a+b")
         stream.seek(0)
         if stream.read(1) == b"":
@@ -730,6 +883,159 @@ def _fit_run_lock(path: Path):
         FIT_LOCK.release()
 
 
+@contextmanager
+def _shared_heavy_job_lock(path: Path | None = None):
+    """Use the same process-lifetime advisory slot as the active Regression lane."""
+    path = SHARED_JOB_LOCK if path is None else Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    stream = path.open("a+b")
+    try:
+        stream.seek(0, os.SEEK_END)
+        if stream.tell() == 0:
+            stream.write(b"\0")
+            stream.flush()
+        stream.seek(0)
+        if os.name == "nt":
+            import msvcrt
+            try:
+                msvcrt.locking(stream.fileno(), msvcrt.LK_NBLCK, 1)
+            except OSError as exc:
+                raise FrequencyRidgeRunnerError(
+                    f"Another KASDAD heavy job holds the shared slot {path}; no wait/poll") from exc
+            unlock = lambda: msvcrt.locking(stream.fileno(), msvcrt.LK_UNLCK, 1)
+        else:
+            import fcntl
+            try:
+                fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except OSError as exc:
+                raise FrequencyRidgeRunnerError(
+                    f"Another KASDAD heavy job holds the shared slot {path}; no wait/poll") from exc
+            unlock = lambda: fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
+        yield
+    finally:
+        try:
+            if 'unlock' in locals():
+                stream.seek(0)
+                unlock()
+        except OSError:
+            pass
+        stream.close()
+
+
+def _require_resource_pass(stage: str, *, estimated_additional_bytes: int) -> dict[str, Any]:
+    resource = resource_snapshot(estimated_additional_bytes=estimated_additional_bytes)
+    if not all(resource[key] for key in ("initial_ram_pass", "projected_reserve_pass", "rss_pass")):
+        raise FrequencyRidgeRunnerError(f"Resource gate failed {stage}: {resource}")
+    return resource
+
+
+@contextmanager
+def _official_fit_slot(root_pass: Mapping[str, Any], prior_ledger_hash: str | None):
+    """Hold shared/local locks, pass fresh RAM gate, then reserve before any fit work."""
+    with _shared_heavy_job_lock():
+        with _fit_run_lock(RUN_ROOT / "FIT_RUN.lock"):
+            _require_resource_pass("before reservation/input-heavy work", estimated_additional_bytes=2 * 1024**3)
+            _append_campaign_reservation(root_pass, prior_ledger_hash)
+            yield
+
+
+def _synthetic_persistence_resume_qa() -> dict[str, Any]:
+    class SyntheticCrash(BaseException):
+        pass
+
+    names = ("ROOT", "RUN_ROOT", "LEDGER", "SOURCE_PREFLIGHT", "ROOT_SOURCE_PASS", "TRAIN_SHA256",
+             "_append_event", "union_document_frequency", "make_penalty_maps")
+    saved_globals = {name: globals()[name] for name in names}
+    try:
+        with tempfile.TemporaryDirectory(prefix="cls-pos-frequency-ridge-resume-") as temporary:
+            root = Path(temporary)
+            run_root = root / "experiments/runs/campaign"
+            ledger = run_root / "BUDGET_LEDGER.jsonl"
+            preflight = root / "reports/SOURCE_PREFLIGHT_R2.json"
+            root_pass_path = root / "reports/ROOT_SOURCE_PASS.json"
+            preflight.parent.mkdir(parents=True)
+            preflight.write_text("synthetic preflight", encoding="utf-8")
+            root_pass_path.write_text("synthetic root pass", encoding="utf-8")
+            globals().update({"ROOT": root, "RUN_ROOT": run_root, "LEDGER": ledger,
+                              "SOURCE_PREFLIGHT": preflight, "ROOT_SOURCE_PASS": root_pass_path,
+                              "TRAIN_SHA256": "f" * 64})
+            root_pass = {"source_commit": "a" * 40, "source_hashes": {"synthetic_source.py": "b" * 64}}
+            rows = np.asarray([0, 1], dtype=np.int64)
+            ids = np.asarray(["synthetic-a", "synthetic-b"])
+            x = sparse.csr_matrix(np.asarray([
+                [1.0, 0.0, 1.0, 0.0, 1.0, 0.0],
+                [1.0, 1.0, 0.0, 1.0, 0.0, 1.0],
+            ], dtype=np.float64))
+            original_df = union_document_frequency
+            original_maps = make_penalty_maps
+            map_calls = {"df": 0, "maps": 0}
+
+            def counted_df(*args, **kwargs):
+                map_calls["df"] += 1
+                return original_df(*args, **kwargs)
+
+            def counted_maps(*args, **kwargs):
+                map_calls["maps"] += 1
+                return original_maps(*args, **kwargs)
+
+            globals()["union_document_frequency"] = counted_df
+            globals()["make_penalty_maps"] = counted_maps
+            append_event = _append_event
+
+            def crash_after_map_publish(path, event):
+                if event.get("event") == "PREPROCESSING_MAP_SAVED":
+                    raise SyntheticCrash("fault after durable map + receipt")
+                append_event(path, event)
+
+            globals()["_append_event"] = crash_after_map_publish
+            try:
+                _ensure_penalty_map(67, x, 2, root_pass=root_pass, fit_rows=rows, fit_ids=ids)
+                raise FrequencyRidgeRunnerError("Synthetic map publish fault was not injected")
+            except SyntheticCrash:
+                pass
+            globals()["_append_event"] = append_event
+            _ensure_penalty_map(67, x, 2, root_pass=root_pass, fit_rows=rows, fit_ids=ids)
+            if map_calls != {"df": 1, "maps": 1}:
+                raise FrequencyRidgeRunnerError("Synthetic map resume recomputed preprocessing")
+
+            fit_id = "E67_ALIGNED"
+            fit_target_sha = sha256_array(np.asarray([0, 1], dtype=np.int8))
+            binding = {
+                "schema_version": 2, "campaign_id": CAMPAIGN_ID, "fit_id": fit_id,
+                "origin": 67, "arm": "ALIGNED", "fit_kind": "PREDICTOR",
+                "source_commit": root_pass["source_commit"], "source_hashes": root_pass["source_hashes"],
+                "root_source_pass_sha256": _sha_file(root_pass_path),
+                "source_preflight_sha256": _sha_file(preflight), "train_sha256": TRAIN_SHA256,
+                "fit_rows": 2, "fit_row_indices_sha256": sha256_array(rows),
+                "fit_ids_sha256": sha256_array(ids), "fit_position_sha256": sha256_csr(x),
+                "fit_base_sha256": "c" * 64, "fixed_bag_artifact_sha256": "d" * 64,
+                "fixed_bag_receipt_sha256": "e" * 64, "fixed_bag_offset_sha256": "1" * 64,
+                "penalty_map_receipt_sha256": _sha_file(run_root / "maps/penalty_map_E67.json"),
+                "penalty_vector_sha256": "2" * 64,
+            }
+            _append_event(ledger, {"event": "FIT_STARTED", **binding,
+                                  "fit_target_sha256": fit_target_sha,
+                                  "fit_consumed_at_start": True})
+            gamma = np.linspace(-0.1, 0.1, x.shape[1], dtype=np.float64)
+            _write_gamma_outputs(*_fit_paths(fit_id), gamma,
+                                 {**binding, "fit_target_sha256": fit_target_sha,
+                                  "optimizer": {"success": True}, "elapsed_seconds": 0.01,
+                                  "target_access": "synthetic only"})
+            # Deliberately omit FIT_SAVED: this is the durable postpublish crash state.
+            resumed = _reconcile_or_validate_fit(fit_id, binding, x.shape[1])
+            if resumed.get("status") != "RECOVERED_AFTER_PUBLISH":
+                raise FrequencyRidgeRunnerError("Synthetic gamma resume did not reconcile the missing terminal event")
+            repeated = _reconcile_or_validate_fit(fit_id, binding, x.shape[1])
+            if repeated.get("status") != "ALREADY_SAVED":
+                raise FrequencyRidgeRunnerError("Synthetic saved gamma reuse failed terminal digest validation")
+            return {"map_recovered_without_recompute": True,
+                    "gamma_recovered_without_optimizer_retry": True,
+                    "saved_reuse_validated_terminal_digest": True,
+                    "synthetic_map_compute_calls": map_calls}
+    finally:
+        globals().update(saved_globals)
+
+
 def run_synthetic_qa() -> dict[str, Any]:
     rng = np.random.default_rng(20261105)
     x = sparse.csr_matrix(rng.normal(size=(90, 12)))
@@ -749,22 +1055,7 @@ def run_synthetic_qa() -> dict[str, Any]:
     routed[present] = probability[present]
     if not np.array_equal(routed[~present], fallback[~present]):
         raise FrequencyRidgeRunnerError("Synthetic missing fallback changed")
-    with tempfile.TemporaryDirectory(prefix="cls-pos-frequency-ridge-v1-") as temporary:
-        temp = Path(temporary)
-        allowed = ("SYNTH_FIT",)
-        ledger = [{"event": "FIT_STARTED", "fit_id": "SYNTH_FIT"}]
-        artifact = temp / "gamma.npz"
-        with artifact.open("wb") as stream:
-            np.savez_compressed(stream, gamma=gamma)
-        digest = _sha_file(artifact)
-        receipt = {"fit_id": "SYNTH_FIT", "artifact_sha256": digest}
-        _atomic_json(temp / "receipt.json", receipt)
-        ledger.append({"event": "FIT_SAVED", "fit_id": "SYNTH_FIT"})
-        if fit_resume_decision(ledger, "SYNTH_FIT", allowed) != "RESUME_SAVED":
-            raise FrequencyRidgeRunnerError("Synthetic restart failed to resume saved fit")
-        if len([event for event in ledger if event.get("event") == "FIT_STARTED"]) != 1:
-            raise FrequencyRidgeRunnerError("Synthetic resume duplicated a predictor fit")
-        enforce_fit_cap(ledger, allowed)
+    persistence = _synthetic_persistence_resume_qa()
     return {
         "status": "PASS",
         "synthetic_rows": 90,
@@ -773,6 +1064,7 @@ def run_synthetic_qa() -> dict[str, Any]:
         "loss_nonincreasing": metadata["loss_final"] <= metadata["loss_gamma0"] + 1e-8,
         "fallback_exact": True,
         "durable_resume_without_duplicate_fit": True,
+        **persistence,
         "official_inputs_opened": False,
         "official_labels_opened": False,
     }
