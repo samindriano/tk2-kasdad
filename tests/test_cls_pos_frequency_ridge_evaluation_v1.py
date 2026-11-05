@@ -18,6 +18,10 @@ from scripts.evaluate_optimization_v3_cls_pos_frequency_ridge_v1 import (
     validate_saved_route_probabilities,
     validate_ordered_row_identity,
 )
+from scripts.verify_optimization_v3_cls_pos_frequency_ridge_eval_v1 import (
+    evaluate_boundary_resource_gate as independent_boundary_resource_gate,
+    evaluate_initial_resource_gates as independent_initial_resource_gates,
+)
 
 
 class SpyArchive:
@@ -162,6 +166,22 @@ def test_query_boundary_resource_gate_requires_two_gib_actual_available():
     gib = 1024**3
     assert evaluate_query_boundary_resource_gate(2 * gib)["pass"] is True
     assert evaluate_query_boundary_resource_gate(2 * gib - 1)["pass"] is False
+
+
+def test_independent_verifier_enforces_r4_initial_gates_independently():
+    gib = 1024**3
+    floor_fail = independent_initial_resource_gates(available_bytes=2 * gib + gib // 2,
+                                                     estimated_additional_bytes=gib // 4)
+    assert floor_fail["initial_floor_pass"] is False
+    assert floor_fail["projected_reserve_pass"] is True
+    assert floor_fail["pass_both_initial_gates"] is False
+
+    reserve_fail = independent_initial_resource_gates(available_bytes=3 * gib + gib // 4,
+                                                       estimated_additional_bytes=3 * gib // 2)
+    assert reserve_fail["initial_floor_pass"] is True
+    assert reserve_fail["projected_reserve_pass"] is False
+    assert reserve_fail["pass_both_initial_gates"] is False
+    assert independent_boundary_resource_gate(2 * gib - 1)["pass"] is False
 
 
 def test_saved_route_audit_separates_raw_bag_lr_from_missing_hgb_route():

@@ -8,7 +8,9 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import subprocess
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -23,8 +25,8 @@ import sys
 sys.path.insert(0, str(ROOT))
 from src.models.optimization_v3_positional_text_pilot_v1 import sha256_csr
 
-FREEZE = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R5.json"
-FREEZE_PARENT = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R4.json"
+FREEZE = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R6.json"
+FREEZE_PARENT = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R5.json"
 R4_ATTEMPT = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_ATTEMPT_R4_PRELABEL.json"
 PRED = "experiments/runs/optimization_v3_cls_pos_frequency_ridge_eval_v1/predictions_r1.npz"
 PRED_MANIFEST = "reports/optimization_v3/cls_pos_frequency_ridge_v1/PREDICTIONS_MANIFEST_R1.json"
@@ -39,6 +41,9 @@ VIEWS = {
 }
 GROUPS = ("availability", "entry_friction", "text_load")
 OPS_THRESHOLD = 0.53230976129477
+INITIAL_MIN_BYTES = 3 * 1024**3
+INCREMENTAL_ESTIMATE_BYTES = 512 * 1024**2
+PROJECTED_MIN_BYTES = 2 * 1024**3
 PILOT_ROOT = "experiments/runs/optimization_v3_research_next_v1/POSITIONAL_TEXT_PILOT_V1"
 POS_BAG_ROOT = "experiments/runs/optimization_v3_research_next_v1/POS_BAG_OFFSET_V1"
 A02 = "experiments/runs/optimization_v3_posoffset_a02_endgame_v1/policy_predictions.npz"
@@ -55,6 +60,104 @@ PILOT_KEYS = ("score_rows","score_record_ids","score_cycles","present_mask",
 
 class VerifyError(RuntimeError):
     pass
+
+
+def evaluate_initial_resource_gates(available_bytes: int,
+                                    estimated_additional_bytes: int = INCREMENTAL_ESTIMATE_BYTES
+                                    ) -> dict[str, Any]:
+    available = int(available_bytes)
+    estimate = int(estimated_additional_bytes)
+    projected = available - estimate
+    initial_pass = available >= INITIAL_MIN_BYTES
+    projected_pass = projected >= PROJECTED_MIN_BYTES
+    return {
+        "available_bytes": available,
+        "estimated_additional_bytes": estimate,
+        "projected_free_bytes": projected,
+        "minimum_available_bytes": INITIAL_MIN_BYTES,
+        "minimum_projected_free_bytes": PROJECTED_MIN_BYTES,
+        "initial_floor_pass": initial_pass,
+        "projected_reserve_pass": projected_pass,
+        "pass_both_initial_gates": initial_pass and projected_pass,
+        "estimate_is_measured_peak": False,
+    }
+
+
+def evaluate_boundary_resource_gate(available_bytes: int) -> dict[str, Any]:
+    available = int(available_bytes)
+    return {
+        "available_bytes": available,
+        "minimum_available_bytes": PROJECTED_MIN_BYTES,
+        "pass": available >= PROJECTED_MIN_BYTES,
+        "sample_is_peak": False,
+    }
+
+
+def initial_resource_snapshot() -> dict[str, Any]:
+    import psutil
+    available = int(psutil.virtual_memory().available)
+    rss = int(psutil.Process().memory_info().rss)
+    return {
+        "stage": "INITIAL_UNDER_SHARED_LOCK",
+        "policy_id": "CLS_EVALUATION_QUERY_REPLAY_R4",
+        **evaluate_initial_resource_gates(available),
+        "process_rss_sample_bytes": rss,
+        "sample_kind": "CURRENT_STATE_SNAPSHOT_NOT_PEAK",
+    }
+
+
+def boundary_resource_snapshot(stage: str) -> dict[str, Any]:
+    import psutil
+    available = int(psutil.virtual_memory().available)
+    rss = int(psutil.Process().memory_info().rss)
+    return {
+        "stage": stage,
+        **evaluate_boundary_resource_gate(available),
+        "process_rss_sample_bytes": rss,
+        "sample_kind": "CURRENT_STATE_SNAPSHOT_NOT_PEAK",
+    }
+
+
+class SharedJobLock:
+    """Nonblocking lock shared with the primary evaluator and regression jobs."""
+
+    def __init__(self) -> None:
+        self.file = Path(tempfile.gettempdir()) / "kasdad_single_heavy_job.lock"
+        self.stream = None
+        self.unlock = None
+
+    def __enter__(self):
+        self.file.parent.mkdir(parents=True, exist_ok=True)
+        self.stream = self.file.open("a+b")
+        self.stream.seek(0, os.SEEK_END)
+        if self.stream.tell() == 0:
+            self.stream.write(b"\0"); self.stream.flush()
+        self.stream.seek(0)
+        if os.name == "nt":
+            import msvcrt
+            try:
+                msvcrt.locking(self.stream.fileno(), msvcrt.LK_NBLCK, 1)
+            except OSError as exc:
+                self.stream.close()
+                raise VerifyError("Another KASDAD heavy job holds the shared slot; stop without waiting") from exc
+            self.unlock = lambda: msvcrt.locking(self.stream.fileno(), msvcrt.LK_UNLCK, 1)
+        else:
+            import fcntl
+            try:
+                fcntl.flock(self.stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except OSError as exc:
+                self.stream.close()
+                raise VerifyError("Another KASDAD heavy job holds the shared slot; stop without waiting") from exc
+            self.unlock = lambda: fcntl.flock(self.stream.fileno(), fcntl.LOCK_UN)
+        return self
+
+    def __exit__(self, exc_type, exc, traceback):
+        if self.stream is not None:
+            try:
+                self.stream.seek(0)
+                self.unlock()
+            finally:
+                self.stream.close()
 
 
 def p(rel: str) -> Path:
@@ -95,17 +198,25 @@ def verify_freeze_and_manifest() -> tuple[dict[str, Any], dict[str, Any]]:
     freeze = read_json(p(FREEZE)); manifest = read_json(p(PRED_MANIFEST))
     if freeze.get("status") != "FROZEN_BEFORE_QUERY_TARGET_LOAD":
         raise VerifyError("Source freeze is not pre-label")
-    if (freeze.get("freeze_round") != "R5"
+    if (freeze.get("freeze_round") != "R6"
             or freeze.get("supersedes_freeze") != FREEZE_PARENT
             or freeze.get("parent_freeze_sha256") != sha_file(p(FREEZE_PARENT))
             or freeze.get("parent_freeze_commit") != committed(FREEZE_PARENT)
             or freeze.get("preserved_failed_attempt_sha256") != sha_file(p(R4_ATTEMPT))
             or freeze.get("preserved_failed_attempt_commit") != committed(R4_ATTEMPT)):
-        raise VerifyError("R5 source freeze parent/failed-attempt lineage is invalid")
+        raise VerifyError("R6 source freeze parent/failed-attempt lineage is invalid")
     parent = read_json(p(FREEZE_PARENT))
     if any(freeze.get(name) != parent.get(name)
            for name in ("windows", "unique_pool", "recipe", "gates", "incident_disclosure", "incident_status")):
-        raise VerifyError("R5 changed the scientific recipe, views, gates, or incident disclosure")
+        raise VerifyError("R6 changed the scientific recipe, views, gates, or incident disclosure")
+    policy = freeze.get("resource_policy", {})
+    if (policy.get("minimum_available_bytes") != INITIAL_MIN_BYTES
+            or policy.get("incremental_memory_estimate_bytes") != INCREMENTAL_ESTIMATE_BYTES
+            or policy.get("minimum_projected_free_bytes") != PROJECTED_MIN_BYTES
+            or policy.get("post_load_and_origin_boundary_minimum_available_bytes") != PROJECTED_MIN_BYTES
+            or policy.get("sampled_rss_is_peak") is not False
+            or freeze.get("new_fits_or_test_inference") != 0):
+        raise VerifyError("R6 resource policy or zero-fit boundary differs from authorization")
     if manifest.get("status") != "PREDICTIONS_FROZEN_BEFORE_QUERY_TARGET_READ":
         raise VerifyError("Predictions manifest is not pre-label")
     if manifest.get("source_freeze_sha256") != sha_file(p(FREEZE)):
@@ -204,7 +315,8 @@ def load_frozen_matrix(manifest: dict[str, Any], key: str) -> sparse.csr_matrix:
     return matrix
 
 
-def independently_replay_saved_predictions(arrays: dict[str,np.ndarray]) -> dict[str,Any]:
+def independently_replay_saved_predictions(arrays: dict[str,np.ndarray],
+                                           resource_samples: list[dict[str, Any]]) -> dict[str,Any]:
     a02=strict_npz(p(A02),A02_KEYS,A02_KEYS)
     audit={}
     for origin in (67,75):
@@ -217,6 +329,10 @@ def independently_replay_saved_predictions(arrays: dict[str,np.ndarray]) -> dict
         augmented=load_frozen_matrix(manifest,"score_position")
         if (augmented[:,:base.shape[1]]!=base).nnz:
             raise VerifyError(f"{k} position matrix no longer contains the exact frozen C2_B base")
+        load_sample=boundary_resource_snapshot(f"{k}_AFTER_MATRIX_LOAD_AND_IDENTITY_BOUNDARIES")
+        resource_samples.append(load_sample)
+        if not load_sample["pass"]:
+            raise VerifyError(f"R4 available RAM below 2 GiB after {k} matrix load: {load_sample}")
         position=augmented[:,base.shape[1]:].tocsr()
         bag_id=f"POSITIONAL_TEXT_PILOT_V1_E{origin}_BAG_LR"
         bag_unit=joblib.load(p(f"{PILOT_ROOT}/units/{bag_id}.joblib"))
@@ -285,10 +401,24 @@ def independently_replay_saved_predictions(arrays: dict[str,np.ndarray]) -> dict
         expected_mix[missing]=p_a[missing]
         if not np.allclose(arrays[f"{k}_MIX50_REFERENCE"],expected_mix,rtol=0.0,atol=2e-15):
             raise VerifyError(f"Saved original MIX50 reference does not replay: {k}")
+        boundary_sample=boundary_resource_snapshot(f"{k}_ORIGIN_BOUNDARY_BEFORE_RELEASE")
+        resource_samples.append(boundary_sample)
+        if not boundary_sample["pass"]:
+            raise VerifyError(f"R4 available RAM below 2 GiB at {k} origin boundary: {boundary_sample}")
         audit[k]={"c2b_max_abs_error":float(np.max(np.abs(bag_p-pilot_raw_bag))),
                   "gamma_probability_max_abs_errors":errors,
                   "route_cache_fields_bit_exact":True,
                   "missing_fallback_bit_exact":True,"a02_alignment":"PASS"}
+        del (pos,pilot,manifest,base,augmented,position,bag_unit,estimator,z0,bag_p,
+             missing,present,p_a,fallback,pilot_hgb,pilot_raw_bag,pilot_routed_bag,
+             gamma_specs,errors,probabilities,gamma,logits,value,saved,expected_mix,
+             load_sample,boundary_sample)
+        import gc
+        gc.collect()
+    final_sample=boundary_resource_snapshot("AFTER_ALL_ORIGINS_RELEASED")
+    resource_samples.append(final_sample)
+    if not final_sample["pass"]:
+        raise VerifyError(f"R4 available RAM below 2 GiB after independent replay: {final_sample}")
     return {"status":"PASS_INDEPENDENT_PREDICTION_REPLAY","origins":audit}
 
 
@@ -354,7 +484,7 @@ def compare_metric(actual: dict[str, Any], expected: dict[str, Any], label: str)
         close(actual[key], expected[key], f"{label}/{key}")
 
 
-def verify_results() -> dict[str, Any]:
+def verify_results(resource_samples: list[dict[str, Any]]) -> dict[str, Any]:
     _, manifest = verify_freeze_and_manifest()
     arrays = load_predictions(manifest)
     results = read_json(p(RESULTS))
@@ -362,6 +492,17 @@ def verify_results() -> dict[str, Any]:
         raise VerifyError("Result status does not disclose development evaluation")
     if results.get("incident_disclosure", {}).get("pre_exposure_cannot_be_claimed") is not True:
         raise VerifyError("Result omits the access-order incident limitation")
+    recorded_resource = results.get("resource_snapshot", {})
+    recorded_samples = recorded_resource.get("samples", [])
+    if (recorded_resource.get("policy_id") != "CLS_EVALUATION_QUERY_REPLAY_R4"
+            or recorded_resource.get("initial_floor_bytes") != INITIAL_MIN_BYTES
+            or recorded_resource.get("incremental_memory_estimate_bytes") != INCREMENTAL_ESTIMATE_BYTES
+            or recorded_resource.get("projected_free_floor_bytes") != PROJECTED_MIN_BYTES
+            or recorded_resource.get("samples_are_peak_measurements") is not False
+            or not recorded_samples
+            or recorded_samples[0].get("pass_both_initial_gates") is not True
+            or any(item.get("pass") is not True for item in recorded_samples[1:])):
+        raise VerifyError("Scored result lacks passing R4 resource boundary evidence")
     if sha_file(p(TRAIN)) != TRAIN_SHA:
         raise VerifyError("Official Train raw-data hash mismatch before independent target read")
     frame = pd.read_csv(p(TRAIN), usecols=["record_id","artifact_signal"],
@@ -376,6 +517,10 @@ def verify_results() -> dict[str, Any]:
         if not np.isin(y,[0,1]).all():
             raise VerifyError(f"E{origin} target values are not binary")
         labels[origin]=y
+        sample=boundary_resource_snapshot(f"E{origin}_INDEPENDENT_TARGET_LABEL_BOUNDARY")
+        resource_samples.append(sample)
+        if not sample["pass"]:
+            raise VerifyError(f"R4 available RAM below 2 GiB after independent {origin} label join: {sample}")
 
     checks = 0
     gain_by_view: dict[str,float] = {}
@@ -567,10 +712,23 @@ def verify_results() -> dict[str, Any]:
         raise VerifyError("Unsupported subgroup UNKNOWN ledger differs from independent recomputation")
     if int(results.get("target_rows_read",-1)) != sum(len(y) for y in labels.values()):
         raise VerifyError("Recorded target row count differs from independent read")
+    final_sample=boundary_resource_snapshot("AFTER_INDEPENDENT_METRIC_REPLAY")
+    resource_samples.append(final_sample)
+    if not final_sample["pass"]:
+        raise VerifyError(f"R4 available RAM below 2 GiB after independent metric replay: {final_sample}")
     return {"status":"PASS_INDEPENDENT_METRIC_AND_ROW_RECONSTRUCTION",
             "metric_comparisons":checks,"target_rows":sum(len(y) for y in labels.values()),
             "test_or_samplesubmission_accessed":False,
-            "incident_disclosure_present":True}
+            "incident_disclosure_present":True,
+            "resource_snapshot": {
+                "policy_id": "CLS_EVALUATION_QUERY_REPLAY_R4",
+                "initial_floor_bytes": INITIAL_MIN_BYTES,
+                "incremental_memory_estimate_bytes": INCREMENTAL_ESTIMATE_BYTES,
+                "projected_free_floor_bytes": PROJECTED_MIN_BYTES,
+                "post_load_and_origin_boundary_floor_bytes": PROJECTED_MIN_BYTES,
+                "samples": resource_samples,
+                "samples_are_peak_measurements": False,
+            }}
 
 
 def main() -> int:
@@ -580,13 +738,32 @@ def main() -> int:
     group.add_argument("--verify-results",action="store_true")
     args=parser.parse_args()
     if args.verify_predictions:
-        freeze,manifest=verify_freeze_and_manifest(); arrays=load_predictions(manifest)
-        replay=independently_replay_saved_predictions(arrays)
-        result={"status":"PASS_PRELABEL_PREDICTION_HASH_AND_SCHEMA",
-                "prediction_fields":len(arrays),"source_freeze_sha256":sha_file(p(FREEZE)),
-                "target_labels_loaded":False,"independent_prediction_replay":replay}
+        with SharedJobLock():
+            initial=initial_resource_snapshot()
+            if not initial["pass_both_initial_gates"]:
+                raise VerifyError(f"R4 initial RAM gates failed before independent replay: {initial}")
+            samples=[initial]
+            freeze,manifest=verify_freeze_and_manifest(); arrays=load_predictions(manifest)
+            replay=independently_replay_saved_predictions(arrays,samples)
+            result={"status":"PASS_PRELABEL_PREDICTION_HASH_AND_SCHEMA",
+                    "prediction_fields":len(arrays),"source_freeze_sha256":sha_file(p(FREEZE)),
+                    "target_labels_loaded":False,"independent_prediction_replay":replay,
+                    "resource_snapshot": {
+                        "policy_id": "CLS_EVALUATION_QUERY_REPLAY_R4",
+                        "initial_floor_bytes": INITIAL_MIN_BYTES,
+                        "incremental_memory_estimate_bytes": INCREMENTAL_ESTIMATE_BYTES,
+                        "projected_free_floor_bytes": PROJECTED_MIN_BYTES,
+                        "post_load_and_origin_boundary_floor_bytes": PROJECTED_MIN_BYTES,
+                        "samples": samples,
+                        "samples_are_peak_measurements": False,
+                    }}
     else:
-        result=verify_results()
+        with SharedJobLock():
+            initial=initial_resource_snapshot()
+            if not initial["pass_both_initial_gates"]:
+                raise VerifyError(f"R4 initial RAM gates failed before independent metric replay: {initial}")
+            samples=[initial]
+            result=verify_results(samples)
     print(json.dumps(result,indent=2,ensure_ascii=False,sort_keys=True))
     return 0
 
