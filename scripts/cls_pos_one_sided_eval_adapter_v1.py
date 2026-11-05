@@ -251,6 +251,13 @@ def run_source_qa() -> dict[str, Any]:
         "adapter_binding": binding,
         "real_fit_audit": real_fit_audit,
         "synthetic_prepare_entry": synthetic,
+        "prior_harness_attempt": {
+            "status": "FAILED_TEST_HARNESS_PRECONDITION_ONLY",
+            "cause": "synthetic test expected ARMS absent after the same-process real ledger audit had correctly installed the adapter binding",
+            "campaign_fit_repeated": False,
+            "official_predictions_created": False,
+            "query_labels_scored": False,
+        },
         "resource_snapshot": {
             "policy": RUNNER.RESOURCE_POLICIES["saved_replay"],
             "initial_under_shared_lock": initial,

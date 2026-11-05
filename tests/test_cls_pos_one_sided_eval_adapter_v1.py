@@ -57,8 +57,9 @@ def run_synthetic_prepare_entry_qa() -> dict[str, Any]:
     probability routing, prediction archive and manifest writer remain real.
     Only boundary inputs are supplied by deterministic synthetic fixtures.
     """
-    if hasattr(EVAL, "ARMS"):
-        raise AssertionError("Frozen evaluator unexpectedly has an ARMS binding before adapter install")
+    existing_binding = getattr(EVAL, "ARMS", None)
+    if existing_binding is not None and tuple(existing_binding) != tuple(ARMS):
+        raise AssertionError("Frozen evaluator has a conflicting ARMS binding before adapter install")
     binding = ADAPTER.install_frozen_arm_binding()
     if tuple(EVAL.ARMS) != tuple(ARMS):
         raise AssertionError("Adapter did not bind the model's exact arm tuple")
@@ -279,6 +280,7 @@ class TestCLSPosOneSidedEvalAdapter(unittest.TestCase):
             delattr(EVAL, "ARMS")
 
     def test_exact_frozen_arm_binding(self) -> None:
+        self.assertFalse(hasattr(EVAL, "ARMS"))
         binding = ADAPTER.install_frozen_arm_binding()
         self.assertEqual(binding["arms"], ["ONE_SIDED", "GLOBAL_STRENGTH"])
         self.assertFalse(binding["evaluator_source_modified"])
