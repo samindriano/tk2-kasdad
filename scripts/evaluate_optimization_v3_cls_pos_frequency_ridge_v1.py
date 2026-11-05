@@ -32,7 +32,8 @@ from src.models.pos_frequency_ridge_v1 import canonical_sha256, sha256_array
 REL_FREEZE_R1 = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R1.json"
 REL_FREEZE_R2 = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R2.json"
 REL_FREEZE_R3 = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R3.json"
-REL_FREEZE = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R4.json"
+REL_FREEZE_R4 = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R4.json"
+REL_FREEZE = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R5.json"
 REL_PREDICTIONS = "experiments/runs/optimization_v3_cls_pos_frequency_ridge_eval_v1/predictions_r1.npz"
 REL_PREDICTION_MANIFEST = "reports/optimization_v3/cls_pos_frequency_ridge_v1/PREDICTIONS_MANIFEST_R1.json"
 REL_RESULTS = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_RESULTS_R1.json"
@@ -40,10 +41,13 @@ REL_REPORT = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_REPO
 REL_SOURCE_QA_R1 = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_SOURCE_QA_R1.json"
 REL_SOURCE_QA_R2 = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_SOURCE_QA_R2.json"
 REL_SOURCE_QA_R3 = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_SOURCE_QA_R3.json"
-REL_SOURCE_QA = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_SOURCE_QA_R4.json"
+REL_SOURCE_QA_R4 = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_SOURCE_QA_R4.json"
+REL_SOURCE_QA = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_SOURCE_QA_R5.json"
 RESOURCE_AMENDMENT_REL = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_RESOURCE_AMENDMENT_R4.json"
+R4_ATTEMPT_REL = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_ATTEMPT_R4_PRELABEL.json"
 R2_FREEZE_COMMIT = "648ee016b63afddedebedd0888e889005d3b45f3"
 R3_FREEZE_COMMIT = "2f712755ea3af077d17f283487f20b405c3dce31"
+R4_FREEZE_COMMIT = "cab69181b5c7dc4961fe60050a57e739aca7bd0c"
 QUERY_INITIAL_MIN_BYTES = 3 * 1024**3
 QUERY_INCREMENTAL_ESTIMATE_BYTES = 512 * 1024**2
 QUERY_PROJECTED_MIN_BYTES = 2 * 1024**3
@@ -79,7 +83,8 @@ OPERATIONAL_MISSING_THRESHOLD = 0.53230976129477
 
 POS_KEYS = ("score_rows", "score_record_ids", "score_cycles", "present_mask",
             "prob_bag", "prob_offset_real", "prob_missing_hgb")
-PILOT_KEYS = ("score_rows", "score_record_ids", "score_cycles", "present_mask", "prob_bag")
+PILOT_KEYS = ("score_rows", "score_record_ids", "score_cycles", "present_mask",
+              "prob_bag", "prob_missing_hgb", "prob_route_bag")
 A02_KEYS = tuple(
     f"E{o}_{key}"
     for o in (67, 75)
@@ -208,10 +213,13 @@ def expected_input_paths() -> list[str]:
     rels.add(REL_FREEZE_R1)
     rels.add(REL_FREEZE_R2)
     rels.add(REL_FREEZE_R3)
+    rels.add(REL_FREEZE_R4)
     rels.add(REL_SOURCE_QA_R1)
     rels.add(REL_SOURCE_QA_R2)
     rels.add(REL_SOURCE_QA_R3)
+    rels.add(REL_SOURCE_QA_R4)
     rels.add(REL_SOURCE_QA)
+    rels.add(R4_ATTEMPT_REL)
     rels.add("reports/optimization_v3/posoffset_a02_endgame_v1/RECIPE.json")
     rels.add("experiments/runs/optimization_v3_cls_pos_frequency_ridge_v1/BUDGET_LEDGER.jsonl")
     rels.update({
@@ -261,6 +269,44 @@ def source_preflight() -> dict[str, Any]:
             or amendment.get("incremental_memory_estimate_bytes") != QUERY_INCREMENTAL_ESTIMATE_BYTES
             or amendment.get("minimum_projected_free_bytes") != QUERY_PROJECTED_MIN_BYTES):
         raise EvaluationError("R4 resource amendment contents differ from the authorized record")
+    prior_r4 = read_json(path(REL_FREEZE_R4))
+    prior_r4_body = dict(prior_r4)
+    prior_r4_claim = prior_r4_body.pop("freeze_sha256", None)
+    prior_r4_resource = prior_r4.get("resource_policy", {})
+    if (prior_r4_claim != canonical_sha256(prior_r4_body)
+            or prior_r4.get("status") != "FROZEN_BEFORE_QUERY_TARGET_LOAD"
+            or prior_r4.get("freeze_round") != "R4"
+            or prior_r4.get("supersedes_freeze") != REL_FREEZE_R3
+            or prior_r4.get("parent_freeze_commit") != R3_FREEZE_COMMIT
+            or prior_r4.get("parent_freeze_sha256") != file_sha256(path(REL_FREEZE_R3))
+            or prior_r4_resource.get("minimum_available_bytes") != QUERY_INITIAL_MIN_BYTES
+            or prior_r4_resource.get("incremental_memory_estimate_bytes") != QUERY_INCREMENTAL_ESTIMATE_BYTES
+            or prior_r4_resource.get("minimum_projected_free_bytes") != QUERY_PROJECTED_MIN_BYTES):
+        raise EvaluationError("Prior R4 source/resource-freeze lineage is invalid")
+    prior_r4_commit = require_committed(REL_FREEZE_R4)
+    if prior_r4_commit != R4_FREEZE_COMMIT:
+        raise EvaluationError("Committed R4 source/resource-freeze checkpoint differs from the recorded parent")
+    r4_attempt = read_json(path(R4_ATTEMPT_REL))
+    if (r4_attempt.get("status") != "STOPPED_PRELABEL_INVALID_FALLBACK_CACHE_COMPARISON"
+            or r4_attempt.get("attempt", {}).get("source_freeze_file_sha256") != file_sha256(path(REL_FREEZE_R4))
+            or r4_attempt.get("attempt", {}).get("source_freeze_commit") != R4_FREEZE_COMMIT
+            or r4_attempt.get("attempt", {}).get("initial_resource_gates_passed") is not True
+            or r4_attempt.get("subsequent_target_free_cache_audit", {}).get("query_labels_or_target_members_accessed") is not False
+            or r4_attempt.get("boundary", {}).get("query_target_labels_read") is not False
+            or r4_attempt.get("boundary", {}).get("prediction_npz_created") is not False
+            or r4_attempt.get("boundary", {}).get("new_model_fits") != 0):
+        raise EvaluationError("R4 failed-attempt receipt is missing or inconsistent")
+    cache_audit = r4_attempt["subsequent_target_free_cache_audit"]
+    for origin, missing_rows in (("E67", 1375), ("E75", 526)):
+        item = cache_audit.get(origin, {})
+        if (item.get("missing_rows") != missing_rows
+                or item.get("raw_bag_lr_equals_hgb_missing") is not False
+                or item.get("pos_hgb_equals_pilot_hgb_full_vector") is not True
+                or item.get("pos_routed_bag_equals_pilot_routed_bag_full_vector") is not True
+                or item.get("routed_bag_missing_equals_hgb") is not True
+                or item.get("routed_bag_present_equals_raw_bag_lr") is not True):
+            raise EvaluationError(f"R4 failed-attempt cache diagnosis is inconsistent for {origin}")
+    r4_attempt_commit = require_committed(R4_ATTEMPT_REL)
     source_hashes: dict[str, str] = {}
     for rel in SOURCE_FILES:
         file_path = path(rel)
@@ -294,8 +340,12 @@ def source_preflight() -> dict[str, Any]:
         "status": "PASS_TARGET_FREE_EVALUATOR_SOURCE_PREFLIGHT",
         "source_hashes": source_hashes, "input_hashes": input_hashes,
         "parent_freeze": {
-            "path": REL_FREEZE_R3, "freeze_sha256": file_sha256(path(REL_FREEZE_R3)),
-            "commit": prior_r3_commit,
+            "path": REL_FREEZE_R4, "freeze_sha256": file_sha256(path(REL_FREEZE_R4)),
+            "commit": prior_r4_commit,
+        },
+        "preserved_failed_attempt": {
+            "path": R4_ATTEMPT_REL, "sha256": file_sha256(path(R4_ATTEMPT_REL)),
+            "commit": r4_attempt_commit,
         },
         "a02_allowlist": list(A02_KEYS), "pos_bundle_allowlist": list(POS_KEYS),
         "pilot_bundle_allowlist": list(PILOT_KEYS),
@@ -311,17 +361,20 @@ def build_source_freeze(*, synthetic_qa: Mapping[str, Any]) -> dict[str, Any]:
     body: dict[str, Any] = {
         "schema_version": 1, "status": "FROZEN_BEFORE_QUERY_TARGET_LOAD",
         "campaign_id": "CLS_POS_FREQUENCY_RIDGE_V1_EVALUATION_R1",
-        "freeze_round": "R4",
-        "supersedes_freeze": REL_FREEZE_R3,
+        "freeze_round": "R5",
+        "supersedes_freeze": REL_FREEZE_R4,
         "supersession_reason": (
-            "R4 is an explicitly authorized evaluation-only resource amendment following the R3 source repair. "
-            "It changes only the zero-fit query-replay resource policy to an initial 3 GiB floor plus a "
-            "projected 2 GiB reserve, adds measured current-state boundary samples, and releases origin matrices "
-            "serially. Scientific recipes, inputs, labels, windows, thresholds, comparisons, and gates are unchanged."
+            "R5 corrects the target-free cache-field semantics identified in the preserved R4 failed attempt. "
+            "The pilot producer stores prob_bag as raw LogisticRegression probability and prob_route_bag as "
+            "availability-routed probability. R5 uses raw prob_bag only for frozen LogisticRegression replay, "
+            "and checks the shared HGB and routed-bag fields explicitly. The R4 resource policy is retained; "
+            "scientific recipes, labels, windows, thresholds, comparisons, and gates are unchanged."
         ),
         "source_preparation_parent_commit": git_text("rev-parse", "HEAD"),
         "parent_freeze_sha256": preflight["parent_freeze"]["freeze_sha256"],
         "parent_freeze_commit": preflight["parent_freeze"]["commit"],
+        "preserved_failed_attempt_sha256": preflight["preserved_failed_attempt"]["sha256"],
+        "preserved_failed_attempt_commit": preflight["preserved_failed_attempt"]["commit"],
         "resource_policy": {
             "amendment_path": RESOURCE_AMENDMENT_REL,
             "minimum_available_bytes": QUERY_INITIAL_MIN_BYTES,
@@ -405,13 +458,29 @@ def verify_source_freeze(*, require_frozen_commit: bool) -> tuple[dict[str, Any]
         raise EvaluationError("Evaluation source freeze signature mismatch")
     if freeze.get("status") != "FROZEN_BEFORE_QUERY_TARGET_LOAD":
         raise EvaluationError("Evaluation source freeze status is not pre-label")
-    if (freeze.get("freeze_round") != "R4"
-            or freeze.get("supersedes_freeze") != REL_FREEZE_R3):
-        raise EvaluationError("Evaluation source freeze is not the committed R4 resource checkpoint")
+    if (freeze.get("freeze_round") != "R5"
+            or freeze.get("supersedes_freeze") != REL_FREEZE_R4):
+        raise EvaluationError("Evaluation source freeze is not the committed R5 cache-semantics checkpoint")
     current = source_preflight()
     if (freeze.get("parent_freeze_sha256") != current["parent_freeze"]["freeze_sha256"]
             or freeze.get("parent_freeze_commit") != current["parent_freeze"]["commit"]):
-        raise EvaluationError("R3 freeze does not bind the verified R2 parent checkpoint")
+        raise EvaluationError("R5 freeze does not bind the verified R4 parent checkpoint")
+    if (freeze.get("preserved_failed_attempt_sha256") != current["preserved_failed_attempt"]["sha256"]
+            or freeze.get("preserved_failed_attempt_commit") != current["preserved_failed_attempt"]["commit"]):
+        raise EvaluationError("R5 freeze does not bind the committed R4 failed-attempt receipt")
+    parent = read_json(path(REL_FREEZE_R4))
+    unchanged_fields = ("windows", "unique_pool", "recipe", "gates",
+                        "incident_disclosure", "incident_status")
+    if any(freeze.get(name) != parent.get(name) for name in unchanged_fields):
+        raise EvaluationError("R5 changed a scientific recipe, comparison window, gate, or incident disclosure")
+    resource_policy = freeze.get("resource_policy", {})
+    if (resource_policy.get("minimum_available_bytes") != QUERY_INITIAL_MIN_BYTES
+            or resource_policy.get("incremental_memory_estimate_bytes") != QUERY_INCREMENTAL_ESTIMATE_BYTES
+            or resource_policy.get("minimum_projected_free_bytes") != QUERY_PROJECTED_MIN_BYTES
+            or resource_policy.get("post_load_and_origin_boundary_minimum_available_bytes") != QUERY_PROJECTED_MIN_BYTES
+            or resource_policy.get("sampled_rss_is_peak") is not False
+            or freeze.get("new_fits_or_test_inference") != 0):
+        raise EvaluationError("R5 resource policy or zero-fit boundary differs from authorized R4 amendment")
     if current["source_hashes"] != freeze.get("source_hashes"):
         raise EvaluationError("Evaluator source or frozen predecessor source changed")
     if current["input_hashes"] != freeze.get("input_hashes"):
@@ -599,6 +668,43 @@ def validate_ordered_row_identity(rows: np.ndarray, ids: np.ndarray, cycles: np.
         raise EvaluationError("Ordered physical rows, record IDs, or cycles differ from the frozen population")
 
 
+def validate_saved_route_probabilities(pos_prob_bag: np.ndarray,
+                                       pos_prob_missing_hgb: np.ndarray,
+                                       pilot_prob_bag_raw: np.ndarray,
+                                       pilot_prob_missing_hgb: np.ndarray,
+                                       pilot_prob_route_bag: np.ndarray,
+                                       missing: np.ndarray) -> dict[str, Any]:
+    """Validate raw, routed, and HGB cache fields without conflating their meanings."""
+    pos_bag = np.asarray(pos_prob_bag, dtype=np.float64)
+    pos_hgb = np.asarray(pos_prob_missing_hgb, dtype=np.float64)
+    raw_bag = np.asarray(pilot_prob_bag_raw, dtype=np.float64)
+    pilot_hgb = np.asarray(pilot_prob_missing_hgb, dtype=np.float64)
+    routed_bag = np.asarray(pilot_prob_route_bag, dtype=np.float64)
+    missing = np.asarray(missing, dtype=bool)
+    if (pos_bag.ndim != 1 or any(x.shape != pos_bag.shape for x in
+                                 (pos_hgb, raw_bag, pilot_hgb, routed_bag, missing))
+            or not all(np.isfinite(x).all() for x in (pos_bag, pos_hgb, raw_bag, pilot_hgb, routed_bag))
+            or any(np.any((x < 0) | (x > 1)) for x in
+                   (pos_bag, pos_hgb, raw_bag, pilot_hgb, routed_bag))):
+        raise EvaluationError("Saved raw/routed/HGB probability vectors are malformed")
+    if not np.array_equal(pos_hgb, pilot_hgb):
+        raise EvaluationError("POS and pilot cached HGB fallback vectors differ")
+    if not np.array_equal(pos_bag, routed_bag):
+        raise EvaluationError("POS bag route differs from pilot prob_route_bag")
+    if not np.array_equal(routed_bag[missing], pilot_hgb[missing]):
+        raise EvaluationError("Pilot routed bag is not bit-exact HGB on missing rows")
+    present = ~missing
+    if not np.array_equal(routed_bag[present], raw_bag[present]):
+        raise EvaluationError("Pilot routed bag differs from raw bag LR on present rows")
+    return {
+        "pos_hgb_equals_pilot_hgb_full_vector": True,
+        "pos_routed_bag_equals_pilot_routed_bag_full_vector": True,
+        "routed_bag_missing_equals_hgb_bit_exact": True,
+        "routed_bag_present_equals_raw_bag_lr_bit_exact": True,
+        "raw_bag_lr_used_for_estimator_replay_only": True,
+    }
+
+
 def verify_four_fit_ledger() -> dict[str, Any]:
     ledger = path("experiments/runs/optimization_v3_cls_pos_frequency_ridge_v1/BUDGET_LEDGER.jsonl")
     events = [json.loads(line) for line in ledger.read_text(encoding="utf-8").splitlines() if line.strip()]
@@ -728,8 +834,12 @@ def prepare_predictions() -> dict[str, Any]:
             p_a = a02[f"E{origin}_pA"].astype(np.float64)
             missing_hgb = pos["prob_missing_hgb"].astype(np.float64)
             p_bag_saved = pilot["prob_bag"].astype(np.float64)
-            if not np.array_equal(missing_hgb[missing], p_bag_saved[missing]):
-                raise EvaluationError(f"E{origin} HGB fallback does not match saved pilot cache")
+            pilot_missing_hgb = pilot["prob_missing_hgb"].astype(np.float64)
+            p_bag_route_saved = pilot["prob_route_bag"].astype(np.float64)
+            route_field_audit = validate_saved_route_probabilities(
+                pos["prob_bag"], missing_hgb, p_bag_saved, pilot_missing_hgb,
+                p_bag_route_saved, missing,
+            )
             p_offset_cached = pos["prob_offset_real"].astype(np.float64)
             if any(not np.isfinite(x).all() or np.any((x < 0) | (x > 1))
                    for x in (p_a, missing_hgb, p_offset_cached)):
@@ -883,6 +993,7 @@ def prepare_predictions() -> dict[str, Any]:
                 "bag_receipt_sha256": file_sha256(bag_receipt_path),
                 "uniform_gamma": uniform_lineage, "frequency_gammas": new_lineages,
                 "row_id_cycle_identity": "PASS_EXACT_ORDERED_ID_AND_CYCLE_ALIGNMENT",
+                "saved_route_field_audit": route_field_audit,
                 "original_c2b_query_logit_replay": "PASS_ATOL_2E-12",
                 "uniform_pos_gamma_replay": "PASS_ATOL_2E-10_PRESENT_ONLY",
                 "missing_fallback": "BIT_EXACT_SHARED_HGB",

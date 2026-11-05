@@ -5,6 +5,7 @@ from scripts.evaluate_optimization_v3_cls_pos_frequency_ridge_v1 import (
     A02_KEYS,
     FORBIDDEN_QUERY_KEYS,
     EvaluationError,
+    PILOT_KEYS,
     VIEWS,
     evaluate_query_boundary_resource_gate,
     evaluate_query_initial_resource_gates,
@@ -14,6 +15,7 @@ from scripts.evaluate_optimization_v3_cls_pos_frequency_ridge_v1 import (
     read_allowlisted_members,
     row_metadata,
     sha256_array,
+    validate_saved_route_probabilities,
     validate_ordered_row_identity,
 )
 
@@ -38,6 +40,11 @@ def test_forbidden_label_rejected_before_archive_indexing():
 def test_a02_allowlist_contains_only_non_target_keys():
     assert not (set(A02_KEYS) & FORBIDDEN_QUERY_KEYS)
     assert not any(key.endswith("_y") for key in A02_KEYS)
+
+
+def test_pilot_allowlist_distinguishes_raw_routed_and_hgb_fields_without_targets():
+    assert {"prob_bag", "prob_route_bag", "prob_missing_hgb"}.issubset(PILOT_KEYS)
+    assert not any(key.endswith("_y") for key in PILOT_KEYS)
 
 
 def test_safe_allowlisted_member_load_indexes_only_requested_fields():
@@ -155,3 +162,24 @@ def test_query_boundary_resource_gate_requires_two_gib_actual_available():
     gib = 1024**3
     assert evaluate_query_boundary_resource_gate(2 * gib)["pass"] is True
     assert evaluate_query_boundary_resource_gate(2 * gib - 1)["pass"] is False
+
+
+def test_saved_route_audit_separates_raw_bag_lr_from_missing_hgb_route():
+    raw_bag = np.asarray([0.10, 0.20, 0.30, 0.40], dtype=np.float64)
+    hgb = np.asarray([0.15, 0.85, 0.75, 0.35], dtype=np.float64)
+    missing = np.asarray([False, True, True, False])
+    routed = np.asarray([0.10, 0.85, 0.75, 0.40], dtype=np.float64)
+    audit = validate_saved_route_probabilities(routed, hgb, raw_bag, hgb, routed, missing)
+    assert raw_bag[missing].tolist() != hgb[missing].tolist()
+    assert audit["routed_bag_missing_equals_hgb_bit_exact"] is True
+    assert audit["routed_bag_present_equals_raw_bag_lr_bit_exact"] is True
+
+
+def test_saved_route_audit_rejects_tampered_missing_fallback():
+    raw_bag = np.asarray([0.10, 0.20, 0.30], dtype=np.float64)
+    hgb = np.asarray([0.15, 0.85, 0.75], dtype=np.float64)
+    missing = np.asarray([False, True, True])
+    tampered_route = np.asarray([0.10, 0.84, 0.75], dtype=np.float64)
+    with pytest.raises(EvaluationError, match="not bit-exact HGB"):
+        validate_saved_route_probabilities(tampered_route, hgb, raw_bag, hgb,
+                                           tampered_route, missing)

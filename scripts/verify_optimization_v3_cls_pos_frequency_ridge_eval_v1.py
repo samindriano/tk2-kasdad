@@ -23,8 +23,9 @@ import sys
 sys.path.insert(0, str(ROOT))
 from src.models.optimization_v3_positional_text_pilot_v1 import sha256_csr
 
-FREEZE = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R4.json"
-FREEZE_PARENT = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R3.json"
+FREEZE = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R5.json"
+FREEZE_PARENT = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R4.json"
+R4_ATTEMPT = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_ATTEMPT_R4_PRELABEL.json"
 PRED = "experiments/runs/optimization_v3_cls_pos_frequency_ridge_eval_v1/predictions_r1.npz"
 PRED_MANIFEST = "reports/optimization_v3/cls_pos_frequency_ridge_v1/PREDICTIONS_MANIFEST_R1.json"
 RESULTS = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_RESULTS_R1.json"
@@ -48,7 +49,8 @@ A02_KEYS = tuple(
 )
 POS_KEYS = ("score_rows","score_record_ids","score_cycles","present_mask",
             "prob_bag","prob_offset_real","prob_missing_hgb")
-PILOT_KEYS = ("score_rows","score_record_ids","score_cycles","present_mask","prob_bag")
+PILOT_KEYS = ("score_rows","score_record_ids","score_cycles","present_mask",
+             "prob_bag","prob_missing_hgb","prob_route_bag")
 
 
 class VerifyError(RuntimeError):
@@ -93,11 +95,17 @@ def verify_freeze_and_manifest() -> tuple[dict[str, Any], dict[str, Any]]:
     freeze = read_json(p(FREEZE)); manifest = read_json(p(PRED_MANIFEST))
     if freeze.get("status") != "FROZEN_BEFORE_QUERY_TARGET_LOAD":
         raise VerifyError("Source freeze is not pre-label")
-    if (freeze.get("freeze_round") != "R4"
+    if (freeze.get("freeze_round") != "R5"
             or freeze.get("supersedes_freeze") != FREEZE_PARENT
             or freeze.get("parent_freeze_sha256") != sha_file(p(FREEZE_PARENT))
-            or freeze.get("parent_freeze_commit") != committed(FREEZE_PARENT)):
-        raise VerifyError("R4 source freeze parent lineage is invalid")
+            or freeze.get("parent_freeze_commit") != committed(FREEZE_PARENT)
+            or freeze.get("preserved_failed_attempt_sha256") != sha_file(p(R4_ATTEMPT))
+            or freeze.get("preserved_failed_attempt_commit") != committed(R4_ATTEMPT)):
+        raise VerifyError("R5 source freeze parent/failed-attempt lineage is invalid")
+    parent = read_json(p(FREEZE_PARENT))
+    if any(freeze.get(name) != parent.get(name)
+           for name in ("windows", "unique_pool", "recipe", "gates", "incident_disclosure", "incident_status")):
+        raise VerifyError("R5 changed the scientific recipe, views, gates, or incident disclosure")
     if manifest.get("status") != "PREDICTIONS_FROZEN_BEFORE_QUERY_TARGET_READ":
         raise VerifyError("Predictions manifest is not pre-label")
     if manifest.get("source_freeze_sha256") != sha_file(p(FREEZE)):
@@ -224,6 +232,16 @@ def independently_replay_saved_predictions(arrays: dict[str,np.ndarray]) -> dict
         missing=a02[f"E{origin}_missing"].astype(bool); present=~missing
         p_a=a02[f"E{origin}_pA"].astype(np.float64)
         fallback=pos["prob_missing_hgb"].astype(np.float64)
+        pilot_hgb=pilot["prob_missing_hgb"].astype(np.float64)
+        pilot_raw_bag=pilot["prob_bag"].astype(np.float64)
+        pilot_routed_bag=pilot["prob_route_bag"].astype(np.float64)
+        if not np.array_equal(fallback,pilot_hgb):
+            raise VerifyError(f"{k} POS and pilot HGB fallback vectors differ")
+        if not np.array_equal(pos["prob_bag"],pilot_routed_bag):
+            raise VerifyError(f"{k} POS route and pilot prob_route_bag differ")
+        if (not np.array_equal(pilot_routed_bag[missing],pilot_hgb[missing])
+                or not np.array_equal(pilot_routed_bag[present],pilot_raw_bag[present])):
+            raise VerifyError(f"{k} pilot raw/routed/HGB cache semantics fail")
         gamma_specs={
             "UNIFORM":(
                 f"{POS_BAG_ROOT}/units/POS_BAG_OFFSET_V1_E{origin}_REAL.npz",
@@ -267,8 +285,9 @@ def independently_replay_saved_predictions(arrays: dict[str,np.ndarray]) -> dict
         expected_mix[missing]=p_a[missing]
         if not np.allclose(arrays[f"{k}_MIX50_REFERENCE"],expected_mix,rtol=0.0,atol=2e-15):
             raise VerifyError(f"Saved original MIX50 reference does not replay: {k}")
-        audit[k]={"c2b_max_abs_error":float(np.max(np.abs(bag_p-pilot["prob_bag"]))),
+        audit[k]={"c2b_max_abs_error":float(np.max(np.abs(bag_p-pilot_raw_bag))),
                   "gamma_probability_max_abs_errors":errors,
+                  "route_cache_fields_bit_exact":True,
                   "missing_fallback_bit_exact":True,"a02_alignment":"PASS"}
     return {"status":"PASS_INDEPENDENT_PREDICTION_REPLAY","origins":audit}
 
