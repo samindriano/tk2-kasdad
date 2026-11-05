@@ -1,0 +1,39 @@
+{
+  "event": "PRE_EVALUATOR_FREEZE_LABEL_ARRAY_MATERIALIZATION",
+  "at_utc": "2026-11-05T04:01:28.622497+00:00",
+  "decision": "CONTINUE_DISCLOSED_FIXED_POLICY_EVALUATION",
+  "reviewed_command_id": "exec-7bc977bb-e71d-4750-9eb9-e28a14767014",
+  "observed_code": "for k in z.files: a=z[k]; print(k,a.shape,a.dtype)",
+  "scope": "All arrays in five saved POS/pilot/policy NPZ files were loaded for shape/dtype inventory; reported label members include E67_y and E75_y in policy_predictions.npz.",
+  "confirmed_from_command": [
+    "Arrays were materialized, including labels.",
+    "Code prints names, shapes and dtypes, not element values.",
+    "Inspection code contains no metric, training, label statistic or output-file write."
+  ],
+  "worker_reported": [
+    "Inspection process ended.",
+    "No evaluator freeze, prediction output, or metric created before reporting.",
+    "No new fits or Test access."
+  ],
+  "limits": [
+    "This was an access-order deviation; pre-exposure cannot be undone.",
+    "Absence of all downstream influence cannot be established merely from the incident report.",
+    "These are repeatedly reused development labels, not fresh or untouched holdout data."
+  ],
+  "basis_for_continuation": [
+    "Four prefix-only predictor fits and their fixed penalty recipes were complete before the incident.",
+    "Comparators, temporal windows, aggregation, thresholds and gates were specified in prior root handoff.",
+    "No outcome-driven recipe change or rerun is authorized."
+  ],
+  "required_actions": [
+    "Freeze additive evaluator source/input mapping and save source/hash receipt before any further target loading.",
+    "Publish fixed prediction arrays and manifest before target scoring.",
+    "Use explicit allowlisted NPZ probability/identity fields; never materialize all arrays during inventory.",
+    "Read Train evaluation targets only in approved stage; independently reconstruct metrics.",
+    "Carry this incident disclosure into results; never claim outcome-blind or untouched evaluation."
+  ],
+  "invalid_actions": [
+    "Do not relabel replacement copies as unexposed holdout.",
+    "No refit, reselection, threshold/weight tuning, altered gate, Test or Kaggle access."
+  ]
+}
