@@ -508,15 +508,22 @@ def _reconstruct_vectors() -> tuple[dict[str, np.ndarray], dict[str, Any]]:
         raise BenchmarkError("Saved R06 final prediction is outside [0,100]")
     if not np.array_equal(r06_final.view("<u8"), current_baseline.view("<u8")):
         raise BenchmarkError("Current E79 baseline is not bit-identical to the pinned R06 final prediction")
-    if (source_array_sha(r06_final, dtype="<f8") != _read_json(INPUTS["r06_manifest"][0])
-            .get("prediction_audit", {}).get("prediction_sha256")
-            or source_array_sha(current_baseline, dtype="<f8")
-            != _read_json(INPUTS["current_r06_manifest"][0]).get("baseline_prediction_member_digest")
-            or source_array_sha(current_prediction, dtype="<f8")
-            != _read_json(INPUTS["current_r06_manifest"][0]).get("prediction_sha256")
-            or source_array_sha(source_ids) != _read_json(INPUTS["current_r06_manifest"][0])
-            .get("ordered_official_test_ids_sha256")):
-        raise BenchmarkError("Saved R06/E79 prediction or ID digests differ from source manifests")
+    r06_source_manifest = _read_json(INPUTS["r06_manifest"][0])
+    position_source_manifest = _read_json(INPUTS["current_r06_manifest"][0])
+    digest_checks = {
+        "r06_prediction": source_array_sha(r06_final, dtype="<f8")
+        == r06_source_manifest.get("prediction_audit", {}).get("prediction_sha256"),
+        "position_baseline": source_array_sha(current_baseline, dtype="<f8")
+        == position_source_manifest.get("baseline_prediction_member_digest"),
+        "position_prediction": source_array_sha(current_prediction, dtype="<f8")
+        == position_source_manifest.get("prediction_sha256"),
+        "official_test_ids": source_array_sha(source_ids)
+        == position_source_manifest.get("ordered_official_test_ids_sha256"),
+    }
+    if not all(digest_checks.values()):
+        failed_checks = [name for name, passed in digest_checks.items() if not passed]
+        raise BenchmarkError("Saved R06/E79 source-manifest digest mismatch: "
+                             + ",".join(failed_checks))
     r06_rebuilt = np.clip(0.75 * legacy_three + 0.25 * r06_char_mapped, 0.0, 100.0)
     if not np.allclose(r06_rebuilt, r06_final, rtol=0.0, atol=1e-10):
         raise BenchmarkError("Full R06 champion reconstruction failed against the saved final prediction")
