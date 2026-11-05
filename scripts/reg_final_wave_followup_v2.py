@@ -40,14 +40,21 @@ EXPERIMENT_DIR = ROOT / "experiments/REG_FINAL_WAVE_FOLLOWUP_V2"
 RUN_DIR = ROOT / "experiments/runs/REG_FINAL_WAVE_FOLLOWUP_V2"
 SUBMISSION_DIR = ROOT / "submissions/reg_final_wave_followup_v2"
 PROTOCOL = REPORT_DIR / "PROTOCOL.md"
-PRIOR_SYNTHETIC_QA = REPORT_DIR / "SYNTHETIC_QA.json"
-SYNTHETIC_QA = REPORT_DIR / "SYNTHETIC_QA_R2.json"
-PRIOR_PREFIT_FREEZE = EXPERIMENT_DIR / "PREFIT_FREEZE.json"
-PREFIT_FREEZE = EXPERIMENT_DIR / "PREFIT_FREEZE_R2.json"
-PRIOR_BLOCKER_REPORT = REPORT_DIR / "SOURCE_PREPARATION_BLOCKED.json"
-BLOCKER_REPORT = REPORT_DIR / "SOURCE_PREPARATION_BLOCKED_R2.json"
-IDENTITY_PREFLIGHT = REPORT_DIR / "IDENTITY_PREFLIGHT_R2.json"
-PRIOR_PREFLIGHT = REPORT_DIR / "IDENTITY_PREFLIGHT.json"
+R1_SYNTHETIC_QA = REPORT_DIR / "SYNTHETIC_QA.json"
+R1_PREFIT_FREEZE = EXPERIMENT_DIR / "PREFIT_FREEZE.json"
+R1_BLOCKER_REPORT = REPORT_DIR / "SOURCE_PREPARATION_BLOCKED.json"
+R2_SYNTHETIC_QA = REPORT_DIR / "SYNTHETIC_QA_R2.json"
+R2_PREFIT_FREEZE = EXPERIMENT_DIR / "PREFIT_FREEZE_R2.json"
+R2_IDENTITY_PREFLIGHT = REPORT_DIR / "IDENTITY_PREFLIGHT_R2.json"
+R2_VERIFICATION_FAILURE = REPORT_DIR / "SOURCE_VERIFICATION_FAILED_R2.json"
+PRIOR_SYNTHETIC_QA = R2_SYNTHETIC_QA
+SYNTHETIC_QA = REPORT_DIR / "SYNTHETIC_QA_R3.json"
+PRIOR_PREFIT_FREEZE = R2_PREFIT_FREEZE
+PREFIT_FREEZE = EXPERIMENT_DIR / "PREFIT_FREEZE_R3.json"
+PRIOR_BLOCKER_REPORT = R2_VERIFICATION_FAILURE
+BLOCKER_REPORT = REPORT_DIR / "SOURCE_PREPARATION_BLOCKED_R3.json"
+IDENTITY_PREFLIGHT = REPORT_DIR / "IDENTITY_PREFLIGHT_R3.json"
+PRIOR_PREFLIGHT = R2_IDENTITY_PREFLIGHT
 ROOT_SOURCE_PASS = EXPERIMENT_DIR / "ROOT_SOURCE_PASS.json"
 ROOT_PRODUCTION_PASS = EXPERIMENT_DIR / "ROOT_PRODUCTION_PASS.json"
 LEDGER = RUN_DIR / "lp_ledger.jsonl"
@@ -92,9 +99,16 @@ DIAGNOSTIC_FIT_IDS = FIT_IDS[:4]
 # Shared with other authorized KASDAD compute lanes. Advisory OS locking releases
 # automatically on process exit; the lock file is never deleted to infer liveness.
 SHARED_JOB_LOCK = Path(tempfile.gettempdir()) / "kasdad_single_heavy_job.lock"
-PRIOR_PREFIT_FREEZE_SHA256 = "564c1dcfbab9370f14dfb7d5698c7961a144da026c5b6e5eaf180f9f43c312e0"
-PRIOR_BLOCKER_REPORT_SHA256 = "2d0bdae1de295b24aabc49ae4a39d9d7021556b2d810b9e4d3f915bf175ef26f"
-PRIOR_BLOCKER_RECEIPT_SHA256 = "e12f319a45d94b781edfc4fad484e7a0636126a7582c7a6c3206edc4755cb033"
+R1_PREFIT_FREEZE_SHA256 = "564c1dcfbab9370f14dfb7d5698c7961a144da026c5b6e5eaf180f9f43c312e0"
+R1_BLOCKER_REPORT_SHA256 = "2d0bdae1de295b24aabc49ae4a39d9d7021556b2d810b9e4d3f915bf175ef26f"
+R1_BLOCKER_RECEIPT_SHA256 = "e12f319a45d94b781edfc4fad484e7a0636126a7582c7a6c3206edc4755cb033"
+R2_PREFIT_FREEZE_SHA256 = "eb42ad7774b2693b64827becdf97e5fdbf736dff3554b7fde0c5ba59b2d9a1c6"
+R2_PREFLIGHT_FILE_SHA256 = "754ca20e822c4934d563e7e187e33eb2a90be1be6b213f2c970b8f07a04e7742"
+R2_PREFLIGHT_RECEIPT_SHA256 = "0c9fdef1e27b6d68549b8fb500215b9860c2fb7f847db4b9277e3bac0aec06cc"
+R2_SYNTHETIC_QA_SHA256 = "e453ea7a78da82d92b307796e955bb976e21ef07d97cd5f89e71caa06b377a4b"
+R2_SYNTHETIC_QA_RECEIPT_SHA256 = "14e88ce6020d41b0416e9f4fd9152aad25e8180fcb348f6c89291a162196ffc6"
+R2_VERIFICATION_FAILURE_SHA256 = "092c0439dd6e674fc73d43d5c08fe1b41cdcbf21270e96fecf98a2fe4f30574f"
+R2_VERIFICATION_FAILURE_RECEIPT_SHA256 = "c211e26e8f03e78372d8a65f5154e2198109146eef86457fcef04c0cdcc82d54"
 
 SOURCE_FILES = {
     "runner": SCRIPT,
@@ -293,12 +307,13 @@ def _is_known_generated_path(path: str) -> bool:
     experiment = "experiments/REG_FINAL_WAVE_FOLLOWUP_V2/"
     reports = "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2/"
     known_experiment_names = {
-        "PREFIT_FREEZE.json", "PREFIT_FREEZE_R2.json",
+        "PREFIT_FREEZE.json", "PREFIT_FREEZE_R2.json", "PREFIT_FREEZE_R3.json",
         "ROOT_SOURCE_PASS.json", "ROOT_PRODUCTION_PASS.json",
     }
     known_report_names = {
         "SOURCE_PREPARATION_BLOCKED.json", "SOURCE_PREPARATION_BLOCKED_R2.json",
-        "IDENTITY_PREFLIGHT.json", "IDENTITY_PREFLIGHT_R2.json",
+        "SOURCE_VERIFICATION_FAILED_R2.json", "SOURCE_PREPARATION_BLOCKED_R3.json",
+        "IDENTITY_PREFLIGHT.json", "IDENTITY_PREFLIGHT_R2.json", "IDENTITY_PREFLIGHT_R3.json",
         "DIAGNOSTICS.json", "PRODUCTION_RESULT.json", "FINAL_APPLICATION_FREEZE.json",
         "MANIFEST_A.json", "MANIFEST_B.json",
     }
@@ -718,42 +733,132 @@ def verify_prefit_freeze() -> dict[str, Any]:
             or body.get("branch") != BRANCH):
         raise GateError("Prefit freeze identity or branch differs")
     if body.get("successor_of") != prior_source_artifact_binding():
-        raise GateError("Successor freeze no longer binds the preserved R1 freeze/blocker")
+        raise GateError("Successor freeze no longer binds the preserved R1/R2 receipts")
     validate_live_source_checkpoint(body)
     return freeze
 
 
 def prior_source_artifact_binding() -> dict[str, Any]:
-    if not PRIOR_PREFIT_FREEZE.is_file() or not PRIOR_BLOCKER_REPORT.is_file():
-        raise GateError("R1 prefit freeze and source-preparation blocker must be preserved")
-    prior_freeze = read_json(PRIOR_PREFIT_FREEZE)
-    prior_freeze_body = verify_signed(prior_freeze)
-    blocker = read_json(PRIOR_BLOCKER_REPORT)
-    blocker_body = verify_signed(blocker)
-    freeze_sha = file_sha256(PRIOR_PREFIT_FREEZE)
-    blocker_sha = file_sha256(PRIOR_BLOCKER_REPORT)
-    if (freeze_sha != PRIOR_PREFIT_FREEZE_SHA256 or blocker_sha != PRIOR_BLOCKER_REPORT_SHA256
-            or blocker.get("receipt_sha256") != PRIOR_BLOCKER_RECEIPT_SHA256
-            or prior_freeze_body.get("experiment_id") != EXPERIMENT
-            or prior_freeze_body.get("official_labels_accessed") is not False
-            or prior_freeze_body.get("official_lp_starts") != 0
-            or blocker_body.get("status") != "BLOCKED_RAM_IDENTITY_PREFLIGHT"
-            or blocker_body.get("source_commit") != prior_freeze_body.get("source_commit")
-            or blocker_body.get("prefit_freeze_sha256") != freeze_sha
-            or blocker_body.get("official_target_rows_parsed") != 0
-            or blocker_body.get("official_labels_accessed") is not False
-            or blocker_body.get("official_lp_starts") != 0
-            or blocker_body.get("candidate_csvs_created") is not False
-            or blocker_body.get("kaggle_upload") is not False):
-        raise GateError("R1 freeze/blocker lineage failed exact receipt or zero-fit checks")
-    return {
-        "freeze_path": str(PRIOR_PREFIT_FREEZE.relative_to(ROOT).as_posix()),
-        "freeze_sha256": freeze_sha,
-        "blocker_report_path": str(PRIOR_BLOCKER_REPORT.relative_to(ROOT).as_posix()),
-        "blocker_report_sha256": blocker_sha,
-        "blocker_receipt_sha256": blocker["receipt_sha256"],
+    for path in (R1_PREFIT_FREEZE, R1_BLOCKER_REPORT, R1_SYNTHETIC_QA,
+                 R2_PREFIT_FREEZE, R2_IDENTITY_PREFLIGHT, R2_SYNTHETIC_QA,
+                 R2_VERIFICATION_FAILURE):
+        if not path.is_file():
+            raise GateError(f"Required preserved R1/R2 artifact is absent: {path}")
+
+    r1_freeze = read_json(R1_PREFIT_FREEZE)
+    r1_freeze_body = verify_signed(r1_freeze)
+    r1_blocker = read_json(R1_BLOCKER_REPORT)
+    r1_blocker_body = verify_signed(r1_blocker)
+    r1_qa = read_json(R1_SYNTHETIC_QA)
+    r1_qa_body = verify_signed(r1_qa)
+    r1_freeze_sha = file_sha256(R1_PREFIT_FREEZE)
+    r1_blocker_sha = file_sha256(R1_BLOCKER_REPORT)
+    if (r1_freeze_sha != R1_PREFIT_FREEZE_SHA256
+            or r1_blocker_sha != R1_BLOCKER_REPORT_SHA256
+            or r1_blocker.get("receipt_sha256") != R1_BLOCKER_RECEIPT_SHA256
+            or r1_freeze_body.get("experiment_id") != EXPERIMENT
+            or r1_freeze_body.get("status") != "PREFIT_FROZEN_IDENTITY_ONLY"
+            or r1_freeze_body.get("branch") != BRANCH
+            or r1_freeze_body.get("official_labels_accessed") is not False
+            or r1_freeze_body.get("official_lp_starts") != 0
+            or r1_blocker_body.get("status") != "BLOCKED_RAM_IDENTITY_PREFLIGHT"
+            or r1_blocker_body.get("source_commit") != r1_freeze_body.get("source_commit")
+            or r1_blocker_body.get("prefit_freeze_sha256") != r1_freeze_sha
+            or r1_blocker_body.get("official_target_rows_parsed") != 0
+            or r1_blocker_body.get("official_labels_accessed") is not False
+            or r1_blocker_body.get("official_lp_starts") != 0
+            or r1_blocker_body.get("candidate_csvs_created") is not False
+            or r1_blocker_body.get("kaggle_upload") is not False
+            or r1_qa_body.get("experiment_id") != EXPERIMENT
+            or r1_qa_body.get("status") != "PASS_SYNTHETIC_ONLY"
+            or r1_qa_body.get("official_labels_accessed") is not False
+            or r1_qa_body.get("official_lp_starts") != 0
+            or r1_qa_body.get("test_or_sample_accessed") is not False):
+        raise GateError("Preserved R1 receipts failed exact binding or zero-fit checks")
+    r1_binding = {
+        "freeze_path": str(R1_PREFIT_FREEZE.relative_to(ROOT).as_posix()),
+        "freeze_sha256": r1_freeze_sha,
+        "blocker_report_path": str(R1_BLOCKER_REPORT.relative_to(ROOT).as_posix()),
+        "blocker_report_sha256": r1_blocker_sha,
+        "blocker_receipt_sha256": r1_blocker["receipt_sha256"],
         "prior_official_lp_starts": 0,
     }
+
+    r2_freeze = read_json(R2_PREFIT_FREEZE)
+    r2_freeze_body = verify_signed(r2_freeze)
+    r2_preflight = read_json(R2_IDENTITY_PREFLIGHT)
+    r2_preflight_body = verify_signed(r2_preflight)
+    r2_qa = read_json(R2_SYNTHETIC_QA)
+    r2_qa_body = verify_signed(r2_qa)
+    r2_failure = read_json(R2_VERIFICATION_FAILURE)
+    r2_failure_body = verify_signed(r2_failure)
+    r2_freeze_sha = file_sha256(R2_PREFIT_FREEZE)
+    r2_preflight_sha = file_sha256(R2_IDENTITY_PREFLIGHT)
+    r2_qa_sha = file_sha256(R2_SYNTHETIC_QA)
+    r2_failure_sha = file_sha256(R2_VERIFICATION_FAILURE)
+    r1_qa_predecessor = {**r1_binding,
+        "synthetic_qa_path": str(R1_SYNTHETIC_QA.relative_to(ROOT).as_posix()),
+        "synthetic_qa_sha256": file_sha256(R1_SYNTHETIC_QA)}
+    if (r2_freeze_sha != R2_PREFIT_FREEZE_SHA256
+            or r2_preflight_sha != R2_PREFLIGHT_FILE_SHA256
+            or r2_preflight.get("receipt_sha256") != R2_PREFLIGHT_RECEIPT_SHA256
+            or r2_qa_sha != R2_SYNTHETIC_QA_SHA256
+            or r2_qa.get("receipt_sha256") != R2_SYNTHETIC_QA_RECEIPT_SHA256
+            or r2_failure_sha != R2_VERIFICATION_FAILURE_SHA256
+            or r2_failure.get("receipt_sha256") != R2_VERIFICATION_FAILURE_RECEIPT_SHA256
+            or r2_freeze_body.get("experiment_id") != EXPERIMENT
+            or r2_freeze_body.get("status") != "PREFIT_FROZEN_IDENTITY_ONLY"
+            or r2_freeze_body.get("branch") != BRANCH
+            or r2_freeze_body.get("successor_of") != r1_binding
+            or r2_freeze_body.get("official_labels_accessed") is not False
+            or r2_freeze_body.get("official_lp_starts") != 0
+            or r2_preflight_body.get("experiment_id") != EXPERIMENT
+            or r2_preflight_body.get("status") != "PASS_IDENTITY_ONLY_PREFIT"
+            or r2_preflight_body.get("source_commit") != r2_freeze_body.get("source_commit")
+            or r2_preflight_body.get("freeze_sha256") != r2_freeze_sha
+            or r2_preflight_body.get("freeze_signature") != r2_freeze.get("receipt_sha256")
+            or r2_preflight_body.get("official_target_rows_parsed") != 0
+            or r2_preflight_body.get("official_labels_accessed") is not False
+            or r2_preflight_body.get("official_lp_starts") != 0
+            or r2_preflight_body.get("test_csv_or_sample_opened") is not False
+            or r2_preflight_body.get("csv_created") is not False
+            or r2_preflight_body.get("kaggle_upload") is not False
+            or r2_qa_body.get("experiment_id") != EXPERIMENT
+            or r2_qa_body.get("status") != "PASS_SYNTHETIC_ONLY"
+            or r2_qa_body.get("qa_revision") != "R2"
+            or r2_qa_body.get("predecessor") != r1_qa_predecessor
+            or r2_qa_body.get("official_labels_accessed") is not False
+            or r2_qa_body.get("official_lp_starts") != 0
+            or r2_qa_body.get("test_or_sample_accessed") is not False
+            or r2_failure_body.get("status") != "FAIL_INDEPENDENT_PREFIT_VERIFICATION"
+            or r2_failure_body.get("source_commit") != r2_freeze_body.get("source_commit")
+            or r2_failure_body.get("prefit_freeze_sha256") != r2_freeze_sha
+            or r2_failure_body.get("identity_preflight_sha256") != r2_preflight_sha
+            or r2_failure_body.get("identity_preflight_receipt_sha256") != r2_preflight.get("receipt_sha256")
+            or r2_failure_body.get("failed_check") != "source_paths_match_freeze"
+            or r2_failure_body.get("official_target_rows_parsed") != 0
+            or r2_failure_body.get("official_labels_accessed") is not False
+            or r2_failure_body.get("official_lp_starts") != 0
+            or r2_failure_body.get("test_csv_or_sample_opened") is not False
+            or r2_failure_body.get("csv_created") is not False
+            or r2_failure_body.get("kaggle_upload") is not False):
+        raise GateError("Preserved R2 receipts failed exact lineage or zero-official checks")
+
+    r2_binding = {
+        "freeze_path": str(R2_PREFIT_FREEZE.relative_to(ROOT).as_posix()),
+        "freeze_sha256": r2_freeze_sha,
+        "identity_preflight_path": str(R2_IDENTITY_PREFLIGHT.relative_to(ROOT).as_posix()),
+        "identity_preflight_sha256": r2_preflight_sha,
+        "identity_preflight_receipt_sha256": r2_preflight["receipt_sha256"],
+        "synthetic_qa_path": str(R2_SYNTHETIC_QA.relative_to(ROOT).as_posix()),
+        "synthetic_qa_sha256": r2_qa_sha,
+        "synthetic_qa_receipt_sha256": r2_qa["receipt_sha256"],
+        "verification_failure_path": str(R2_VERIFICATION_FAILURE.relative_to(ROOT).as_posix()),
+        "verification_failure_sha256": r2_failure_sha,
+        "verification_failure_receipt_sha256": r2_failure["receipt_sha256"],
+        "prior_official_lp_starts": 0,
+    }
+    return {"r1": r1_binding, "r2": r2_binding, "prior_official_lp_starts": 0}
 
 
 def prepare_freeze() -> dict[str, Any]:
@@ -762,16 +867,16 @@ def prepare_freeze() -> dict[str, Any]:
         return verify_prefit_freeze()
     successor = prior_source_artifact_binding()
     if LEDGER.exists() and read_ledger(LEDGER):
-        raise GateError("R2 LP ledger is nonempty; cannot certify that no old official slots were consumed")
+        raise GateError("R3 LP ledger is nonempty; cannot certify that no prior official slots were consumed")
     if not SYNTHETIC_QA.is_file():
         raise GateError("Synthetic QA must exist before prefit freeze")
     qa = read_json(SYNTHETIC_QA)
     qa_body = verify_signed(qa)
-    qa_predecessor = {**successor,
-                      "synthetic_qa_path": str(PRIOR_SYNTHETIC_QA.relative_to(ROOT).as_posix()),
-                      "synthetic_qa_sha256": file_sha256(PRIOR_SYNTHETIC_QA)}
+    qa_predecessor = {"successor_of": successor,
+                      "prior_synthetic_qa_path": str(PRIOR_SYNTHETIC_QA.relative_to(ROOT).as_posix()),
+                      "prior_synthetic_qa_sha256": file_sha256(PRIOR_SYNTHETIC_QA)}
     if (qa_body.get("status") != "PASS_SYNTHETIC_ONLY"
-            or qa_body.get("qa_revision") != "R2"
+            or qa_body.get("qa_revision") != "R3"
             or qa_body.get("predecessor") != qa_predecessor
             or qa_body.get("official_labels_accessed") is not False
             or qa_body.get("official_lp_starts") != 0):
@@ -1678,11 +1783,11 @@ def synthetic_qa_body() -> dict[str, Any]:
     if not csv:
         raise GateError("Synthetic CSV exact finite/range round-trip failed")
     return {
-        "schema_version": 2, "experiment_id": EXPERIMENT, "qa_revision": "R2",
+        "schema_version": 3, "experiment_id": EXPERIMENT, "qa_revision": "R3",
         "status": "PASS_SYNTHETIC_ONLY",
-        "predecessor": {**prior_source_artifact_binding(),
-            "synthetic_qa_path": str(PRIOR_SYNTHETIC_QA.relative_to(ROOT).as_posix()),
-            "synthetic_qa_sha256": file_sha256(PRIOR_SYNTHETIC_QA)},
+        "predecessor": {"successor_of": prior_source_artifact_binding(),
+            "prior_synthetic_qa_path": str(PRIOR_SYNTHETIC_QA.relative_to(ROOT).as_posix()),
+            "prior_synthetic_qa_sha256": file_sha256(PRIOR_SYNTHETIC_QA)},
         "official_labels_accessed": False, "official_lp_starts": 0,
         "test_or_sample_accessed": False, "csv_created": False, "kaggle_upload": False,
         "synthetic_solver_calls": 4,

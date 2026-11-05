@@ -25,12 +25,16 @@ if str(ROOT) not in sys.path:
 REPORT_DIR = ROOT / "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2"
 EXPERIMENT_DIR = ROOT / "experiments/REG_FINAL_WAVE_FOLLOWUP_V2"
 RUN_DIR = ROOT / "experiments/runs/REG_FINAL_WAVE_FOLLOWUP_V2"
-PRIOR_FREEZE = EXPERIMENT_DIR / "PREFIT_FREEZE.json"
-PREFIT_FREEZE = EXPERIMENT_DIR / "PREFIT_FREEZE_R2.json"
-PRIOR_BLOCKER = REPORT_DIR / "SOURCE_PREPARATION_BLOCKED.json"
-PRIOR_SYNTHETIC_QA = REPORT_DIR / "SYNTHETIC_QA.json"
-IDENTITY_PREFLIGHT = REPORT_DIR / "IDENTITY_PREFLIGHT_R2.json"
-SYNTHETIC_QA = REPORT_DIR / "SYNTHETIC_QA_R2.json"
+R1_FREEZE = EXPERIMENT_DIR / "PREFIT_FREEZE.json"
+R1_BLOCKER = REPORT_DIR / "SOURCE_PREPARATION_BLOCKED.json"
+R1_SYNTHETIC_QA = REPORT_DIR / "SYNTHETIC_QA.json"
+R2_FREEZE = EXPERIMENT_DIR / "PREFIT_FREEZE_R2.json"
+R2_PREFLIGHT = REPORT_DIR / "IDENTITY_PREFLIGHT_R2.json"
+R2_SYNTHETIC_QA = REPORT_DIR / "SYNTHETIC_QA_R2.json"
+R2_VERIFICATION_FAILURE = REPORT_DIR / "SOURCE_VERIFICATION_FAILED_R2.json"
+PREFIT_FREEZE = EXPERIMENT_DIR / "PREFIT_FREEZE_R3.json"
+IDENTITY_PREFLIGHT = REPORT_DIR / "IDENTITY_PREFLIGHT_R3.json"
+SYNTHETIC_QA = REPORT_DIR / "SYNTHETIC_QA_R3.json"
 DIAGNOSTICS = REPORT_DIR / "DIAGNOSTICS.json"
 ROOT_SOURCE_PASS = EXPERIMENT_DIR / "ROOT_SOURCE_PASS.json"
 ROOT_PRODUCTION_PASS = EXPERIMENT_DIR / "ROOT_PRODUCTION_PASS.json"
@@ -46,6 +50,16 @@ OUTPUTS = {
 MANIFESTS = {"A": REPORT_DIR / "MANIFEST_A.json", "B": REPORT_DIR / "MANIFEST_B.json"}
 EXPERIMENT = "REG_FINAL_WAVE_FOLLOWUP_V2"
 EXPECTED_BRANCH = "codex/reg-position-failure-mechanism-v1"
+R1_FREEZE_SHA256 = "564c1dcfbab9370f14dfb7d5698c7961a144da026c5b6e5eaf180f9f43c312e0"
+R1_BLOCKER_SHA256 = "2d0bdae1de295b24aabc49ae4a39d9d7021556b2d810b9e4d3f915bf175ef26f"
+R1_BLOCKER_RECEIPT_SHA256 = "e12f319a45d94b781edfc4fad484e7a0636126a7582c7a6c3206edc4755cb033"
+R2_FREEZE_SHA256 = "eb42ad7774b2693b64827becdf97e5fdbf736dff3554b7fde0c5ba59b2d9a1c6"
+R2_PREFLIGHT_SHA256 = "754ca20e822c4934d563e7e187e33eb2a90be1be6b213f2c970b8f07a04e7742"
+R2_PREFLIGHT_RECEIPT_SHA256 = "0c9fdef1e27b6d68549b8fb500215b9860c2fb7f847db4b9277e3bac0aec06cc"
+R2_QA_SHA256 = "e453ea7a78da82d92b307796e955bb976e21ef07d97cd5f89e71caa06b377a4b"
+R2_QA_RECEIPT_SHA256 = "14e88ce6020d41b0416e9f4fd9152aad25e8180fcb348f6c89291a162196ffc6"
+R2_VERIFY_FAILURE_SHA256 = "092c0439dd6e674fc73d43d5c08fe1b41cdcbf21270e96fecf98a2fe4f30574f"
+R2_VERIFY_FAILURE_RECEIPT_SHA256 = "c211e26e8f03e78372d8a65f5154e2198109146eef86457fcef04c0cdcc82d54"
 FIT_IDS = ("D1_GLOBAL", "D1_RECENCY_H8", "D2_GLOBAL", "D2_RECENCY_H8", "FINAL_RECENCY_H8")
 DIAGNOSTIC_FIT_IDS = FIT_IDS[:4]
 
@@ -54,7 +68,7 @@ SOURCE_RELATIVE = {
     "verifier": "scripts/verify_reg_final_wave_followup_v2.py",
     "tests": "tests/test_reg_final_wave_followup_v2.py",
     "protocol": "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2/PROTOCOL.md",
-    "synthetic_qa": "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2/SYNTHETIC_QA_R2.json",
+    "synthetic_qa": "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2/SYNTHETIC_QA_R3.json",
     "v2_identity_helpers": "scripts/reg_final_wave_v2.py",
     "r17_lp_helper": "src/models/optimization_v3_batch1_r17.py",
     "selected_row_reader": "scripts/reg_position_failure_mechanism_v1.py",
@@ -120,10 +134,11 @@ def _is_known_generated_path(path: str) -> bool:
     normalized = _repo_path(path)
     exp_prefix = "experiments/REG_FINAL_WAVE_FOLLOWUP_V2/"
     report_prefix = "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2/"
-    exp_names = {"PREFIT_FREEZE.json", "PREFIT_FREEZE_R2.json",
+    exp_names = {"PREFIT_FREEZE.json", "PREFIT_FREEZE_R2.json", "PREFIT_FREEZE_R3.json",
                  "ROOT_SOURCE_PASS.json", "ROOT_PRODUCTION_PASS.json"}
     report_names = {"SOURCE_PREPARATION_BLOCKED.json", "SOURCE_PREPARATION_BLOCKED_R2.json",
-                    "IDENTITY_PREFLIGHT.json", "IDENTITY_PREFLIGHT_R2.json",
+                    "SOURCE_VERIFICATION_FAILED_R2.json", "SOURCE_PREPARATION_BLOCKED_R3.json",
+                    "IDENTITY_PREFLIGHT.json", "IDENTITY_PREFLIGHT_R2.json", "IDENTITY_PREFLIGHT_R3.json",
                     "DIAGNOSTICS.json", "PRODUCTION_RESULT.json", "FINAL_APPLICATION_FREEZE.json",
                     "MANIFEST_A.json", "MANIFEST_B.json"}
     return ((normalized.startswith(exp_prefix) and Path(normalized).name in exp_names)
@@ -173,50 +188,158 @@ def _validate_live_source_checkpoint(freeze: dict[str, Any]) -> dict[str, Any]:
 
 
 def _verify_successor_lineage(body: dict[str, Any], qa_body: dict[str, Any]) -> dict[str, Any]:
-    prior_freeze = _read_json(PRIOR_FREEZE)
-    prior_freeze_body = _verify_signed(prior_freeze)
-    prior_blocker = _read_json(PRIOR_BLOCKER)
-    prior_blocker_body = _verify_signed(prior_blocker)
-    prior_qa = _read_json(PRIOR_SYNTHETIC_QA)
-    prior_qa_body = _verify_signed(prior_qa)
-    freeze_sha = _sha_file(PRIOR_FREEZE)
-    blocker_sha = _sha_file(PRIOR_BLOCKER)
-    if (freeze_sha != "564c1dcfbab9370f14dfb7d5698c7961a144da026c5b6e5eaf180f9f43c312e0"
-            or blocker_sha != "2d0bdae1de295b24aabc49ae4a39d9d7021556b2d810b9e4d3f915bf175ef26f"
-            or prior_blocker.get("receipt_sha256") != "e12f319a45d94b781edfc4fad484e7a0636126a7582c7a6c3206edc4755cb033"
-            or prior_freeze_body.get("experiment_id") != EXPERIMENT
-            or prior_freeze_body.get("status") != "PREFIT_FROZEN_IDENTITY_ONLY"
-            or prior_freeze_body.get("official_labels_accessed") is not False
-            or prior_freeze_body.get("official_lp_starts") != 0
-            or prior_blocker_body.get("source_commit") != prior_freeze_body.get("source_commit")
-            or prior_blocker_body.get("status") != "BLOCKED_RAM_IDENTITY_PREFLIGHT"
-            or prior_blocker_body.get("prefit_freeze_sha256") != freeze_sha
-            or prior_blocker_body.get("official_target_rows_parsed") != 0
-            or prior_blocker_body.get("official_labels_accessed") is not False
-            or prior_blocker_body.get("official_lp_starts") != 0
-            or prior_blocker_body.get("candidate_csvs_created") is not False
-            or prior_blocker_body.get("kaggle_upload") is not False
-            or prior_qa_body.get("experiment_id") != EXPERIMENT
-            or prior_qa_body.get("status") != "PASS_SYNTHETIC_ONLY"
-            or prior_qa_body.get("official_labels_accessed") is not False
-            or prior_qa_body.get("official_lp_starts") != 0
-            or prior_qa_body.get("test_or_sample_accessed") is not False):
-        raise VerificationError("Preserved R1 freeze/blocker lineage or zero-fit boundary changed")
-    expected = {
-        "freeze_path": str(PRIOR_FREEZE.relative_to(ROOT).as_posix()),
-        "freeze_sha256": freeze_sha,
-        "blocker_report_path": str(PRIOR_BLOCKER.relative_to(ROOT).as_posix()),
-        "blocker_report_sha256": blocker_sha,
-        "blocker_receipt_sha256": prior_blocker["receipt_sha256"],
+    for path in (R1_FREEZE, R1_BLOCKER, R1_SYNTHETIC_QA, R2_FREEZE,
+                 R2_PREFLIGHT, R2_SYNTHETIC_QA, R2_VERIFICATION_FAILURE):
+        if not path.is_file():
+            raise VerificationError(f"Required preserved R1/R2 artifact is absent: {path}")
+
+    r1_freeze = _read_json(R1_FREEZE)
+    r1_freeze_body = _verify_signed(r1_freeze)
+    r1_blocker = _read_json(R1_BLOCKER)
+    r1_blocker_body = _verify_signed(r1_blocker)
+    r1_qa = _read_json(R1_SYNTHETIC_QA)
+    r1_qa_body = _verify_signed(r1_qa)
+    r1_freeze_sha = _sha_file(R1_FREEZE)
+    r1_blocker_sha = _sha_file(R1_BLOCKER)
+    if (r1_freeze_sha != R1_FREEZE_SHA256
+            or r1_blocker_sha != R1_BLOCKER_SHA256
+            or r1_blocker.get("receipt_sha256") != R1_BLOCKER_RECEIPT_SHA256
+            or r1_freeze_body.get("experiment_id") != EXPERIMENT
+            or r1_freeze_body.get("status") != "PREFIT_FROZEN_IDENTITY_ONLY"
+            or r1_freeze_body.get("branch") != EXPECTED_BRANCH
+            or r1_freeze_body.get("official_labels_accessed") is not False
+            or r1_freeze_body.get("official_lp_starts") != 0
+            or r1_blocker_body.get("status") != "BLOCKED_RAM_IDENTITY_PREFLIGHT"
+            or r1_blocker_body.get("source_commit") != r1_freeze_body.get("source_commit")
+            or r1_blocker_body.get("prefit_freeze_sha256") != r1_freeze_sha
+            or r1_blocker_body.get("official_target_rows_parsed") != 0
+            or r1_blocker_body.get("official_labels_accessed") is not False
+            or r1_blocker_body.get("official_lp_starts") != 0
+            or r1_blocker_body.get("candidate_csvs_created") is not False
+            or r1_blocker_body.get("kaggle_upload") is not False
+            or r1_qa_body.get("experiment_id") != EXPERIMENT
+            or r1_qa_body.get("status") != "PASS_SYNTHETIC_ONLY"
+            or r1_qa_body.get("official_labels_accessed") is not False
+            or r1_qa_body.get("official_lp_starts") != 0
+            or r1_qa_body.get("test_or_sample_accessed") is not False):
+        raise VerificationError("Preserved R1 receipts failed exact binding or zero-fit checks")
+    r1_binding = {
+        "freeze_path": str(R1_FREEZE.relative_to(ROOT).as_posix()),
+        "freeze_sha256": r1_freeze_sha,
+        "blocker_report_path": str(R1_BLOCKER.relative_to(ROOT).as_posix()),
+        "blocker_report_sha256": r1_blocker_sha,
+        "blocker_receipt_sha256": r1_blocker["receipt_sha256"],
         "prior_official_lp_starts": 0,
     }
+
+    r2_freeze = _read_json(R2_FREEZE)
+    r2_freeze_body = _verify_signed(r2_freeze)
+    r2_preflight = _read_json(R2_PREFLIGHT)
+    r2_preflight_body = _verify_signed(r2_preflight)
+    r2_qa = _read_json(R2_SYNTHETIC_QA)
+    r2_qa_body = _verify_signed(r2_qa)
+    r2_failure = _read_json(R2_VERIFICATION_FAILURE)
+    r2_failure_body = _verify_signed(r2_failure)
+    r2_freeze_sha = _sha_file(R2_FREEZE)
+    r2_preflight_sha = _sha_file(R2_PREFLIGHT)
+    r2_qa_sha = _sha_file(R2_SYNTHETIC_QA)
+    r2_failure_sha = _sha_file(R2_VERIFICATION_FAILURE)
+    r1_qa_predecessor = {**r1_binding,
+        "synthetic_qa_path": str(R1_SYNTHETIC_QA.relative_to(ROOT).as_posix()),
+        "synthetic_qa_sha256": _sha_file(R1_SYNTHETIC_QA)}
+    if (r2_freeze_sha != R2_FREEZE_SHA256
+            or r2_preflight_sha != R2_PREFLIGHT_SHA256
+            or r2_preflight.get("receipt_sha256") != R2_PREFLIGHT_RECEIPT_SHA256
+            or r2_qa_sha != R2_QA_SHA256
+            or r2_qa.get("receipt_sha256") != R2_QA_RECEIPT_SHA256
+            or r2_failure_sha != R2_VERIFY_FAILURE_SHA256
+            or r2_failure.get("receipt_sha256") != R2_VERIFY_FAILURE_RECEIPT_SHA256
+            or r2_freeze_body.get("experiment_id") != EXPERIMENT
+            or r2_freeze_body.get("status") != "PREFIT_FROZEN_IDENTITY_ONLY"
+            or r2_freeze_body.get("branch") != EXPECTED_BRANCH
+            or r2_freeze_body.get("successor_of") != r1_binding
+            or r2_freeze_body.get("official_labels_accessed") is not False
+            or r2_freeze_body.get("official_lp_starts") != 0
+            or r2_preflight_body.get("experiment_id") != EXPERIMENT
+            or r2_preflight_body.get("status") != "PASS_IDENTITY_ONLY_PREFIT"
+            or r2_preflight_body.get("source_commit") != r2_freeze_body.get("source_commit")
+            or r2_preflight_body.get("freeze_sha256") != r2_freeze_sha
+            or r2_preflight_body.get("freeze_signature") != r2_freeze.get("receipt_sha256")
+            or r2_preflight_body.get("official_target_rows_parsed") != 0
+            or r2_preflight_body.get("official_labels_accessed") is not False
+            or r2_preflight_body.get("official_lp_starts") != 0
+            or r2_preflight_body.get("test_csv_or_sample_opened") is not False
+            or r2_preflight_body.get("csv_created") is not False
+            or r2_preflight_body.get("kaggle_upload") is not False
+            or r2_qa_body.get("experiment_id") != EXPERIMENT
+            or r2_qa_body.get("status") != "PASS_SYNTHETIC_ONLY"
+            or r2_qa_body.get("qa_revision") != "R2"
+            or r2_qa_body.get("predecessor") != r1_qa_predecessor
+            or r2_qa_body.get("official_labels_accessed") is not False
+            or r2_qa_body.get("official_lp_starts") != 0
+            or r2_qa_body.get("test_or_sample_accessed") is not False
+            or r2_failure_body.get("status") != "FAIL_INDEPENDENT_PREFIT_VERIFICATION"
+            or r2_failure_body.get("source_commit") != r2_freeze_body.get("source_commit")
+            or r2_failure_body.get("prefit_freeze_sha256") != r2_freeze_sha
+            or r2_failure_body.get("identity_preflight_sha256") != r2_preflight_sha
+            or r2_failure_body.get("identity_preflight_receipt_sha256") != r2_preflight.get("receipt_sha256")
+            or r2_failure_body.get("failed_check") != "source_paths_match_freeze"
+            or r2_failure_body.get("official_target_rows_parsed") != 0
+            or r2_failure_body.get("official_labels_accessed") is not False
+            or r2_failure_body.get("official_lp_starts") != 0
+            or r2_failure_body.get("test_csv_or_sample_opened") is not False
+            or r2_failure_body.get("csv_created") is not False
+            or r2_failure_body.get("kaggle_upload") is not False):
+        raise VerificationError("Preserved R2 receipts failed exact lineage or zero-official checks")
+
+    r2_binding = {
+        "freeze_path": str(R2_FREEZE.relative_to(ROOT).as_posix()),
+        "freeze_sha256": r2_freeze_sha,
+        "identity_preflight_path": str(R2_PREFLIGHT.relative_to(ROOT).as_posix()),
+        "identity_preflight_sha256": r2_preflight_sha,
+        "identity_preflight_receipt_sha256": r2_preflight["receipt_sha256"],
+        "synthetic_qa_path": str(R2_SYNTHETIC_QA.relative_to(ROOT).as_posix()),
+        "synthetic_qa_sha256": r2_qa_sha,
+        "synthetic_qa_receipt_sha256": r2_qa["receipt_sha256"],
+        "verification_failure_path": str(R2_VERIFICATION_FAILURE.relative_to(ROOT).as_posix()),
+        "verification_failure_sha256": r2_failure_sha,
+        "verification_failure_receipt_sha256": r2_failure["receipt_sha256"],
+        "prior_official_lp_starts": 0,
+    }
+    expected = {"r1": r1_binding, "r2": r2_binding, "prior_official_lp_starts": 0}
+    qa_predecessor = {"successor_of": expected,
+        "prior_synthetic_qa_path": str(R2_SYNTHETIC_QA.relative_to(ROOT).as_posix()),
+        "prior_synthetic_qa_sha256": r2_qa_sha}
     if (body.get("successor_of") != expected or body.get("prior_official_lp_starts") != 0
-            or qa_body.get("qa_revision") != "R2"
-            or qa_body.get("predecessor") != {**expected,
-                "synthetic_qa_path": str(PRIOR_SYNTHETIC_QA.relative_to(ROOT).as_posix()),
-                "synthetic_qa_sha256": _sha_file(PRIOR_SYNTHETIC_QA)}):
-        raise VerificationError("R2 freeze/QA does not bind its exact R1 predecessor artifacts")
+            or qa_body.get("qa_revision") != "R3"
+            or qa_body.get("predecessor") != qa_predecessor):
+        raise VerificationError("R3 freeze/QA does not bind exact R1/R2 predecessor artifacts")
     return expected
+
+
+def _verify_preflight_source_paths(preflight_body: dict[str, Any],
+                                  source_hashes: dict[str, str]) -> None:
+    source_paths = preflight_body.get("source_paths", {})
+    if set(source_paths) != set(SOURCE_RELATIVE) or preflight_body.get("source_hashes") != source_hashes:
+        raise VerificationError("Identity preflight source path/hash inventory differs from freeze")
+    external_tails = {
+        "direct_prediction_source": ("tk2-regression-frontier", "scripts", "reg_position_direct_l1_v1.py"),
+        "r16_h8_rationale_source": ("tp 2", "src", "models", "optimization_v3_batch1_r16.py"),
+    }
+    for name, rel in SOURCE_RELATIVE.items():
+        path = Path(source_paths[name])
+        if not path.is_absolute():
+            raise VerificationError(f"Identity preflight source path is not absolute: {name}")
+        resolved = path.resolve()
+        if name in external_tails:
+            tail = tuple(part.casefold() for part in resolved.parts[-len(external_tails[name]):])
+            expected_tail = tuple(part.casefold() for part in external_tails[name])
+            if tail != expected_tail:
+                raise VerificationError(f"Identity preflight external source path is outside its pinned checkout: {name}")
+        elif resolved != (ROOT / rel).resolve():
+            raise VerificationError(f"Identity preflight source path differs from the isolated checkout: {name}")
+        if not resolved.is_file() or _sha_file(resolved) != source_hashes[name]:
+            raise VerificationError(f"Identity preflight source path bytes differ from freeze: {name}")
 
 
 def verify_prefit() -> dict[str, Any]:
@@ -285,10 +408,7 @@ def verify_prefit() -> dict[str, Any]:
                        "E79": 29421, "E79_missing": 1062}
     if support.get("row_counts") != expected_counts:
         raise VerificationError("Frozen OOF/E79 support counts differ from the recipe")
-    expected_source_paths = {name: str((ROOT / rel).resolve()) for name, rel in SOURCE_RELATIVE.items()}
-    if (preflight_body.get("source_hashes") != source_hashes
-            or preflight_body.get("source_paths") != expected_source_paths):
-        raise VerificationError("Identity preflight source paths/hashes differ from freeze")
+    _verify_preflight_source_paths(preflight_body, source_hashes)
     return {"status": "PASS_IDENTITY_ONLY_PREFIT", "source_commit": body["source_commit"],
             "freeze_sha256": _sha_file(PREFIT_FREEZE), "official_labels_accessed": False,
             "official_lp_starts": 0, "test_or_sample_accessed": False,

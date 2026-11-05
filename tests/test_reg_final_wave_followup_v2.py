@@ -293,6 +293,21 @@ def test_independent_verifier_rejects_executable_descendant(monkeypatch):
         })
 
 
+def test_independent_verifier_checks_resolved_external_helper_paths():
+    paths = {name: str((independent.ROOT / rel).resolve())
+             for name, rel in independent.SOURCE_RELATIVE.items()}
+    paths["direct_prediction_source"] = str(reg.DIRECT_SOURCE.resolve())
+    paths["r16_h8_rationale_source"] = str(reg.R16_SOURCE.resolve())
+    hashes = {name: independent._sha_file(Path(path)) for name, path in paths.items()}
+    independent._verify_preflight_source_paths({"source_paths": paths, "source_hashes": hashes}, hashes)
+
+    copied_path = str((independent.ROOT / independent.SOURCE_RELATIVE["direct_prediction_source"]).resolve())
+    wrong_paths = {**paths, "direct_prediction_source": copied_path}
+    with pytest.raises(independent.VerificationError, match="outside its pinned checkout"):
+        independent._verify_preflight_source_paths({"source_paths": wrong_paths,
+                                                      "source_hashes": hashes}, hashes)
+
+
 def test_report_only_descendant_reuses_completed_fit_without_refit(tmp_path, monkeypatch):
     ledger = tmp_path / "ledger.jsonl"
     run_dir = tmp_path / "run"
