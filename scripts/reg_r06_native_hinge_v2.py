@@ -287,7 +287,8 @@ def create_prefit_freeze() -> dict[str, Any]:
         reserved = [event for event in ledger_rows if event.get("event") == "RESERVE"]
         if (len(completed) != 1 or len(reserved) != 1
                 or completed[0].get("state_sha256") != file_sha256(path)
-                or reserved[0].get("fit_input_sha256") != file_sha256(input_path)
+                or reserved[0].get("fit_input", {}).get(
+                    "fit_input_bundle_sha256") != file_sha256(input_path)
                 or reserved[0].get("root_source_pass_sha256") != r4_pass_sha):
             raise GateError(f"Saved historical {fit_id} state differs from its R4 ledger")
         historical_states[fit_id] = {
@@ -1397,10 +1398,21 @@ def _synthetic_checks() -> dict[str, Any]:
 
 
 def run_synthetic_qa() -> dict[str, Any]:
+    checks = _synthetic_checks()
+    if SYNTHETIC_QA.exists():
+        existing = json.loads(SYNTHETIC_QA.read_text(encoding="utf-8"))
+        signature = existing.pop("signature", None)
+        if (signature != canonical_sha(existing)
+                or existing.get("experiment_id") != EXPERIMENT_ID
+                or existing.get("status") != "PASS_SYNTHETIC_SOURCE_AND_RECEIPT_E2E"
+                or existing.get("checks") != checks):
+            raise GateError("Existing synthetic QA receipt does not match this source run")
+        return {"status": existing["status"], "path": str(SYNTHETIC_QA.resolve()),
+                "sha256": file_sha256(SYNTHETIC_QA)}
     body = {
         "schema_version": 1, "experiment_id": EXPERIMENT_ID,
         "status": "PASS_SYNTHETIC_SOURCE_AND_RECEIPT_E2E",
-        "checks": _synthetic_checks(),
+        "checks": checks,
         "created_utc": datetime.now(timezone.utc).isoformat(),
     }
     body["signature"] = canonical_sha(body)

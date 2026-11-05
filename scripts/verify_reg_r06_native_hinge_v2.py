@@ -158,7 +158,8 @@ def _check_r4_comparator_lineage(freeze: dict[str, Any]) -> dict[str, Any]:
               f"Prefit freeze does not bind the saved R4 {fit_id} state and input")
         _need(len(completed) == 1 and len(reserved) == 1
               and completed[0].get("state_sha256") == _sha(state_path)
-              and reserved[0].get("fit_input_sha256") == _sha(input_path)
+              and reserved[0].get("fit_input", {}).get(
+                  "fit_input_bundle_sha256") == _sha(input_path)
               and reserved[0].get("root_source_pass_sha256") == root_pass_sha,
               f"R4 {fit_id} state differs from its immutable ledger history")
         result[fit_id] = {"state_sha256": _sha(state_path),
