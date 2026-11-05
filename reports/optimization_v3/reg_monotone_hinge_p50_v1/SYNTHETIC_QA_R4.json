@@ -1,0 +1,95 @@
+{
+  "base_or_preprocessing_fits": 0,
+  "candidate_data_read": false,
+  "checks": {
+    "actual_direct_receipt_signature_api": {
+      "pass": true,
+      "tampered_receipt_rejected": true,
+      "three_argument_api_used": true
+    },
+    "actual_stage_postpublish_recovery": {
+      "pass": true,
+      "recovered": true,
+      "solver_calls": 1
+    },
+    "ambiguous_started_no_state_blocks_retry": {
+      "blocked": true,
+      "pass": true,
+      "solver_calls": 1
+    },
+    "hinge_shape_and_bounds": {
+      "bound_violations_rejected": 2,
+      "pass": true
+    },
+    "independent_frozen_row_target_replay": {
+      "fit_rows": 2,
+      "pass": true,
+      "tampered_target_rejected": true
+    },
+    "independent_resource_replay": {
+      "inconsistent_peak_rejected": true,
+      "pass": true,
+      "thresholds_checked": {
+        "incremental_estimate_bytes": 536870912,
+        "minimum_actual_free_at_boundary_bytes": 1073741824,
+        "minimum_available_bytes": 2147483648,
+        "minimum_projected_free_bytes": 1073741824
+      }
+    },
+    "independent_subgroup_harm_replay": {
+      "maximum_supported_harm": 0.1999999999999993,
+      "pass": true
+    },
+    "known_hinge_recovery": {
+      "max_parameter_error": 2.220446049250313e-16,
+      "pass": true
+    },
+    "official_threat_rank_csv_schema": {
+      "pass": true,
+      "right_schema_rows": 29421,
+      "wrong_headers_rejected": 2
+    },
+    "producer_hash_schemas": {
+      "pass": true
+    },
+    "rss_and_os_peak_measurement_flags": {
+      "pass": true,
+      "peak_metric_supported": true
+    },
+    "source_pass_precedes_target_loader": {
+      "pass": true,
+      "target_loader_calls": 0
+    },
+    "unweighted_l1_no_weights": {
+      "pass": true,
+      "weights_argument_present": false
+    },
+    "user_revised_ram_boundaries": {
+      "actual_at_1g_accepted": true,
+      "actual_below_1g_rejected": true,
+      "initial_at_2g_accepted": true,
+      "initial_below_2g_rejected": true,
+      "pass": true
+    },
+    "zero_target_identity_preflight_contract": {
+      "cached_targets_loaded": false,
+      "official_lp_starts": 0,
+      "pass": true,
+      "target_loader_called": false
+    }
+  },
+  "experiment_id": "REG_MONOTONE_HINGE_P50_V1_R4",
+  "official_lp_starts": 0,
+  "official_train_labels_read": false,
+  "resource_policy_sha256": "0f281c9ba4552b20a47a8d977bf7ee083cf1009c94024068c4f0ef80ab4cad32",
+  "schema_version": 2,
+  "source_hashes": {
+    "reports/optimization_v3/reg_monotone_hinge_p50_v1/PROTOCOL_R4.md": "534192cfa32f181b1a168110517ae6290598a529a02911bf32f93f70753623a1",
+    "scripts/reg_monotone_hinge_p50_v4.py": "dcf35a80bf50e9e83a234b08c7b3cc1b32cdec5e54e89236fb221fa33352225d",
+    "scripts/verify_reg_monotone_hinge_p50_v4.py": "0a291d18390eacd17ccd7ee1712c99bd4c307263dca442936b5494201d969245",
+    "tests/test_reg_monotone_hinge_p50_v4.py": "8b2f8a5a058d720c373c8679e95ffde556f667b60b6aa6a1d4d20cba772df69e"
+  },
+  "status": "PASS_SYNTHETIC_ONLY",
+  "synthetic_lp_starts": 1,
+  "test_or_sample_read": false
+}
