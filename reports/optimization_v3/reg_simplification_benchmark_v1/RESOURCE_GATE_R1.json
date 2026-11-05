@@ -1,0 +1,49 @@
+{
+  "execution_policy": {
+    "active_polling_or_scheduler_allowed": false,
+    "authority": "User-directed resource-only steering relayed through task 01a19569-16e0-7253-aa14-57a0a3160e03",
+    "data_guards_changed": false,
+    "heavy_lock_required": false,
+    "heavy_lock_scope": "Large feature matrices and base fits",
+    "incremental_memory_estimate_bytes": 536870912,
+    "lane": "REG",
+    "maximum_concurrent_light_jobs_total": 2,
+    "minimum_post_run_available_bytes": 1073741824,
+    "new_fits_allowed": 0,
+    "notes": [
+      "This receipt changes only the resource policy for the frozen cached-vector and CSV QA stage.",
+      "The 2.5 GiB start floor, 512 MiB estimate, 1 GiB projected and post-run reserve, two-job global cap, and lane-specific lock are required.",
+      "No source, test-label, training, predictor, preprocessing, calibrator, selection, or local-gate boundary is weakened."
+    ],
+    "parallel_start_available_floor_bytes": 2684354560,
+    "per_lane_idempotency_lock_required": true,
+    "policy_id": "REG_CACHED_VECTOR_PARALLEL_R1",
+    "reg_candidates_serial_within_lane": true,
+    "schema_version": 1,
+    "scope": "Two authorized cached-vector and CSV simplification jobs, one CLS lane and one REG lane",
+    "test_labels_allowed": false,
+    "upload_retry_allowed": false
+  },
+  "execution_policy_sha256": "7b60d60f0e3ced842e2fe7b5bc2b6cc7a8ebdcd8050bef91aa3ae0e763d4d39a",
+  "resource": {
+    "estimated_incremental_bytes": 536870912,
+    "final_available_bytes": 4732084224,
+    "lock_owner": {
+      "created_at_utc": "2026-11-05T13:24:41.390397+00:00",
+      "lane": "REG",
+      "pid": 17552,
+      "token": "1b08b39ba8e348768d748508eebdfa57"
+    },
+    "parallel_start_floor_bytes": 2684354560,
+    "per_lane_lock_path": "C:\\Users\\Sam\\AppData\\Local\\Temp\\kasdad_reg_simplification_benchmark_v1.lock",
+    "per_lane_lock_token": "1b08b39ba8e348768d748508eebdfa57",
+    "post_run_reserve_floor_bytes": 1073741824,
+    "post_run_reserve_pass": true,
+    "projected_available_bytes": 4201238528,
+    "projected_reserve_floor_bytes": 1073741824,
+    "shared_heavy_lock_used": false,
+    "start_available_bytes": 4738109440
+  },
+  "schema_version": 1,
+  "status": "PASS_REG_LIGHT_JOB_RESOURCE_GATE"
+}
