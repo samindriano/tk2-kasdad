@@ -243,7 +243,9 @@ def run_source_qa() -> dict[str, Any]:
         spec.loader.exec_module(test_module)
         synthetic = test_module.run_synthetic_prepare_entry_qa()
         boundary = RUNNER.require_actual_boundary("saved_replay", "after additive adapter source QA")
-    if synthetic.get("status") != "PASS" or not synthetic.get("manifest_commit_guard_passed"):
+    if (synthetic.get("status") != "PASS"
+            or synthetic.get("query_labels_blocked_until_manifest_commit") is not True
+            or synthetic.get("query_labels_joined_after_commit") is not True):
         raise AdapterError("Synthetic prediction preparation or label boundary QA failed")
     return {
         "status": "PASS_ADDITIVE_EVALUATION_ADAPTER_SOURCE_QA",
@@ -251,13 +253,22 @@ def run_source_qa() -> dict[str, Any]:
         "adapter_binding": binding,
         "real_fit_audit": real_fit_audit,
         "synthetic_prepare_entry": synthetic,
-        "prior_harness_attempt": {
-            "status": "FAILED_TEST_HARNESS_PRECONDITION_ONLY",
-            "cause": "synthetic test expected ARMS absent after the same-process real ledger audit had correctly installed the adapter binding",
-            "campaign_fit_repeated": False,
-            "official_predictions_created": False,
-            "query_labels_scored": False,
-        },
+        "prior_harness_attempts": [
+            {
+                "status": "FAILED_TEST_HARNESS_PRECONDITION_ONLY",
+                "cause": "synthetic test expected ARMS absent after the same-process real ledger audit had correctly installed the adapter binding",
+                "campaign_fit_repeated": False,
+                "official_predictions_created": False,
+                "query_labels_scored": False,
+            },
+            {
+                "status": "FAILED_QA_AGGREGATOR_FIELD_NAME_ONLY",
+                "cause": "aggregate QA checked manifest_commit_guard_passed while the test emits query_labels_blocked_until_manifest_commit and query_labels_joined_after_commit",
+                "synthetic_prepare_completed": True,
+                "campaign_fit_repeated": False,
+                "official_predictions_created": False,
+            },
+        ],
         "resource_snapshot": {
             "policy": RUNNER.RESOURCE_POLICIES["saved_replay"],
             "initial_under_shared_lock": initial,
