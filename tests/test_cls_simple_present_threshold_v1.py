@@ -152,7 +152,7 @@ def test_real_cli_freeze_preflight_and_independent_verifier_are_target_free(tmp_
         "PREFLIGHT": out / "SOURCE_PREFLIGHT.json", "READY": out / "SOURCE_READY.json",
         "LEDGER": run / "LEDGER.jsonl", "FIT_DIR": run / "fits", "SCORE_DIR": run / "scores",
         "CACHE": cache, "EXPECTED_ROWS": {67: 12, 75: 4}, "EXPECTED_SCORE_ROWS": 8,
-        "OFFICIAL_TRAIN_ROWS": 33,
+        "OFFICIAL_TRAIN_ROWS": 33, "CACHE_SHA256": hashlib.sha256(cache.read_bytes()).hexdigest(),
     }
     verifier_checks = {
         "OUT": out, "FREEZE": out / "SOURCE_FREEZE.json", "PREFLIGHT": out / "SOURCE_PREFLIGHT.json",
