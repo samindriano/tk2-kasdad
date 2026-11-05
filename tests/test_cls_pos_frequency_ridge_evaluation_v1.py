@@ -6,21 +6,34 @@ from scripts.evaluate_optimization_v3_cls_pos_frequency_ridge_v1 import (
     FORBIDDEN_QUERY_KEYS,
     EvaluationError,
     PILOT_KEYS,
+    QUERY_BOUNDARY_MIN_BYTES,
+    QUERY_INCREMENTAL_ESTIMATE_BYTES,
+    QUERY_INITIAL_MIN_BYTES,
+    QUERY_POLICY_ID,
+    QUERY_PROJECTED_MIN_BYTES,
     VIEWS,
     evaluate_query_boundary_resource_gate,
     evaluate_query_initial_resource_gates,
     competition_probabilities,
     metrics,
     metrics_missing_threshold,
+    process_memory_measurements,
     read_allowlisted_members,
     row_metadata,
     sha256_array,
     validate_saved_route_probabilities,
     validate_ordered_row_identity,
+    write_npz_once,
 )
 from scripts.verify_optimization_v3_cls_pos_frequency_ridge_eval_v1 import (
+    BOUNDARY_MIN_BYTES as INDEPENDENT_BOUNDARY_MIN_BYTES,
+    INCREMENTAL_ESTIMATE_BYTES as INDEPENDENT_INCREMENTAL_ESTIMATE_BYTES,
+    INITIAL_MIN_BYTES as INDEPENDENT_INITIAL_MIN_BYTES,
+    PROJECTED_MIN_BYTES as INDEPENDENT_PROJECTED_MIN_BYTES,
+    RESOURCE_POLICY_ID as INDEPENDENT_RESOURCE_POLICY_ID,
     evaluate_boundary_resource_gate as independent_boundary_resource_gate,
     evaluate_initial_resource_gates as independent_initial_resource_gates,
+    process_memory_measurements as independent_process_memory_measurements,
 )
 
 
@@ -141,47 +154,107 @@ def test_ordered_row_identity_rejects_row_id_or_cycle_changes(rows, ids, cycles)
         )
 
 
+def test_r7_resource_policy_constants_match_authorized_saved_evaluation_scope():
+    assert QUERY_POLICY_ID == INDEPENDENT_RESOURCE_POLICY_ID == "CLS_EVALUATION_QUERY_REPLAY_R7"
+    assert QUERY_INITIAL_MIN_BYTES == INDEPENDENT_INITIAL_MIN_BYTES == 1610612736
+    assert QUERY_INCREMENTAL_ESTIMATE_BYTES == INDEPENDENT_INCREMENTAL_ESTIMATE_BYTES == 536870912
+    assert QUERY_PROJECTED_MIN_BYTES == INDEPENDENT_PROJECTED_MIN_BYTES == 805306368
+    assert QUERY_BOUNDARY_MIN_BYTES == INDEPENDENT_BOUNDARY_MIN_BYTES == 805306368
+
+
 def test_query_initial_resource_gates_require_both_floor_and_projection():
-    gib = 1024**3
-    fail_initial = evaluate_query_initial_resource_gates(available_bytes=2 * gib + gib // 2,
-                                                         estimated_additional_bytes=gib // 4)
+    floor = QUERY_INITIAL_MIN_BYTES
+    reserve = QUERY_PROJECTED_MIN_BYTES
+    estimate = QUERY_INCREMENTAL_ESTIMATE_BYTES
+    fail_initial = evaluate_query_initial_resource_gates(available_bytes=floor - 1,
+                                                         estimated_additional_bytes=0)
     assert fail_initial["initial_floor_pass"] is False
     assert fail_initial["projected_reserve_pass"] is True
     assert fail_initial["pass_both_initial_gates"] is False
 
-    fail_projection = evaluate_query_initial_resource_gates(available_bytes=3 * gib + gib // 4,
-                                                            estimated_additional_bytes=3 * gib // 2)
+    fail_projection = evaluate_query_initial_resource_gates(available_bytes=floor,
+                                                            estimated_additional_bytes=floor - reserve + 1)
     assert fail_projection["initial_floor_pass"] is True
     assert fail_projection["projected_reserve_pass"] is False
     assert fail_projection["pass_both_initial_gates"] is False
 
-    pass_both = evaluate_query_initial_resource_gates(available_bytes=3 * gib + gib // 2,
-                                                      estimated_additional_bytes=gib // 2)
+    pass_both = evaluate_query_initial_resource_gates(available_bytes=floor,
+                                                      estimated_additional_bytes=estimate)
     assert pass_both["initial_floor_pass"] is True
     assert pass_both["projected_reserve_pass"] is True
     assert pass_both["pass_both_initial_gates"] is True
 
 
-def test_query_boundary_resource_gate_requires_two_gib_actual_available():
-    gib = 1024**3
-    assert evaluate_query_boundary_resource_gate(2 * gib)["pass"] is True
-    assert evaluate_query_boundary_resource_gate(2 * gib - 1)["pass"] is False
+def test_query_boundary_resource_gate_uses_actual_available_floor():
+    assert evaluate_query_boundary_resource_gate(QUERY_BOUNDARY_MIN_BYTES)["pass"] is True
+    assert evaluate_query_boundary_resource_gate(QUERY_BOUNDARY_MIN_BYTES - 1)["pass"] is False
 
 
-def test_independent_verifier_enforces_r4_initial_gates_independently():
-    gib = 1024**3
-    floor_fail = independent_initial_resource_gates(available_bytes=2 * gib + gib // 2,
-                                                     estimated_additional_bytes=gib // 4)
+def test_independent_verifier_enforces_r7_initial_gates_independently():
+    floor = INDEPENDENT_INITIAL_MIN_BYTES
+    reserve = INDEPENDENT_PROJECTED_MIN_BYTES
+    floor_fail = independent_initial_resource_gates(available_bytes=floor - 1,
+                                                     estimated_additional_bytes=0)
     assert floor_fail["initial_floor_pass"] is False
     assert floor_fail["projected_reserve_pass"] is True
     assert floor_fail["pass_both_initial_gates"] is False
 
-    reserve_fail = independent_initial_resource_gates(available_bytes=3 * gib + gib // 4,
-                                                       estimated_additional_bytes=3 * gib // 2)
+    reserve_fail = independent_initial_resource_gates(available_bytes=floor,
+                                                       estimated_additional_bytes=floor - reserve + 1)
     assert reserve_fail["initial_floor_pass"] is True
     assert reserve_fail["projected_reserve_pass"] is False
     assert reserve_fail["pass_both_initial_gates"] is False
-    assert independent_boundary_resource_gate(2 * gib - 1)["pass"] is False
+    assert independent_boundary_resource_gate(INDEPENDENT_BOUNDARY_MIN_BYTES)["pass"] is True
+    assert independent_boundary_resource_gate(INDEPENDENT_BOUNDARY_MIN_BYTES - 1)["pass"] is False
+
+
+def test_rss_and_os_peak_working_set_are_reported_distinctly_when_available():
+    from types import SimpleNamespace
+
+    measured = process_memory_measurements(SimpleNamespace(rss=123, peak_wset=456))
+    assert measured["process_rss_sample_bytes"] == 123
+    assert measured["process_rss_sample_is_peak"] is False
+    assert measured["process_peak_working_set_bytes"] == 456
+    assert measured["peak_working_set_measurement_available"] is True
+    assert measured["peak_working_set_value_is_os_high_water_mark"] is True
+
+    unavailable = process_memory_measurements(SimpleNamespace(rss=789))
+    assert unavailable["process_rss_sample_bytes"] == 789
+    assert unavailable["process_rss_sample_is_peak"] is False
+    assert unavailable["process_peak_working_set_bytes"] is None
+    assert unavailable["peak_working_set_measurement_available"] is False
+    assert unavailable["peak_working_set_source"] is None
+    assert independent_process_memory_measurements(SimpleNamespace(rss=789))["process_peak_working_set_bytes"] is None
+
+
+def test_synthetic_end_to_end_prediction_scoring_and_persistence_resume(tmp_path):
+    rows = np.asarray([11, 12, 13, 14], dtype=np.int64)
+    ids = np.asarray(["r11", "r12", "r13", "r14"])
+    cycles = np.asarray([68, 68, 69, 69], dtype=np.int64)
+    p_a = np.asarray([0.10, 0.70, 0.40, 0.80], dtype=np.float64)
+    p_pos = np.asarray([0.20, 0.90, 0.30, 0.60], dtype=np.float64)
+    missing = np.asarray([False, False, True, False])
+    synthetic_labels = np.asarray([0, 1, 0, 1], dtype=np.int8)
+    routed = competition_probabilities(p_pos, p_a, ~missing)
+    scored = metrics(synthetic_labels, routed)
+    assert scored["n"] == len(rows)
+    assert scored["confusion_matrix"] == [[2, 0], [0, 2]]
+
+    bundle = {"rows": rows, "ids": ids, "cycles": cycles, "probability": routed}
+    saved = tmp_path / "synthetic_predictions.npz"
+    write_npz_once(saved, bundle)
+    first_bytes = saved.read_bytes()
+    with np.load(saved, allow_pickle=False) as archive:
+        assert set(archive.files) == set(bundle)
+        for key, expected in bundle.items():
+            np.testing.assert_array_equal(archive[key], expected)
+    write_npz_once(saved, bundle)  # resumable exact replay is a no-op
+    assert saved.read_bytes() == first_bytes
+
+    changed = dict(bundle)
+    changed["probability"] = routed + np.asarray([0.01, 0.0, 0.0, 0.0])
+    with pytest.raises(EvaluationError, match="Existing saved predictions differ"):
+        write_npz_once(saved, changed)
 
 
 def test_saved_route_audit_separates_raw_bag_lr_from_missing_hgb_route():
