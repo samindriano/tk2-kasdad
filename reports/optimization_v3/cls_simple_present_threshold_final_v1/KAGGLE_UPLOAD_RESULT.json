@@ -1,0 +1,72 @@
+{
+  "campaign": "CLS_SIMPLE_PRESENT_THRESHOLD_FINAL_V1",
+  "champion_changed": false,
+  "competition": "tp2-classification-cyber-vulnerability-kasdd-gasal-2026-2027",
+  "csv": {
+    "path": "submissions/optimization_v3/cls_simple_present_threshold_final_v1/classification_threshold_final.csv",
+    "prediction_vector_sha256": "05098b8ec8ca726b26c356b98f1e486a04e003c099feaa931991fb068aff76ac",
+    "rows": 29421,
+    "sha256": "409479edf1614306289144e6c05db85b5a8a86aafadf7a7f87882884b6fbb006",
+    "threshold": 0.4854367183801688
+  },
+  "internal_calibration": {
+    "interpretation": "In-sample calibration objective on selected past OOF rows; not an untouched validation score.",
+    "macro_f1_exact": "77977941/94637632",
+    "macro_f1_objective": 0.8239633574094499,
+    "rows": 20903,
+    "threshold": 0.4854367183801688
+  },
+  "lineage": {
+    "apply_receipt_sha256": "73734605ecc6dbb08447edd76206aa4df9f0818cb2d71fa5314114ab94cf3a70",
+    "fit_receipt_sha256": "8003cf5b6b5aa40c30cb0cf3cfb4d4d31322e3070d04faeda2c25b4eb7f6afff",
+    "independent_qa_sha256": "2ab38c5e3c690433eb912d9be491fee24934c4c0f729e02bfa6ce7be4c3fc205",
+    "pre_fit_freeze_sha256": "9d16166e279a0bb903de7e72a7a53b31afedf4683c845f4e803ff87657715f45",
+    "source_commit": "127394921ee485e960dc4f0c7adf093f911a40d8",
+    "upload_intent_sha256": "cc9f0999ff0b7cc212ff1d57a9f7f9b972f8ed3d833e9478dc606eb3c8140e71"
+  },
+  "live_quota": {
+    "after": {
+      "numAllowedNow": 8,
+      "numToday": 2,
+      "numTotal": 25
+    },
+    "before": {
+      "numAllowedNow": 9,
+      "numToday": 1,
+      "numTotal": 24
+    }
+  },
+  "next_action": "No additional upload, retune, or champion change is authorized by this result.",
+  "preflight_ledger": {
+    "before_entries": 25,
+    "current_champion_prior_a02_no_pos_vectors_all_distinct": true,
+    "exact_message_already_present": false,
+    "local_duplicate_vectors": []
+  },
+  "public_score_comparison": {
+    "full_champion": {
+      "delta": -0.00241,
+      "ref": 58001282,
+      "score": 0.83225
+    },
+    "previous_no_pos": {
+      "delta": 0.00033,
+      "ref": 58024217,
+      "score": 0.82951
+    },
+    "private_score": "NOT_RETURNED"
+  },
+  "schema_version": 1,
+  "status": "COMPLETE",
+  "submission": {
+    "description": "Samuel CLS Simplified A02 Past OOF Threshold Benchmark",
+    "file_name": "classification_threshold_final.csv",
+    "private_score": "NOT_RETURNED",
+    "public_score": 0.82984,
+    "ref": 58029412,
+    "status": "COMPLETE",
+    "submitted_at": "2026-11-05T16:32:27.777000"
+  },
+  "test_or_sample_submission_target_values_read": false,
+  "upload_count_for_this_authorization": 1
+}

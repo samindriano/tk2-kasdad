@@ -1,0 +1,90 @@
+{
+  "apply_receipt_sha256": "73734605ecc6dbb08447edd76206aa4df9f0818cb2d71fa5314114ab94cf3a70",
+  "calibration_rows": 20903,
+  "campaign": "CLS_SIMPLE_PRESENT_THRESHOLD_FINAL_V1",
+  "check_count": 14,
+  "checks": [
+    "committed_source_snapshot",
+    "all_source_and_input_hashes",
+    "root_authorization_commit_and_hash",
+    "exact_unique_20903_oof_pool",
+    "selected_train_labels_only",
+    "exact_macro_f1_optimum",
+    "durable_one_fit_slot",
+    "E79_cache_to_Test_ID_order",
+    "Test_missing_mask_match",
+    "CSV_exact_prediction_replay",
+    "missing_decision_invariance",
+    "champion_prior_A02_and_NO_POS_vector_comparison",
+    "all_local_submission_duplicate_vectors_scanned",
+    "application_receipt_and_sample_schema"
+  ],
+  "comparisons": {
+    "current_public_champion": {
+      "changed_decisions": 384,
+      "identical": false,
+      "path": "submissions/optimization_v3/cls_a02_missing_temporal_decision_v2/classification_a02_missing_temporal_e79.csv",
+      "positive_delta": 56,
+      "sha256": "189a779b6100333a2fecfe443689fe7d340a331e828167221c81281a7ece4a4a"
+    },
+    "no_pos": {
+      "changed_decisions": 131,
+      "identical": false,
+      "path": "submissions/optimization_v3/cls_simplification_benchmark_v1/classification_no_pos_e79.csv",
+      "positive_delta": 131,
+      "sha256": "0884d518072274ad5ae6e35c9b37f275c0b503870bf6ab23772df250f4e40c67"
+    },
+    "prior_a02": {
+      "changed_decisions": 149,
+      "identical": false,
+      "path": "submissions/optimization_v3/a02_continuation_v1/a02_continuation.csv",
+      "positive_delta": 113,
+      "sha256": "6909d4af8a326661b81e4a947d42b42919c004852967ca99f6bd481a78c679f8"
+    }
+  },
+  "csv_path": "submissions/optimization_v3/cls_simple_present_threshold_final_v1/classification_threshold_final.csv",
+  "csv_sha256": "409479edf1614306289144e6c05db85b5a8a86aafadf7a7f87882884b6fbb006",
+  "decision_state_interval": [
+    0.48541374896069867,
+    0.4854367183801688
+  ],
+  "fit_confusion": {
+    "fn": 1690,
+    "fp": 1498,
+    "tn": 12678,
+    "tp": 5037
+  },
+  "fit_macro_f1": 0.8239633574094499,
+  "fit_macro_f1_exact": "77977941/94637632",
+  "fit_receipt_sha256": "8003cf5b6b5aa40c30cb0cf3cfb4d4d31322e3070d04faeda2c25b4eb7f6afff",
+  "interpretation": "Calibration objective is a fit statistic on the selected past OOF rows, not an untouched validation estimate.",
+  "local_duplicate_vectors": [],
+  "missing_rows": 1062,
+  "positive_count": 6815,
+  "postfit_adapter": {
+    "accepted_exact_value": "PREVIOUSLY_UPLOADED_REF_58024217_COMPLETE",
+    "artifacts_mutated": false,
+    "normalization_scope": "provenance label only; all prediction vectors, hashes, deltas, IDs, and counts were independently recomputed",
+    "normalized_field": "apply_receipt.comparisons.no_pos.status",
+    "status": "PASS"
+  },
+  "pre_fit_freeze_sha256": "9d16166e279a0bb903de7e72a7a53b31afedf4683c845f4e803ff87657715f45",
+  "prediction_vector_sha256": "05098b8ec8ca726b26c356b98f1e486a04e003c099feaa931991fb068aff76ac",
+  "present_class_support": {
+    "0": 13288,
+    "1": 6240
+  },
+  "sample_target_values_read": false,
+  "schema_version": 1,
+  "source_commit": "127394921ee485e960dc4f0c7adf093f911a40d8",
+  "status": "PASS",
+  "test_columns_read": [
+    "record_id",
+    "signal_stream"
+  ],
+  "test_rows": 29421,
+  "test_target_read": false,
+  "threshold": 0.4854367183801688,
+  "threshold_hex": "0x1.f11652b6e1ad2p-2",
+  "upload_must_be_skipped_for_duplicate": false
+}
