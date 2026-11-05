@@ -31,15 +31,22 @@ from src.models.pos_frequency_ridge_v1 import canonical_sha256, sha256_array
 
 REL_FREEZE_R1 = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R1.json"
 REL_FREEZE_R2 = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R2.json"
-REL_FREEZE = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R3.json"
+REL_FREEZE_R3 = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R3.json"
+REL_FREEZE = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R4.json"
 REL_PREDICTIONS = "experiments/runs/optimization_v3_cls_pos_frequency_ridge_eval_v1/predictions_r1.npz"
 REL_PREDICTION_MANIFEST = "reports/optimization_v3/cls_pos_frequency_ridge_v1/PREDICTIONS_MANIFEST_R1.json"
 REL_RESULTS = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_RESULTS_R1.json"
 REL_REPORT = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_REPORT_R1.md"
 REL_SOURCE_QA_R1 = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_SOURCE_QA_R1.json"
 REL_SOURCE_QA_R2 = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_SOURCE_QA_R2.json"
-REL_SOURCE_QA = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_SOURCE_QA_R3.json"
+REL_SOURCE_QA_R3 = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_SOURCE_QA_R3.json"
+REL_SOURCE_QA = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_SOURCE_QA_R4.json"
+RESOURCE_AMENDMENT_REL = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_RESOURCE_AMENDMENT_R4.json"
 R2_FREEZE_COMMIT = "648ee016b63afddedebedd0888e889005d3b45f3"
+R3_FREEZE_COMMIT = "2f712755ea3af077d17f283487f20b405c3dce31"
+QUERY_INITIAL_MIN_BYTES = 3 * 1024**3
+QUERY_INCREMENTAL_ESTIMATE_BYTES = 512 * 1024**2
+QUERY_PROJECTED_MIN_BYTES = 2 * 1024**3
 
 TRAIN_REL = "data/raw/classification/Train.csv"
 TRAIN_SHA256 = "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c"
@@ -93,6 +100,7 @@ SOURCE_FILES = (
     "scripts/verify_optimization_v3_cls_pos_frequency_ridge_eval_v1.py",
     "tests/test_pos_frequency_ridge_v1.py",
     "tests/test_cls_pos_frequency_ridge_evaluation_v1.py",
+    RESOURCE_AMENDMENT_REL,
 )
 
 
@@ -199,8 +207,10 @@ def expected_input_paths() -> list[str]:
     rels.update(SOURCE_FILES)
     rels.add(REL_FREEZE_R1)
     rels.add(REL_FREEZE_R2)
+    rels.add(REL_FREEZE_R3)
     rels.add(REL_SOURCE_QA_R1)
     rels.add(REL_SOURCE_QA_R2)
+    rels.add(REL_SOURCE_QA_R3)
     rels.add(REL_SOURCE_QA)
     rels.add("reports/optimization_v3/posoffset_a02_endgame_v1/RECIPE.json")
     rels.add("experiments/runs/optimization_v3_cls_pos_frequency_ridge_v1/BUDGET_LEDGER.jsonl")
@@ -231,6 +241,26 @@ def source_preflight() -> dict[str, Any]:
     prior_r2_commit = require_committed(REL_FREEZE_R2)
     if prior_r2_commit != R2_FREEZE_COMMIT:
         raise EvaluationError("Committed R2 source-freeze checkpoint differs from the recorded parent")
+    prior_r3 = read_json(path(REL_FREEZE_R3))
+    prior_r3_body = dict(prior_r3)
+    prior_r3_claim = prior_r3_body.pop("freeze_sha256", None)
+    if (prior_r3_claim != canonical_sha256(prior_r3_body)
+            or prior_r3.get("status") != "FROZEN_BEFORE_QUERY_TARGET_LOAD"
+            or prior_r3.get("freeze_round") != "R3"
+            or prior_r3.get("supersedes_freeze") != REL_FREEZE_R2
+            or prior_r3.get("parent_freeze_commit") != R2_FREEZE_COMMIT
+            or prior_r3.get("parent_freeze_sha256") != file_sha256(path(REL_FREEZE_R2))):
+        raise EvaluationError("Prior R3 source-freeze lineage is invalid")
+    prior_r3_commit = require_committed(REL_FREEZE_R3)
+    if prior_r3_commit != R3_FREEZE_COMMIT:
+        raise EvaluationError("Committed R3 source-freeze checkpoint differs from the recorded parent")
+    amendment = read_json(path(RESOURCE_AMENDMENT_REL))
+    if (amendment.get("decision") != "AUTHORIZE_VERSIONED_EVALUATION_ONLY_RESOURCE_POLICY"
+            or amendment.get("new_model_fits") != 0
+            or amendment.get("minimum_available_bytes") != QUERY_INITIAL_MIN_BYTES
+            or amendment.get("incremental_memory_estimate_bytes") != QUERY_INCREMENTAL_ESTIMATE_BYTES
+            or amendment.get("minimum_projected_free_bytes") != QUERY_PROJECTED_MIN_BYTES):
+        raise EvaluationError("R4 resource amendment contents differ from the authorized record")
     source_hashes: dict[str, str] = {}
     for rel in SOURCE_FILES:
         file_path = path(rel)
@@ -264,8 +294,8 @@ def source_preflight() -> dict[str, Any]:
         "status": "PASS_TARGET_FREE_EVALUATOR_SOURCE_PREFLIGHT",
         "source_hashes": source_hashes, "input_hashes": input_hashes,
         "parent_freeze": {
-            "path": REL_FREEZE_R2, "freeze_sha256": file_sha256(path(REL_FREEZE_R2)),
-            "commit": prior_r2_commit,
+            "path": REL_FREEZE_R3, "freeze_sha256": file_sha256(path(REL_FREEZE_R3)),
+            "commit": prior_r3_commit,
         },
         "a02_allowlist": list(A02_KEYS), "pos_bundle_allowlist": list(POS_KEYS),
         "pilot_bundle_allowlist": list(PILOT_KEYS),
@@ -281,17 +311,26 @@ def build_source_freeze(*, synthetic_qa: Mapping[str, Any]) -> dict[str, Any]:
     body: dict[str, Any] = {
         "schema_version": 1, "status": "FROZEN_BEFORE_QUERY_TARGET_LOAD",
         "campaign_id": "CLS_POS_FREQUENCY_RIDGE_V1_EVALUATION_R1",
-        "freeze_round": "R3",
-        "supersedes_freeze": REL_FREEZE_R2,
+        "freeze_round": "R4",
+        "supersedes_freeze": REL_FREEZE_R3,
         "supersession_reason": (
-            "R2 prelabel replay exposed a dtype-sensitive record-ID digest mismatch: the frozen matrix "
-            "builder hashed pandas string-converted object arrays while the evaluator hashed Unicode arrays. "
-            "Ordered ID values match exactly; R3 preserves the digest guard using the historical object-string "
-            "schema and adds an explicit ordered identity validator."
+            "R4 is an explicitly authorized evaluation-only resource amendment following the R3 source repair. "
+            "It changes only the zero-fit query-replay resource policy to an initial 3 GiB floor plus a "
+            "projected 2 GiB reserve, adds measured current-state boundary samples, and releases origin matrices "
+            "serially. Scientific recipes, inputs, labels, windows, thresholds, comparisons, and gates are unchanged."
         ),
         "source_preparation_parent_commit": git_text("rev-parse", "HEAD"),
         "parent_freeze_sha256": preflight["parent_freeze"]["freeze_sha256"],
         "parent_freeze_commit": preflight["parent_freeze"]["commit"],
+        "resource_policy": {
+            "amendment_path": RESOURCE_AMENDMENT_REL,
+            "minimum_available_bytes": QUERY_INITIAL_MIN_BYTES,
+            "incremental_memory_estimate_bytes": QUERY_INCREMENTAL_ESTIMATE_BYTES,
+            "minimum_projected_free_bytes": QUERY_PROJECTED_MIN_BYTES,
+            "post_load_and_origin_boundary_minimum_available_bytes": QUERY_PROJECTED_MIN_BYTES,
+            "training_and_reg_lp_gates_unchanged": "minimum 4 GiB plus 2 GiB reserve",
+            "sampled_rss_is_peak": False,
+        },
         "frozen_at_utc": datetime.now(timezone.utc).isoformat(),
         "source_hashes": preflight["source_hashes"], "input_hashes": preflight["input_hashes"],
         "raw_file_hashing_only": {
@@ -366,9 +405,9 @@ def verify_source_freeze(*, require_frozen_commit: bool) -> tuple[dict[str, Any]
         raise EvaluationError("Evaluation source freeze signature mismatch")
     if freeze.get("status") != "FROZEN_BEFORE_QUERY_TARGET_LOAD":
         raise EvaluationError("Evaluation source freeze status is not pre-label")
-    if (freeze.get("freeze_round") != "R3"
-            or freeze.get("supersedes_freeze") != REL_FREEZE_R2):
-        raise EvaluationError("Evaluation source freeze is not the committed R3 repair checkpoint")
+    if (freeze.get("freeze_round") != "R4"
+            or freeze.get("supersedes_freeze") != REL_FREEZE_R3):
+        raise EvaluationError("Evaluation source freeze is not the committed R4 resource checkpoint")
     current = source_preflight()
     if (freeze.get("parent_freeze_sha256") != current["parent_freeze"]["freeze_sha256"]
             or freeze.get("parent_freeze_commit") != current["parent_freeze"]["commit"]):
@@ -424,13 +463,59 @@ def write_npz_once(file_path: Path, arrays: Mapping[str, np.ndarray]) -> None:
         stream.flush()
 
 
-def resource_snapshot(estimated_additional_bytes: int) -> dict[str, Any]:
+def evaluate_query_initial_resource_gates(available_bytes: int,
+                                          estimated_additional_bytes: int = QUERY_INCREMENTAL_ESTIMATE_BYTES
+                                          ) -> dict[str, Any]:
+    available = int(available_bytes)
+    estimate = int(estimated_additional_bytes)
+    projected = available - estimate
+    initial_pass = available >= QUERY_INITIAL_MIN_BYTES
+    projected_pass = projected >= QUERY_PROJECTED_MIN_BYTES
+    return {
+        "available_bytes": available,
+        "estimated_additional_bytes": estimate,
+        "projected_free_bytes": projected,
+        "minimum_available_bytes": QUERY_INITIAL_MIN_BYTES,
+        "minimum_projected_free_bytes": QUERY_PROJECTED_MIN_BYTES,
+        "initial_floor_pass": initial_pass,
+        "projected_reserve_pass": projected_pass,
+        "pass_both_initial_gates": initial_pass and projected_pass,
+        "estimate_is_measured_peak": False,
+    }
+
+
+def evaluate_query_boundary_resource_gate(available_bytes: int) -> dict[str, Any]:
+    available = int(available_bytes)
+    return {
+        "available_bytes": available,
+        "minimum_available_bytes": QUERY_PROJECTED_MIN_BYTES,
+        "pass": available >= QUERY_PROJECTED_MIN_BYTES,
+        "sample_is_peak": False,
+    }
+
+
+def resource_snapshot() -> dict[str, Any]:
     import psutil
     available = int(psutil.virtual_memory().available)
-    minimum = 4 * 1024**3; reserve = 2 * 1024**3
-    return {"available_bytes": available, "estimated_additional_bytes": int(estimated_additional_bytes),
-            "minimum_4gib_pass": available >= minimum,
-            "projected_2gib_reserve_pass": available-estimated_additional_bytes >= reserve}
+    process_rss = int(psutil.Process().memory_info().rss)
+    return {
+        "policy_id": "CLS_EVALUATION_QUERY_REPLAY_R4",
+        **evaluate_query_initial_resource_gates(available),
+        "process_rss_sample_bytes": process_rss,
+        "sample_kind": "CURRENT_STATE_SNAPSHOT_NOT_PEAK",
+    }
+
+
+def resource_boundary_snapshot(stage: str) -> dict[str, Any]:
+    import psutil
+    available = int(psutil.virtual_memory().available)
+    process_rss = int(psutil.Process().memory_info().rss)
+    return {
+        "stage": stage,
+        **evaluate_query_boundary_resource_gate(available),
+        "process_rss_sample_bytes": process_rss,
+        "sample_kind": "CURRENT_STATE_SNAPSHOT_NOT_PEAK",
+    }
 
 
 class SharedJobLock:
@@ -543,11 +628,17 @@ def verify_four_fit_ledger() -> dict[str, Any]:
 
 
 def prepare_predictions() -> dict[str, Any]:
-    freeze, freeze_commit = verify_source_freeze(require_frozen_commit=True)
-    resource = resource_snapshot(estimated_additional_bytes=512 * 1024**2)
-    if not resource["minimum_4gib_pass"] or not resource["projected_2gib_reserve_pass"]:
-        raise EvaluationError(f"RAM gate failed before target-free prediction replay: {resource}")
     with SharedJobLock():
+        initial_resource = resource_snapshot()
+        if not initial_resource["pass_both_initial_gates"]:
+            raise EvaluationError(
+                "R4 initial RAM gates failed before target-free prediction replay: "
+                f"{initial_resource}"
+            )
+        freeze, freeze_commit = verify_source_freeze(require_frozen_commit=True)
+        resource_samples: list[dict[str, Any]] = [
+            {"stage": "INITIAL_UNDER_SHARED_LOCK", **initial_resource}
+        ]
         protocol = read_json(path(PROTOCOL_REL))
         root_pass = read_json(path(ROOT_PASS_REL))
         if protocol.get("campaign_id") != "CLS_POS_FREQUENCY_RIDGE_V1":
@@ -652,7 +743,14 @@ def prepare_predictions() -> dict[str, Any]:
                 raise EvaluationError(f"E{origin} query matrices do not match frozen row count")
             if (score_position_augmented[:, :score_base.shape[1]] != score_base).nnz:
                 raise EvaluationError(f"E{origin} augmented query matrix changed the frozen C2_B base block")
+            load_sample = resource_boundary_snapshot(f"E{origin}_AFTER_MATRIX_LOAD_AND_IDENTITY_BOUNDARIES")
+            resource_samples.append(load_sample)
+            if not load_sample["pass"]:
+                raise EvaluationError(
+                    f"R4 actual available RAM fell below 2 GiB after E{origin} matrix load: {load_sample}"
+                )
             score_position = score_position_augmented[:, score_base.shape[1]:].tocsr()
+            del score_position_augmented
             bag_id = f"POSITIONAL_TEXT_PILOT_V1_E{origin}_BAG_LR"
             bag_entry = next((unit for unit in accounting["fit_units"]
                               if unit.get("fit_id") == bag_id), None)
@@ -794,7 +892,34 @@ def prepare_predictions() -> dict[str, Any]:
                 "uniform_pos_max_abs_present_error": uniform_error,
                 "saved_mix50_formula_max_abs_error": float(np.max(np.abs(mix50_saved-mix50_exact))),
             }
+            boundary_sample = resource_boundary_snapshot(f"E{origin}_ORIGIN_BOUNDARY_BEFORE_RELEASE")
+            resource_samples.append(boundary_sample)
+            if not boundary_sample["pass"]:
+                raise EvaluationError(
+                    f"R4 actual available RAM fell below 2 GiB at E{origin} origin boundary: {boundary_sample}"
+                )
+            # Retain only compact predictions/lineage in outputs. Free matrix,
+            # estimator, and replay intermediates before loading the next origin.
+            del (score_base, score_position, bag_unit, bag, coef, intercept, z0, p_bag_replay,
+                 uniform_gamma, uniform_receipt, gamma_by_arm, new_lineages, all_gammas,
+                 replay, p_uniform, p_pos_a02, mix50_saved, mix50_exact, mix50_primary,
+                 groups, pos, pilot, source_rows, source_ids, source_cycles, rows, ids, cycles,
+                 expected_rows, expected_ids, expected_cycles, missing, present, p_a,
+                 missing_hgb, p_bag_saved, p_offset_cached, fit_rows, fit_ids_for_receipt,
+                 fit_ids_receipt_sha, uniform_lineage, saved_real, ready_bundle, manifest,
+                 bag_entry, bag_rel, bag_receipt_rel, bag_path, bag_receipt_path, key, expected,
+                 manifest_rel, manifest_sha, pos_rel, pilot_rel, uniform_rel, uniform_receipt_rel,
+                 artifact_rel, receipt_rel, map_rel, gamma, lineage, receipt, arm, logits,
+                probability, source_name, boundary_sample, load_sample)
+            import gc
+            gc.collect()
 
+        final_sample = resource_boundary_snapshot("AFTER_ALL_ORIGINS_RELEASED_BEFORE_SAVE")
+        resource_samples.append(final_sample)
+        if not final_sample["pass"]:
+            raise EvaluationError(
+                f"R4 actual available RAM fell below 2 GiB before prediction save: {final_sample}"
+            )
         pred_path = path(REL_PREDICTIONS)
         write_npz_once(pred_path, outputs)
         pred_manifest: dict[str, Any] = {
@@ -807,7 +932,16 @@ def prepare_predictions() -> dict[str, Any]:
             "prediction_schema": list(outputs), "lineages": lineages,
             "replay_audit": replay_audit,
             "a02_allowlist": list(A02_KEYS), "forbidden_target_fields_requested": [],
-            "four_fit_ledger_audit": ledger_audit, "resource_snapshot": resource,
+            "four_fit_ledger_audit": ledger_audit,
+            "resource_snapshot": {
+                "policy_id": "CLS_EVALUATION_QUERY_REPLAY_R4",
+                "initial_floor_bytes": QUERY_INITIAL_MIN_BYTES,
+                "incremental_memory_estimate_bytes": QUERY_INCREMENTAL_ESTIMATE_BYTES,
+                "projected_free_floor_bytes": QUERY_PROJECTED_MIN_BYTES,
+                "post_load_and_boundary_floor_bytes": QUERY_PROJECTED_MIN_BYTES,
+                "samples": resource_samples,
+                "samples_are_peak_measurements": False,
+            },
             "query_target_members_loaded": [], "query_target_labels_read": False,
             "test_or_samplesubmission_accessed": False, "estimator_fits": 0,
         }

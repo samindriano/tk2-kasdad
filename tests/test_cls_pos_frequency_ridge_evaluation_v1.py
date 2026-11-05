@@ -6,6 +6,8 @@ from scripts.evaluate_optimization_v3_cls_pos_frequency_ridge_v1 import (
     FORBIDDEN_QUERY_KEYS,
     EvaluationError,
     VIEWS,
+    evaluate_query_boundary_resource_gate,
+    evaluate_query_initial_resource_gates,
     competition_probabilities,
     metrics,
     metrics_missing_threshold,
@@ -126,3 +128,30 @@ def test_ordered_row_identity_rejects_row_id_or_cycle_changes(rows, ids, cycles)
         validate_ordered_row_identity(
             rows, ids, cycles, expected_rows, expected_ids, expected_cycles
         )
+
+
+def test_query_initial_resource_gates_require_both_floor_and_projection():
+    gib = 1024**3
+    fail_initial = evaluate_query_initial_resource_gates(available_bytes=2 * gib + gib // 2,
+                                                         estimated_additional_bytes=gib // 4)
+    assert fail_initial["initial_floor_pass"] is False
+    assert fail_initial["projected_reserve_pass"] is True
+    assert fail_initial["pass_both_initial_gates"] is False
+
+    fail_projection = evaluate_query_initial_resource_gates(available_bytes=3 * gib + gib // 4,
+                                                            estimated_additional_bytes=3 * gib // 2)
+    assert fail_projection["initial_floor_pass"] is True
+    assert fail_projection["projected_reserve_pass"] is False
+    assert fail_projection["pass_both_initial_gates"] is False
+
+    pass_both = evaluate_query_initial_resource_gates(available_bytes=3 * gib + gib // 2,
+                                                      estimated_additional_bytes=gib // 2)
+    assert pass_both["initial_floor_pass"] is True
+    assert pass_both["projected_reserve_pass"] is True
+    assert pass_both["pass_both_initial_gates"] is True
+
+
+def test_query_boundary_resource_gate_requires_two_gib_actual_available():
+    gib = 1024**3
+    assert evaluate_query_boundary_resource_gate(2 * gib)["pass"] is True
+    assert evaluate_query_boundary_resource_gate(2 * gib - 1)["pass"] is False

@@ -23,7 +23,8 @@ import sys
 sys.path.insert(0, str(ROOT))
 from src.models.optimization_v3_positional_text_pilot_v1 import sha256_csr
 
-FREEZE = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R3.json"
+FREEZE = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R4.json"
+FREEZE_PARENT = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R3.json"
 PRED = "experiments/runs/optimization_v3_cls_pos_frequency_ridge_eval_v1/predictions_r1.npz"
 PRED_MANIFEST = "reports/optimization_v3/cls_pos_frequency_ridge_v1/PREDICTIONS_MANIFEST_R1.json"
 RESULTS = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_RESULTS_R1.json"
@@ -92,6 +93,11 @@ def verify_freeze_and_manifest() -> tuple[dict[str, Any], dict[str, Any]]:
     freeze = read_json(p(FREEZE)); manifest = read_json(p(PRED_MANIFEST))
     if freeze.get("status") != "FROZEN_BEFORE_QUERY_TARGET_LOAD":
         raise VerifyError("Source freeze is not pre-label")
+    if (freeze.get("freeze_round") != "R4"
+            or freeze.get("supersedes_freeze") != FREEZE_PARENT
+            or freeze.get("parent_freeze_sha256") != sha_file(p(FREEZE_PARENT))
+            or freeze.get("parent_freeze_commit") != committed(FREEZE_PARENT)):
+        raise VerifyError("R4 source freeze parent lineage is invalid")
     if manifest.get("status") != "PREDICTIONS_FROZEN_BEFORE_QUERY_TARGET_READ":
         raise VerifyError("Predictions manifest is not pre-label")
     if manifest.get("source_freeze_sha256") != sha_file(p(FREEZE)):
@@ -106,6 +112,16 @@ def verify_freeze_and_manifest() -> tuple[dict[str, Any], dict[str, Any]]:
             raise VerifyError(f"Frozen input hash changed: {rel}")
     if manifest.get("query_target_labels_read") is not False or manifest.get("query_target_members_loaded") != []:
         raise VerifyError("Predictions manifest does not prove zero query-target read")
+    resource = manifest.get("resource_snapshot", {})
+    samples = resource.get("samples", [])
+    if (resource.get("policy_id") != "CLS_EVALUATION_QUERY_REPLAY_R4"
+            or resource.get("initial_floor_bytes") != 3 * 1024**3
+            or resource.get("incremental_memory_estimate_bytes") != 512 * 1024**2
+            or resource.get("projected_free_floor_bytes") != 2 * 1024**3
+            or resource.get("samples_are_peak_measurements") is not False
+            or not samples or samples[0].get("pass_both_initial_gates") is not True
+            or any(item.get("pass") is not True for item in samples[1:])):
+        raise VerifyError("R4 resource sample guards are incomplete or failed")
     return freeze, manifest
 
 
