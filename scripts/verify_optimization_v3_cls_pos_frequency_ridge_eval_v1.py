@@ -25,12 +25,17 @@ import sys
 sys.path.insert(0, str(ROOT))
 from src.models.optimization_v3_positional_text_pilot_v1 import sha256_csr
 
-FREEZE = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R7.json"
-FREEZE_PARENT = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R6.json"
+FREEZE = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R8.json"
+FREEZE_PARENT = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R7.json"
+R6_FREEZE = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R6.json"
 R5_FREEZE = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R5.json"
 R6_FREEZE_COMMIT = "87693a2f3f3cf6d5d984183c52c2ac76be27ff1b"
 R4_ATTEMPT = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_ATTEMPT_R4_PRELABEL.json"
+R7_ATTEMPT = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_ATTEMPT_R7_PRELABEL.json"
 USER_RESOURCE_POLICY = "reports/optimization_v3/RESOURCE_POLICY_USER_REVISED_20261105.json"
+R7_FREEZE_COMMIT = "be3e1abfe99a8f032d6fe6427f6c21a6387aefdd"
+R7_ATTEMPT_COMMIT = "abf19827b7b6d78407a867e8b21c5e0fec66937b"
+R7_ATTEMPT_SHA256 = "ecec00c176e85bb62c28b3702f0a964c1ec4d5025949d6206eb8e60526fdd0fe"
 PRED = "experiments/runs/optimization_v3_cls_pos_frequency_ridge_eval_v1/predictions_r1.npz"
 PRED_MANIFEST = "reports/optimization_v3/cls_pos_frequency_ridge_v1/PREDICTIONS_MANIFEST_R1.json"
 RESULTS = "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_RESULTS_R1.json"
@@ -227,7 +232,7 @@ def verify_freeze_and_manifest() -> tuple[dict[str, Any], dict[str, Any]]:
         raise VerifyError("R7 source-freeze signature mismatch")
     if freeze.get("status") != "FROZEN_BEFORE_QUERY_TARGET_LOAD":
         raise VerifyError("Source freeze is not pre-label")
-    r6 = read_json(p(FREEZE_PARENT))
+    r6 = read_json(p(R6_FREEZE))
     r6_body = dict(r6)
     r6_claim = r6_body.pop("freeze_sha256", None)
     r6_sha = hashlib.sha256(json.dumps(
@@ -239,7 +244,7 @@ def verify_freeze_and_manifest() -> tuple[dict[str, Any], dict[str, Any]]:
             or r6.get("supersedes_freeze") != R5_FREEZE
             or r6.get("parent_freeze_sha256") != sha_file(p(R5_FREEZE))
             or r6.get("parent_freeze_commit") != committed(R5_FREEZE)
-            or committed(FREEZE_PARENT) != R6_FREEZE_COMMIT
+            or committed(R6_FREEZE) != R6_FREEZE_COMMIT
             or r6_policy.get("minimum_available_bytes") != R4_INITIAL_MIN_BYTES
             or r6_policy.get("incremental_memory_estimate_bytes") != R4_INCREMENTAL_ESTIMATE_BYTES
             or r6_policy.get("minimum_projected_free_bytes") != R4_PROJECTED_MIN_BYTES
@@ -247,17 +252,96 @@ def verify_freeze_and_manifest() -> tuple[dict[str, Any], dict[str, Any]]:
             or r6_policy.get("sampled_rss_is_peak") is not False
             or r6.get("new_fits_or_test_inference") != 0):
         raise VerifyError("Committed R6 historical resource checkpoint is invalid")
-    if (freeze.get("freeze_round") != "R7"
+    r7 = read_json(p(FREEZE_PARENT))
+    r7_body = dict(r7)
+    r7_claim = r7_body.pop("freeze_sha256", None)
+    r7_sha = hashlib.sha256(json.dumps(
+        r7_body, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False
+    ).encode("utf-8")).hexdigest()
+    r7_policy = r7.get("resource_policy", {})
+    r7_policy_record = read_json(p(USER_RESOURCE_POLICY))
+    r7_eval_policy = r7_policy_record.get("workloads", {}).get("saved_prediction_evaluation", {})
+    if (r7_claim != r7_sha or r7.get("status") != "FROZEN_BEFORE_QUERY_TARGET_LOAD"
+            or r7.get("freeze_round") != "R7"
+            or r7.get("supersedes_freeze") != R6_FREEZE
+            or r7.get("parent_freeze_sha256") != sha_file(p(R6_FREEZE))
+            or r7.get("parent_freeze_commit") != committed(R6_FREEZE)
+            or committed(FREEZE_PARENT) != R7_FREEZE_COMMIT
+            or r7.get("preserved_failed_attempt_sha256") != sha_file(p(R4_ATTEMPT))
+            or r7.get("preserved_failed_attempt_commit") != committed(R4_ATTEMPT)
+            or any(r7.get(name) != r6.get(name)
+                   for name in ("windows", "unique_pool", "recipe", "gates", "incident_disclosure", "incident_status"))
+            or r7_policy_record.get("decision") != "USER_AUTHORIZED_WORKLOAD_SPECIFIC_LOWER_RAM_FLOORS"
+            or r7_eval_policy.get("minimum_available_bytes") != INITIAL_MIN_BYTES
+            or r7_eval_policy.get("incremental_estimate_bytes") != INCREMENTAL_ESTIMATE_BYTES
+            or r7_eval_policy.get("minimum_projected_free_bytes") != PROJECTED_MIN_BYTES
+            or r7_eval_policy.get("minimum_actual_free_at_boundary_bytes") != BOUNDARY_MIN_BYTES
+            or r7_policy.get("user_policy_path") != USER_RESOURCE_POLICY
+            or r7_policy.get("policy_id") != RESOURCE_POLICY_ID
+            or r7_policy.get("minimum_available_bytes") != INITIAL_MIN_BYTES
+            or r7_policy.get("incremental_memory_estimate_bytes") != INCREMENTAL_ESTIMATE_BYTES
+            or r7_policy.get("minimum_projected_free_bytes") != PROJECTED_MIN_BYTES
+            or r7_policy.get("minimum_actual_free_at_boundary_bytes") != BOUNDARY_MIN_BYTES
+            or r7.get("new_fits_or_test_inference") != 0):
+        raise VerifyError("Committed R7 resource freeze or lineage is invalid")
+    r7_attempt = read_json(p(R7_ATTEMPT))
+    r7_attempt_data = r7_attempt.get("attempt", {})
+    r7_audit = r7_attempt.get("target_free_formula_audit", {})
+    if (sha_file(p(R7_ATTEMPT)) != R7_ATTEMPT_SHA256
+            or r7_attempt.get("status") != "STOPPED_PRELABEL_VALIDATOR_SEMANTIC_MISMATCH"
+            or r7_attempt_data.get("source_freeze_sha256") != r7_claim
+            or r7_attempt_data.get("source_freeze_commit") != R7_FREEZE_COMMIT
+            or r7_attempt_data.get("query_target_labels_read") is not False
+            or r7_attempt_data.get("new_fits") != 0
+            or r7_attempt_data.get("prediction_manifest_written") is not False
+            or r7_audit.get("source_hash_matches_r7_freeze") is not True
+            or r7_audit.get("source_sha256") != r7.get("input_hashes", {}).get(A02)
+            or committed(R7_ATTEMPT) != R7_ATTEMPT_COMMIT):
+        raise VerifyError("Preserved R7 prelabel stop receipt is invalid")
+    for origin, expected in {
+        "E67": (20903, 19528, 1375, 0.39826575881011356, 0.7965315176202271),
+        "E75": (8491, 7965, 526, 0.32067833152757613, 0.6413566630551523),
+    }.items():
+        item = r7_audit.get("origins", {}).get(origin, {})
+        rows, present, missing, incorrect_missing_error, fallback_diff = expected
+        if (item.get("rows") != rows or item.get("present_rows") != present
+                or item.get("missing_rows") != missing
+                or item.get("cached_equals_historical_formula_bit_exact") is not True
+                or item.get("historical_formula_max_abs_error") != 0.0
+                or item.get("historical_missing_equals_pP_bit_exact") is not True
+                or item.get("incorrect_all_rows_average_max_abs_error_missing") != incorrect_missing_error
+                or item.get("pA_vs_pP_missing_max_abs_difference") != fallback_diff):
+            raise VerifyError(f"R7 target-free MIX50 cache semantics audit differs for {origin}")
+    if (freeze.get("freeze_round") != "R8"
             or freeze.get("supersedes_freeze") != FREEZE_PARENT
             or freeze.get("parent_freeze_sha256") != sha_file(p(FREEZE_PARENT))
             or freeze.get("parent_freeze_commit") != committed(FREEZE_PARENT)
             or freeze.get("preserved_failed_attempt_sha256") != sha_file(p(R4_ATTEMPT))
-            or freeze.get("preserved_failed_attempt_commit") != committed(R4_ATTEMPT)):
-        raise VerifyError("R7 source freeze parent/failed-attempt lineage is invalid")
-    parent = read_json(p(FREEZE_PARENT))
+            or freeze.get("preserved_failed_attempt_commit") != committed(R4_ATTEMPT)
+            or freeze.get("preserved_prior_attempt_sha256") != sha_file(p(R7_ATTEMPT))
+            or freeze.get("preserved_prior_attempt_commit") != committed(R7_ATTEMPT)):
+        raise VerifyError("R8 source freeze parent/attempt lineage is invalid")
+    parent = r7
     if any(freeze.get(name) != parent.get(name)
            for name in ("windows", "unique_pool", "recipe", "gates", "incident_disclosure", "incident_status")):
-        raise VerifyError("R7 changed the scientific recipe, views, gates, or incident disclosure")
+        raise VerifyError("R8 changed the scientific recipe, views, gates, or incident disclosure")
+    cache_semantics = freeze.get("cache_validation_semantics", {})
+    expected_cache_semantics = {
+        "archived_A02_MIX50": {
+            "present": "0.5 * pP + 0.5 * pA",
+            "missing": "pP exactly",
+            "validation": "exact pP on missing rows and existing 2e-15 tolerance on present-row blend",
+        },
+        "current_primary_competition_reference": {
+            "present": "0.5 * pP + 0.5 * pA",
+            "missing": "pA",
+            "relation_to_archived_cache": "distinct on missing rows by frozen protocol; do not validate archived MIX50 against this reference",
+        },
+        "cached_probability_vectors_modified": False,
+    }
+    if (freeze.get("resource_policy") != r7_policy
+            or cache_semantics != expected_cache_semantics):
+        raise VerifyError("R8 changed the parent resource policy or misstates cached/current MIX50 semantics")
     user_policy = read_json(p(USER_RESOURCE_POLICY))
     saved_eval_policy = user_policy.get("workloads", {}).get("saved_prediction_evaluation", {})
     policy = freeze.get("resource_policy", {})
@@ -278,7 +362,7 @@ def verify_freeze_and_manifest() -> tuple[dict[str, Any], dict[str, Any]]:
             or policy.get("peak_working_set_source_if_available") != "psutil.Process().memory_info().peak_wset"
             or policy.get("peak_working_set_is_os_high_water_mark_when_available") is not True
             or freeze.get("new_fits_or_test_inference") != 0):
-        raise VerifyError("R7 resource policy or zero-fit boundary differs from user authorization")
+        raise VerifyError("R8 resource policy or zero-fit boundary differs from its frozen parent")
     if manifest.get("status") != "PREDICTIONS_FROZEN_BEFORE_QUERY_TARGET_READ":
         raise VerifyError("Predictions manifest is not pre-label")
     if manifest.get("source_freeze_sha256") != sha_file(p(FREEZE)):
@@ -363,6 +447,38 @@ def strict_npz(file: Path, requested: tuple[str, ...], allowlist: tuple[str, ...
         return {key: np.asarray(archive[key]) for key in requested}
 
 
+def validate_historical_mix50_cache(p_pos: np.ndarray, p_a: np.ndarray,
+                                    missing: np.ndarray, saved: np.ndarray,
+                                    *, atol: float = 2e-15) -> dict[str, Any]:
+    """Independent check of archived A02 recipe: present average; missing pP exactly."""
+    p_pos = np.asarray(p_pos, dtype=np.float64)
+    p_a = np.asarray(p_a, dtype=np.float64)
+    missing = np.asarray(missing, dtype=bool)
+    saved = np.asarray(saved, dtype=np.float64)
+    if (p_pos.ndim != 1 or p_pos.shape != p_a.shape or p_pos.shape != missing.shape
+            or p_pos.shape != saved.shape or not np.isfinite(p_pos).all()
+            or not np.isfinite(p_a).all() or not np.isfinite(saved).all()
+            or np.any((p_pos < 0) | (p_pos > 1))
+            or np.any((p_a < 0) | (p_a > 1))
+            or np.any((saved < 0) | (saved > 1))):
+        raise VerifyError("Archived MIX50 inputs are malformed")
+    present = ~missing
+    present_expected = 0.5 * p_pos + 0.5 * p_a
+    if not np.array_equal(saved[missing], p_pos[missing]):
+        raise VerifyError("Archived MIX50 missing rows do not equal pP bit-exactly")
+    if not np.allclose(saved[present], present_expected[present], rtol=0.0, atol=atol):
+        raise VerifyError("Archived MIX50 present rows fail the historical average formula")
+    historical = present_expected.copy()
+    historical[missing] = p_pos[missing]
+    return {
+        "status": "PASS_HISTORICAL_MIX50_CACHE_REPLAY",
+        "present_rows": int(present.sum()), "missing_rows": int(missing.sum()),
+        "missing_equals_pP_bit_exact": True,
+        "present_max_abs_error": float(np.max(np.abs(saved[present] - present_expected[present]))) if present.any() else 0.0,
+        "historical_max_abs_error_overall": float(np.max(np.abs(saved - historical))) if saved.size else 0.0,
+    }
+
+
 def array_sha256(value: Any) -> str:
     a=np.asarray(value)
     header=json.dumps({"shape":a.shape,"dtype":str(a.dtype)},sort_keys=True,separators=(",",":"))
@@ -434,6 +550,9 @@ def independently_replay_saved_predictions(arrays: dict[str,np.ndarray],
 
         missing=a02[f"E{origin}_missing"].astype(bool); present=~missing
         p_a=a02[f"E{origin}_pA"].astype(np.float64)
+        p_pos_a02=a02[f"E{origin}_pP"].astype(np.float64)
+        mix50_cache_audit=validate_historical_mix50_cache(
+            p_pos_a02,p_a,missing,a02[f"E{origin}_MIX50"],atol=2e-15)
         fallback=pos["prob_missing_hgb"].astype(np.float64)
         pilot_hgb=pilot["prob_missing_hgb"].astype(np.float64)
         pilot_raw_bag=pilot["prob_bag"].astype(np.float64)
@@ -494,10 +613,11 @@ def independently_replay_saved_predictions(arrays: dict[str,np.ndarray],
                 raise VerifyError(f"R7 available RAM below 0.75 GiB at {k} origin boundary: {boundary_sample}")
         audit[k]={"c2b_max_abs_error":float(np.max(np.abs(bag_p-pilot_raw_bag))),
                   "gamma_probability_max_abs_errors":errors,
+                  "historical_mix50_cache_audit":mix50_cache_audit,
                   "route_cache_fields_bit_exact":True,
                   "missing_fallback_bit_exact":True,"a02_alignment":"PASS"}
         del (pos,pilot,manifest,base,augmented,position,bag_unit,estimator,z0,bag_p,
-             missing,present,p_a,fallback,pilot_hgb,pilot_raw_bag,pilot_routed_bag,
+             missing,present,p_a,p_pos_a02,mix50_cache_audit,fallback,pilot_hgb,pilot_raw_bag,pilot_routed_bag,
              gamma_specs,errors,probabilities,gamma,logits,value,saved,expected_mix,
              load_sample,boundary_sample)
         import gc

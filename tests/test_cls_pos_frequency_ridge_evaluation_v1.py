@@ -15,6 +15,8 @@ from scripts.evaluate_optimization_v3_cls_pos_frequency_ridge_v1 import (
     evaluate_query_boundary_resource_gate,
     evaluate_query_initial_resource_gates,
     competition_probabilities,
+    current_primary_mix50_reference,
+    historical_mix50_probabilities,
     metrics,
     metrics_missing_threshold,
     process_memory_measurements,
@@ -22,6 +24,7 @@ from scripts.evaluate_optimization_v3_cls_pos_frequency_ridge_v1 import (
     row_metadata,
     sha256_array,
     validate_saved_route_probabilities,
+    validate_saved_historical_mix50,
     validate_ordered_row_identity,
     write_npz_once,
 )
@@ -34,6 +37,7 @@ from scripts.verify_optimization_v3_cls_pos_frequency_ridge_eval_v1 import (
     evaluate_boundary_resource_gate as independent_boundary_resource_gate,
     evaluate_initial_resource_gates as independent_initial_resource_gates,
     process_memory_measurements as independent_process_memory_measurements,
+    validate_historical_mix50_cache as independent_validate_historical_mix50_cache,
 )
 
 
@@ -276,3 +280,48 @@ def test_saved_route_audit_rejects_tampered_missing_fallback():
     with pytest.raises(EvaluationError, match="not bit-exact HGB"):
         validate_saved_route_probabilities(tampered_route, hgb, raw_bag, hgb,
                                            tampered_route, missing)
+
+
+def test_historical_mix50_and_current_primary_reference_keep_distinct_missing_semantics():
+    p_pos = np.asarray([0.10, 0.20, 0.70, 0.90], dtype=np.float64)
+    p_a = np.asarray([0.90, 0.80, 0.30, 0.10], dtype=np.float64)
+    missing = np.asarray([False, True, False, True])
+    historical = historical_mix50_probabilities(p_pos, p_a, missing)
+    current = current_primary_mix50_reference(p_pos, p_a, missing)
+
+    np.testing.assert_array_equal(historical[~missing], current[~missing])
+    np.testing.assert_array_equal(historical[missing], p_pos[missing])
+    np.testing.assert_array_equal(current[missing], p_a[missing])
+    assert not np.array_equal(historical[missing], current[missing])
+
+    audit = validate_saved_historical_mix50(p_pos, p_a, missing, historical)
+    assert audit["historical_formula"] == "present=0.5*pP+0.5*pA; missing=pP exactly"
+    assert audit["present_rows"] == 2
+    assert audit["missing_rows"] == 2
+    assert audit["missing_equals_pP_bit_exact"] is True
+    independent_audit = independent_validate_historical_mix50_cache(p_pos, p_a, missing, historical)
+    assert independent_audit["status"] == "PASS_HISTORICAL_MIX50_CACHE_REPLAY"
+    assert independent_audit["historical_max_abs_error_overall"] == 0.0
+    with pytest.raises(EvaluationError, match="missing rows must equal pP"):
+        validate_saved_historical_mix50(p_pos, p_a, missing, current)
+    with pytest.raises(RuntimeError, match="missing rows do not equal pP"):
+        independent_validate_historical_mix50_cache(p_pos, p_a, missing, current)
+
+
+@pytest.mark.parametrize("tamper", ["present", "missing"])
+def test_historical_mix50_validator_rejects_tampered_present_or_missing_rows(tamper):
+    p_pos = np.asarray([0.10, 0.20, 0.70, 0.90], dtype=np.float64)
+    p_a = np.asarray([0.90, 0.80, 0.30, 0.10], dtype=np.float64)
+    missing = np.asarray([False, True, False, True])
+    saved = historical_mix50_probabilities(p_pos, p_a, missing)
+    if tamper == "present":
+        saved[0] += 0.01
+        expected_error = "present rows fail"
+    else:
+        saved[1] += 0.01
+        expected_error = "missing rows must equal pP"
+    with pytest.raises(EvaluationError, match=expected_error):
+        validate_saved_historical_mix50(p_pos, p_a, missing, saved)
+    independent_error = "historical average formula" if tamper == "present" else "missing rows do not equal pP"
+    with pytest.raises(RuntimeError, match=independent_error):
+        independent_validate_historical_mix50_cache(p_pos, p_a, missing, saved)
