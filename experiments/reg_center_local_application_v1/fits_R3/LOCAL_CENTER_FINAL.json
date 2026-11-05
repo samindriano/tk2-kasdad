@@ -1,0 +1,57 @@
+{
+  "application": {
+    "application_performed": false,
+    "csv_created": false,
+    "missing_route": "unchanged raw DIRECT float64 bits",
+    "present_route": "clip(frozen hinge(raw_DIRECT) + delta*b(raw_DIRECT), 0, 100)"
+  },
+  "basis": "max(0, 1 - abs(raw_DIRECT - 50) / 10)",
+  "choice_dependent_objective": {
+    "b_zero_rows_contribute": "no choice-dependent objective",
+    "population": "present b>0 only",
+    "unweighted_absolute_residual_sum": 55579.14220648316
+  },
+  "delta": -1.3955577433171884,
+  "delta_bounded_minimizer_interval": [
+    -1.3955577433171884,
+    -1.3955577433171884
+  ],
+  "delta_bounds": [
+    -2.0,
+    0.0
+  ],
+  "delta_unbounded_minimizer_interval": [
+    -1.3955577433171884,
+    -1.3955577433171884
+  ],
+  "experiment_id": "REG_CENTER_LOCAL_APPLICATION_V1_R3",
+  "fit_id": "LOCAL_CENTER_FINAL",
+  "fit_population": {
+    "choice_informative_rows_present_and_b_positive": 4125,
+    "eligible_present_rows": 19528,
+    "excluded_missing_rows": 1375,
+    "universe_rows": 20903,
+    "zero_basis_rows_choice_independent": 15403
+  },
+  "fixed_hinge_coefficients": {
+    "intercept": 1.7288079036674198,
+    "slope_high": 0.957778072288735,
+    "slope_low": 0.9933285599956824
+  },
+  "identity_preflight_sha256": "ca908690b4b1e73c68669e346b11b847b1848399ae3c69eaa0fee0cf4fdd9c74",
+  "oof_bundle_sha256": "e75f70cccd1bb231499060b84155af876173214d984461e39e4c1364e4c5b2bf",
+  "optimizer": "exact lower weighted median of (y-g(raw_DIRECT))/b, weights=b, on present b>0 rows",
+  "preparation_freeze_sha256": "752ecaec45734f7261eeb6b0a67f62d22a87158e99376b6bc2881486fae01538",
+  "root_source_pass_sha256": "62816f8a7a2692215737f99beaaa8eb54184485fb22d9a65dae48d0c36b76760",
+  "schema_version": 2,
+  "signature": "1fc1ae39289c4b7d119042e93855a2fd189f75cf97cb0628d2842a8535a54808",
+  "status": "PASS_LOCAL_SCALAR_FIT_COMPLETE",
+  "target_access": {
+    "authorized_target_member": "targets",
+    "e79_read": false,
+    "missing_target_values_used": false,
+    "target_array_loaded_after_pass": true,
+    "target_values_in_fit_objective": 4125,
+    "test_or_sample_read": false
+  }
+}

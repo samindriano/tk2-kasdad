@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "status": "BLOCKED_SOURCE_POPULATION_AMBIGUITY",
+  "experiment_id": "REG_CENTER_LOCAL_APPLICATION_V1",
+  "created_utc": "2026-11-05",
+  "worktree": {
+    "path": "C:/Users/Sam/OneDrive/Documents/KASDAD/tk2-reg-position-failure-mechanism-v1",
+    "branch": "codex/reg-position-failure-mechanism-v1",
+    "head": "2e3d9fcc7ea94caddc6879cd8f3b5bceaa08638a"
+  },
+  "blocker": {
+    "requested_population": "20,903 OOF PRESENT rows",
+    "observed_population": {
+      "unique_oof_rows": 20903,
+      "present_rows": 19528,
+      "missing_rows": 1375
+    },
+    "reason": "The pinned source bundle has 20,903 unique OOF rows total, but its missing_mask marks 1,375 rows missing. A present-only correction therefore has 19,528 eligible rows. Choosing 20,903 would include missing rows; choosing 19,528 would change the stated fit population. No interpretation was inferred."
+  },
+  "evidence": {
+    "fit_input_path": "experiments/runs/reg_monotone_hinge_p50_v1/FINAL_APPLICATION_R1/fit_inputs/HINGE_FINAL.npz",
+    "fit_input_sha256": "e75f70cccd1bb231499060b84155af876173214d984461e39e4c1364e4c5b2bf",
+    "prior_final_report_path": "reports/optimization_v3/reg_monotone_hinge_p50_v1/FINAL_APPLICATION_REPORT_R1.json",
+    "prior_final_report_sha256": "fec7182eace04b425b7dbf1d871dbb39f14a1080e479ba95243803e4b1cdae73",
+    "prior_final_fit_state_sha256": "a81b2e8e709a33e9a15036ab040c87c92faabd08f16b48ff7f42916fd23ad99a",
+    "identity_hashes_loaded_without_targets": {
+      "record_ids_sha256": "d16962cea5ce6420561117b2f10b268341b8ccfe8cfc4b3f62390f4f58a112ce",
+      "direct_prediction_sha256": "292c6ea4d595ac575911f1960615c745917cc89eae70dc38ac86ac155ac9c6a5",
+      "missing_mask_sha256": "fde0b74637fed2940b2e7479784f1a3f513a5b691108dcc2c6ad7863b23953ea"
+    },
+    "origin_rows": {
+      "E67": 12412,
+      "E75": 8491
+    },
+    "fixed_hinge_coefficients_from_pinned_final_report": {
+      "intercept": 1.7288079036674198,
+      "slope_low": 0.9933285599956824,
+      "slope_high": 0.957778072288735
+    },
+    "prior_artifact_chain_checks": {
+      "freeze_signature": true,
+      "root_source_pass_signature": true,
+      "identity_preflight_signature": true,
+      "final_report_signature": true,
+      "report_binds_freeze_pass_and_preflight": true,
+      "verification_binds_report": true,
+      "receipt_binds_report_and_verification": true,
+      "prior_fit_state_status": "LP_COMPLETE",
+      "prior_preflight_target_reader_called": false,
+      "prior_preflight_train_targets_parsed": false
+    }
+  },
+  "actions_this_turn": {
+    "loaded_npz_members": [
+      "physical_rows",
+      "record_ids",
+      "prediction_origins",
+      "original_bundle_indices",
+      "cycles",
+      "direct_predictions",
+      "missing_mask"
+    ],
+    "target_array_loaded": false,
+    "e79_archive_read": false,
+    "fit_run": false,
+    "csv_created": false,
+    "kaggle_accessed": false,
+    "existing_source_or_result_files_modified": false,
+    "new_executor_tests_or_root_pass_created": false
+  },
+  "resume_condition": "Root specifies whether the new fit population is all 20,903 OOF rows or only the 19,528 non-missing rows; then resume source-only preparation with a separate freeze, identity preflight, one-slot root-pass contract, verifier, and synthetic tests."
+}

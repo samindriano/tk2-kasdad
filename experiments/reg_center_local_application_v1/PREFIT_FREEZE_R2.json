@@ -1,0 +1,126 @@
+{
+  "access_boundary": {
+    "csv_created": false,
+    "e79_read": false,
+    "fit_started": false,
+    "kaggle_accessed": false,
+    "targets_loaded": false,
+    "test_or_sample_read": false
+  },
+  "experiment_id": "REG_CENTER_LOCAL_APPLICATION_V1_R2",
+  "fit_contract": {
+    "base_model": "frozen FULLREG HINGE_FINAL",
+    "delta_bounds": [
+      -2.0,
+      0.0
+    ],
+    "fit_id": "LOCAL_CENTER_FINAL",
+    "local_basis": "max(0, 1 - abs(raw_DIRECT - 50) / 10)",
+    "missing_rows": "excluded from fit and unchanged at application",
+    "new_base_model_fits": 0,
+    "optimizer": "exact lower weighted median of (y-g(raw_DIRECT))/b with weights b over present b>0 rows",
+    "preprocessing_fits": 0,
+    "zero_basis_rows": "contribute no choice-dependent objective"
+  },
+  "population_resolution": {
+    "eligible_present_rows": 19528,
+    "interpretation": "All unique OOF rows define the universe; only rows with missing_mask=false are fit-eligible.",
+    "missing_rows_excluded_from_fit": 1375,
+    "requested_universe_rows": 20903
+  },
+  "prepared_on_head_informational_only": "2ef76694f2129042e8d7133b1568c4c5aa3d5257",
+  "producer_ancestry": {
+    "blocked_r1_sha256": "a3c9377ba5a802c4f0ea84ef3589fcaf20a8932016e2d37e6f0368d1fc74eb0f",
+    "fixed_hinge_coefficients": {
+      "intercept": 1.7288079036674198,
+      "slope_high": 0.957778072288735,
+      "slope_low": 0.9933285599956824
+    },
+    "oof_bundle_sha256": "e75f70cccd1bb231499060b84155af876173214d984461e39e4c1364e4c5b2bf",
+    "parent_final_report_sha256": "fec7182eace04b425b7dbf1d871dbb39f14a1080e479ba95243803e4b1cdae73",
+    "parent_fit_state_sha256": "a81b2e8e709a33e9a15036ab040c87c92faabd08f16b48ff7f42916fd23ad99a",
+    "parent_freeze_sha256": "e3522ab957381dc32c1e37ba41863781a736291982b7c8f1364dd4d8c7def049",
+    "parent_identity_preflight_sha256": "281022a94eaf8dd07831d73476811e29217020d7dcee12a02f00564053847521",
+    "parent_source_pass_sha256": "ca35d7f580ee2fd2c5e7173309e89482b69c3eba7a2c29a7adbd0a1c791acd2f",
+    "producer_source_commit": "ac0f84905d35080837cda6bd0da5394073fce2c1",
+    "producer_source_commit_is_ancestor": true
+  },
+  "schema_version": 2,
+  "signature": "fb65b5f2ee3e44201f004213e8d45031db0c7e38ebbaf053bfe9ec068d65bd5e",
+  "source_inventory": {
+    "inputs": {
+      "blocked_r1": {
+        "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\reports\\optimization_v3\\reg_center_local_application_v1\\SOURCE_PREP_BLOCKED_R1.json",
+        "sha256": "a3c9377ba5a802c4f0ea84ef3589fcaf20a8932016e2d37e6f0368d1fc74eb0f"
+      },
+      "oof_bundle": {
+        "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\runs\\reg_monotone_hinge_p50_v1\\FINAL_APPLICATION_R1\\fit_inputs\\HINGE_FINAL.npz",
+        "sha256": "e75f70cccd1bb231499060b84155af876173214d984461e39e4c1364e4c5b2bf"
+      },
+      "parent_fit_state": {
+        "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\runs\\reg_monotone_hinge_p50_v1\\FINAL_APPLICATION_R1\\fits\\HINGE_FINAL.json",
+        "sha256": "a81b2e8e709a33e9a15036ab040c87c92faabd08f16b48ff7f42916fd23ad99a"
+      },
+      "parent_freeze": {
+        "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\reg_monotone_hinge_p50_v1\\FINAL_APPLICATION_FREEZE_R1.json",
+        "sha256": "e3522ab957381dc32c1e37ba41863781a736291982b7c8f1364dd4d8c7def049"
+      },
+      "parent_pass": {
+        "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\reg_monotone_hinge_p50_v1\\FINAL_APPLICATION_ROOT_SOURCE_PASS_R1.json",
+        "sha256": "ca35d7f580ee2fd2c5e7173309e89482b69c3eba7a2c29a7adbd0a1c791acd2f"
+      },
+      "parent_preflight": {
+        "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\reports\\optimization_v3\\reg_monotone_hinge_p50_v1\\FINAL_APPLICATION_PREFLIGHT_R1.json",
+        "sha256": "281022a94eaf8dd07831d73476811e29217020d7dcee12a02f00564053847521"
+      },
+      "parent_receipt": {
+        "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\reports\\optimization_v3\\reg_monotone_hinge_p50_v1\\FINAL_APPLICATION_RECEIPT_R1.json",
+        "sha256": "364a0cbe8258127e6ff963f9117e11a8d61c1ec05bb3bc4d2ca5962f117ad89f"
+      },
+      "parent_report": {
+        "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\reports\\optimization_v3\\reg_monotone_hinge_p50_v1\\FINAL_APPLICATION_REPORT_R1.json",
+        "sha256": "fec7182eace04b425b7dbf1d871dbb39f14a1080e479ba95243803e4b1cdae73"
+      },
+      "parent_verification": {
+        "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\reports\\optimization_v3\\reg_monotone_hinge_p50_v1\\FINAL_APPLICATION_VERIFICATION_R1.json",
+        "sha256": "af859d6efcf90b3044ba55c37f2ae3e5e27132ae520c1cd90aad28580fadf97c"
+      }
+    },
+    "sources": {
+      "hinge_core": {
+        "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\scripts\\reg_monotone_hinge_p50_v1.py",
+        "sha256": "f51d428fce23cf45575d8bbdc3241cc2a5c976b840665aca33b62b1a9687fb99"
+      },
+      "parent_final_runner": {
+        "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\scripts\\reg_monotone_hinge_p50_final_application_v1.py",
+        "sha256": "9ff89d6833b7a72cbd681089ff0f7c5e37c1f7d3e163e05d0c965811c8319863"
+      },
+      "parent_final_verifier": {
+        "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\scripts\\verify_reg_monotone_hinge_p50_final_application_v1.py",
+        "sha256": "2cf7f1b4738b5e4dedbbf4562d253cdbd1aa3baefd03a1e214bce41daf233ff7"
+      },
+      "policy": {
+        "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\reports\\optimization_v3\\reg_center_local_application_v1\\POLICY_R2.md",
+        "sha256": "efb9c31ddabf0b5848d50af0ea89d3dbbbe153275326df5895dee9b01e55eb79"
+      },
+      "root_pass_contract": {
+        "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\reports\\optimization_v3\\reg_center_local_application_v1\\ROOT_SOURCE_PASS_CONTRACT_R2.md",
+        "sha256": "d4e875ab45edcd22fee24f2eb6e9240b976b6b671bf15be92f3e8df206aeed6c"
+      },
+      "runner": {
+        "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\scripts\\reg_center_local_application_v1.py",
+        "sha256": "94545ca2381c8e7de8ec87da33e86f57541678885998bf3a40dc9db54fb16dcb"
+      },
+      "tests": {
+        "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\tests\\test_reg_center_local_application_v1.py",
+        "sha256": "57aed5fd0c1599bf7aee2655bbe683438517a4d97e9a47ab94ab941b1525551e"
+      },
+      "verifier": {
+        "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\scripts\\verify_reg_center_local_application_v1.py",
+        "sha256": "f8d87ed49400ecd8083415fc5d9d8566db6cfbd1f0bf3885b357f54f4e3a8894"
+      }
+    }
+  },
+  "source_inventory_sha256": "312c4a62c1feb6e76494af9fe6fb4d0b938fac597d90e20bee2be3dd4d38cc90",
+  "status": "SOURCE_FROZEN_PENDING_NON_TARGET_PREFLIGHT"
+}
