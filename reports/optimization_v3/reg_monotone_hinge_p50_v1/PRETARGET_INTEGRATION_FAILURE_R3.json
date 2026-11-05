@@ -1,0 +1,85 @@
+{
+  "authorization": {
+    "authorized_fit_ids": [
+      "HINGE_D1",
+      "HINGE_D2"
+    ],
+    "command": "python scripts/reg_monotone_hinge_p50_v3.py --run-diagnostics",
+    "exit_code": 1,
+    "freeze_sha256": "9ddf50d2796b9b19e4e4ca61767dea80cbc81161daa50a8536f3f5356aceedb5",
+    "identity_preflight_sha256": "0343e5e91aa934f9bd0270b1ebd110b7b2148a850179d0f8d1b7f01f2e9e8c0f",
+    "root_source_pass_sha256": "340043c85cec86413f0fe9530f5017ca40a1b0af2008aa22b003bb77d62a9c8e"
+  },
+  "classification": "INTEGRATION_SCHEMA_FAILURE_BEFORE_LABEL_READ_OR_LP_START",
+  "disposition": {
+    "current_frozen_source_not_modified": true,
+    "current_pass_not_reused_for_source_changes": true,
+    "next_action": "Root review and narrow versioned repair decision; do not retry under the current frozen source pass."
+  },
+  "failure": {
+    "exception_type": "KeyError",
+    "integration_mismatch": {
+      "load_oof_identity_returns_keys": [
+        "rows",
+        "origins",
+        "indices",
+        "ids",
+        "cycles",
+        "direct",
+        "missing",
+        "row_identity_hashes",
+        "direct_bundle_audits"
+      ],
+      "verify_oof_identity_expects_keys": [
+        "physical_rows",
+        "record_ids",
+        "prediction_origins",
+        "original_bundle_indices",
+        "cycles",
+        "direct_predictions",
+        "missing_mask",
+        "row_counts"
+      ]
+    },
+    "message": "'physical_rows'",
+    "retry_attempted": false,
+    "source_fix_applied": false,
+    "traceback_location": "scripts/reg_monotone_hinge_p50_v3.py:875 in verify_oof_identity; called from :894 load_targets_after_source_pass and :1459 run_diagnostics"
+  },
+  "post_failure_state": {
+    "freeze_sha256": "9ddf50d2796b9b19e4e4ca61767dea80cbc81161daa50a8536f3f5356aceedb5",
+    "identity_preflight_sha256": "0343e5e91aa934f9bd0270b1ebd110b7b2148a850179d0f8d1b7f01f2e9e8c0f",
+    "ledger_lp_started_count": 0,
+    "root_source_pass_sha256": "340043c85cec86413f0fe9530f5017ca40a1b0af2008aa22b003bb77d62a9c8e",
+    "run_directory_files": []
+  },
+  "recorded_at_utc": "2026-11-05T07:55:53.031744+00:00",
+  "schema_version": 1,
+  "status": "PRETARGET_TECHNICAL_BLOCKER",
+  "work_boundary": {
+    "csv_created": false,
+    "diagnostic_lock_held_during_command": true,
+    "diagnostic_lock_released_on_exit": true,
+    "diagnostics_report_exists": false,
+    "diagnostics_verification_exists": false,
+    "direct_identity_arrays_loaded": true,
+    "final_fit_started": false,
+    "kaggle_upload": false,
+    "ledger_exists": false,
+    "load_targets_after_source_pass_called": true,
+    "official_lp_starts": 0,
+    "official_train_labels_parsed": false,
+    "resource_receipt_exists": false,
+    "scoring_started": false,
+    "selected_train_row_reader_called": false,
+    "source_pass_verified": true,
+    "target_arrays_loaded": false,
+    "test_or_sample_accessed": false
+  },
+  "worktree": {
+    "approval_commit": "4f0bdb4fa6a97c3570e1b0f9376285d44e765235",
+    "branch": "codex/reg-position-failure-mechanism-v1",
+    "frozen_source_commit": "f1c1ab6914d642508e2089f7f3c200d158ceb3ba",
+    "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1"
+  }
+}

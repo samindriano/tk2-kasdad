@@ -1,0 +1,82 @@
+{
+  "authorization": {
+    "authorized_fit_ids": [
+      "HINGE_D1",
+      "HINGE_D2"
+    ],
+    "root_source_pass_path": "experiments/reg_monotone_hinge_p50_v1/ROOT_SOURCE_PASS_R3.json",
+    "root_source_pass_sha256": "340043c85cec86413f0fe9530f5017ca40a1b0af2008aa22b003bb77d62a9c8e"
+  },
+  "classification": "PRESTART_RESOURCE_BLOCKED_NOT_FIT_OR_SCIENTIFIC_FAILURE",
+  "frozen_identity": {
+    "freeze_path": "experiments/reg_monotone_hinge_p50_v1/IDENTITY_FREEZE_R3.json",
+    "freeze_sha256": "9ddf50d2796b9b19e4e4ca61767dea80cbc81161daa50a8536f3f5356aceedb5",
+    "preflight_path": "reports/optimization_v3/reg_monotone_hinge_p50_v1/IDENTITY_PREFLIGHT_R3.json",
+    "preflight_sha256": "0343e5e91aa934f9bd0270b1ebd110b7b2148a850179d0f8d1b7f01f2e9e8c0f",
+    "preflight_status": "PASS_IDENTITY_ONLY_PREFLIGHT"
+  },
+  "measurement_note": "Readings are preserved in observed order; exact per-reading timestamps were not captured.",
+  "recorded_at_utc": "2026-11-05T07:48:14.563554+00:00",
+  "resource_gate": {
+    "gate_passed": false,
+    "initial_available_ram_threshold_bytes": 2147483648,
+    "measurement_count": 3,
+    "readings": [
+      {
+        "available_bytes": 2133151744,
+        "context": "during source-pass verification",
+        "sequence": 1,
+        "shortfall_bytes": 14331904
+      },
+      {
+        "available_bytes": 1898266624,
+        "context": "first follow-up check",
+        "sequence": 2,
+        "shortfall_bytes": 249217024
+      },
+      {
+        "available_bytes": 1768955904,
+        "context": "follow-up check after a 20-second interval",
+        "sequence": 3,
+        "shortfall_bytes": 378527744
+      }
+    ]
+  },
+  "resume": {
+    "command": "python scripts/reg_monotone_hinge_p50_v3.py --run-diagnostics",
+    "no_extra_fit_or_retry": true,
+    "prerequisites": [
+      "fresh initial RAM snapshot passes the unchanged 2 GiB floor and projected-free-memory gate",
+      "shared heavy-job lock is acquired exclusively by the diagnostics run"
+    ],
+    "scheduler_created": false,
+    "scope": [
+      "HINGE_D1",
+      "HINGE_D2"
+    ]
+  },
+  "schema_version": 1,
+  "shared_job_lock": {
+    "diagnostic_lock_acquired_for_run": false,
+    "note": "The availability probe acquired and released the lock immediately; no diagnostic run held it.",
+    "prestart_probe": "AVAILABLE"
+  },
+  "status": "PRESTART_RESOURCE_BLOCKED",
+  "work_boundary": {
+    "diagnostics_command_invoked": false,
+    "diagnostics_receipt_exists": false,
+    "fit_failure": false,
+    "ledger_exists": false,
+    "official_lp_starts": 0,
+    "official_train_labels_parsed": false,
+    "resource_receipt_exists": false,
+    "scientific_result": null,
+    "target_loader_called": false
+  },
+  "worktree": {
+    "approval_commit": "4f0bdb4fa6a97c3570e1b0f9376285d44e765235",
+    "branch": "codex/reg-position-failure-mechanism-v1",
+    "frozen_source_commit": "f1c1ab6914d642508e2089f7f3c200d158ceb3ba",
+    "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1"
+  }
+}
