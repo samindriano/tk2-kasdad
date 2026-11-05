@@ -29,7 +29,7 @@ import cls_simple_present_threshold_v1 as pilot
 AUDIT_ROOT = ROOT.parent / "tk2-simplification-audit-v1"
 AUTH_REL = "reports/simplification_v1/CLS_SIMPLE_THRESHOLD_FINAL_AUTHORIZATION.md"
 AUTH_PATH = AUDIT_ROOT / AUTH_REL
-AUTH_SHA256 = "80359910f2bebf694de87fa5180b0c2c6e0c9d3ec40fc1a9c3589d569fc1375"
+AUTH_SHA256 = "80359910f2befbf694de87fa5180b0c2c6e0c9d3ec40fc1a9c3589d569fc1375"
 AUTH_COMMIT = "1facbf6b125b9aba23fc0423226f33687adaefa2"
 
 OUT = ROOT / "reports/optimization_v3/cls_simple_present_threshold_final_v1"
