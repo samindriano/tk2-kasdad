@@ -48,7 +48,11 @@ python scripts/verify_cls_simple_present_threshold_final_v1.py
 
 The test suite creates isolated synthetic files and invokes the same CLI with
 the hidden `--synthetic-fixture` switch. That switch is only for tests and
-cannot be used to create the production pre-fit freeze.
+cannot be used to create the production pre-fit freeze. Fixture paths must all
+resolve under the OS temporary directory and outside the repository. The test
+path retains the shared/lane locks with a 512 MiB start floor and 256 MiB
+reserve; the one official calibration uses the unchanged project gate of
+1.5 GiB start, 0.75 GiB reserve, and 512 MiB estimated work.
 
 Runtime receipts and ledger live under ignored
 `experiments/runs/cls_simple_present_threshold_final_v1/`. The final CSV is

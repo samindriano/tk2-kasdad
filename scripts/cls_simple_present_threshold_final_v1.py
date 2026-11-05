@@ -13,6 +13,8 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -212,6 +214,34 @@ def _path_label(path: Path) -> str:
             return str(resolved)
 
 
+def _require_synthetic_temp_paths(paths: list[Path]) -> None:
+    temp_root = Path(tempfile.gettempdir()).resolve()
+    for path in paths:
+        resolved = path.resolve()
+        if not resolved.is_relative_to(temp_root) or resolved.is_relative_to(ROOT.resolve()):
+            raise ValueError("Synthetic fixture mode is restricted to isolated temporary files outside the repository")
+
+
+@contextmanager
+def _calibration_resource_gate(*, synthetic: bool):
+    if not synthetic:
+        with pilot.single_job_resource_gate():
+            yield
+        return
+    # Synthetic tests are tiny, isolated fixtures. Keep the shared and lane
+    # locks, while using a proportionate memory floor; official calibration
+    # always uses the unchanged frozen project thresholds above.
+    saved = (pilot.RESOURCE_START_BYTES, pilot.RESOURCE_RESERVE_BYTES, pilot.RESOURCE_ESTIMATE_BYTES)
+    pilot.RESOURCE_START_BYTES = 512 * 1024**2
+    pilot.RESOURCE_RESERVE_BYTES = 256 * 1024**2
+    pilot.RESOURCE_ESTIMATE_BYTES = 64 * 1024**2
+    try:
+        with pilot.single_job_resource_gate():
+            yield
+    finally:
+        pilot.RESOURCE_START_BYTES, pilot.RESOURCE_RESERVE_BYTES, pilot.RESOURCE_ESTIMATE_BYTES = saved
+
+
 def _input_paths(train_path: Path, oof_path: Path, e79_path: Path, test_path: Path,
                  sample_path: Path, *, synthetic: bool) -> dict[str, Path]:
     paths = {
@@ -237,6 +267,8 @@ def create_pre_fit_freeze(*, train_path: Path = TRAIN, oof_path: Path = OOF_CACH
         _validate_pilot_lineage()
         _validate_upstream_e79()
     input_paths = _input_paths(train_path, oof_path, e79_path, test_path, sample_path, synthetic=synthetic)
+    if synthetic:
+        _require_synthetic_temp_paths(list(input_paths.values()) + [freeze_path])
     missing = [str(path) for path in input_paths.values() if not path.is_file()]
     if missing:
         raise FileNotFoundError(f"Required frozen inputs are missing: {missing}")
@@ -422,7 +454,9 @@ def fit_final_threshold(*, train_path: Path = TRAIN, cache_path: Path = OOF_CACH
                         run_dir: Path = RUN, synthetic: bool = False) -> dict[str, Any]:
     # The old pilot's resource gate coordinates all heavy KASDAD jobs. This is
     # only a small calibrator, but retaining the shared/lane lock is mandatory.
-    with pilot.single_job_resource_gate():
+    if synthetic:
+        _require_synthetic_temp_paths([train_path, cache_path, e79_path, test_path, sample_path, freeze_path, run_dir])
+    with _calibration_resource_gate(synthetic=synthetic):
         input_paths = _input_paths(train_path, cache_path, e79_path, test_path, sample_path, synthetic=synthetic)
         freeze = _verify_source_and_inputs(freeze_path, input_paths, synthetic=synthetic)
         ledger_path = run_dir / "LEDGER.jsonl"
@@ -598,6 +632,8 @@ def apply_frozen_threshold(*, test_path: Path = TEST, sample_path: Path = SAMPLE
                            train_path: Path = TRAIN, oof_path: Path = OOF_CACHE,
                            synthetic: bool = False) -> dict[str, Any]:
     input_paths = _input_paths(train_path, oof_path, e79_path, test_path, sample_path, synthetic=synthetic)
+    if synthetic:
+        _require_synthetic_temp_paths(list(input_paths.values()) + [freeze_path, run_dir, output_path])
     freeze = _verify_source_and_inputs(freeze_path, input_paths, synthetic=synthetic)
     fit_path = run_dir / "fits/FINAL.json"
     ledger_path = run_dir / "LEDGER.jsonl"
