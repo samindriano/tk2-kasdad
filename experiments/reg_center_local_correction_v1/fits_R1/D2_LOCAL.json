@@ -1,0 +1,131 @@
+{
+  "arm": "LOCAL",
+  "base_model_fit": false,
+  "counted_as_one_calibrator_fit": true,
+  "experiment_id": "REG_CENTER_LOCAL_CORRECTION_V1_R1",
+  "fit": {
+    "bounded_optimal_interval": [
+      -1.9644215654237005,
+      -1.9644215654237005
+    ],
+    "delta": -1.9644215654237005,
+    "fit_active_rows": 2476,
+    "fit_present_rows": 11563,
+    "objective_unweighted_sum_absolute_unclipped": 129259.46214528003,
+    "solution_nonunique": false,
+    "unbounded_median_interval": [
+      -1.9644215654237005,
+      -1.9644215654237005
+    ],
+    "unbounded_solution_nonunique": false,
+    "weighted_rows": 2476
+  },
+  "fit_id": "D2_LOCAL",
+  "fit_input_sha256": "29b1a7d52e9e4f9d502d329071769e260889e81817d82b9e12f73abd0cfc5445",
+  "fit_population": {
+    "cycles": [
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75
+    ],
+    "fit_id": "HINGE_D2",
+    "local_positive_basis_present_rows": 2476,
+    "n_all": 12412,
+    "n_missing": 849,
+    "n_present": 11563,
+    "origins": [
+      67
+    ],
+    "population": "fit",
+    "row_identity_hashes": {
+      "cycles_sha256": "20b6344ec1a73905389c6ab7fb723090d63a12a873eb0920863f61d12ea9b32d",
+      "direct_prediction_sha256": "bf32e5020fc6b6434f6fcd5af2cd23b9d23da1c63d5d7fe8a4ab1cb300beb1cc",
+      "missing_mask_sha256": "48b11d34fff820fdf20c49905b8e2fa73eea0a0425c849cca60c68b8fabbafef",
+      "original_bundle_indices_sha256": "16be7d719d1b2fe48549fbf9f05ff0a8373d08ec9f41189189f1790b65158956",
+      "physical_rows_sha256": "d25216ce845d5c8d23ad29db5dbfd5b843450f01140acc77ca81ede430dd1045",
+      "prediction_origins_sha256": "fb54dfdf92d98090c8766e024a20c712368b5c5c4315961378bfff0d6e567c00",
+      "record_ids_sha256": "36165cd65fbd923782e557924f1cf666c36864f64d77b0116ecc08369004eb4b"
+    }
+  },
+  "hinge_state_sha256": "9be290f35c89d7fd9199e6838a93a429d5ca5c3049117e4f30506a0b418bc51e",
+  "monotonicity": {
+    "minimum_derivative": 0.8039491832577933,
+    "monotone_non_decreasing": true,
+    "piecewise_derivatives": {
+      "local_40_to_50": 0.8039491832577933,
+      "local_50_to_60": 1.1508483847935325,
+      "outside_left": 1.0003913398001634,
+      "outside_right": 0.9544062282511625
+    }
+  },
+  "prefit_freeze_sha256": "9f488498c44d8e308e739050cf7c5d2411b2af74428f60ef7b5d2e27ba1807ba",
+  "preprocessing_fit": false,
+  "recipe": {
+    "base": "saved fixed-p50 HINGE",
+    "center": 50.0,
+    "clipping_in_objective": false,
+    "delta_bounds": [
+      -2.0,
+      0.0
+    ],
+    "fit_rows": "present only",
+    "half_width": 10.0,
+    "objective": "unweighted sum absolute"
+  },
+  "resource_snapshots": [
+    {
+      "actual_boundary_pass": true,
+      "available_bytes": 2322952192,
+      "boundary": "D2_LOCAL_before_target_load",
+      "concurrent_heavy_jobs": 1,
+      "incremental_estimate_bytes": 536870912,
+      "initial_gate_pass": true,
+      "minimum_actual_free_at_boundary_bytes": 1073741824,
+      "minimum_initial_available_bytes": 2147483648,
+      "minimum_projected_free_bytes": 1073741824,
+      "os_peak_working_set_bytes": 143470592,
+      "os_peak_working_set_measured": true,
+      "process_rss_bytes": 142094336,
+      "process_rss_measured": true,
+      "projected_free_bytes": 1786081280,
+      "status": "PASS",
+      "threads": 2,
+      "workload": "small_calibration_lp"
+    },
+    {
+      "actual_boundary_pass": true,
+      "available_bytes": 2338836480,
+      "boundary": "D2_LOCAL_after_fit",
+      "concurrent_heavy_jobs": 1,
+      "incremental_estimate_bytes": 536870912,
+      "initial_gate_pass": true,
+      "minimum_actual_free_at_boundary_bytes": 1073741824,
+      "minimum_initial_available_bytes": 2147483648,
+      "minimum_projected_free_bytes": 1073741824,
+      "os_peak_working_set_bytes": 146534400,
+      "os_peak_working_set_measured": true,
+      "process_rss_bytes": 141033472,
+      "process_rss_measured": true,
+      "projected_free_bytes": 1801965568,
+      "status": "PASS",
+      "threads": 2,
+      "workload": "small_calibration_lp"
+    }
+  ],
+  "root_source_pass_sha256": "3b5cd6684f2eb084bada74f384ff0d1d44019278c2d8c9128443ae7a28c284ec",
+  "saved_hinge_parameters": {
+    "intercept": 1.8742215974336602,
+    "slope_high": 0.9544062282511625,
+    "slope_low": 1.0003913398001634
+  },
+  "schema_version": 1,
+  "source_commit": "0db77c67e2ab9e1153128cdd72724162c630809b",
+  "stage_id": "HINGE_D2",
+  "status": "FIT_COMPLETE",
+  "target_sha256": "ea93738382e1ff0e685864e7730368011b21eac5e0c8f5ba630743ec12bd5e70"
+}

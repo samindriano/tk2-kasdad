@@ -1,0 +1,1823 @@
+{
+  "base_model_fits": 0,
+  "calibrator_fit_starts": 4,
+  "csv_created": false,
+  "e79_accessed": false,
+  "experiment_id": "REG_CENTER_LOCAL_CORRECTION_V1_R1",
+  "fit_state_hashes": {
+    "D1_GLOBAL_CONTROL": "bd26301705cfb20c1fddd011741cc2b30bdbc0912100aa0b26d2944bd131db95",
+    "D1_LOCAL": "2ae3259ae0715051bb06b6eab9e23ec5ae0394832b3455456c16e364064a4291",
+    "D2_GLOBAL_CONTROL": "47157f177a51d3cc3503f42fe5952bcb9b399cafa90a37d5a2793094fffed808",
+    "D2_LOCAL": "b818cfd21d0c207c801786945e3fd8e2384487197f75106e70ba88d185a53343"
+  },
+  "gates": {
+    "candidate_gate": {
+      "pass": false,
+      "rule": "pooled gain>=0.01; each window gain>=0; max supported all-row group harm<=0.25"
+    },
+    "exploratory_review_gate": {
+      "pass": true,
+      "rule": "pooled gain>=0; each window harm<=0.02; max supported all-row group harm<=0.25"
+    },
+    "local_fit_deltas": {
+      "HINGE_D1": -0.5144618597605731,
+      "HINGE_D2": -1.9644215654237005
+    },
+    "maximum_supported_all_row_group_harm_vs_hinge": 0.00471972642970897,
+    "mechanism_gate": {
+      "pass": true,
+      "rule": "delta<0 in both fit populations; LOCAL gain >1e-12 over HINGE and GLOBAL_CONTROL in both score windows"
+    },
+    "pooled_gain_over_hinge": {
+      "GLOBAL_CONTROL": -0.0006695494293573745,
+      "LOCAL": 0.006150040535745305
+    },
+    "pooled_mae": {
+      "GLOBAL_CONTROL": 10.625772346051544,
+      "HINGE": 10.625102796622187,
+      "LOCAL": 10.618952756086442
+    },
+    "score_rows_pooled_unique": 15953,
+    "supported_all_row_group_harm_vs_hinge": {
+      "HINGE_D1": 0.00471972642970897,
+      "HINGE_D2": 0.00467643859267497
+    },
+    "targeted_region_gain_over_hinge": {
+      "HINGE_D1": 0.012382308536732722,
+      "HINGE_D2": 0.048189108556952576
+    },
+    "window_gains": {
+      "HINGE_D1": {
+        "global_control_over_hinge": -0.0014314288456915847,
+        "local_over_global_control": 0.003930458148333926,
+        "local_over_hinge": 0.0024990293026423416
+      },
+      "HINGE_D2": {
+        "global_control_over_hinge": 0.0,
+        "local_over_global_control": 0.009358596161867183,
+        "local_over_hinge": 0.009358596161867183
+      }
+    }
+  },
+  "identity_preflight_sha256": "bbfd2935d91a23722f0ba79dbfb0013a72625c68676a232500532b65dffaf04b",
+  "kaggle_upload": false,
+  "prediction_freeze_sha256": "fe3ec5ae9ec66d090f7aa5dd98012099707cddbfe3cd1efd0bbdb4917d68398e",
+  "prefit_freeze_sha256": "9f488498c44d8e308e739050cf7c5d2411b2af74428f60ef7b5d2e27ba1807ba",
+  "preprocessing_fits": 0,
+  "resource_snapshots": [
+    {
+      "actual_boundary_pass": true,
+      "available_bytes": 2372894720,
+      "boundary": "initial_locked_before_score_targets",
+      "concurrent_heavy_jobs": 1,
+      "incremental_estimate_bytes": 536870912,
+      "initial_gate_pass": true,
+      "minimum_actual_free_at_boundary_bytes": 805306368,
+      "minimum_initial_available_bytes": 1610612736,
+      "minimum_projected_free_bytes": 805306368,
+      "os_peak_working_set_bytes": 143667200,
+      "os_peak_working_set_measured": true,
+      "process_rss_bytes": 141381632,
+      "process_rss_measured": true,
+      "projected_free_bytes": 1836023808,
+      "status": "PASS",
+      "threads": 2,
+      "workload": "saved_prediction_evaluation"
+    },
+    {
+      "actual_boundary_pass": true,
+      "available_bytes": 2371063808,
+      "boundary": "HINGE_D1_after_score",
+      "concurrent_heavy_jobs": 1,
+      "incremental_estimate_bytes": 536870912,
+      "initial_gate_pass": true,
+      "minimum_actual_free_at_boundary_bytes": 805306368,
+      "minimum_initial_available_bytes": 1610612736,
+      "minimum_projected_free_bytes": 805306368,
+      "os_peak_working_set_bytes": 143843328,
+      "os_peak_working_set_measured": true,
+      "process_rss_bytes": 143843328,
+      "process_rss_measured": true,
+      "projected_free_bytes": 1834192896,
+      "status": "PASS",
+      "threads": 2,
+      "workload": "saved_prediction_evaluation"
+    },
+    {
+      "actual_boundary_pass": true,
+      "available_bytes": 2373324800,
+      "boundary": "HINGE_D2_after_score",
+      "concurrent_heavy_jobs": 1,
+      "incremental_estimate_bytes": 536870912,
+      "initial_gate_pass": true,
+      "minimum_actual_free_at_boundary_bytes": 805306368,
+      "minimum_initial_available_bytes": 1610612736,
+      "minimum_projected_free_bytes": 805306368,
+      "os_peak_working_set_bytes": 145113088,
+      "os_peak_working_set_measured": true,
+      "process_rss_bytes": 143986688,
+      "process_rss_measured": true,
+      "projected_free_bytes": 1836453888,
+      "status": "PASS",
+      "threads": 2,
+      "workload": "saved_prediction_evaluation"
+    }
+  ],
+  "root_source_pass_sha256": "3b5cd6684f2eb084bada74f384ff0d1d44019278c2d8c9128443ae7a28c284ec",
+  "schema_version": 1,
+  "score_populations": {
+    "HINGE_D1": {
+      "metrics": {
+        "by_cycle": [
+          {
+            "cycle": 72,
+            "gain_over_hinge": {
+              "all_rows": {
+                "GLOBAL_CONTROL": -0.0032693712921592066,
+                "LOCAL": -0.0010595356514748744
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": -0.003509680741021981,
+                "LOCAL": -0.001137414976184914
+              }
+            },
+            "metrics": {
+              "all_rows": {
+                "GLOBAL_CONTROL": {
+                  "mae": 11.440054800278155,
+                  "mean_error": -1.2140239870725444,
+                  "n": 1811,
+                  "p90_absolute_error": 24.8903822348948,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 11.436785428985996,
+                  "mean_error": -1.1841086412821242,
+                  "n": 1811,
+                  "p90_absolute_error": 24.922496456131583,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 11.43784496463747,
+                  "mean_error": -1.2374925209041139,
+                  "n": 1811,
+                  "p90_absolute_error": 24.733463061089104,
+                  "status": "SUPPORTED"
+                }
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": {
+                  "mae": 11.292237242350406,
+                  "mean_error": -1.354987249697928,
+                  "n": 1687,
+                  "p90_absolute_error": 24.862428868045082,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 11.288727561609385,
+                  "mean_error": -1.3228730284611467,
+                  "n": 1687,
+                  "p90_absolute_error": 24.832013470901064,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 11.28986497658557,
+                  "mean_error": -1.3801807972788245,
+                  "n": 1687,
+                  "p90_absolute_error": 24.651970894805558,
+                  "status": "SUPPORTED"
+                }
+              }
+            },
+            "n_all": 1811,
+            "n_missing": 124,
+            "n_present": 1687
+          },
+          {
+            "cycle": 73,
+            "gain_over_hinge": {
+              "all_rows": {
+                "GLOBAL_CONTROL": -0.0007979656596290852,
+                "LOCAL": 0.008266126678593722
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": -0.0008631619333154816,
+                "LOCAL": 0.008941494911251624
+              }
+            },
+            "metrics": {
+              "all_rows": {
+                "GLOBAL_CONTROL": {
+                  "mae": 11.670192146487148,
+                  "mean_error": -1.0024968375016805,
+                  "n": 1880,
+                  "p90_absolute_error": 25.829378160111943,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 11.669394180827519,
+                  "mean_error": -0.9728082648902302,
+                  "n": 1880,
+                  "p90_absolute_error": 25.79726393887516,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 11.661128054148925,
+                  "mean_error": -1.025549288768522,
+                  "n": 1880,
+                  "p90_absolute_error": 25.80701975121997,
+                  "status": "SUPPORTED"
+                }
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": {
+                  "mae": 11.507798375742016,
+                  "mean_error": -1.2951655609518975,
+                  "n": 1738,
+                  "p90_absolute_error": 25.8356215824449,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 11.5069352138087,
+                  "mean_error": -1.2630513397151157,
+                  "n": 1738,
+                  "p90_absolute_error": 25.80350736120812,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 11.49799371889745,
+                  "mean_error": -1.3201014691116573,
+                  "n": 1738,
+                  "p90_absolute_error": 25.8327747982425,
+                  "status": "SUPPORTED"
+                }
+              }
+            },
+            "n_all": 1880,
+            "n_missing": 142,
+            "n_present": 1738
+          },
+          {
+            "cycle": 74,
+            "gain_over_hinge": {
+              "all_rows": {
+                "GLOBAL_CONTROL": -0.002822655062040269,
+                "LOCAL": -0.004356286611487903
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": -0.003049610650709411,
+                "LOCAL": -0.0047065538494575065
+              }
+            },
+            "metrics": {
+              "all_rows": {
+                "GLOBAL_CONTROL": {
+                  "mae": 11.615807701220328,
+                  "mean_error": -0.6082123789085174,
+                  "n": 1814,
+                  "p90_absolute_error": 25.54473028782203,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 11.612985046158288,
+                  "mean_error": -0.5784881355476814,
+                  "n": 1814,
+                  "p90_absolute_error": 25.51261606658525,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 11.617341332769776,
+                  "mean_error": -0.6255470790473069,
+                  "n": 1814,
+                  "p90_absolute_error": 25.51261606658525,
+                  "status": "SUPPORTED"
+                }
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": {
+                  "mae": 11.351762167883559,
+                  "mean_error": -1.2415254347346878,
+                  "n": 1679,
+                  "p90_absolute_error": 25.079507242272864,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 11.348712557232849,
+                  "mean_error": -1.2094112134979058,
+                  "n": 1679,
+                  "p90_absolute_error": 25.098775775014932,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 11.353419111082307,
+                  "mean_error": -1.2602539314897585,
+                  "n": 1679,
+                  "p90_absolute_error": 24.911834706961525,
+                  "status": "SUPPORTED"
+                }
+              }
+            },
+            "n_all": 1814,
+            "n_missing": 135,
+            "n_present": 1679
+          },
+          {
+            "cycle": 75,
+            "gain_over_hinge": {
+              "all_rows": {
+                "GLOBAL_CONTROL": 0.0009504246735811961,
+                "LOCAL": 0.006606316545031632
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": 0.001004852018475333,
+                "LOCAL": 0.006984636131079469
+              }
+            },
+            "metrics": {
+              "all_rows": {
+                "GLOBAL_CONTROL": {
+                  "mae": 10.92736905425551,
+                  "mean_error": -0.09921320504653389,
+                  "n": 1957,
+                  "p90_absolute_error": 22.599695098466665,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 10.928319478929092,
+                  "mean_error": -0.06883843575206121,
+                  "n": 1957,
+                  "p90_absolute_error": 22.61650072278061,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 10.92171316238406,
+                  "mean_error": -0.12138733221921537,
+                  "n": 1957,
+                  "p90_absolute_error": 22.57365454209886,
+                  "status": "SUPPORTED"
+                }
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": {
+                  "mae": 10.759473804747874,
+                  "mean_error": -0.15312867594039292,
+                  "n": 1851,
+                  "p90_absolute_error": 22.464894088544078,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 10.760478656766349,
+                  "mean_error": -0.12101445470361112,
+                  "n": 1851,
+                  "p90_absolute_error": 22.432779867307296,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 10.75349402063527,
+                  "mean_error": -0.1765726342747729,
+                  "n": 1851,
+                  "p90_absolute_error": 22.41161464145819,
+                  "status": "SUPPORTED"
+                }
+              }
+            },
+            "n_all": 1957,
+            "n_missing": 106,
+            "n_present": 1851
+          }
+        ],
+        "by_raw_direct_bin": [
+          {
+            "bin_index": 0,
+            "gain_over_hinge": {
+              "all_rows": {
+                "GLOBAL_CONTROL": 0.00029444726063410087,
+                "LOCAL": 0.0
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": 0.0002990809085101631,
+                "LOCAL": 0.0
+              }
+            },
+            "label": "[0,20)",
+            "metrics": {
+              "all_rows": {
+                "GLOBAL_CONTROL": {
+                  "mae": 9.24967680293554,
+                  "mean_error": -2.94544124595596,
+                  "n": 1420,
+                  "p90_absolute_error": 21.295626174632933,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 9.249971250196174,
+                  "mean_error": -2.9138245689918607,
+                  "n": 1420,
+                  "p90_absolute_error": 21.26351195339615,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 9.249971250196174,
+                  "mean_error": -2.9138245689918607,
+                  "n": 1420,
+                  "p90_absolute_error": 21.26351195339615,
+                  "status": "SUPPORTED"
+                }
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": {
+                  "mae": 9.206035117970712,
+                  "mean_error": -2.9334337027275796,
+                  "n": 1398,
+                  "p90_absolute_error": 21.452001308834415,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 9.206334198879222,
+                  "mean_error": -2.901319481490798,
+                  "n": 1398,
+                  "p90_absolute_error": 21.419887087597633,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 9.206334198879222,
+                  "mean_error": -2.901319481490798,
+                  "n": 1398,
+                  "p90_absolute_error": 21.419887087597633,
+                  "status": "SUPPORTED"
+                }
+              }
+            },
+            "n_all": 1420,
+            "n_missing": 22,
+            "n_present": 1398
+          },
+          {
+            "bin_index": 1,
+            "gain_over_hinge": {
+              "all_rows": {
+                "GLOBAL_CONTROL": -0.0028720540855911025,
+                "LOCAL": 0.0
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": -0.003080804231121448,
+                "LOCAL": 0.0
+              }
+            },
+            "label": "[20,40)",
+            "metrics": {
+              "all_rows": {
+                "GLOBAL_CONTROL": {
+                  "mae": 13.783123952359958,
+                  "mean_error": -2.803932333564524,
+                  "n": 1771,
+                  "p90_absolute_error": 27.654694598219123,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 13.780251898274367,
+                  "mean_error": -2.7739941182839334,
+                  "n": 1771,
+                  "p90_absolute_error": 27.62258037698234,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 13.780251898274367,
+                  "mean_error": -2.7739941182839334,
+                  "n": 1771,
+                  "p90_absolute_error": 27.62258037698234,
+                  "status": "SUPPORTED"
+                }
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": {
+                  "mae": 13.572540105608828,
+                  "mean_error": -3.1341769803516004,
+                  "n": 1651,
+                  "p90_absolute_error": 27.690971923527723,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 13.569459301377707,
+                  "mean_error": -3.1020627591148187,
+                  "n": 1651,
+                  "p90_absolute_error": 27.723086144764505,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 13.569459301377707,
+                  "mean_error": -3.1020627591148187,
+                  "n": 1651,
+                  "p90_absolute_error": 27.723086144764505,
+                  "status": "SUPPORTED"
+                }
+              }
+            },
+            "n_all": 1771,
+            "n_missing": 120,
+            "n_present": 1651
+          },
+          {
+            "bin_index": 2,
+            "gain_over_hinge": {
+              "all_rows": {
+                "GLOBAL_CONTROL": 0.001299533170831424,
+                "LOCAL": 0.011433327195781828
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": 0.0014073961498173304,
+                "LOCAL": 0.012382308536732722
+              }
+            },
+            "label": "[40,60)",
+            "metrics": {
+              "all_rows": {
+                "GLOBAL_CONTROL": {
+                  "mae": 14.234921461987707,
+                  "mean_error": 1.6923616712509435,
+                  "n": 1631,
+                  "p90_absolute_error": 28.77883593156218,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 14.236220995158538,
+                  "mean_error": 1.7220146554217548,
+                  "n": 1631,
+                  "p90_absolute_error": 28.78194966843703,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 14.224787667962756,
+                  "mean_error": 1.4865551552493743,
+                  "n": 1631,
+                  "p90_absolute_error": 28.73442713165638,
+                  "status": "SUPPORTED"
+                }
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": {
+                  "mae": 13.93238336284704,
+                  "mean_error": 1.2921944582443419,
+                  "n": 1506,
+                  "p90_absolute_error": 27.778731103231436,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 13.933790758996857,
+                  "mean_error": 1.3243086794811236,
+                  "n": 1506,
+                  "p90_absolute_error": 27.810845324468218,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 13.921408450460124,
+                  "mean_error": 1.0693057280992162,
+                  "n": 1506,
+                  "p90_absolute_error": 27.839454533117532,
+                  "status": "SUPPORTED"
+                }
+              }
+            },
+            "n_all": 1631,
+            "n_missing": 125,
+            "n_present": 1506
+          },
+          {
+            "bin_index": 3,
+            "gain_over_hinge": {
+              "all_rows": {
+                "GLOBAL_CONTROL": -0.004334928189823728,
+                "LOCAL": 0.0
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": -0.00472992550750817,
+                "LOCAL": 0.0
+              }
+            },
+            "label": "[60,80)",
+            "metrics": {
+              "all_rows": {
+                "GLOBAL_CONTROL": {
+                  "mae": 10.964635821827336,
+                  "mean_error": -0.8301323463682903,
+                  "n": 1413,
+                  "p90_absolute_error": 21.941164105964713,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 10.960300893637513,
+                  "mean_error": -0.8006999921562363,
+                  "n": 1413,
+                  "p90_absolute_error": 21.933856374999348,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 10.960300893637513,
+                  "mean_error": -0.8006999921562363,
+                  "n": 1413,
+                  "p90_absolute_error": 21.933856374999348,
+                  "status": "SUPPORTED"
+                }
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": {
+                  "mae": 10.722337207685944,
+                  "mean_error": -1.206093077478926,
+                  "n": 1295,
+                  "p90_absolute_error": 21.619354973430468,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 10.717607282178436,
+                  "mean_error": -1.1739788562421443,
+                  "n": 1295,
+                  "p90_absolute_error": 21.62011140041759,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 10.717607282178436,
+                  "mean_error": -1.1739788562421443,
+                  "n": 1295,
+                  "p90_absolute_error": 21.62011140041759,
+                  "status": "SUPPORTED"
+                }
+              }
+            },
+            "n_all": 1413,
+            "n_missing": 118,
+            "n_present": 1295
+          },
+          {
+            "bin_index": 4,
+            "gain_over_hinge": {
+              "all_rows": {
+                "GLOBAL_CONTROL": -0.0016359530892202656,
+                "LOCAL": 0.0
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": -0.0018165741542706115,
+                "LOCAL": 0.0
+              }
+            },
+            "label": "[80,100]",
+            "metrics": {
+              "all_rows": {
+                "GLOBAL_CONTROL": {
+                  "mae": 7.220208628646587,
+                  "mean_error": 1.7769167554202816,
+                  "n": 1227,
+                  "p90_absolute_error": 16.934512211911905,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 7.2185726755573665,
+                  "mean_error": 1.8058378756049955,
+                  "n": 1227,
+                  "p90_absolute_error": 16.935058302229056,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 7.2185726755573665,
+                  "mean_error": 1.8058378756049955,
+                  "n": 1227,
+                  "p90_absolute_error": 16.935058302229056,
+                  "status": "SUPPORTED"
+                }
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": {
+                  "mae": 7.131272090194931,
+                  "mean_error": 1.7977272153238624,
+                  "n": 1105,
+                  "p90_absolute_error": 16.96122180712325,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 7.12945551604066,
+                  "mean_error": 1.8298414365606441,
+                  "n": 1105,
+                  "p90_absolute_error": 16.97757507191699,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 7.12945551604066,
+                  "mean_error": 1.8298414365606441,
+                  "n": 1105,
+                  "p90_absolute_error": 16.97757507191699,
+                  "status": "SUPPORTED"
+                }
+              }
+            },
+            "n_all": 1227,
+            "n_missing": 122,
+            "n_present": 1105
+          }
+        ],
+        "n_all": 7462,
+        "n_missing": 507,
+        "n_present": 6955,
+        "overall": {
+          "gain_over_hinge": {
+            "all_rows": {
+              "GLOBAL_CONTROL": -0.0014314288456915847,
+              "LOCAL": 0.0024990293026423416
+            },
+            "present_only": {
+              "GLOBAL_CONTROL": -0.0015357759951903915,
+              "LOCAL": 0.002681201532181987
+            }
+          },
+          "metrics": {
+            "all_rows": {
+              "GLOBAL_CONTROL": {
+                "mae": 11.40630352290154,
+                "mean_error": -0.7210867049996857,
+                "n": 7462,
+                "p90_absolute_error": 24.854819357278327,
+                "status": "SUPPORTED"
+              },
+              "HINGE": {
+                "mae": 11.404872094055849,
+                "mean_error": -0.6911544604671452,
+                "n": 7462,
+                "p90_absolute_error": 24.843074261006624,
+                "status": "SUPPORTED"
+              },
+              "LOCAL": {
+                "mae": 11.402373064753206,
+                "mean_error": -0.7426198108800577,
+                "n": 7462,
+                "p90_absolute_error": 24.81828006441824,
+                "status": "SUPPORTED"
+              }
+            },
+            "present_only": {
+              "GLOBAL_CONTROL": {
+                "mae": 11.218684758784986,
+                "mean_error": -0.9927855671114322,
+                "n": 6955,
+                "p90_absolute_error": 24.602059786130155,
+                "status": "SUPPORTED"
+              },
+              "HINGE": {
+                "mae": 11.217148982789796,
+                "mean_error": -0.9606713458746504,
+                "n": 6955,
+                "p90_absolute_error": 24.625504324682502,
+                "status": "SUPPORTED"
+              },
+              "LOCAL": {
+                "mae": 11.214467781257614,
+                "mean_error": -1.015888376037289,
+                "n": 6955,
+                "p90_absolute_error": 24.547331538013047,
+                "status": "SUPPORTED"
+              }
+            }
+          },
+          "n_all": 7462,
+          "n_missing": 507,
+          "n_present": 6955
+        },
+        "target_tails": {
+          "target_ge_95": {
+            "gain_over_hinge": {
+              "all_rows": {
+                "GLOBAL_CONTROL": -0.025330736002274534,
+                "LOCAL": -0.00471972642970897
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": -0.026686465534791814,
+                "LOCAL": -0.0049723315062282225
+              }
+            },
+            "metrics": {
+              "all_rows": {
+                "GLOBAL_CONTROL": {
+                  "mae": 7.971079757925949,
+                  "mean_error": -7.788520510846853,
+                  "n": 374,
+                  "p90_absolute_error": 19.729279509187826,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 7.945749021923675,
+                  "mean_error": -7.75803776074242,
+                  "n": 374,
+                  "p90_absolute_error": 19.71964524281679,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 7.950468748353384,
+                  "mean_error": -7.762757487172129,
+                  "n": 374,
+                  "p90_absolute_error": 19.71964524281679,
+                  "status": "SUPPORTED"
+                }
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": {
+                  "mae": 7.722459807839768,
+                  "mean_error": -7.530129784156436,
+                  "n": 355,
+                  "p90_absolute_error": 19.55259288270329,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 7.695773342304976,
+                  "mean_error": -7.4980155629196545,
+                  "n": 355,
+                  "p90_absolute_error": 19.52047866146651,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 7.700745673811205,
+                  "mean_error": -7.502987894425883,
+                  "n": 355,
+                  "p90_absolute_error": 19.52047866146651,
+                  "status": "SUPPORTED"
+                }
+              }
+            },
+            "n_all": 374,
+            "n_missing": 19,
+            "n_present": 355
+          },
+          "target_le_5": {
+            "gain_over_hinge": {
+              "all_rows": {
+                "GLOBAL_CONTROL": 0.02936410836843706,
+                "LOCAL": 0.0
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": 0.030811035447463553,
+                "LOCAL": 0.0
+              }
+            },
+            "metrics": {
+              "all_rows": {
+                "GLOBAL_CONTROL": {
+                  "mae": 9.146041385650324,
+                  "mean_error": 9.07901670924806,
+                  "n": 362,
+                  "p90_absolute_error": 18.543223485793387,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 9.175405494018761,
+                  "mean_error": 9.10962280407317,
+                  "n": 362,
+                  "p90_absolute_error": 18.57533770703017,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 9.175405494018761,
+                  "mean_error": 9.10962280407317,
+                  "n": 362,
+                  "p90_absolute_error": 18.57533770703017,
+                  "status": "SUPPORTED"
+                }
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": {
+                  "mae": 8.546528947032076,
+                  "mean_error": 8.476201605415788,
+                  "n": 345,
+                  "p90_absolute_error": 16.64190793863377,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 8.57733998247954,
+                  "mean_error": 8.50831582665257,
+                  "n": 345,
+                  "p90_absolute_error": 16.674022159870553,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 8.57733998247954,
+                  "mean_error": 8.50831582665257,
+                  "n": 345,
+                  "p90_absolute_error": 16.674022159870553,
+                  "status": "SUPPORTED"
+                }
+              }
+            },
+            "n_all": 362,
+            "n_missing": 17,
+            "n_present": 345
+          }
+        }
+      },
+      "prediction_hashes": {
+        "GLOBAL_CONTROL": "fd1ac7b2a5613965467e256f403482ac6d89898ca8ef1978eca56a8e7efaf262",
+        "HINGE": "83454bd0b7d2a89cf03b62396684131346824d653979d5368269007734396fbb",
+        "LOCAL": "1855092226d3459d40da95bf0cbe6fb5c12dcf88bc76d5643a9d5e53df4dd056"
+      },
+      "score_rows": {
+        "cycles": [
+          72,
+          73,
+          74,
+          75
+        ],
+        "fit_id": "HINGE_D1",
+        "local_positive_basis_present_rows": 1506,
+        "n_all": 7462,
+        "n_missing": 507,
+        "n_present": 6955,
+        "origins": [
+          67
+        ],
+        "population": "score",
+        "row_identity_hashes": {
+          "cycles_sha256": "f839145e076ceab517d1b677862d72de8aafbe10ac7cf4424bb9030bda416c7f",
+          "direct_prediction_sha256": "5c8dee387b7332136057e4fb5c16fb7c2b710b1513a91b419d9f754619080dad",
+          "missing_mask_sha256": "8eb92930cf46186190d1c35d85e039078b0cb2fac9ef0141ff9b7dec693000cd",
+          "original_bundle_indices_sha256": "48309f2158fdb5601cbe447dc5bfbce785d4bacdb9193bbb3a3cb2ffbea1ca3e",
+          "physical_rows_sha256": "e4aacb15596a34f2306dadf9e3c2cff22729dd15edf20a28a0de3f942c56b3c5",
+          "prediction_origins_sha256": "b89aafc33c442e99444f8b0aa1096538eac1a5b29cedbd0e264d768111d9244f",
+          "record_ids_sha256": "a848096635f78d426f0f2858c38d1484c355df494832d39d849154a59994b500"
+        }
+      },
+      "stage_id": "HINGE_D1",
+      "target_sha256": "a66e65cac3f70191f38a1dc41d6da93f4f8f7736c9524a643ad76ba2874a200a",
+      "targeted_region": {
+        "local_gain_over_hinge": 0.012382308536732722,
+        "metrics": {
+          "GLOBAL_CONTROL": {
+            "mae": 13.93238336284704,
+            "mean_error": 1.2921944582443419,
+            "n": 1506,
+            "p90_absolute_error": 27.778731103231436,
+            "status": "SUPPORTED"
+          },
+          "HINGE": {
+            "mae": 13.933790758996857,
+            "mean_error": 1.3243086794811236,
+            "n": 1506,
+            "p90_absolute_error": 27.810845324468218,
+            "status": "SUPPORTED"
+          },
+          "LOCAL": {
+            "mae": 13.921408450460124,
+            "mean_error": 1.0693057280992162,
+            "n": 1506,
+            "p90_absolute_error": 27.839454533117532,
+            "status": "SUPPORTED"
+          }
+        },
+        "n_present": 1506,
+        "support": "SUPPORTED"
+      }
+    },
+    "HINGE_D2": {
+      "metrics": {
+        "by_cycle": [
+          {
+            "cycle": 76,
+            "gain_over_hinge": {
+              "all_rows": {
+                "GLOBAL_CONTROL": 0.0,
+                "LOCAL": 0.005852603668275336
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": 0.0,
+                "LOCAL": 0.006257889603050515
+              }
+            },
+            "metrics": {
+              "all_rows": {
+                "GLOBAL_CONTROL": {
+                  "mae": 10.126252786046653,
+                  "mean_error": 1.3139088578532576,
+                  "n": 1822,
+                  "p90_absolute_error": 23.98755691718688,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 10.126252786046653,
+                  "mean_error": 1.3139088578532576,
+                  "n": 1822,
+                  "p90_absolute_error": 23.98755691718688,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 10.120400182378377,
+                  "mean_error": 1.130037641212182,
+                  "n": 1822,
+                  "p90_absolute_error": 23.932896025807427,
+                  "status": "SUPPORTED"
+                }
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": {
+                  "mae": 9.999354800545946,
+                  "mean_error": 1.108011235794549,
+                  "n": 1704,
+                  "p90_absolute_error": 23.620960086905725,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 9.999354800545946,
+                  "mean_error": 1.108011235794549,
+                  "n": 1704,
+                  "p90_absolute_error": 23.620960086905725,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 9.993096910942896,
+                  "mean_error": 0.9114071532123661,
+                  "n": 1704,
+                  "p90_absolute_error": 23.47648862362632,
+                  "status": "SUPPORTED"
+                }
+              }
+            },
+            "n_all": 1822,
+            "n_missing": 118,
+            "n_present": 1704
+          },
+          {
+            "cycle": 77,
+            "gain_over_hinge": {
+              "all_rows": {
+                "GLOBAL_CONTROL": 0.0,
+                "LOCAL": -0.0035860354642807124
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": 0.0,
+                "LOCAL": -0.0038711940864946115
+              }
+            },
+            "metrics": {
+              "all_rows": {
+                "GLOBAL_CONTROL": {
+                  "mae": 9.69382118602627,
+                  "mean_error": 0.39816463840476746,
+                  "n": 2335,
+                  "p90_absolute_error": 23.534089522674048,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 9.69382118602627,
+                  "mean_error": 0.39816463840476746,
+                  "n": 2335,
+                  "p90_absolute_error": 23.534089522674048,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 9.69740722149055,
+                  "mean_error": 0.2052420443789014,
+                  "n": 2335,
+                  "p90_absolute_error": 23.461621992907588,
+                  "status": "SUPPORTED"
+                }
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": {
+                  "mae": 9.401215942039672,
+                  "mean_error": -0.04043331333504365,
+                  "n": 2163,
+                  "p90_absolute_error": 22.856057105849473,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 9.401215942039672,
+                  "mean_error": -0.04043331333504365,
+                  "n": 2163,
+                  "p90_absolute_error": 22.856057105849473,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 9.405087136126166,
+                  "mean_error": -0.24869695505968412,
+                  "n": 2163,
+                  "p90_absolute_error": 22.78808512895488,
+                  "status": "SUPPORTED"
+                }
+              }
+            },
+            "n_all": 2335,
+            "n_missing": 172,
+            "n_present": 2163
+          },
+          {
+            "cycle": 78,
+            "gain_over_hinge": {
+              "all_rows": {
+                "GLOBAL_CONTROL": 0.0,
+                "LOCAL": 0.00856827646966174
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": 0.0,
+                "LOCAL": 0.009125320746345977
+              }
+            },
+            "metrics": {
+              "all_rows": {
+                "GLOBAL_CONTROL": {
+                  "mae": 10.081120294027755,
+                  "mean_error": -0.6663210306430059,
+                  "n": 2146,
+                  "p90_absolute_error": 22.964489639109033,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 10.081120294027755,
+                  "mean_error": -0.6663210306430059,
+                  "n": 2146,
+                  "p90_absolute_error": 22.964489639109033,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 10.072552017558094,
+                  "mean_error": -0.8555242918575762,
+                  "n": 2146,
+                  "p90_absolute_error": 22.929724942972168,
+                  "status": "SUPPORTED"
+                }
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": {
+                  "mae": 9.77729588592556,
+                  "mean_error": -0.853382696919158,
+                  "n": 2015,
+                  "p90_absolute_error": 22.380546801051725,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 9.77729588592556,
+                  "mean_error": -0.853382696919158,
+                  "n": 2015,
+                  "p90_absolute_error": 22.380546801051725,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 9.768170565179213,
+                  "mean_error": -1.054886517547678,
+                  "n": 2015,
+                  "p90_absolute_error": 22.30816908429673,
+                  "status": "SUPPORTED"
+                }
+              }
+            },
+            "n_all": 2146,
+            "n_missing": 131,
+            "n_present": 2015
+          },
+          {
+            "cycle": 79,
+            "gain_over_hinge": {
+              "all_rows": {
+                "GLOBAL_CONTROL": 0.0,
+                "LOCAL": 0.026867581184651712
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": 0.0,
+                "LOCAL": 0.028221923971205598
+              }
+            },
+            "metrics": {
+              "all_rows": {
+                "GLOBAL_CONTROL": {
+                  "mae": 9.908555828216228,
+                  "mean_error": 1.941514988939518,
+                  "n": 2188,
+                  "p90_absolute_error": 22.016258626089396,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 9.908555828216228,
+                  "mean_error": 1.941514988939518,
+                  "n": 2188,
+                  "p90_absolute_error": 22.016258626089396,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 9.881688247031576,
+                  "mean_error": 1.751216003067433,
+                  "n": 2188,
+                  "p90_absolute_error": 21.891594098810536,
+                  "status": "SUPPORTED"
+                }
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": {
+                  "mae": 9.807262497456371,
+                  "mean_error": 1.9036735922782877,
+                  "n": 2083,
+                  "p90_absolute_error": 21.668702038737024,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 9.807262497456371,
+                  "mean_error": 1.9036735922782877,
+                  "n": 2083,
+                  "p90_absolute_error": 21.668702038737024,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 9.779040573485165,
+                  "mean_error": 1.7037820027016572,
+                  "n": 2083,
+                  "p90_absolute_error": 21.543711933784977,
+                  "status": "SUPPORTED"
+                }
+              }
+            },
+            "n_all": 2188,
+            "n_missing": 105,
+            "n_present": 2083
+          }
+        ],
+        "by_raw_direct_bin": [
+          {
+            "bin_index": 0,
+            "gain_over_hinge": {
+              "all_rows": {
+                "GLOBAL_CONTROL": 0.0,
+                "LOCAL": 0.0
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": 0.0,
+                "LOCAL": 0.0
+              }
+            },
+            "label": "[0,20)",
+            "metrics": {
+              "all_rows": {
+                "GLOBAL_CONTROL": {
+                  "mae": 7.784875929475025,
+                  "mean_error": -0.8837617502353531,
+                  "n": 1446,
+                  "p90_absolute_error": 17.806327093264038,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 7.784875929475025,
+                  "mean_error": -0.8837617502353531,
+                  "n": 1446,
+                  "p90_absolute_error": 17.806327093264038,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 7.784875929475025,
+                  "mean_error": -0.8837617502353531,
+                  "n": 1446,
+                  "p90_absolute_error": 17.806327093264038,
+                  "status": "SUPPORTED"
+                }
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": {
+                  "mae": 7.742053932431749,
+                  "mean_error": -0.9347084151206295,
+                  "n": 1427,
+                  "p90_absolute_error": 17.58277978172079,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 7.742053932431749,
+                  "mean_error": -0.9347084151206295,
+                  "n": 1427,
+                  "p90_absolute_error": 17.58277978172079,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 7.742053932431749,
+                  "mean_error": -0.9347084151206295,
+                  "n": 1427,
+                  "p90_absolute_error": 17.58277978172079,
+                  "status": "SUPPORTED"
+                }
+              }
+            },
+            "n_all": 1446,
+            "n_missing": 19,
+            "n_present": 1427
+          },
+          {
+            "bin_index": 1,
+            "gain_over_hinge": {
+              "all_rows": {
+                "GLOBAL_CONTROL": 0.0,
+                "LOCAL": 0.0
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": 0.0,
+                "LOCAL": 0.0
+              }
+            },
+            "label": "[20,40)",
+            "metrics": {
+              "all_rows": {
+                "GLOBAL_CONTROL": {
+                  "mae": 11.705103570348479,
+                  "mean_error": -1.0017676427653566,
+                  "n": 2052,
+                  "p90_absolute_error": 24.863250102360865,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 11.705103570348479,
+                  "mean_error": -1.0017676427653566,
+                  "n": 2052,
+                  "p90_absolute_error": 24.863250102360865,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 11.705103570348479,
+                  "mean_error": -1.0017676427653566,
+                  "n": 2052,
+                  "p90_absolute_error": 24.863250102360865,
+                  "status": "SUPPORTED"
+                }
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": {
+                  "mae": 11.378372172921907,
+                  "mean_error": -1.269815453710973,
+                  "n": 1917,
+                  "p90_absolute_error": 24.472369782215832,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 11.378372172921907,
+                  "mean_error": -1.269815453710973,
+                  "n": 1917,
+                  "p90_absolute_error": 24.472369782215832,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 11.378372172921907,
+                  "mean_error": -1.269815453710973,
+                  "n": 1917,
+                  "p90_absolute_error": 24.472369782215832,
+                  "status": "SUPPORTED"
+                }
+              }
+            },
+            "n_all": 2052,
+            "n_missing": 135,
+            "n_present": 1917
+          },
+          {
+            "bin_index": 2,
+            "gain_over_hinge": {
+              "all_rows": {
+                "GLOBAL_CONTROL": 0.0,
+                "LOCAL": 0.04407312257926499
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": 0.0,
+                "LOCAL": 0.048189108556952576
+              }
+            },
+            "label": "[40,60)",
+            "metrics": {
+              "all_rows": {
+                "GLOBAL_CONTROL": {
+                  "mae": 13.03337577678433,
+                  "mean_error": 2.853646231527477,
+                  "n": 1803,
+                  "p90_absolute_error": 28.38419640725225,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 13.03337577678433,
+                  "mean_error": 2.853646231527477,
+                  "n": 1803,
+                  "p90_absolute_error": 28.38419640725225,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 12.989302654205066,
+                  "mean_error": 1.9618592135435469,
+                  "n": 1803,
+                  "p90_absolute_error": 28.107111794166638,
+                  "status": "SUPPORTED"
+                }
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": {
+                  "mae": 12.759287157715585,
+                  "mean_error": 2.4957066932601175,
+                  "n": 1649,
+                  "p90_absolute_error": 28.489290107215943,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 12.759287157715585,
+                  "mean_error": 2.4957066932601175,
+                  "n": 1649,
+                  "p90_absolute_error": 28.489290107215943,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 12.711098049158633,
+                  "mean_error": 1.5206357451551893,
+                  "n": 1649,
+                  "p90_absolute_error": 28.13779409489848,
+                  "status": "SUPPORTED"
+                }
+              }
+            },
+            "n_all": 1803,
+            "n_missing": 154,
+            "n_present": 1649
+          },
+          {
+            "bin_index": 3,
+            "gain_over_hinge": {
+              "all_rows": {
+                "GLOBAL_CONTROL": 0.0,
+                "LOCAL": 0.0
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": 0.0,
+                "LOCAL": 0.0
+              }
+            },
+            "label": "[60,80)",
+            "metrics": {
+              "all_rows": {
+                "GLOBAL_CONTROL": {
+                  "mae": 9.99794124284132,
+                  "mean_error": 0.9707731563152721,
+                  "n": 1694,
+                  "p90_absolute_error": 20.580668868349377,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 9.99794124284132,
+                  "mean_error": 0.9707731563152721,
+                  "n": 1694,
+                  "p90_absolute_error": 20.580668868349377,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 9.99794124284132,
+                  "mean_error": 0.9707731563152721,
+                  "n": 1694,
+                  "p90_absolute_error": 20.580668868349377,
+                  "status": "SUPPORTED"
+                }
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": {
+                  "mae": 9.864618162773231,
+                  "mean_error": 0.7780778371345795,
+                  "n": 1580,
+                  "p90_absolute_error": 20.29446944561496,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 9.864618162773231,
+                  "mean_error": 0.7780778371345795,
+                  "n": 1580,
+                  "p90_absolute_error": 20.29446944561496,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 9.864618162773231,
+                  "mean_error": 0.7780778371345795,
+                  "n": 1580,
+                  "p90_absolute_error": 20.29446944561496,
+                  "status": "SUPPORTED"
+                }
+              }
+            },
+            "n_all": 1694,
+            "n_missing": 114,
+            "n_present": 1580
+          },
+          {
+            "bin_index": 4,
+            "gain_over_hinge": {
+              "all_rows": {
+                "GLOBAL_CONTROL": 0.0,
+                "LOCAL": 0.0
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": 0.0,
+                "LOCAL": 0.0
+              }
+            },
+            "label": "[80,100]",
+            "metrics": {
+              "all_rows": {
+                "GLOBAL_CONTROL": {
+                  "mae": 5.807230773648193,
+                  "mean_error": 1.7952533725108704,
+                  "n": 1496,
+                  "p90_absolute_error": 13.267194017287238,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 5.807230773648193,
+                  "mean_error": 1.7952533725108704,
+                  "n": 1496,
+                  "p90_absolute_error": 13.267194017287238,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 5.807230773648193,
+                  "mean_error": 1.7952533725108704,
+                  "n": 1496,
+                  "p90_absolute_error": 13.267194017287238,
+                  "status": "SUPPORTED"
+                }
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": {
+                  "mae": 5.759409495529898,
+                  "mean_error": 1.7741822275548038,
+                  "n": 1392,
+                  "p90_absolute_error": 13.187773850965991,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 5.759409495529898,
+                  "mean_error": 1.7741822275548038,
+                  "n": 1392,
+                  "p90_absolute_error": 13.187773850965991,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 5.759409495529898,
+                  "mean_error": 1.7741822275548038,
+                  "n": 1392,
+                  "p90_absolute_error": 13.187773850965991,
+                  "status": "SUPPORTED"
+                }
+              }
+            },
+            "n_all": 1496,
+            "n_missing": 104,
+            "n_present": 1392
+          }
+        ],
+        "n_all": 8491,
+        "n_missing": 526,
+        "n_present": 7965,
+        "overall": {
+          "gain_over_hinge": {
+            "all_rows": {
+              "GLOBAL_CONTROL": 0.0,
+              "LOCAL": 0.009358596161867183
+            },
+            "present_only": {
+              "GLOBAL_CONTROL": 0.0,
+              "LOCAL": 0.00997662774769914
+            }
+          },
+          "metrics": {
+            "all_rows": {
+              "GLOBAL_CONTROL": {
+                "mae": 9.93983150967719,
+                "mean_error": 0.7233266086118881,
+                "n": 8491,
+                "p90_absolute_error": 23.027214936919904,
+                "status": "SUPPORTED"
+              },
+              "HINGE": {
+                "mae": 9.93983150967719,
+                "mean_error": 0.7233266086118881,
+                "n": 8491,
+                "p90_absolute_error": 23.027214936919904,
+                "status": "SUPPORTED"
+              },
+              "LOCAL": {
+                "mae": 9.930472913515322,
+                "mean_error": 0.5339623413377126,
+                "n": 8491,
+                "p90_absolute_error": 22.95997611849151,
+                "status": "SUPPORTED"
+              }
+            },
+            "present_only": {
+              "GLOBAL_CONTROL": {
+                "mae": 9.730509686767574,
+                "mean_error": 0.5080200687349381,
+                "n": 7965,
+                "p90_absolute_error": 22.55856141746577,
+                "status": "SUPPORTED"
+              },
+              "HINGE": {
+                "mae": 9.730509686767574,
+                "mean_error": 0.5080200687349381,
+                "n": 7965,
+                "p90_absolute_error": 22.55856141746577,
+                "status": "SUPPORTED"
+              },
+              "LOCAL": {
+                "mae": 9.720533059019875,
+                "mean_error": 0.3061503897110805,
+                "n": 7965,
+                "p90_absolute_error": 22.521162113907874,
+                "status": "SUPPORTED"
+              }
+            }
+          },
+          "n_all": 8491,
+          "n_missing": 526,
+          "n_present": 7965
+        },
+        "target_tails": {
+          "target_ge_95": {
+            "gain_over_hinge": {
+              "all_rows": {
+                "GLOBAL_CONTROL": 0.0,
+                "LOCAL": -0.00467643859267497
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": 0.0,
+                "LOCAL": -0.004878784493319799
+              }
+            },
+            "metrics": {
+              "all_rows": {
+                "GLOBAL_CONTROL": {
+                  "mae": 5.8236884069613755,
+                  "mean_error": -5.186857987785681,
+                  "n": 434,
+                  "p90_absolute_error": 14.461254461943609,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 5.8236884069613755,
+                  "mean_error": -5.186857987785681,
+                  "n": 434,
+                  "p90_absolute_error": 14.461254461943609,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 5.82836484555405,
+                  "mean_error": -5.191534426378356,
+                  "n": 434,
+                  "p90_absolute_error": 14.461254461943609,
+                  "status": "SUPPORTED"
+                }
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": {
+                  "mae": 5.828134830942,
+                  "mean_error": -5.1848769003822115,
+                  "n": 416,
+                  "p90_absolute_error": 14.76851690220883,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 5.828134830942,
+                  "mean_error": -5.1848769003822115,
+                  "n": 416,
+                  "p90_absolute_error": 14.76851690220883,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 5.83301361543532,
+                  "mean_error": -5.18975568487553,
+                  "n": 416,
+                  "p90_absolute_error": 14.76851690220883,
+                  "status": "SUPPORTED"
+                }
+              }
+            },
+            "n_all": 434,
+            "n_missing": 18,
+            "n_present": 416
+          },
+          "target_le_5": {
+            "gain_over_hinge": {
+              "all_rows": {
+                "GLOBAL_CONTROL": 0.0,
+                "LOCAL": 0.003781464246445765
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": 0.0,
+                "LOCAL": 0.003960680561444718
+              }
+            },
+            "metrics": {
+              "all_rows": {
+                "GLOBAL_CONTROL": {
+                  "mae": 9.94877365564617,
+                  "mean_error": 9.92995664071274,
+                  "n": 442,
+                  "p90_absolute_error": 23.32377801269956,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 9.94877365564617,
+                  "mean_error": 9.92995664071274,
+                  "n": 442,
+                  "p90_absolute_error": 23.32377801269956,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 9.944992191399724,
+                  "mean_error": 9.926175176466291,
+                  "n": 442,
+                  "p90_absolute_error": 23.32377801269956,
+                  "status": "SUPPORTED"
+                }
+              },
+              "present_only": {
+                "GLOBAL_CONTROL": {
+                  "mae": 9.37006119911353,
+                  "mean_error": 9.350352382524486,
+                  "n": 422,
+                  "p90_absolute_error": 20.25861815044246,
+                  "status": "SUPPORTED"
+                },
+                "HINGE": {
+                  "mae": 9.37006119911353,
+                  "mean_error": 9.350352382524486,
+                  "n": 422,
+                  "p90_absolute_error": 20.25861815044246,
+                  "status": "SUPPORTED"
+                },
+                "LOCAL": {
+                  "mae": 9.366100518552086,
+                  "mean_error": 9.346391701963043,
+                  "n": 422,
+                  "p90_absolute_error": 20.25861815044246,
+                  "status": "SUPPORTED"
+                }
+              }
+            },
+            "n_all": 442,
+            "n_missing": 20,
+            "n_present": 422
+          }
+        }
+      },
+      "prediction_hashes": {
+        "GLOBAL_CONTROL": "f5f90970de23562c1087891bc15669a7ce056585bca9a040a1657bcd215d7fc8",
+        "HINGE": "f5f90970de23562c1087891bc15669a7ce056585bca9a040a1657bcd215d7fc8",
+        "LOCAL": "64e7f687b026444d0fe84bab32b0aca0505fa4bac7a09f03d59a735222470790"
+      },
+      "score_rows": {
+        "cycles": [
+          76,
+          77,
+          78,
+          79
+        ],
+        "fit_id": "HINGE_D2",
+        "local_positive_basis_present_rows": 1649,
+        "n_all": 8491,
+        "n_missing": 526,
+        "n_present": 7965,
+        "origins": [
+          75
+        ],
+        "population": "score",
+        "row_identity_hashes": {
+          "cycles_sha256": "79b6624a70d38dea4bb6db129646158bf420f55abf05773fe867ff69bf8eb72a",
+          "direct_prediction_sha256": "6dd78579b161884792855cce8e89a6147c6201dca80250a94f1e1b5e42ceb8dd",
+          "missing_mask_sha256": "0dee844f6237cb95a14dc13bb436d67df0b9f15cd81c633210e87379273f60fd",
+          "original_bundle_indices_sha256": "a740b784ffac8aa42d2d986ccc62afa2ead51f2ef7b90d6c5312dd101d0211ec",
+          "physical_rows_sha256": "56ce75432afddf4b55d01753871a788ab8afb3af3a28c1045025ba142035934e",
+          "prediction_origins_sha256": "f0a37f977aae4b4f7b90f85b12d596be8692cfe36c8f6124cad34ceafd21c4a7",
+          "record_ids_sha256": "3d53539427605cc78d5478bc71143cfbc07cf3e8120be15c4358c5278d1c8c38"
+        }
+      },
+      "stage_id": "HINGE_D2",
+      "target_sha256": "3ad5e23fc8ec72c1263827668be68fb550e201bf714809c7a737c621216c69b2",
+      "targeted_region": {
+        "local_gain_over_hinge": 0.048189108556952576,
+        "metrics": {
+          "GLOBAL_CONTROL": {
+            "mae": 12.759287157715585,
+            "mean_error": 2.4957066932601175,
+            "n": 1649,
+            "p90_absolute_error": 28.489290107215943,
+            "status": "SUPPORTED"
+          },
+          "HINGE": {
+            "mae": 12.759287157715585,
+            "mean_error": 2.4957066932601175,
+            "n": 1649,
+            "p90_absolute_error": 28.489290107215943,
+            "status": "SUPPORTED"
+          },
+          "LOCAL": {
+            "mae": 12.711098049158633,
+            "mean_error": 1.5206357451551893,
+            "n": 1649,
+            "p90_absolute_error": 28.13779409489848,
+            "status": "SUPPORTED"
+          }
+        },
+        "n_present": 1649,
+        "support": "SUPPORTED"
+      }
+    }
+  },
+  "score_predictions_committed_before_score_target_load": true,
+  "signature": "c6440217e4a5707fbcadbf865e55b7a11d66fbb4f6d0fa47a5c507e6e15a43d9",
+  "source_commit": "0db77c67e2ab9e1153128cdd72724162c630809b",
+  "status": "PASS_FOUR_FIT_SCORE_DIAGNOSTIC_COMPLETE",
+  "test_or_sample_accessed": false
+}
