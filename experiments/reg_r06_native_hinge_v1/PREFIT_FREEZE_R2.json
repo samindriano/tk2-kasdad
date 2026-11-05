@@ -1,0 +1,286 @@
+{
+  "branch": "codex/reg-position-failure-mechanism-v1",
+  "cache_assignment": {
+    "R06_fit67_cycles": [
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75
+    ],
+    "R06_fit71_used": false,
+    "R06_fit75_cycles": [
+      76,
+      77,
+      78,
+      79
+    ],
+    "prediction_member": "prediction"
+  },
+  "calibration": {
+    "application": "clip to [0,100] on present rows; missing rows bit-exact raw R06",
+    "form": "intercept + slope_low*min(p,50) + slope_high*max(p-50,0)",
+    "knot": 50.0,
+    "no_knots_grids_weights_or_seed_search": true,
+    "objective": "unweighted sum absolute error",
+    "slope_bounds": [
+      0.0,
+      2.0
+    ],
+    "solver": "pinned R4 HiGHS solver; 2 threads; 180 second time limit"
+  },
+  "comparators": {
+    "HINGE_FINAL_use": "descriptive or deployment context only; excluded from every diagnostic gate",
+    "historical_cutoff_states": {
+      "HINGE_D1": {
+        "coefficients": {
+          "intercept": 1.6151279903545919,
+          "knot": 50.0,
+          "slope_high": 0.9495400653646829,
+          "slope_low": 1.0015524534891977
+        },
+        "fit_input_sha256": "d3646fe66040f064faa671f9ccc67f67d8c72b83e6192b681c2857a3163c76bd",
+        "fit_rows": 4950,
+        "state_sha256": "a2fe1297e15566bdc86506458a81de4b7b9f4c6c15359d9fbea4b2818ff3838a"
+      },
+      "HINGE_D2": {
+        "coefficients": {
+          "intercept": 1.8742215974336602,
+          "knot": 50.0,
+          "slope_high": 0.9544062282511625,
+          "slope_low": 1.0003913398001634
+        },
+        "fit_input_sha256": "29b1a7d52e9e4f9d502d329071769e260889e81817d82b9e12f73abd0cfc5445",
+        "fit_rows": 12412,
+        "state_sha256": "9be290f35c89d7fd9199e6838a93a429d5ca5c3049117e4f30506a0b418bc51e"
+      }
+    },
+    "primary": "same-history R06 with the saved same-cutoff R4 HINGE_D1 or HINGE_D2 coefficients",
+    "raw": "same-history raw R06 predictions",
+    "separate_full_model": "original DIRECT predictions with the matching saved R4 HINGE_D1 or HINGE_D2 coefficients"
+  },
+  "created_utc": "2026-11-05T14:46:14.073258+00:00",
+  "csv_created": false,
+  "experiment_id": "REG_R06_NATIVE_HINGE_V1_R2",
+  "exploratory_gate": {
+    "cycle_minimum_rows": 50,
+    "each_window_harm_vs_primary_le": 0.02,
+    "group_minimum_rows": 200,
+    "pooled_gain_vs_primary_min": 0.0,
+    "supported_group_harm_vs_primary_le": 0.25
+  },
+  "final_fit_policy": {
+    "final_fit_is_in_sample_calibration_not_holdout_validation": true,
+    "new_pilot_slot_cap": 3,
+    "old_r4_ledger_is_separate_and_immutable": true,
+    "root_review_eligible_if_qualification_or_exploratory_pass": true,
+    "separate_root_final_approval_required": true,
+    "source_pass_never_authorizes_final_fit": true
+  },
+  "identity_contract": {
+    "D1_fit_cycles": [
+      68,
+      69,
+      70,
+      71
+    ],
+    "D1_score_cycles": [
+      72,
+      73,
+      74,
+      75
+    ],
+    "D2_fit_cycles": [
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75
+    ],
+    "D2_score_cycles": [
+      76,
+      77,
+      78,
+      79
+    ],
+    "cached_label_bundle": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\runs\\reg_monotone_hinge_p50_v1\\FINAL_APPLICATION_R1\\fit_inputs\\HINGE_FINAL.npz",
+    "cycles": [
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79
+    ],
+    "final_fit_id": "R06_HINGE_FINAL",
+    "final_fit_rows_including_missing": 20903,
+    "rows": 20903
+  },
+  "input_hashes": {
+    "official_train": {
+      "bytes": 24540489,
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\data\\raw\\regression\\Train.csv",
+      "sha256": "756523ff8156a9cd776e52249f7e2a8f23dcec432b8d10570e55ff6db0e0f082"
+    },
+    "old_direct_hinge_report": {
+      "bytes": 15938,
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\reports\\optimization_v3\\reg_monotone_hinge_p50_v1\\FINAL_APPLICATION_REPORT_R1.json",
+      "sha256": "fec7182eace04b425b7dbf1d871dbb39f14a1080e479ba95243803e4b1cdae73"
+    },
+    "old_direct_hinge_state": {
+      "bytes": 13671,
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\runs\\reg_monotone_hinge_p50_v1\\FINAL_APPLICATION_R1\\fits\\HINGE_FINAL.json",
+      "sha256": "a81b2e8e709a33e9a15036ab040c87c92faabd08f16b48ff7f42916fd23ad99a"
+    },
+    "oof_label_and_identity_bundle": {
+      "bytes": 549851,
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\runs\\reg_monotone_hinge_p50_v1\\FINAL_APPLICATION_R1\\fit_inputs\\HINGE_FINAL.npz",
+      "sha256": "e75f70cccd1bb231499060b84155af876173214d984461e39e4c1364e4c5b2bf"
+    },
+    "r06_fit67_npz": {
+      "bytes": 1387095,
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\experiments\\runs\\optimization_v3_batch1\\R06\\R06_fit67.npz",
+      "sha256": "4bda0ac6838388ea46ca768e0998f7b0f9a9a1b6defb2b1e5399f6ff83154804"
+    },
+    "r06_fit67_sidecar": {
+      "bytes": 277172,
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\experiments\\runs\\optimization_v3_batch1\\R06\\R06_fit67.json",
+      "sha256": "faa11f25bfd37fded8db5f84244ce306d6f2027dc153fb143560304fcf91da1e"
+    },
+    "r06_fit75_npz": {
+      "bytes": 808435,
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\experiments\\runs\\optimization_v3_expanded_benchmark_v1_recovery_v2\\R06\\R06_fit75.npz",
+      "sha256": "61ef463a5bf5ee06f3c68162b8a7f874664b2736161979342731de98b5e09abb"
+    },
+    "r06_fit75_sidecar": {
+      "bytes": 119605,
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\experiments\\runs\\optimization_v3_expanded_benchmark_v1_recovery_v2\\R06\\R06_fit75.json",
+      "sha256": "61f3ab25d1cbc954cb74f47bdf823cc72113b1a2e19394c61802da1bdba7ca45"
+    },
+    "r4_diagnostics": {
+      "bytes": 56702,
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\reports\\optimization_v3\\reg_monotone_hinge_p50_v1\\DIAGNOSTICS_R4.json",
+      "sha256": "ea6a77cbb43c836e08136a8c417e02384084deabc1c42fa94226f719e20f7b1e"
+    },
+    "r4_diagnostics_verification": {
+      "bytes": 3616,
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\reports\\optimization_v3\\reg_monotone_hinge_p50_v1\\DIAGNOSTICS_VERIFICATION_R4.json",
+      "sha256": "f89a2e2f21afacd79f88d3253e76a3207e25c7cd29fae5f5e8cbdc21586f9f2f"
+    },
+    "r4_hinge_d1_input": {
+      "bytes": 128871,
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\runs\\reg_monotone_hinge_p50_v1\\R4\\fit_inputs\\HINGE_D1.npz",
+      "sha256": "d3646fe66040f064faa671f9ccc67f67d8c72b83e6192b681c2857a3163c76bd"
+    },
+    "r4_hinge_d1_state": {
+      "bytes": 25693,
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\runs\\reg_monotone_hinge_p50_v1\\R4\\fits\\HINGE_D1.json",
+      "sha256": "a2fe1297e15566bdc86506458a81de4b7b9f4c6c15359d9fbea4b2818ff3838a"
+    },
+    "r4_hinge_d2_input": {
+      "bytes": 319658,
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\runs\\reg_monotone_hinge_p50_v1\\R4\\fit_inputs\\HINGE_D2.npz",
+      "sha256": "29b1a7d52e9e4f9d502d329071769e260889e81817d82b9e12f73abd0cfc5445"
+    },
+    "r4_hinge_d2_state": {
+      "bytes": 25676,
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\runs\\reg_monotone_hinge_p50_v1\\R4\\fits\\HINGE_D2.json",
+      "sha256": "9be290f35c89d7fd9199e6838a93a429d5ca5c3049117e4f30506a0b418bc51e"
+    },
+    "r4_lp_ledger": {
+      "bytes": 161489,
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\runs\\reg_monotone_hinge_p50_v1\\R4\\lp_ledger.jsonl",
+      "sha256": "8c31daaf63831831010afd6cd350a731448ce833c9fcf13d53b12f1415a8ca7d"
+    },
+    "r4_root_source_pass": {
+      "bytes": 22689,
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\reg_monotone_hinge_p50_v1\\ROOT_SOURCE_PASS_R4.json",
+      "sha256": "adbeaac6a53afd095eb53ffe372eb89de9ec1f3e47dd7794ecafb163ff394bac"
+    },
+    "resource_policy": {
+      "bytes": 2850,
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\reports\\optimization_v3\\RESOURCE_POLICY_USER_REVISED_20261105.json",
+      "sha256": "0f281c9ba4552b20a47a8d977bf7ee083cf1009c94024068c4f0ef80ab4cad32"
+    },
+    "target_free_inventory": {
+      "bytes": 15969,
+      "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\reports\\optimization_v3\\rnbr_target_median_v1\\targetfree_preflight.json",
+      "sha256": "b7c8179e49ebd63c2785fbbff19834e912a207e54f2831d66e9ff031a9adb3a0"
+    }
+  },
+  "kaggle_accessed": false,
+  "official_lp_starts": 0,
+  "prior_slot_accounting": {
+    "new_pilot_initial_starts": 0,
+    "new_pilot_ledger_path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\runs\\reg_r06_native_hinge_v1\\R2\\lp_ledger.jsonl",
+    "new_pilot_lp_start_cap": 3,
+    "old_ledger_reset_or_rewritten": false,
+    "old_r4_fit_ids": {
+      "HINGE_D1": [
+        "RESERVE",
+        "LP_STARTED",
+        "LP_COMPLETE"
+      ],
+      "HINGE_D2": [
+        "RESERVE",
+        "LP_STARTED",
+        "LP_COMPLETE"
+      ],
+      "HINGE_FINAL": [
+        "RESERVE",
+        "LP_STARTED",
+        "LP_COMPLETE"
+      ]
+    },
+    "old_r4_ledger_path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\runs\\reg_monotone_hinge_p50_v1\\R4\\lp_ledger.jsonl",
+    "old_r4_ledger_sha256": "8c31daaf63831831010afd6cd350a731448ce833c9fcf13d53b12f1415a8ca7d",
+    "old_r4_lp_starts_already_consumed": 3
+  },
+  "qualification_gate": {
+    "each_window_gain_vs_primary_min": 0.0,
+    "max_supported_availability_or_tail_harm_vs_primary_le": 0.25,
+    "pooled_gain_vs_primary_min": 0.005
+  },
+  "repo_root": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1",
+  "resources": {
+    "new_base_or_preprocessing_fits": 0,
+    "official_lp_starts_cap": 3,
+    "resource_policy_path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\reports\\optimization_v3\\RESOURCE_POLICY_USER_REVISED_20261105.json",
+    "resource_policy_sha256": "0f281c9ba4552b20a47a8d977bf7ee083cf1009c94024068c4f0ef80ab4cad32",
+    "shared_lock_path": "C:\\Users\\Sam\\AppData\\Local\\Temp\\kasdad_single_heavy_job.lock",
+    "threads": 2
+  },
+  "root_final_approval_path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\reg_r06_native_hinge_v1\\ROOT_FINAL_FIT_APPROVAL_R2.json",
+  "root_source_pass_created_by_runner": false,
+  "root_source_pass_path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\reg_r06_native_hinge_v1\\ROOT_SOURCE_PASS_R2.json",
+  "schema_version": 1,
+  "signature": "3acbc05a27d19ae0f54b082573c3e66bb10dcbf4bd9d46805a89dd2fcb2ae5f7",
+  "source_commit": "555ef8e318cbcff9a52e9178503e257f8f6cc722",
+  "source_commit_must_be_ancestor": true,
+  "source_hashes": {
+    "direct_identity_helpers_v3": "16dbce9befde26347f697346394962c51fdf9c1c77fed43374320b76bb95f3df",
+    "final_wave_helpers_v2": "67d6b2238ca82d35d0017d116dbe18a44b4864fee5affe65963d27764f15fa9f",
+    "hinge_core_r1": "f51d428fce23cf45575d8bbdc3241cc2a5c976b840665aca33b62b1a9687fb99",
+    "hinge_solver_r4": "dcf35a80bf50e9e83a234b08c7b3cc1b32cdec5e54e89236fb221fa33352225d",
+    "protocol": "353b388d87e982014d47dab1903d4e1109bf3f2bdd352f90df4aeb41a1bb189b",
+    "runner": "87daf35b163acc16c1de5c9a9b7e3f636b4ec132337408a698ba5f005ad6d12e",
+    "tests": "4a1cdcba12b93029cb5113185f7609c76cff44d047579cd4de4bc055675e9692",
+    "verifier": "ffb863205a8f644a788ca0e959546a37739cd7f9acca485a640ef32dccf808d7"
+  },
+  "status": "IDENTITY_FROZEN_PENDING_NON_TARGET_PREFLIGHT_AND_ROOT_REVIEW_R2",
+  "target_free_inventory_sha256": "b7c8179e49ebd63c2785fbbff19834e912a207e54f2831d66e9ff031a9adb3a0",
+  "test_labels_read": false,
+  "test_or_sample_accessed": false
+}
