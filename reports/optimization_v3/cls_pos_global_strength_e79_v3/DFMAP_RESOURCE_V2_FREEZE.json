@@ -1,0 +1,47 @@
+{
+  "formula": {
+    "aligned": "raw / mean(raw)",
+    "df": "count each retained unigram at most once per Train row if present in any positional segment block",
+    "global_strength": "v=max(1,aligned); c=mean(v); penalty=full(3*V,c)",
+    "permutation": "numpy.default_rng(42).permutation(V); permuted_aligned=aligned[permutation]",
+    "raw": "clip(sqrt(median(df)/df), 0.5, 2.0)"
+  },
+  "freeze_sha256": "fab0325b1316603f0668efa019fe7f45aa86522d84c3b2f0208bfb800aedfbfc",
+  "global_fit_limit_across_resource_versions": 1,
+  "output_root": "experiments/runs/optimization_v3_cls_pos_global_strength_e79_v3/df_map_v1",
+  "policy_id": "CLS_POS_GLOBAL_STRENGTH_E79_DF_MAP_RESOURCE_V2",
+  "policy_status": "FROZEN_FOR_ONE_GLOBAL_DF_MAP_PASS",
+  "position_logical_sha256": "32268550b8220dbfb43f5c92c33cd84554f0bced446d1459c5c55c3eabbf9942",
+  "position_nnz": 1638979,
+  "position_shape": [
+    50608,
+    17259
+  ],
+  "prepared_from_head": "951a4af5fd690844b273b32fdde330357109e06a",
+  "r3_measured_peak_rss_bytes": 556793856,
+  "r3_receipt_file_sha256": "e2978ea5b5ffd531b8a2592353ae2ac38e83a32706fa16f74a13c2c61d715105",
+  "r3_receipt_path": "experiments/runs/optimization_v3_cls_pos_global_strength_e79_v3/descendant_replay_v1/REPLAY_RECEIPT.json",
+  "resource_policy": {
+    "dfmap_peak_measurement_claimed": false,
+    "free_reserve_bytes": 805306368,
+    "incremental_estimate_bytes": 805306368,
+    "max_threads": 2,
+    "minimum_initial_available_bytes": 1610612736,
+    "r3_measured_peak_plus_sparse_bound_under_estimate": true,
+    "sparse_union_extra_bound_limit_bytes": 167772160,
+    "sparse_union_extra_upper_bound_bytes": 138869361
+  },
+  "schema_version": 1,
+  "source_file_sha256": {
+    "reports/optimization_v3/cls_pos_global_strength_e79_v3/DFMAP_RESOURCE_POLICY_V2.md": "ca39449690d7e07d5a18690bb657e2c9a199018d8e592cb06013d69b72882ee8",
+    "scripts/optimization_v3_cls_pos_global_strength_e79_dfmap_resource_v2.py": "11e60daf2fe1ef9cf3109d784be2b41ca3e9764b03145b59fc9f263295ecfd88",
+    "scripts/verify_optimization_v3_cls_pos_global_strength_e79_dfmap_resource_v2.py": "9514ed74b6e344c02ff3335d719191a6fba65039b193d68bc40ba35d52dfb426",
+    "tests/test_optimization_v3_cls_pos_global_strength_e79_dfmap_resource_v2.py": "63718a3d52461fbb0365df345f874e5cfc52a46343d46ca5b756b096bcb0b313"
+  },
+  "test_sample_targets_fit_or_kaggle_access": false,
+  "train_rows": 50608,
+  "train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+  "v1_dfmap_freeze_file_sha256": "068522aec896b39bd0301c94a102fd2ec87857b3a1d5a4199132c75727d8c0e1",
+  "v1_dfmap_freeze_sha256": "3eaf12bbd5064b91e4dca45c7ff0c1c27de8b1e4b573ae5242360aaf933915dc",
+  "v1_source_freeze_sha256": "3eaf12bbd5064b91e4dca45c7ff0c1c27de8b1e4b573ae5242360aaf933915dc"
+}
