@@ -51,7 +51,7 @@ def test_diagnostics_stop_before_any_target_or_solver_call_without_pass(monkeypa
     calls = {"identity": 0, "targets": 0, "solver": 0}
 
     def deny():
-        raise pilot.GateError("ROOT_SOURCE_PASS_R2.json is absent")
+        raise pilot.GateError("ROOT_SOURCE_PASS_R2B.json is absent")
 
     def identity(*_args, **_kwargs):
         calls["identity"] += 1
