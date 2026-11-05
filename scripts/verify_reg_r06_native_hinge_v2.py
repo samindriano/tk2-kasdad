@@ -172,10 +172,10 @@ def verify_source_ready(*, write_receipt: bool = False) -> dict[str, Any]:
     preflight, preflight_sha = _signed_json(pilot.PREFLIGHT)
     synthetic, synthetic_sha = _signed_json(pilot.SYNTHETIC_QA)
     _need(freeze.get("status") ==
-          "IDENTITY_FROZEN_PENDING_NON_TARGET_PREFLIGHT_AND_ROOT_REVIEW_R2B",
+          "IDENTITY_FROZEN_PENDING_NON_TARGET_PREFLIGHT_AND_ROOT_REVIEW_R2C",
           "Prefit freeze is not pending root review")
     _need(preflight.get("status") ==
-          "PASS_NON_TARGET_IDENTITY_PREFLIGHT_PENDING_ROOT_SOURCE_PASS_R2B",
+          "PASS_NON_TARGET_IDENTITY_PREFLIGHT_PENDING_ROOT_SOURCE_PASS_R2C",
           "Non-target identity preflight is not in pending-root state")
     _need(preflight.get("prefit_freeze_sha256") == freeze_sha,
           "Preflight does not bind the prefit freeze")
@@ -226,7 +226,7 @@ def verify_source_ready(*, write_receipt: bool = False) -> dict[str, Any]:
           "Resource preflight did not pass at each recorded boundary")
     body = {
         "schema_version": 1, "experiment_id": pilot.EXPERIMENT_ID,
-        "status": "PASS_SOURCE_READY_PENDING_ROOT_RELEASE_R2B",
+        "status": "PASS_SOURCE_READY_PENDING_ROOT_RELEASE_R2C",
         "prefit_freeze_sha256": freeze_sha,
         "identity_preflight_sha256": preflight_sha,
         "synthetic_qa_sha256": synthetic_sha,

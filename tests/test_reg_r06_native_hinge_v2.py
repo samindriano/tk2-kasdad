@@ -51,7 +51,7 @@ def test_diagnostics_stop_before_any_target_or_solver_call_without_pass(monkeypa
     calls = {"identity": 0, "targets": 0, "solver": 0}
 
     def deny():
-        raise pilot.GateError("ROOT_SOURCE_PASS_R2B.json is absent")
+        raise pilot.GateError("ROOT_SOURCE_PASS_R2C.json is absent")
 
     def identity(*_args, **_kwargs):
         calls["identity"] += 1
@@ -193,3 +193,17 @@ def test_synthetic_cli_writes_a_verifiable_receipt() -> None:
     assert signature == pilot.canonical_sha(receipt)
     assert receipt["status"] == "PASS_SYNTHETIC_SOURCE_AND_RECEIPT_E2E"
     assert receipt["checks"]["official_lp_starts"] == 0
+
+
+def test_source_ready_command_dispatches_to_r2_verifier(monkeypatch, capsys) -> None:
+    from scripts import verify_reg_r06_native_hinge_v2 as verifier
+    called = {"write_receipt": False}
+
+    def stub(*, write_receipt: bool) -> dict[str, object]:
+        called["write_receipt"] = write_receipt
+        return {"status": "R2C_VERIFIER_DISPATCHED", "fit_starts": 0}
+
+    monkeypatch.setattr(verifier, "verify_source_ready", stub)
+    assert pilot.main(["verify-source-ready"]) == 0
+    assert called["write_receipt"] is True
+    assert '"status": "R2C_VERIFIER_DISPATCHED"' in capsys.readouterr().out

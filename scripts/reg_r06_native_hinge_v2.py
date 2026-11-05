@@ -1,7 +1,7 @@
 """Source-frozen R06-native p50 hinge pilot.
 
 Freeze and preflight are outcome-blind and never load target arrays. Official
-LPs require a separate immutable ROOT_SOURCE_PASS_R2B.json, created by the root
+LPs require a separate immutable ROOT_SOURCE_PASS_R2C.json, created by the root
 reviewer. The old R4 ledger and fit artifacts are read-only inputs.
 """
 from __future__ import annotations
@@ -25,19 +25,19 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from scripts import reg_monotone_hinge_p50_v4 as r4  # noqa: E402
 
-EXPERIMENT_ID = "REG_R06_NATIVE_HINGE_V1_R2B"
+EXPERIMENT_ID = "REG_R06_NATIVE_HINGE_V1_R2C"
 EXPERIMENT_DIR = ROOT / "experiments/reg_r06_native_hinge_v1"
 REPORT_DIR = ROOT / "reports/optimization_v3/reg_r06_native_hinge_v1"
-RUN_DIR = ROOT / "experiments/runs/reg_r06_native_hinge_v1/R2B"
-FREEZE = EXPERIMENT_DIR / "PREFIT_FREEZE_R2B.json"
-ROOT_SOURCE_PASS = EXPERIMENT_DIR / "ROOT_SOURCE_PASS_R2B.json"  # root-owned; never authored here
-ROOT_FINAL_APPROVAL = EXPERIMENT_DIR / "ROOT_FINAL_FIT_APPROVAL_R2B.json"  # root-owned
-PREFLIGHT = REPORT_DIR / "IDENTITY_PREFLIGHT_R2B.json"
-SYNTHETIC_QA = REPORT_DIR / "SYNTHETIC_QA_R2B.json"
-DIAGNOSTICS = REPORT_DIR / "DIAGNOSTICS_R2B.json"
-VERIFICATION = REPORT_DIR / "SOURCE_VERIFICATION_R2B.json"
-PROTOCOL = REPORT_DIR / "PROTOCOL_R2B.md"
-HANDOFF = REPORT_DIR / "SOL_HANDOFF_R2B.md"
+RUN_DIR = ROOT / "experiments/runs/reg_r06_native_hinge_v1/R2C"
+FREEZE = EXPERIMENT_DIR / "PREFIT_FREEZE_R2C.json"
+ROOT_SOURCE_PASS = EXPERIMENT_DIR / "ROOT_SOURCE_PASS_R2C.json"  # root-owned; never authored here
+ROOT_FINAL_APPROVAL = EXPERIMENT_DIR / "ROOT_FINAL_FIT_APPROVAL_R2C.json"  # root-owned
+PREFLIGHT = REPORT_DIR / "IDENTITY_PREFLIGHT_R2C.json"
+SYNTHETIC_QA = REPORT_DIR / "SYNTHETIC_QA_R2C.json"
+DIAGNOSTICS = REPORT_DIR / "DIAGNOSTICS_R2C.json"
+VERIFICATION = REPORT_DIR / "SOURCE_VERIFICATION_R2C.json"
+PROTOCOL = REPORT_DIR / "PROTOCOL_R2C.md"
+HANDOFF = REPORT_DIR / "SOL_HANDOFF_R2C.md"
 LEDGER = RUN_DIR / "lp_ledger.jsonl"
 FIT_IDS = ("R06_HINGE_D1", "R06_HINGE_D2", "R06_HINGE_FINAL")
 DIAGNOSTIC_IDS = FIT_IDS[:2]
@@ -301,7 +301,7 @@ def create_prefit_freeze() -> dict[str, Any]:
     body = {
         "schema_version": 1,
         "experiment_id": EXPERIMENT_ID,
-        "status": "IDENTITY_FROZEN_PENDING_NON_TARGET_PREFLIGHT_AND_ROOT_REVIEW_R2B",
+        "status": "IDENTITY_FROZEN_PENDING_NON_TARGET_PREFLIGHT_AND_ROOT_REVIEW_R2C",
         "created_utc": datetime.now(timezone.utc).isoformat(),
         "repo_root": str(ROOT.resolve()),
         "branch": _git_value("branch", "--show-current"),
@@ -396,7 +396,7 @@ def verify_freeze() -> tuple[dict[str, Any], str]:
     freeze["signature"] = signature
     if (freeze.get("experiment_id") != EXPERIMENT_ID
             or freeze.get("status") !=
-               "IDENTITY_FROZEN_PENDING_NON_TARGET_PREFLIGHT_AND_ROOT_REVIEW_R2B"):
+               "IDENTITY_FROZEN_PENDING_NON_TARGET_PREFLIGHT_AND_ROOT_REVIEW_R2C"):
         raise GateError("Prefit freeze identity or status is invalid")
     for name, item in freeze.get("input_hashes", {}).items():
         path = Path(item["path"])
@@ -593,7 +593,7 @@ def identity_preflight() -> dict[str, Any]:
     body = {
         "schema_version": 1,
         "experiment_id": EXPERIMENT_ID,
-        "status": "PASS_NON_TARGET_IDENTITY_PREFLIGHT_PENDING_ROOT_SOURCE_PASS_R2B",
+        "status": "PASS_NON_TARGET_IDENTITY_PREFLIGHT_PENDING_ROOT_SOURCE_PASS_R2C",
         "prefit_freeze_path": str(FREEZE.resolve()),
         "prefit_freeze_sha256": freeze_sha,
         "source_commit": freeze["source_commit"],
@@ -649,14 +649,14 @@ def _load_root_authorization() -> tuple[dict[str, Any], str, dict[str, Any], str
     preflight["signature"] = preflight_sig
     audit = preflight.get("npz_member_audit", {})
     if (preflight.get("status") !=
-            "PASS_NON_TARGET_IDENTITY_PREFLIGHT_PENDING_ROOT_SOURCE_PASS_R2B"
+            "PASS_NON_TARGET_IDENTITY_PREFLIGHT_PENDING_ROOT_SOURCE_PASS_R2C"
             or preflight.get("prefit_freeze_sha256") != freeze_sha
             or audit.get("target_member_loaded") is not False
             or preflight.get("train_target_values_loaded") is not False
             or preflight.get("official_lp_starts") != 0):
         raise GateError("Identity preflight is not a clean non-target pass")
     if not ROOT_SOURCE_PASS.is_file():
-        raise GateError("ROOT_SOURCE_PASS_R2B.json is absent; no official fit may start")
+        raise GateError("ROOT_SOURCE_PASS_R2C.json is absent; no official fit may start")
     approval = json.loads(ROOT_SOURCE_PASS.read_text(encoding="utf-8"))
     approval_sig = approval.pop("signature", None)
     if approval_sig != canonical_sha(approval):
@@ -696,7 +696,7 @@ def _load_final_approval(freeze: Mapping[str, Any], freeze_sha: str,
             or approval.get("source_commit") != freeze["source_commit"]
             or approval.get("source_hashes") != freeze["source_hashes"]
             or approval.get("input_hashes") != freeze["input_hashes"]):
-        raise GateError("Root final-fit approval does not bind this exact R2B diagnostic package")
+        raise GateError("Root final-fit approval does not bind this exact R2C diagnostic package")
     return approval, file_sha256(ROOT_FINAL_APPROVAL)
 
 
@@ -1288,7 +1288,7 @@ def run_final_fit() -> dict[str, Any]:
         "test_labels_read": False, "csv_created": False, "kaggle_accessed": False,
     }
     receipt["signature"] = canonical_sha(receipt)
-    path = REPORT_DIR / "FINAL_FIT_RECEIPT_R2B.json"
+    path = REPORT_DIR / "FINAL_FIT_RECEIPT_R2C.json"
     return {"status": receipt["status"], "path": str(path.resolve()),
             "sha256": write_once(path, receipt)}
 
@@ -1432,7 +1432,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "synthetic-qa":
             result = run_synthetic_qa()
         elif args.command == "verify-source-ready":
-            from scripts.verify_reg_r06_native_hinge_v1 import verify_source_ready
+            from scripts.verify_reg_r06_native_hinge_v2 import verify_source_ready
             result = verify_source_ready(write_receipt=True)
         elif args.command == "run-diagnostics":
             result = run_diagnostics()
