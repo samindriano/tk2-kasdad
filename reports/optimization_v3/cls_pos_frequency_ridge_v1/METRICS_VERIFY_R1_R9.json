@@ -1,0 +1,93 @@
+{
+  "adapter_metadata": {
+    "adapter_freeze_sha256": "ad57455de8474d254170167f1c53b7b72d5be618610e53a41e049baf82b4c5d1",
+    "adapter_invocation": "--verify-results",
+    "adapter_version": "R9_ADDITIVE_HASH_SCHEMA_ADAPTER",
+    "prediction_archive_sha256": "babc77e7052c2a4dd0c16f4de932b9391fce6bf4efbc9816df3322ae5485b685",
+    "query_target_access_forbidden_during_prediction_verification": true,
+    "unmodified_r8_cli_status": "FAILED_PRELABEL_HASH_SCHEMA_MISMATCH; adapter result is distinct"
+  },
+  "incident_disclosure_present": true,
+  "metric_comparisons": 208,
+  "resource_snapshot": {
+    "incremental_memory_estimate_bytes": 536870912,
+    "initial_floor_bytes": 1610612736,
+    "minimum_actual_free_at_boundary_bytes": 805306368,
+    "peak_working_set_is_os_high_water_mark_when_available": true,
+    "policy_id": "CLS_EVALUATION_QUERY_REPLAY_R7",
+    "post_load_and_origin_boundary_floor_bytes": 805306368,
+    "projected_free_floor_bytes": 805306368,
+    "rss_samples_are_current_state_not_peak": true,
+    "samples": [
+      {
+        "available_bytes": 4303282176,
+        "estimate_is_measured_peak": false,
+        "estimated_additional_bytes": 536870912,
+        "initial_floor_pass": true,
+        "minimum_available_bytes": 1610612736,
+        "minimum_projected_free_bytes": 805306368,
+        "pass_both_initial_gates": true,
+        "peak_working_set_measurement_available": true,
+        "peak_working_set_source": "psutil.Process().memory_info().peak_wset",
+        "peak_working_set_value_is_os_high_water_mark": true,
+        "policy_id": "CLS_EVALUATION_QUERY_REPLAY_R7",
+        "process_peak_working_set_bytes": 161861632,
+        "process_rss_sample_bytes": 159793152,
+        "process_rss_sample_is_peak": false,
+        "projected_free_bytes": 3766411264,
+        "projected_reserve_pass": true,
+        "sample_kind": "CURRENT_STATE_SNAPSHOT_WITH_OPTIONAL_OS_PEAK",
+        "stage": "INITIAL_UNDER_SHARED_LOCK"
+      },
+      {
+        "available_bytes": 4260544512,
+        "minimum_available_bytes": 805306368,
+        "pass": true,
+        "peak_working_set_measurement_available": true,
+        "peak_working_set_source": "psutil.Process().memory_info().peak_wset",
+        "peak_working_set_value_is_os_high_water_mark": true,
+        "policy_id": "CLS_EVALUATION_QUERY_REPLAY_R7",
+        "process_peak_working_set_bytes": 201662464,
+        "process_rss_sample_bytes": 172294144,
+        "process_rss_sample_is_peak": false,
+        "sample_is_peak": false,
+        "sample_kind": "CURRENT_STATE_SNAPSHOT_WITH_OPTIONAL_OS_PEAK",
+        "stage": "E67_INDEPENDENT_TARGET_LABEL_BOUNDARY"
+      },
+      {
+        "available_bytes": 4260544512,
+        "minimum_available_bytes": 805306368,
+        "pass": true,
+        "peak_working_set_measurement_available": true,
+        "peak_working_set_source": "psutil.Process().memory_info().peak_wset",
+        "peak_working_set_value_is_os_high_water_mark": true,
+        "policy_id": "CLS_EVALUATION_QUERY_REPLAY_R7",
+        "process_peak_working_set_bytes": 201662464,
+        "process_rss_sample_bytes": 172318720,
+        "process_rss_sample_is_peak": false,
+        "sample_is_peak": false,
+        "sample_kind": "CURRENT_STATE_SNAPSHOT_WITH_OPTIONAL_OS_PEAK",
+        "stage": "E75_INDEPENDENT_TARGET_LABEL_BOUNDARY"
+      },
+      {
+        "available_bytes": 4309204992,
+        "minimum_available_bytes": 805306368,
+        "pass": true,
+        "peak_working_set_measurement_available": true,
+        "peak_working_set_source": "psutil.Process().memory_info().peak_wset",
+        "peak_working_set_value_is_os_high_water_mark": true,
+        "policy_id": "CLS_EVALUATION_QUERY_REPLAY_R7",
+        "process_peak_working_set_bytes": 201662464,
+        "process_rss_sample_bytes": 174669824,
+        "process_rss_sample_is_peak": false,
+        "sample_is_peak": false,
+        "sample_kind": "CURRENT_STATE_SNAPSHOT_WITH_OPTIONAL_OS_PEAK",
+        "stage": "AFTER_INDEPENDENT_METRIC_REPLAY"
+      }
+    ],
+    "samples_are_peak_measurements": false
+  },
+  "status": "PASS_INDEPENDENT_METRIC_AND_ROW_RECONSTRUCTION",
+  "target_rows": 29394,
+  "test_or_samplesubmission_accessed": false
+}
