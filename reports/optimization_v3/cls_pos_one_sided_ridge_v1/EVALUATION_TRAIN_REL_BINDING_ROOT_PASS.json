@@ -1,0 +1,15 @@
+{
+  "execution": "Validate prior adapter freeze and committed manifest, install exact ARMS and TRAIN_REL bindings, then call original evaluate_results and independent verifier. Record this pass in execution provenance. No new fits, predictions, source edits, Test, Kaggle or CSV.",
+  "fit_starts_cap_unchanged": 4,
+  "frozen_evaluator_sha256": "2445459e845acedb35ebe33bf679b4d506e35a84b4cb9dfa654d57d8823a1cf8",
+  "manifest_sha256": "b0eb1254f2b7ef5afd71a0e1083f1bf0c45ec02de8dcc51c84b79eb1fd834043",
+  "prediction_sha256": "a916a65fe6974501b3a2777a8a9bfae08049a917e5d1a0d9d3b7eb8fd4b479c1",
+  "prior_adapter_root_pass_sha256": "eda8cc866b551c8b1f1d763d88a5c02329a6c0d1ed95a0515adf758c33f383fe",
+  "review": "Root symtable inspection of every evaluator and independent verifier function found only ARMS and TRAIN_REL unresolved; verifier has none. ARMS adapter already approved. Sourcepath/hash and manifest-before-label guards remain original.",
+  "runtime_binding": {
+    "exact_value": "data/raw/classification/Train.csv",
+    "field": "EVAL.TRAIN_REL",
+    "source": "RUNNER.TRAIN_REL"
+  },
+  "status": "AUTHORIZED_EVALUATION_ONLY_RUNTIME_BINDING"
+}
