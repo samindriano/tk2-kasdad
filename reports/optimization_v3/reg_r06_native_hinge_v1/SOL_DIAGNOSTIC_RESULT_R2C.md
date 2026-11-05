@@ -46,8 +46,9 @@ matching same-cutoff R4 hinge on DIRECT are diagnostic comparisons.
 | D2 | 8,491 | 9.876721 | 9.878612 | +0.001891 | +0.044892 | 22.843228 | +0.635972 |
 | Pooled | 15,953 | 10.590318 | 10.589955 | -0.000364 | +0.059035 | 23.679499 | +0.030029 |
 
-Pooled candidate MAE is 10.625103 against the matching DIRECT comparator
-(gain `+0.034784`). Present-only MAE is 10.386318 versus 10.385929 for the
+Pooled candidate MAE is 10.590318. The matching DIRECT comparator MAE is
+10.625103, so the candidate gain is `+0.034784`. Present-only MAE is
+10.386318 versus 10.385929 for the
 primary. There are 14,920 present and 1,033 missing scored rows; all missing
 rows retain raw R06 predictions exactly. All required groups and cycles meet
 support (`group n >= 200`, `cycle n >= 50`).
