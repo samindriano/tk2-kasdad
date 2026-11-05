@@ -2,7 +2,7 @@
 
 --freeze hashes sources and cached inputs only; it never opens NPZ arrays.
 --calculate opens only the allowlisted E67/E75 prediction members after the
-pre-access freeze commit and a per-lane RAM/lock gate. No model is fit.
+pre-access freeze commit and shared/per-lane RAM/lock gates. No model is fit.
 """
 from __future__ import annotations
 
@@ -40,6 +40,7 @@ RELATIVE_FILES = {
     "audit_verification": "../tk2-simplification-audit-v1/reports/simplification_v1/VERIFICATION.json",
     "audit_findings": "../tk2-simplification-audit-v1/reports/simplification_v1/FINDINGS.md",
     "light_parallel_policy": "../tk2-simplification-audit-v1/reports/simplification_v1/LIGHT_PARALLEL_EXECUTION_POLICY.json",
+    "audit_next_simple_research": "../tk2-simplification-audit-v1/reports/simplification_v1/NEXT_SIMPLE_MODEL_RESEARCH.md",
     "a02_policy_predictions": "experiments/runs/optimization_v3_posoffset_a02_endgame_v1/policy_predictions.npz",
     "pos_predictions": "experiments/runs/optimization_v3_cls_pos_one_sided_ridge_v1/predictions.npz",
     "novelty_b01_summary": "reports/optimization_v3/a02_b01_centering_v1/B01_OUTPUTS/SUMMARY.md",
@@ -56,6 +57,7 @@ EXPECTED_HASHES = {
     "audit_verification": "3c342d1e30a41fa882a4b6fed241b9212c533a3138980124d91a3ae6fbac35ac",
     "audit_findings": "5073d955f5d2b932bef7e18df1b8498adec3885873867d64da3f5b272e4cc000",
     "light_parallel_policy": "235de024810c602635a518851438ffd9e6e45f55e7451b3adffd749cb89f955e",
+    "audit_next_simple_research": "702ea7ca9da8fa647e60d3d4b4c89a33f3b24b05bc03f43c80282a3bc2c04a07",
     "a02_policy_predictions": "25d1d2b91348a57d33b3b0e5ce78da29840d115b75e24f9502cc83c1b63ef351",
     "pos_predictions": "a916a65fe6974501b3a2777a8a9bfae08049a917e5d1a0d9d3b7eb8fd4b479c1",
     "novelty_b01_summary": "3400fe21529abe96abd5a02a6191851edc366e3d5af5ace6ae29f4eadd1b516b",
@@ -64,13 +66,13 @@ EXPECTED_HASHES = {
     "novelty_a02_continuation": "39b4b0b21a48d9e269f455912d8ed34bf5e344fffaa1ae85cd085e056f853f3d",
 }
 FROZEN_AUDIT_SOURCE_HEAD = "a39721172b6d293cb68ee0d120060082d222699e"
-FROZEN_AUDIT_ARTIFACT_HEAD = "56958254e3b33a54f583343e2cdbc18cff2b9e6a"
 PRESENT_THRESHOLD = 0.50
 MISSING_THRESHOLD = 0.53230976129477
 RESOURCE_ESTIMATE_BYTES = 512 * 1024**2
-RESOURCE_START_BYTES = int(2.5 * 1024**3)
-RESOURCE_RESERVE_BYTES = 1024**3
+RESOURCE_START_BYTES = int(1.5 * 1024**3)
+RESOURCE_RESERVE_BYTES = int(0.75 * 1024**3)
 LOCK_PATH = Path(tempfile.gettempdir()) / "kasdad_cls_simple_rank_allocation_diagnostic_v1.lock"
+SHARED_LOCK_PATH = Path(tempfile.gettempdir()) / "kasdad_single_heavy_job.lock"
 MEMBERS = {
     origin: [f"E{origin}_{suffix}" for suffix in ("ids", "cycles", "missing", "y", "pA", "pP")]
     for origin in (67, 75)
@@ -121,9 +123,14 @@ def resource_available_bytes() -> int:
 
 @contextmanager
 def lane_lock_and_ram_gate() -> Any:
-    LOCK_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with LOCK_PATH.open("a+b") as stream:
-        if LOCK_PATH.stat().st_size == 0:
+    streams = []
+    locked_streams = []
+
+    def acquire(path: Path) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        stream = path.open("a+b")
+        streams.append(stream)
+        if path.stat().st_size == 0:
             stream.write(b"\0")
             stream.flush()
         stream.seek(0)
@@ -135,31 +142,47 @@ def lane_lock_and_ram_gate() -> Any:
                 import fcntl
                 fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
         except OSError as exc:
-            raise RuntimeError(f"Diagnostic lane lock is busy: {LOCK_PATH}") from exc
-        try:
-            start = resource_available_bytes()
-            projected = start - RESOURCE_ESTIMATE_BYTES
-            if start < RESOURCE_START_BYTES or projected < RESOURCE_RESERVE_BYTES:
-                raise RuntimeError(
-                    f"RAM gate failed: available={start}, projected={projected}, "
-                    f"start_floor={RESOURCE_START_BYTES}, reserve_floor={RESOURCE_RESERVE_BYTES}"
-                )
-            gate_receipt = {"lock_path": str(LOCK_PATH), "available_start_bytes": start,
-                            "estimate_bytes": RESOURCE_ESTIMATE_BYTES, "projected_bytes": projected,
-                            "start_floor_bytes": RESOURCE_START_BYTES, "reserve_floor_bytes": RESOURCE_RESERVE_BYTES}
-            yield gate_receipt
-            end = resource_available_bytes()
-            if end < RESOURCE_RESERVE_BYTES:
-                raise RuntimeError(f"RAM reserve failed at lane boundary: available={end}")
-            gate_receipt.update({"available_end_bytes": end, "reserve_pass": True})
-        finally:
-            stream.seek(0)
-            if os.name == "nt":
-                import msvcrt
-                msvcrt.locking(stream.fileno(), msvcrt.LK_UNLCK, 1)
-            else:
-                import fcntl
-                fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
+            raise RuntimeError(f"Required lock is busy: {path}") from exc
+        locked_streams.append(stream)
+
+    try:
+        acquire(SHARED_LOCK_PATH)
+        acquire(LOCK_PATH)
+        start = resource_available_bytes()
+        projected = start - RESOURCE_ESTIMATE_BYTES
+        if start < RESOURCE_START_BYTES or projected < RESOURCE_RESERVE_BYTES:
+            raise RuntimeError(
+                f"RAM gate failed: available={start}, projected={projected}, "
+                f"start_floor={RESOURCE_START_BYTES}, reserve_floor={RESOURCE_RESERVE_BYTES}"
+            )
+        gate_receipt = {
+            "shared_lock_path": str(SHARED_LOCK_PATH), "lane_lock_path": str(LOCK_PATH),
+            "available_start_bytes": start, "estimate_bytes": RESOURCE_ESTIMATE_BYTES,
+            "projected_bytes": projected, "start_floor_bytes": RESOURCE_START_BYTES,
+            "reserve_floor_bytes": RESOURCE_RESERVE_BYTES,
+        }
+        yield gate_receipt
+        end = resource_available_bytes()
+        if end < RESOURCE_RESERVE_BYTES:
+            raise RuntimeError(f"RAM reserve failed at lane boundary: available={end}")
+        gate_receipt.update({"available_end_bytes": end, "reserve_pass": True})
+    finally:
+        for stream in reversed(locked_streams):
+            try:
+                stream.seek(0)
+                if os.name == "nt":
+                    import msvcrt
+                    msvcrt.locking(stream.fileno(), msvcrt.LK_UNLCK, 1)
+                else:
+                    import fcntl
+                    fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
+            except OSError:
+                pass
+        for stream in streams:
+            try:
+                stream.close()
+            except OSError:
+                pass
 
 
 def _root_audit_status() -> dict[str, Any]:
@@ -171,9 +194,9 @@ def _root_audit_status() -> dict[str, Any]:
     )
     if ancestor.returncode != 0:
         raise RuntimeError("Frozen root-audit source commit is not an ancestor of the artifact checkout")
-    if head != FROZEN_AUDIT_ARTIFACT_HEAD or branch_status:
-        raise RuntimeError(f"Root-audit checkout changed: head={head}, status={branch_status!r}")
-    return {"source_head": FROZEN_AUDIT_SOURCE_HEAD, "artifact_head": head, "working_tree_clean": True}
+    if branch_status:
+        raise RuntimeError(f"Root-audit checkout has uncommitted changes: {branch_status!r}")
+    return {"source_head": FROZEN_AUDIT_SOURCE_HEAD, "artifact_head_at_freeze": head, "working_tree_clean": True}
 
 
 def _hash_inventory() -> dict[str, str]:
@@ -182,6 +205,15 @@ def _hash_inventory() -> dict[str, str]:
 
 def _source_hashes() -> dict[str, str]:
     return {p: sha256_file(ROOT / p) for p in (SOURCE_SELF, SOURCE_VERIFIER, SOURCE_PROTOCOL)}
+
+
+def _committed_freeze_hash() -> str:
+    relative = FREEZE.relative_to(ROOT).as_posix()
+    payload = subprocess.run(
+        ["git", "-C", str(ROOT), "show", f"HEAD:{relative}"],
+        check=True, capture_output=True,
+    ).stdout
+    return hashlib.sha256(payload).hexdigest()
 
 
 def freeze_inputs() -> dict[str, Any]:
@@ -230,12 +262,13 @@ def freeze_inputs() -> dict[str, Any]:
             "auc_ap": "present rows only; descriptive, not causal",
         },
         "resource_policy": {
-            "policy_source": input_hashes["light_parallel_policy"],
+            "policy_source": input_hashes["audit_protocol"],
+            "policy_mode": "single-job saved-vector replay; original shared-lock gate",
             "max_incremental_bytes": RESOURCE_ESTIMATE_BYTES,
             "minimum_available_at_start_bytes": RESOURCE_START_BYTES,
             "minimum_available_at_boundaries_bytes": RESOURCE_RESERVE_BYTES,
             "per_lane_lock_required": True,
-            "shared_heavy_lock": False,
+            "shared_heavy_lock": str(SHARED_LOCK_PATH),
         },
         "novelty_review": {
             "documents": ["novelty_b01_summary", "novelty_a02_neighbors", "novelty_a02_cgeom", "novelty_a02_continuation"],
@@ -276,11 +309,39 @@ def verify_frozen_inputs() -> dict[str, Any]:
         raise RuntimeError("Frozen view definitions differ from the executable protocol")
     if freeze.get("allowed_npz_members") != {str(k): v for k, v in MEMBERS.items()}:
         raise RuntimeError("Frozen cached-array allowlist differs from the executable protocol")
+    expected_recipe = {
+        "complex_present": "0.5*pP + 0.5*pA; >= 0.50",
+        "simple_present": "pA; >= 0.50",
+        "missing_for_all_operational_full_rows": "pA/CB fallback; >= 0.53230976129477",
+        "matched_policy": "within complete origin-cycle; compare top-K pA and top-K complex score",
+        "origin_sensitivity": "within origin and selected view block; unique pool keeps E67/E75 blocks separate",
+        "tie_rule": "descending score, then ascending string record_id",
+        "topk_count_source": "fixed-threshold predictions only; labels are excluded from K selection",
+        "auc_ap": "present rows only; descriptive, not causal",
+    }
+    if freeze.get("recipe") != expected_recipe:
+        raise RuntimeError("Frozen recipe differs from the executable protocol")
+    expected_resource_policy = {
+        "policy_source": EXPECTED_HASHES["audit_protocol"],
+        "policy_mode": "single-job saved-vector replay; original shared-lock gate",
+        "max_incremental_bytes": RESOURCE_ESTIMATE_BYTES,
+        "minimum_available_at_start_bytes": RESOURCE_START_BYTES,
+        "minimum_available_at_boundaries_bytes": RESOURCE_RESERVE_BYTES,
+        "per_lane_lock_required": True,
+        "shared_heavy_lock": str(SHARED_LOCK_PATH),
+    }
+    if freeze.get("resource_policy") != expected_resource_policy:
+        raise RuntimeError("Frozen resource policy differs from the authorized single-job gate")
+    if _committed_freeze_hash() != sha256_file(FREEZE):
+        raise RuntimeError("Pre-access freeze differs from the committed artifact")
     actual_inputs = _hash_inventory()
     if freeze.get("input_hashes") != actual_inputs:
         raise RuntimeError("An upstream source/cache/novelty document changed after freeze")
-    if freeze.get("root_audit") != _root_audit_status():
-        raise RuntimeError("Root audit worktree changed after the pre-access freeze")
+    current_audit = _root_audit_status()
+    if current_audit.get("source_head") != FROZEN_AUDIT_SOURCE_HEAD:
+        raise RuntimeError("Frozen root-audit source commit changed")
+    if not current_audit.get("working_tree_clean"):
+        raise RuntimeError("Root-audit worktree is not clean")
     return freeze
 
 

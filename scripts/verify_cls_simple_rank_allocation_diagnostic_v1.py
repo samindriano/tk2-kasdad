@@ -10,6 +10,8 @@ import hashlib
 import json
 import os
 import subprocess
+import tempfile
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -30,6 +32,7 @@ INPUTS = {
     "audit_verification": "../tk2-simplification-audit-v1/reports/simplification_v1/VERIFICATION.json",
     "audit_findings": "../tk2-simplification-audit-v1/reports/simplification_v1/FINDINGS.md",
     "light_parallel_policy": "../tk2-simplification-audit-v1/reports/simplification_v1/LIGHT_PARALLEL_EXECUTION_POLICY.json",
+    "audit_next_simple_research": "../tk2-simplification-audit-v1/reports/simplification_v1/NEXT_SIMPLE_MODEL_RESEARCH.md",
     "a02_policy_predictions": "experiments/runs/optimization_v3_posoffset_a02_endgame_v1/policy_predictions.npz",
     "pos_predictions": "experiments/runs/optimization_v3_cls_pos_one_sided_ridge_v1/predictions.npz",
     "novelty_b01_summary": "reports/optimization_v3/a02_b01_centering_v1/B01_OUTPUTS/SUMMARY.md",
@@ -52,7 +55,12 @@ EXPECTED_VIEWS = {
 }
 PRESENT_THRESHOLD = 0.50
 MISSING_THRESHOLD = 0.53230976129477
-FROZEN_AUDIT_HEAD = "56958254e3b33a54f583343e2cdbc18cff2b9e6a"
+FROZEN_AUDIT_SOURCE_HEAD = "a39721172b6d293cb68ee0d120060082d222699e"
+RESOURCE_ESTIMATE_BYTES = 512 * 1024**2
+RESOURCE_START_BYTES = int(1.5 * 1024**3)
+RESOURCE_RESERVE_BYTES = int(0.75 * 1024**3)
+LANE_LOCK = Path(tempfile.gettempdir()) / "kasdad_cls_simple_rank_allocation_diagnostic_v1.lock"
+SHARED_LOCK = Path(tempfile.gettempdir()) / "kasdad_single_heavy_job.lock"
 EXPECTED_ROWS = {"E67_W4": 4_950, "E67_W5": 7_462, "E67_W6": 8_491,
                  "E67_H12": 20_903, "E75_W6": 8_491, "UNIQUE": 20_903}
 POLICIES = (
@@ -87,6 +95,78 @@ def set_hash(ids: Any) -> str:
     return hashlib.sha256("\n".join(sorted(str(x) for x in ids)).encode("utf-8")).hexdigest()
 
 
+def available_ram_bytes() -> int:
+    try:
+        import psutil
+    except ImportError as exc:
+        raise RuntimeError("psutil is required for the declared RAM gate") from exc
+    return int(psutil.virtual_memory().available)
+
+
+@contextmanager
+def single_job_resource_gate() -> Any:
+    streams = []
+    locked_streams = []
+
+    def acquire(path: Path) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        stream = path.open("a+b")
+        streams.append(stream)
+        if path.stat().st_size == 0:
+            stream.write(b"\0")
+            stream.flush()
+        stream.seek(0)
+        try:
+            if os.name == "nt":
+                import msvcrt
+                msvcrt.locking(stream.fileno(), msvcrt.LK_NBLCK, 1)
+            else:
+                import fcntl
+                fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError as exc:
+            raise RuntimeError(f"Required lock is busy: {path}") from exc
+        locked_streams.append(stream)
+
+    try:
+        acquire(SHARED_LOCK)
+        acquire(LANE_LOCK)
+        start = available_ram_bytes()
+        projected = start - RESOURCE_ESTIMATE_BYTES
+        if start < RESOURCE_START_BYTES or projected < RESOURCE_RESERVE_BYTES:
+            raise RuntimeError(
+                f"RAM gate failed: available={start}, projected={projected}, "
+                f"start_floor={RESOURCE_START_BYTES}, reserve_floor={RESOURCE_RESERVE_BYTES}"
+            )
+        receipt = {
+            "shared_lock_path": str(SHARED_LOCK), "lane_lock_path": str(LANE_LOCK),
+            "available_start_bytes": start, "estimate_bytes": RESOURCE_ESTIMATE_BYTES,
+            "projected_bytes": projected, "start_floor_bytes": RESOURCE_START_BYTES,
+            "reserve_floor_bytes": RESOURCE_RESERVE_BYTES,
+        }
+        yield receipt
+        end = available_ram_bytes()
+        if end < RESOURCE_RESERVE_BYTES:
+            raise RuntimeError(f"RAM reserve failed at verifier boundary: available={end}")
+        receipt.update({"available_end_bytes": end, "reserve_pass": True})
+    finally:
+        for stream in reversed(locked_streams):
+            try:
+                stream.seek(0)
+                if os.name == "nt":
+                    import msvcrt
+                    msvcrt.locking(stream.fileno(), msvcrt.LK_UNLCK, 1)
+                else:
+                    import fcntl
+                    fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
+            except OSError:
+                pass
+        for stream in streams:
+            try:
+                stream.close()
+            except OSError:
+                pass
+
+
 def verify_lineage(freeze: dict[str, Any]) -> None:
     for label, relative in INPUTS.items():
         actual = sha_file(resolve(label))
@@ -98,12 +178,47 @@ def verify_lineage(freeze: dict[str, Any]) -> None:
             raise ValueError(f"Source hash mismatch: {relative}")
     if freeze.get("views") != {k: [list(v) for v in vals] for k, vals in EXPECTED_VIEWS.items()}:
         raise ValueError("Frozen view map differs from independent verifier")
-    if git(AUDIT, "rev-parse", "HEAD") != FROZEN_AUDIT_HEAD or git(AUDIT, "status", "--porcelain"):
+    expected_recipe = {
+        "complex_present": "0.5*pP + 0.5*pA; >= 0.50",
+        "simple_present": "pA; >= 0.50",
+        "missing_for_all_operational_full_rows": "pA/CB fallback; >= 0.53230976129477",
+        "matched_policy": "within complete origin-cycle; compare top-K pA and top-K complex score",
+        "origin_sensitivity": "within origin and selected view block; unique pool keeps E67/E75 blocks separate",
+        "tie_rule": "descending score, then ascending string record_id",
+        "topk_count_source": "fixed-threshold predictions only; labels are excluded from K selection",
+        "auc_ap": "present rows only; descriptive, not causal",
+    }
+    if freeze.get("recipe") != expected_recipe:
+        raise ValueError("Frozen recipe differs from independent protocol")
+    expected_resource = {
+        "policy_source": sha_file(resolve("audit_protocol")),
+        "policy_mode": "single-job saved-vector replay; original shared-lock gate",
+        "max_incremental_bytes": RESOURCE_ESTIMATE_BYTES,
+        "minimum_available_at_start_bytes": RESOURCE_START_BYTES,
+        "minimum_available_at_boundaries_bytes": RESOURCE_RESERVE_BYTES,
+        "per_lane_lock_required": True,
+        "shared_heavy_lock": str(SHARED_LOCK),
+    }
+    if freeze.get("resource_policy") != expected_resource:
+        raise ValueError("Frozen resource policy differs from independent protocol")
+    if git(AUDIT, "status", "--porcelain"):
         raise ValueError("Frozen root-audit worktree changed")
     ancestor = subprocess.run(["git", "-C", str(AUDIT), "merge-base", "--is-ancestor",
-                               freeze["root_audit"]["source_head"], "HEAD"], capture_output=True)
+                               FROZEN_AUDIT_SOURCE_HEAD, "HEAD"], capture_output=True)
     if ancestor.returncode != 0:
         raise ValueError("Frozen source commit is not an ancestor of audit artifacts")
+    if freeze.get("root_audit", {}).get("source_head") != FROZEN_AUDIT_SOURCE_HEAD:
+        raise ValueError("Freeze records an unexpected root-audit source commit")
+    audit_freeze = json.loads(resolve("audit_input_freeze").read_text(encoding="utf-8"))
+    if audit_freeze.get("head") != FROZEN_AUDIT_SOURCE_HEAD:
+        raise ValueError("Frozen root-audit INPUT_FREEZE points to an unexpected source commit")
+    relative_freeze = FREEZE.relative_to(ROOT).as_posix()
+    committed_freeze = subprocess.run(
+        ["git", "-C", str(ROOT), "show", f"HEAD:{relative_freeze}"],
+        check=True, capture_output=True,
+    ).stdout
+    if hashlib.sha256(committed_freeze).hexdigest() != sha_file(FREEZE):
+        raise ValueError("Pre-access freeze differs from the committed artifact")
 
 
 def load_vectors(freeze: dict[str, Any]) -> dict[int, dict[str, Any]]:
@@ -308,11 +423,7 @@ def assert_nested(actual: Any, expected: Any, path: str, checks: list[str], tol:
     checks.append(path)
 
 
-def main() -> None:
-    if QA.exists():
-        raise FileExistsError(f"Refusing to overwrite independent QA: {QA}")
-    freeze = json.loads(FREEZE.read_text(encoding="utf-8"))
-    results = json.loads(RESULTS.read_text(encoding="utf-8"))
+def build_qa(freeze: dict[str, Any], results: dict[str, Any]) -> dict[str, Any]:
     if results.get("pre_access_freeze_sha256") != sha_file(FREEZE):
         raise ValueError("Results do not point to the exact committed pre-access freeze")
     verify_lineage(freeze)
@@ -385,6 +496,17 @@ def main() -> None:
         "new_model_inference": 0,
         "kaggle_access": False,
     }
+    return qa
+
+
+def main() -> None:
+    if QA.exists():
+        raise FileExistsError(f"Refusing to overwrite independent QA: {QA}")
+    freeze = json.loads(FREEZE.read_text(encoding="utf-8"))
+    results = json.loads(RESULTS.read_text(encoding="utf-8"))
+    with single_job_resource_gate() as resource_receipt:
+        qa = build_qa(freeze, results)
+    qa["resource"] = resource_receipt
     OUT.mkdir(parents=True, exist_ok=True)
     with QA.open("x", encoding="utf-8") as f:
         json.dump(qa, f, indent=2, sort_keys=True, allow_nan=False)

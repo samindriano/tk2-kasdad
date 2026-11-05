@@ -73,10 +73,12 @@ duplicate only if the same POS/A02 matched-count estimand and recipe is found.
 ## Resource, reproducibility, and outputs
 
 Build the source and freeze its hashes, all input hashes, view definitions,
-thresholds, and tie rule before opening cached vectors. Use the per-lane lock,
-at least 2.5 GiB available before reading, at most 512 MiB incremental
-estimate, and at least 1 GiB available at boundaries. Do not acquire the shared
-heavy-fit lock for this small cached-vector job.
+thresholds, and tie rule before opening cached vectors. This run is a single
+small job, so use the original saved-replay gate: acquire both the shared
+`kasdad_single_heavy_job.lock` and the per-lane lock, require at least 1.5 GiB
+available before reading, budget up to 512 MiB incremental use, and preserve at
+least 0.75 GiB available at boundaries. Do not start if either lock or RAM gate
+fails. Do not lower a threshold or remove another process's lock.
 
 Run `python -m scripts.cls_simple_rank_allocation_diagnostic_v1 --freeze`
 before calculation, then commit that freeze. Run `--calculate`, run the
