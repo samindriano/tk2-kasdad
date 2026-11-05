@@ -19,10 +19,11 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 AUDIT = ROOT.parent / "tk2-simplification-audit-v1"
-OUT = ROOT / "reports/optimization_v3/cls_simple_rank_allocation_diagnostic_v1"
+OUT = ROOT / "reports/optimization_v3/cls_simple_rank_allocation_diagnostic_v1_corrected"
 FREEZE = OUT / "PRE_ACCESS_FREEZE.json"
 RESULTS = OUT / "RESULTS.json"
 QA = OUT / "INDEPENDENT_QA.json"
+DIAGNOSTIC_ID = "CLS_SIMPLE_RANK_ALLOCATION_DIAGNOSTIC_V1_CORRECTED"
 INPUTS = {
     "audit_input_freeze": "../tk2-simplification-audit-v1/reports/simplification_v1/INPUT_FREEZE.json",
     "audit_protocol": "../tk2-simplification-audit-v1/reports/simplification_v1/PROTOCOL.md",
@@ -43,7 +44,7 @@ INPUTS = {
 EXPECTED_SOURCE_PATHS = (
     "scripts/cls_simple_rank_allocation_diagnostic_v1.py",
     "scripts/verify_cls_simple_rank_allocation_diagnostic_v1.py",
-    "reports/optimization_v3/cls_simple_rank_allocation_diagnostic_v1/PROTOCOL.md",
+    "reports/optimization_v3/cls_simple_rank_allocation_diagnostic_v1_corrected/PROTOCOL.md",
 )
 EXPECTED_VIEWS = {
     "E67_W4": [(67, 68, 71)],
@@ -178,6 +179,8 @@ def verify_lineage(freeze: dict[str, Any]) -> None:
             raise ValueError(f"Source hash mismatch: {relative}")
     if freeze.get("views") != {k: [list(v) for v in vals] for k, vals in EXPECTED_VIEWS.items()}:
         raise ValueError("Frozen view map differs from independent verifier")
+    if freeze.get("diagnostic_id") != DIAGNOSTIC_ID:
+        raise ValueError("Freeze identifies a different diagnostic version")
     expected_recipe = {
         "complex_present": "0.5*pP + 0.5*pA; >= 0.50",
         "simple_present": "pA; >= 0.50",
@@ -319,10 +322,10 @@ def independently_rebuild(view: dict[str, Any]) -> dict[str, Any]:
     preds = {
         "complex_threshold": np.where(missing, pa >= MISSING_THRESHOLD, mix >= PRESENT_THRESHOLD),
         "simple_threshold": np.where(missing, pa >= MISSING_THRESHOLD, pa >= PRESENT_THRESHOLD),
-        "simple_topk_cycle_at_complex_count": np.zeros(len(ids), dtype=bool),
-        "complex_topk_cycle_at_simple_count": np.zeros(len(ids), dtype=bool),
-        "simple_topk_origin_at_complex_count": np.zeros(len(ids), dtype=bool),
-        "complex_topk_origin_at_simple_count": np.zeros(len(ids), dtype=bool),
+        "simple_topk_cycle_at_complex_count": (missing & (pa >= MISSING_THRESHOLD)).copy(),
+        "complex_topk_cycle_at_simple_count": (missing & (pa >= MISSING_THRESHOLD)).copy(),
+        "simple_topk_origin_at_complex_count": (missing & (pa >= MISSING_THRESHOLD)).copy(),
+        "complex_topk_origin_at_simple_count": (missing & (pa >= MISSING_THRESHOLD)).copy(),
     }
     cycle_details, origin_details = [], []
 
@@ -362,8 +365,22 @@ def independently_rebuild(view: dict[str, Any]) -> dict[str, Any]:
         origin_groups.append((f"E{origin}_origin_block", ix, [origin]))
     origin_details = apply("origin", origin_groups)
 
+    missing_route = missing & (pa >= MISSING_THRESHOLD)
+    for name in POLICIES:
+        if not np.array_equal(preds[name][missing], missing_route[missing]):
+            raise AssertionError(f"Missing fallback changed before metric computation for {name}")
     metrics_full = {n: independent_metric(y, preds[n]) for n in POLICIES}
     metrics_present = {n: independent_metric(y[present], preds[n][present]) for n in POLICIES}
+    missing_route_positive = int(np.sum(missing_route))
+    for name in POLICIES:
+        expected_full_positive = int(np.sum(present & preds[name])) + missing_route_positive
+        if metrics_full[name]["predicted_positive"] != expected_full_positive:
+            raise AssertionError(f"Full-row positive count does not close for {name}")
+        cm = metrics_full[name]["confusion"]
+        if (cm["tp"] + cm["fn"] != int(np.sum(y == 1))
+                or cm["fp"] + cm["tn"] != int(np.sum(y == 0))
+                or cm["tp"] + cm["fp"] != metrics_full[name]["predicted_positive"]):
+            raise AssertionError(f"Full-row confusion matrix does not close for {name}")
     psets = {n: {str(x) for x in ids[present & preds[n]]} for n in POLICIES}
     complex_set, simple_set = psets["complex_threshold"], psets["simple_threshold"]
     overlaps = {}
@@ -397,7 +414,94 @@ def independently_rebuild(view: dict[str, Any]) -> dict[str, Any]:
         "matching": {"per_cycle": cycle_details, "origin_level_sensitivity": origin_details},
         "ordered_ids_sha256": ordered_hash(ids), "unique_ids": len(set(ids.tolist())),
         "rows": len(ids), "present": int(present.sum()), "missing": int(missing.sum()),
+        "missing_route_positive": missing_route_positive,
     }
+
+
+def independent_synthetic_missing_route_fixture() -> dict[str, Any]:
+    """Hand-written independent replay for missing routes, K edges, ties, and CM closure."""
+    import numpy as np
+
+    ids = np.asarray(["m_pos", "m_neg", "a0", "a1", "b0", "b1", "m2_pos",
+                      "tie_b", "tie_a", "tie_c", "ctie_b", "ctie_a", "ctie_c"])
+    origins = np.asarray([67] * 7 + [75] * 6, dtype=np.int16)
+    cycles = np.asarray([1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4], dtype=np.int64)
+    missing = np.asarray([True, True, False, False, False, False, True,
+                          False, False, False, False, False, False])
+    y = np.asarray([1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1], dtype=np.int8)
+    pa = np.asarray([0.8, 0.4, 0.2, 0.3, 0.8, 0.9, 0.9,
+                     0.6, 0.6, 0.4, 0.6, 0.4, 0.4], dtype=np.float64)
+    pp = np.asarray([0.8, 0.4, 0.2, 0.3, 0.8, 0.9, 0.9,
+                     0.8, 0.3, 0.2, 0.8, 1.0, 0.2], dtype=np.float64)
+    mix = 0.5 * pa + 0.5 * pp
+    present = ~missing
+    fallback_pos = missing & (pa >= MISSING_THRESHOLD)
+    expected_missing_ids = sorted(ids[fallback_pos].tolist())
+    predicted = {
+        "complex_threshold": np.where(missing, pa >= MISSING_THRESHOLD, mix >= PRESENT_THRESHOLD),
+        "simple_threshold": np.where(missing, pa >= MISSING_THRESHOLD, pa >= PRESENT_THRESHOLD),
+        "simple_topk_cycle_at_complex_count": fallback_pos.copy(),
+        "complex_topk_cycle_at_simple_count": fallback_pos.copy(),
+        "simple_topk_origin_at_complex_count": fallback_pos.copy(),
+        "complex_topk_origin_at_simple_count": fallback_pos.copy(),
+    }
+    cycle_rows: dict[tuple[int, int], list[int]] = {}
+    for i, (origin, cycle) in enumerate(zip(origins, cycles)):
+        cycle_rows.setdefault((int(origin), int(cycle)), []).append(i)
+    details = {}
+    for (origin, cycle), rows in cycle_rows.items():
+        candidates = [i for i in rows if present[i]]
+        k_complex = sum(mix[i] >= PRESENT_THRESHOLD for i in candidates)
+        k_simple = sum(pa[i] >= PRESENT_THRESHOLD for i in candidates)
+        top_simple, simple_ties = independent_topk(candidates, pa, ids, k_complex)
+        top_complex, complex_ties = independent_topk(candidates, mix, ids, k_simple)
+        predicted["simple_topk_cycle_at_complex_count"][top_simple] = True
+        predicted["complex_topk_cycle_at_simple_count"][top_complex] = True
+        details[(origin, cycle)] = (k_complex, k_simple, len(candidates), simple_ties, complex_ties,
+                                    {str(ids[i]) for i in top_simple}, {str(ids[i]) for i in top_complex})
+    for origin in sorted(set(int(x) for x in origins.tolist())):
+        rows = [i for i, o in enumerate(origins) if int(o) == origin]
+        candidates = [i for i in rows if present[i]]
+        k_complex = sum(mix[i] >= PRESENT_THRESHOLD for i in candidates)
+        k_simple = sum(pa[i] >= PRESENT_THRESHOLD for i in candidates)
+        top_simple, _ = independent_topk(candidates, pa, ids, k_complex)
+        top_complex, _ = independent_topk(candidates, mix, ids, k_simple)
+        predicted["simple_topk_origin_at_complex_count"][top_simple] = True
+        predicted["complex_topk_origin_at_simple_count"][top_complex] = True
+
+    checks = []
+    if expected_missing_ids != ["m2_pos", "m_pos"]:
+        raise AssertionError("Synthetic fallback fixture expected labels are malformed")
+    for name in POLICIES:
+        actual_ids = sorted(ids[missing & predicted[name]].tolist())
+        if actual_ids != expected_missing_ids:
+            raise AssertionError(f"{name} missing-bit labels differ: {actual_ids}")
+        metric = independent_metric(y, predicted[name])
+        present_positive = int(np.sum(present & predicted[name]))
+        if metric["predicted_positive"] != present_positive + len(expected_missing_ids):
+            raise AssertionError(f"{name} full count != K-present + fixed missing positives")
+        cm = metric["confusion"]
+        if (cm["tp"] + cm["fn"] != int(np.sum(y == 1))
+                or cm["fp"] + cm["tn"] != int(np.sum(y == 0))
+                or cm["tp"] + cm["fp"] != metric["predicted_positive"]):
+            raise AssertionError(f"{name} confusion-matrix closure failed")
+        checks.append(f"synthetic.{name}.missing_labels_and_confusion_closure")
+    if details[(67, 1)][:3] != (0, 0, 2):
+        raise AssertionError("Synthetic K=0 group failed")
+    if details[(67, 2)][:3] != (2, 2, 2):
+        raise AssertionError("Synthetic K=n group failed")
+    if "tie_a" not in details[(75, 3)][5] or "tie_b" in details[(75, 3)][5]:
+        raise AssertionError("Synthetic pA tie did not resolve by ascending ID")
+    if "ctie_a" not in details[(75, 4)][6] or "ctie_b" in details[(75, 4)][6]:
+        raise AssertionError("Synthetic complex-score tie did not resolve by ascending ID")
+    if len(set(int(x) for x in origins.tolist())) != 2:
+        raise AssertionError("Synthetic disjoint origins were not represented")
+    checks.extend(["synthetic.K_zero", "synthetic.K_equals_n", "synthetic.pA_tie_order",
+                   "synthetic.complex_tie_order", "synthetic.disjoint_origins"])
+    return {"status": "PASS", "checks": checks, "missing_predicted_ids": expected_missing_ids,
+            "policies_checked": len(POLICIES), "k_zero_cycle": [67, 1],
+            "k_equals_n_cycle": [67, 2], "tie_cycles": [[75, 3], [75, 4]],
+            "disjoint_origins": 2}
 
 
 def assert_nested(actual: Any, expected: Any, path: str, checks: list[str], tol: float = 1e-12) -> None:
@@ -426,9 +530,12 @@ def assert_nested(actual: Any, expected: Any, path: str, checks: list[str], tol:
 def build_qa(freeze: dict[str, Any], results: dict[str, Any]) -> dict[str, Any]:
     if results.get("pre_access_freeze_sha256") != sha_file(FREEZE):
         raise ValueError("Results do not point to the exact committed pre-access freeze")
+    if results.get("diagnostic_id") != DIAGNOSTIC_ID:
+        raise ValueError("Results identify a different diagnostic version")
+    synthetic = independent_synthetic_missing_route_fixture()
     verify_lineage(freeze)
     data = load_vectors(freeze)
-    checks: list[str] = []
+    checks: list[str] = list(synthetic["checks"])
     overlap_h12_e75 = None
     rebuilt = {}
     for name, segments in EXPECTED_VIEWS.items():
@@ -462,6 +569,8 @@ def build_qa(freeze: dict[str, Any], results: dict[str, Any]) -> dict[str, Any]:
         assert_nested(stored["denominator"]["rows"], expected["rows"], f"{name}.rows", checks)
         assert_nested(stored["denominator"]["present"], expected["present"], f"{name}.present", checks)
         assert_nested(stored["denominator"]["missing"], expected["missing"], f"{name}.missing", checks)
+        assert_nested(stored["denominator"]["missing_route_positive"], expected["missing_route_positive"],
+                      f"{name}.missing_route_positive", checks)
         assert_nested(stored["denominator"]["unique_ids"], expected["unique_ids"], f"{name}.unique_ids", checks)
         # Matched policies must preserve counts at every declared matching block.
         for group in expected["matching"]["per_cycle"]:
@@ -474,7 +583,7 @@ def build_qa(freeze: dict[str, Any], results: dict[str, Any]) -> dict[str, Any]:
     qa = {
         "schema_version": 1,
         "status": "PASS",
-        "diagnostic_id": "CLS_SIMPLE_RANK_ALLOCATION_DIAGNOSTIC_V1",
+        "diagnostic_id": DIAGNOSTIC_ID,
         "verified_at_utc": datetime.now(timezone.utc).isoformat(),
         "verifier": "standalone; no producer import",
         "pre_access_freeze_sha256": sha_file(FREEZE),
@@ -489,6 +598,9 @@ def build_qa(freeze: dict[str, Any], results: dict[str, Any]) -> dict[str, Any]:
         "independent_confusion_count_replay": True,
         "independent_stable_topk_replay": True,
         "ID_order_tie_and_overlap_checks": True,
+        "synthetic_missing_route_fixture": synthetic,
+        "missing_route_identical_for_all_policies": True,
+        "full_row_positive_count_and_confusion_closure": True,
         "raw_train_label_access": False,
         "test_or_sample_access": False,
         "e79_access": False,

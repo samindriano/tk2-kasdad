@@ -23,13 +23,14 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 AUDIT = ROOT.parent / "tk2-simplification-audit-v1"
-OUT = ROOT / "reports/optimization_v3/cls_simple_rank_allocation_diagnostic_v1"
+OUT = ROOT / "reports/optimization_v3/cls_simple_rank_allocation_diagnostic_v1_corrected"
 FREEZE = OUT / "PRE_ACCESS_FREEZE.json"
 RESULTS = OUT / "RESULTS.json"
 QA = OUT / "INDEPENDENT_QA.json"
+DIAGNOSTIC_ID = "CLS_SIMPLE_RANK_ALLOCATION_DIAGNOSTIC_V1_CORRECTED"
 SOURCE_SELF = "scripts/cls_simple_rank_allocation_diagnostic_v1.py"
 SOURCE_VERIFIER = "scripts/verify_cls_simple_rank_allocation_diagnostic_v1.py"
-SOURCE_PROTOCOL = "reports/optimization_v3/cls_simple_rank_allocation_diagnostic_v1/PROTOCOL.md"
+SOURCE_PROTOCOL = "reports/optimization_v3/cls_simple_rank_allocation_diagnostic_v1_corrected/PROTOCOL.md"
 
 RELATIVE_FILES = {
     "audit_input_freeze": "../tk2-simplification-audit-v1/reports/simplification_v1/INPUT_FREEZE.json",
@@ -241,7 +242,7 @@ def freeze_inputs() -> dict[str, Any]:
     freeze = {
         "schema_version": 1,
         "status": "FROZEN_BEFORE_CACHED_VECTOR_ACCESS",
-        "diagnostic_id": "CLS_SIMPLE_RANK_ALLOCATION_DIAGNOSTIC_V1",
+        "diagnostic_id": DIAGNOSTIC_ID,
         "frozen_at_utc": datetime.now(timezone.utc).isoformat(),
         "source_commit": root_head,
         "branch": branch,
@@ -302,6 +303,8 @@ def verify_frozen_inputs() -> dict[str, Any]:
     freeze = json.loads(FREEZE.read_text(encoding="utf-8"))
     if freeze.get("status") != "FROZEN_BEFORE_CACHED_VECTOR_ACCESS":
         raise RuntimeError("Unexpected pre-access freeze status")
+    if freeze.get("diagnostic_id") != DIAGNOSTIC_ID:
+        raise RuntimeError("Freeze identifies a different diagnostic version")
     if freeze.get("source_hashes") != _source_hashes():
         raise RuntimeError("Diagnostic source changed after the pre-access freeze")
     expected_views = {key: [list(segment) for segment in segments] for key, segments in VIEWS.items()}
@@ -480,6 +483,20 @@ def overlap_metrics(ids: Any, present: Any, predictions: dict[str, Any]) -> dict
     return output
 
 
+def initialize_policy_predictions(missing: Any, p_a: Any, complex_score: Any) -> dict[str, Any]:
+    import numpy as np
+
+    missing_route = missing & (p_a >= MISSING_THRESHOLD)
+    return {
+        "complex_threshold": np.where(missing, p_a >= MISSING_THRESHOLD, complex_score >= PRESENT_THRESHOLD),
+        "simple_threshold": np.where(missing, p_a >= MISSING_THRESHOLD, p_a >= PRESENT_THRESHOLD),
+        "simple_topk_cycle_at_complex_count": missing_route.copy(),
+        "complex_topk_cycle_at_simple_count": missing_route.copy(),
+        "simple_topk_origin_at_complex_count": missing_route.copy(),
+        "complex_topk_origin_at_simple_count": missing_route.copy(),
+    }
+
+
 def build_policy_predictions(view: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
     import numpy as np
 
@@ -487,14 +504,7 @@ def build_policy_predictions(view: dict[str, Any]) -> tuple[dict[str, Any], dict
     missing, y, p_a, p_p = view["missing"], view["y"], view["pA"], view["pP"]
     present = ~missing
     complex_score = 0.5 * p_p + 0.5 * p_a
-    predictions = {
-        "complex_threshold": np.where(missing, p_a >= MISSING_THRESHOLD, complex_score >= PRESENT_THRESHOLD),
-        "simple_threshold": np.where(missing, p_a >= MISSING_THRESHOLD, p_a >= PRESENT_THRESHOLD),
-        "simple_topk_cycle_at_complex_count": np.zeros(len(ids), dtype=bool),
-        "complex_topk_cycle_at_simple_count": np.zeros(len(ids), dtype=bool),
-        "simple_topk_origin_at_complex_count": np.zeros(len(ids), dtype=bool),
-        "complex_topk_origin_at_simple_count": np.zeros(len(ids), dtype=bool),
-    }
+    predictions = initialize_policy_predictions(missing, p_a, complex_score)
     cycle_details: list[dict[str, Any]] = []
     origin_details: list[dict[str, Any]] = []
 
@@ -532,11 +542,24 @@ def build_policy_predictions(view: dict[str, Any]) -> tuple[dict[str, Any], dict
         ix = np.flatnonzero(origins == origin)
         apply_group(f"E{origin}_origin_block", (int(origin),), ix, "origin")
 
+    expected_missing = missing & (p_a >= MISSING_THRESHOLD)
+    for name in POLICY_NAMES:
+        if not np.array_equal(predictions[name][missing], expected_missing[missing]):
+            raise RuntimeError(f"Missing-stream fallback changed before metric access for {name}")
     metrics = {}
     present_metrics = {}
+    missing_route_positive = int(expected_missing.sum())
     for name in POLICY_NAMES:
         metrics[name] = confusion_metrics(y, predictions[name])
         present_metrics[name] = confusion_metrics(y[present], predictions[name][present])
+        expected_full_positives = int(np.sum(present & predictions[name])) + missing_route_positive
+        if metrics[name]["predicted_positive"] != expected_full_positives:
+            raise RuntimeError(f"Full-row positive count does not close for {name}")
+        confusion = metrics[name]["confusion"]
+        if (confusion["tp"] + confusion["fn"] != int(np.sum(y == 1))
+                or confusion["fp"] + confusion["tn"] != int(np.sum(y == 0))
+                or confusion["tp"] + confusion["fp"] != metrics[name]["predicted_positive"]):
+            raise RuntimeError(f"Full-row confusion matrix does not close for {name}")
     overlaps = overlap_metrics(ids, present, predictions)
     from sklearn.metrics import average_precision_score, roc_auc_score
     ranking = {
@@ -561,11 +584,71 @@ def build_policy_predictions(view: dict[str, Any]) -> tuple[dict[str, Any], dict
             {"per_cycle": cycle_details, "origin_level_sensitivity": origin_details})
 
 
+def run_synthetic_route_check() -> dict[str, Any]:
+    """Exercise routing, K edge cases, ties, and confusion-count closure without cached inputs."""
+    import numpy as np
+
+    view = {
+        "ids": np.asarray(["m_pos", "m_neg", "a0", "a1", "b0", "b1", "m2_pos",
+                           "tie_b", "tie_a", "tie_c", "ctie_b", "ctie_a", "ctie_c"]),
+        "origins": np.asarray([67] * 7 + [75] * 6, dtype=np.int16),
+        "cycles": np.asarray([1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4], dtype=np.int64),
+        "missing": np.asarray([True, True, False, False, False, False, True,
+                                False, False, False, False, False, False]),
+        "y": np.asarray([1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1], dtype=np.int8),
+        "pA": np.asarray([0.8, 0.4, 0.2, 0.3, 0.8, 0.9, 0.9,
+                           0.6, 0.6, 0.4, 0.6, 0.4, 0.4], dtype=np.float64),
+        "pP": np.asarray([0.8, 0.4, 0.2, 0.3, 0.8, 0.9, 0.9,
+                           0.8, 0.3, 0.2, 0.8, 1.0, 0.2], dtype=np.float64),
+    }
+    base, extras, matching = build_policy_predictions(view)
+    missing = view["missing"]
+    fallback = view["pA"] >= MISSING_THRESHOLD
+    initialized = initialize_policy_predictions(missing, view["pA"], 0.5 * view["pP"] + 0.5 * view["pA"])
+    policy_predictions = {}
+    # Reconstruct the policy outputs independently from the returned metrics via expected invariants.
+    # Direct expected values for all six policies on the two missing examples.
+    for policy in POLICY_NAMES:
+        if not np.array_equal(fallback[missing], np.asarray([True, False, True])):
+            raise AssertionError("Synthetic fixture missing-route labels are malformed")
+        if not np.array_equal(initialized[policy][missing], np.asarray([True, False, True])):
+            raise AssertionError(f"{policy} does not preserve the exact synthetic missing labels")
+        if extras["selection_counts"][policy]["full_positive_count"] - extras["selection_counts"][policy]["present_positive_count"] != 2:
+            raise AssertionError(f"{policy} omitted/changed synthetic missing-route positives")
+        counts = base["operational_full"][policy]
+        if counts["confusion"]["tp"] + counts["confusion"]["fn"] != int(np.sum(view["y"] == 1)):
+            raise AssertionError(f"{policy} positive confusion closure failed")
+        if counts["confusion"]["fp"] + counts["confusion"]["tn"] != int(np.sum(view["y"] == 0)):
+            raise AssertionError(f"{policy} negative confusion closure failed")
+        if counts["confusion"]["tp"] + counts["confusion"]["fp"] != counts["predicted_positive"]:
+            raise AssertionError(f"{policy} predicted-positive confusion closure failed")
+        policy_predictions[policy] = extras["selection_counts"][policy]
+    by_cycle = {(g["key"][0], g["key"][1]): g for g in matching["per_cycle"]}
+    if (by_cycle[(67, 1)]["k_complex"], by_cycle[(67, 1)]["k_simple"]) != (0, 0):
+        raise AssertionError("Synthetic K=0 cycle did not stay empty")
+    if (by_cycle[(67, 2)]["k_complex"], by_cycle[(67, 2)]["k_simple"], by_cycle[(67, 2)]["n_present"]) != (2, 2, 2):
+        raise AssertionError("Synthetic K=n cycle did not select every present row")
+    if by_cycle[(75, 3)]["simple_topk_at_complex_count"]["selected_equal_boundary_score"] != 1:
+        raise AssertionError("Synthetic pA tie boundary was not exercised")
+    if by_cycle[(75, 4)]["complex_topk_at_simple_count"]["selected_equal_boundary_score"] != 1:
+        raise AssertionError("Synthetic complex-score tie boundary was not exercised")
+    if len(matching["origin_level_sensitivity"]) != 2:
+        raise AssertionError("Synthetic origin blocks were not kept separate")
+    return {
+        "status": "PASS", "policies_checked": len(policy_predictions),
+        "missing_rows": int(missing.sum()), "missing_route_positives": 2,
+        "k_zero_cycle": [67, 1], "k_equals_n_cycle": [67, 2],
+        "tie_cycles": [[75, 3], [75, 4]], "disjoint_origin_blocks": 2,
+        "confusion_closure": True,
+    }
+
+
 def calculate() -> dict[str, Any]:
     import numpy as np
 
     if RESULTS.exists():
         raise FileExistsError(f"Refusing to overwrite result: {RESULTS}")
+    run_synthetic_route_check()
     freeze = verify_frozen_inputs()
     with lane_lock_and_ram_gate() as gate_receipt:
         origins = load_origins()
@@ -581,6 +664,7 @@ def calculate() -> dict[str, Any]:
                 "denominator": {
                     "rows": int(len(view["ids"])), "present": int(present.sum()),
                     "missing": int(view["missing"].sum()),
+                    "missing_route_positive": int(np.sum(view["missing"] & (view["pA"] >= MISSING_THRESHOLD))),
                     "actual_positive": int(np.sum(view["y"] == 1)),
                     "actual_negative": int(np.sum(view["y"] == 0)),
                     "ordered_ids_sha256": ordered_ids_hash(view["ids"]),
@@ -598,7 +682,7 @@ def calculate() -> dict[str, Any]:
         result = {
             "schema_version": 1,
             "status": "CALCULATED_PENDING_INDEPENDENT_QA",
-            "diagnostic_id": "CLS_SIMPLE_RANK_ALLOCATION_DIAGNOSTIC_V1",
+            "diagnostic_id": DIAGNOSTIC_ID,
             "pre_access_freeze_sha256": sha256_file(FREEZE),
             "source_commit": freeze["source_commit"],
             "input_hashes": freeze["input_hashes"],
@@ -681,11 +765,14 @@ def generate_plots() -> list[str]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     modes = parser.add_mutually_exclusive_group(required=True)
+    modes.add_argument("--self-check", action="store_true", help="run the hand-written route fixture; no cached inputs")
     modes.add_argument("--freeze", action="store_true", help="hash inputs and rules only; never loads NPZ arrays")
     modes.add_argument("--calculate", action="store_true", help="calculate frozen zero-fit diagnostic")
     modes.add_argument("--plots", action="store_true", help="write at most two plots after independent QA PASS")
     args = parser.parse_args()
-    if args.freeze:
+    if args.self_check:
+        print(json.dumps(run_synthetic_route_check(), indent=2))
+    elif args.freeze:
         freeze_inputs()
     elif args.calculate:
         calculate()
