@@ -426,7 +426,8 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps({"status": "BLOCKED_OR_FAILED", "error_type": type(exc).__name__, "error": str(exc)}, indent=2))
         return 2
     print(json.dumps(result, sort_keys=True, ensure_ascii=False, indent=2))
-    return 0 if result.get("status", "").startswith("PASS") else 2
+    successful_statuses = ("PASS", "FROZEN_FOR_ONE_SHOT_DESCENDANT_REPLAY")
+    return 0 if result.get("status", "").startswith(successful_statuses) else 2
 
 
 if __name__ == "__main__":
