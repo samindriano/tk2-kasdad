@@ -1,0 +1,83 @@
+{
+  "base_or_preprocessing_fits": 0,
+  "candidate_data_read": false,
+  "checks": {
+    "causal_stage_boundaries": {
+      "authorized_row_counts": {
+        "D1_fit": 4950,
+        "D1_score": 7462,
+        "D2_fit": 12412,
+        "D2_score": 8491
+      },
+      "pass": true,
+      "synthetic_cycle_counts": {
+        "D1_fit": 4,
+        "D1_score": 4,
+        "D2_fit": 8,
+        "D2_score": 4
+      }
+    },
+    "csv_ids_range_and_missing_route": {
+      "csv_sha256": "bbbe1df498d86e2e98b06f1122336b3413ec897bdb40ba5dfe46fcf28646ea3d",
+      "missing_rows": 2,
+      "pass": true,
+      "rows": 4
+    },
+    "equal_slope_affine_and_continuity": {
+      "max_affine_error": 1.4210854715202004e-14,
+      "pass": true,
+      "seam_value": 37.0
+    },
+    "identity_before_target_access": {
+      "pass": true,
+      "row_order_rejected": true,
+      "target_loader_calls": 1,
+      "wrong_hash_rejected": true
+    },
+    "known_hinge_recovery": {
+      "independent_replay": {
+        "objective_error": 0.0,
+        "replayed_objective": 3.2711611197555612e-12,
+        "rows": 1200
+      },
+      "max_parameter_error": 8.881784197001252e-16,
+      "objective": 3.2711611197555612e-12,
+      "pass": true
+    },
+    "monotonicity_and_slope_bounds": {
+      "invalid_bound_cases_rejected": 2,
+      "minimum_step": 0.0,
+      "pass": true
+    },
+    "postpublish_crash_recovery": {
+      "first_status": "NEWLY_PUBLISHED",
+      "pass": true,
+      "recovery_status": "RECOVERED_PUBLISHED"
+    },
+    "producer_hash_schemas": {
+      "direct_raw_sha256": "d8d161a55e7505edb71951ca1e2b130a93a36717d4a05e701faa08448f51e328",
+      "pass": true,
+      "tagged_vector_sha256": "62bb336b20b1be46dee281865c657dd1a9ef536f12df6eb0a3e0439748a83948"
+    },
+    "stored_global_control_replay": {
+      "pass": true,
+      "state_sha256": "49fb2068712ef4381212179cbb560b657310ffcd9534e8f93ec4fc871b4b33f1"
+    },
+    "unweighted_objective_only": {
+      "pass": true,
+      "weights_parameter_present": false
+    }
+  },
+  "official_lp_starts": 0,
+  "official_train_labels_read": false,
+  "schema_version": 1,
+  "source_hashes": {
+    "reports/optimization_v3/reg_monotone_hinge_p50_v1/PROTOCOL.md": "c503551132e0e55c23afcf9abb474c4683df376d4f870c49494c62ab3f1429db",
+    "scripts/reg_monotone_hinge_p50_v1.py": "f51d428fce23cf45575d8bbdc3241cc2a5c976b840665aca33b62b1a9687fb99",
+    "scripts/verify_reg_monotone_hinge_p50_v1.py": "0636af5690af240f0665e122400511214707123a93bacb42d5e30799ba1e39da",
+    "tests/test_reg_monotone_hinge_p50_v1.py": "72a62b6e7c15147b2396b7fcf97ef9044d77c89e98171ec49793950dd5c8fb95"
+  },
+  "status": "PASS_SYNTHETIC_ONLY",
+  "synthetic_lp_starts": 1,
+  "test_or_sample_read": false
+}
