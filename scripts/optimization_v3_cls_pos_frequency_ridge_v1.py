@@ -296,7 +296,7 @@ def _verify_origin_identity_and_files(frame: pd.DataFrame, origin: int) -> dict[
     }
 
 
-def resource_snapshot(estimated_additional_bytes: int = 1024**3) -> dict[str, Any]:
+def resource_snapshot(estimated_additional_bytes: int = 2 * 1024**3) -> dict[str, Any]:
     memory = psutil.virtual_memory()
     current_rss = psutil.Process().memory_info().rss
     projected_free = max(0, int(memory.available) - int(estimated_additional_bytes))
