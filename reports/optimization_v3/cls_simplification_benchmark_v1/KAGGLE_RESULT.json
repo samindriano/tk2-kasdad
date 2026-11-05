@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "benchmark_id": "CLS_SIMPLIFICATION_NO_POS_V1",
+  "status": "SUBMITTED_AND_SCORED_COMPLETE",
+  "submission": {
+    "ref": 58024217,
+    "competition": "tp2-classification-cyber-vulnerability-kasdd-gasal-2026-2027",
+    "team_id": 17211300,
+    "team_name": "kasdud lovers",
+    "file_name": "classification_no_pos_e79.csv",
+    "message": "Samuel CLS Simplified A02 Only Frozen Benchmark",
+    "status": "COMPLETE",
+    "public_macro_f1": 0.82951,
+    "submission_date_as_returned_by_kaggle": "2026-11-05T13:23:07.643000",
+    "uploads_made_for_this_candidate": 1,
+    "quota_remaining_after_upload_as_returned_by_cli": 9
+  },
+  "candidate": {
+    "path": "submissions/optimization_v3/cls_simplification_benchmark_v1/classification_no_pos_e79.csv",
+    "sha256": "0884d518072274ad5ae6e35c9b37f275c0b503870bf6ab23772df250f4e40c67",
+    "label_vector_sha256": "b61e8f94ab5e0f14556b0c294c207f8d3543fd5d5e1854bb49bc74ad51741033",
+    "rows": 29421,
+    "labels": {
+      "0": 22737,
+      "1": 6684
+    }
+  },
+  "public_comparisons": {
+    "current_public_champion": {
+      "ref": 58001282,
+      "macro_f1": 0.83225,
+      "candidate_delta": -0.00274,
+      "remains_current_team_best": true
+    },
+    "historical_a02": {
+      "ref": 57909983,
+      "macro_f1": 0.82930,
+      "candidate_delta": 0.00021
+    }
+  },
+  "internal_evidence": {
+    "source": "read-only NO_POS simplification audit, preserved historical result",
+    "unique_pool_macro_f1_gain": 0.0003275686,
+    "E67_H12_macro_f1_gain": 0.0006066184,
+    "E75_W6_macro_f1_gain": 0.0004897279,
+    "max_supported_subgroup_f1_harm": 0.0043974,
+    "max_positive_recall_harm": 0.0195489,
+    "interpretation": "Internal adaptive temporal checks and Kaggle public score are separate evaluations; the public result does not qualify a new champion."
+  },
+  "qa": {
+    "independent_qa_status": "PASS",
+    "row_count": 29421,
+    "unique_ordered_test_ids": 29421,
+    "sample_submission_columns_match": true,
+    "integer_binary_labels": true,
+    "threshold_route_replayed_independently": true,
+    "Test_fields_read": [
+      "record_id",
+      "signal_stream"
+    ],
+    "Test_target_read": false,
+    "new_fits": 0,
+    "new_model_inference": 0
+  },
+  "evidence_paths": {
+    "run_manifest": "reports/optimization_v3/cls_simplification_benchmark_v1/RUN_MANIFEST.json",
+    "independent_qa": "reports/optimization_v3/cls_simplification_benchmark_v1/INDEPENDENT_QA.json",
+    "live_preupload_checks": "reports/optimization_v3/cls_simplification_benchmark_v1/KAGGLE_PREUPLOAD_PREFLIGHT.json",
+    "upload_intent": "reports/optimization_v3/cls_simplification_benchmark_v1/UPLOAD_INTENT.json"
+  },
+  "decision": {
+    "champion_changed": false,
+    "additional_uploads_authorized_or_made": 0,
+    "next_action": "Keep the benchmark experimental; compare with internal temporal results without using this public score to select or retune a model."
+  }
+}
