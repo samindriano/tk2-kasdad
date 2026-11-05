@@ -1,0 +1,30 @@
+{
+  "decision": "AUTHORIZE_ADDITIVE_INDEPENDENT_VERIFIER_HASH_ADAPTER_ONLY",
+  "source_prediction_archive_sha256": "babc77e7052c2a4dd0c16f4de932b9391fce6bf4efbc9816df3322ae5485b685",
+  "root_evidence": {
+    "all_28_saved_array_digests_recomputed_independently": true,
+    "algorithm": "seed array digest with ASCII hex SHA256 of canonical shape/dtype header, then canonical content bytes",
+    "query_labels_read": false,
+    "archive_byte_hash_match": true
+  },
+  "defect": "Frozen producer hashes the metadata header once before seeding content digest; frozen independent verifier incorrectly seeds with the raw metadata JSON. Its inline prediction-array checker and gamma helper both use the wrong schema.",
+  "repair_scope": [
+    "Keep R8 producer/evaluator/verifier source bytes, prediction archive and committed manifest immutable.",
+    "Add versioned independent verifier adapter with its own source/input freeze binding exact old verifier/evaluator files plus R8 freeze/manifest/archive and this decision.",
+    "Implement the producer-defined serialization independently; do not import its digest implementation as evidence of independence.",
+    "Correct prediction array digest checking and gamma digest helper consistently.",
+    "Retain all full matrix/ID/routing/formula/receipt/resource/source verification; do not skip or relax numeric/identity checks.",
+    "Record exact adapter invocation and source/hash binding. An adapter PASS is not a claim the unmodified R8 CLI passed."
+  ],
+  "tests": [
+    "Integer/float/bool/Unicode/object-string/empty/noncontiguous arrays agree with documented schema.",
+    "Same IDs with changed dtype are distinguished as schema requires; reordered IDs and changed values rejected.",
+    "All28actual saved prediction array digests independently match before label scoring.",
+    "Known gamma receipt schema checked independently."
+  ],
+  "next": "After target-free prediction verifier PASS, run existing frozen R8 --evaluate without regenerating predictions, then adapter-based independent metric verification. Reused-label incident01 remains disclosed.",
+  "scientific_changes": false,
+  "new_fits": 0,
+  "test_access": false,
+  "kaggle": false
+}
