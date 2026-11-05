@@ -9,6 +9,7 @@ import sys
 from typing import Any, Mapping
 
 import numpy as np
+import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -32,6 +33,33 @@ def _read_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _array_sha256(value: Any) -> str:
+    array = np.asarray(value)
+    header = canonical_sha256({"shape": array.shape, "dtype": str(array.dtype)})
+    digest = hashlib.sha256(header.encode("ascii"))
+    if array.dtype.kind in "OUS":
+        digest.update(json.dumps(array.astype(str).tolist(), ensure_ascii=False,
+                                  separators=(",", ":")).encode("utf-8"))
+    else:
+        digest.update(np.ascontiguousarray(array).tobytes())
+    return digest.hexdigest()
+
+
+def _row_metadata(frame: pd.DataFrame, rows: np.ndarray) -> dict[str, Any]:
+    rows = np.asarray(rows, dtype=np.int64)
+    selected = frame.iloc[rows]
+    ids = selected["record_id"].astype(str).to_numpy()
+    cycles = selected["cycle_code"].to_numpy(dtype=np.int64)
+    return {
+        "rows": int(len(rows)),
+        "cycle_min": int(cycles.min()),
+        "cycle_max": int(cycles.max()),
+        "row_indices_sha256": _array_sha256(rows),
+        "record_ids_sha256": _array_sha256(ids),
+        "cycles_sha256": _array_sha256(cycles),
+    }
+
+
 def verify_source_preflight(path: Path) -> dict[str, Any]:
     report = _read_json(path)
     if report.get("campaign_id") != "CLS_POS_FREQUENCY_RIDGE_V1":
@@ -51,6 +79,34 @@ def verify_source_preflight(path: Path) -> dict[str, Any]:
     hashes = report.get("source_hashes")
     if not isinstance(hashes, dict) or not hashes or any(len(str(v)) != 64 for v in hashes.values()):
         raise VerificationError("Source file hashes are absent or malformed")
+    for relative, expected_sha in hashes.items():
+        source_path = ROOT / relative
+        if not source_path.is_file() or sha256_file(source_path) != expected_sha:
+            raise VerificationError(f"Executable source hash mismatch: {relative}")
+    train_path = ROOT / "data/raw/classification/Train.csv"
+    if sha256_file(train_path) != report["train_sha256"]:
+        raise VerificationError("Official Train byte hash differs from source-preflight receipt")
+    identity = pd.read_csv(train_path, usecols=["record_id", "cycle_code"], dtype={"record_id": "string"})
+    identity["cycle_code"] = pd.to_numeric(identity["cycle_code"], errors="raise").astype(np.int64)
+    for origin, (fit_rows_expected, score_rows_expected) in expected_rows.items():
+        cycle = identity["cycle_code"].to_numpy(dtype=np.int64)
+        fit_rows = np.flatnonzero(cycle <= int(origin[1:]))
+        score_rows = np.flatnonzero(cycle > int(origin[1:]))
+        actual = report["origin_identity_and_cache_checks"][origin]
+        if (_row_metadata(identity, fit_rows) != actual["fit_row_metadata"]
+                or _row_metadata(identity, score_rows) != actual["score_row_metadata"]):
+            raise VerificationError(f"{origin} Train ID/cycle row mapping does not reproduce")
+        manifest_path = ROOT / f"experiments/runs/optimization_v3_research_next_v1/POSITIONAL_TEXT_PILOT_V1/MATRIX_MANIFEST_{origin}.json"
+        if sha256_file(manifest_path) != actual["matrix_manifest_sha256"]:
+            raise VerificationError(f"{origin} matrix manifest hash differs from preflight")
+        manifest = _read_json(manifest_path)
+        for name, expected_matrix_sha in actual["matrix_file_hashes"].items():
+            matrix_path = ROOT / manifest["matrices"][name]["path"]
+            if sha256_file(matrix_path) != expected_matrix_sha:
+                raise VerificationError(f"{origin} matrix file hash mismatch: {name}")
+        prediction_path = ROOT / f"experiments/runs/optimization_v3_research_next_v1/POSITIONAL_TEXT_PILOT_V1/{origin}/predictions_{origin}.npz"
+        if sha256_file(prediction_path) != actual["prediction_bundle_sha256"]:
+            raise VerificationError(f"{origin} prediction bundle hash differs from preflight")
     return {
         "status": "PASS_SOURCE_PREFLIGHT_INDEPENDENT",
         "campaign_id": report["campaign_id"],

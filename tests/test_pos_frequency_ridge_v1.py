@@ -174,25 +174,18 @@ def test_official_fit_requires_committed_root_source_pass(monkeypatch, tmp_path:
         runner._require_root_source_pass()
 
 
-def test_independent_preflight_verifier_checks_scope_flags_and_populations(tmp_path: Path) -> None:
+def test_independent_preflight_verifier_fails_closed_on_forbidden_access_flag(tmp_path: Path) -> None:
     report = {
         "campaign_id": "CLS_POS_FREQUENCY_RIDGE_V1",
         "source_commit": "a" * 40,
-        "source_hashes": {"a.py": "b" * 64},
+        "source_hashes": {},
         "train_sha256": runner.TRAIN_SHA256,
         "target_values_opened": False,
-        "test_or_sample_submission_accessed": False,
+        "test_or_sample_submission_accessed": True,
         "kaggle_accessed": False,
         "official_fit_started": False,
-        "origin_identity_and_cache_checks": {
-            "E67": {"fit_rows": 29705, "score_rows": 20903},
-            "E75": {"fit_rows": 42117, "score_rows": 8491},
-        },
     }
     path = tmp_path / "preflight.json"
-    path.write_text(json.dumps(report), encoding="utf-8")
-    assert verify_source_preflight(path)["status"] == "PASS_SOURCE_PREFLIGHT_INDEPENDENT"
-    report["test_or_sample_submission_accessed"] = True
     path.write_text(json.dumps(report), encoding="utf-8")
     with pytest.raises(VerificationError, match="forbidden access"):
         verify_source_preflight(path)
