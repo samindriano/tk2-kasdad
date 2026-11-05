@@ -1,0 +1,94 @@
+{
+  "attempt": {
+    "E67_post_matrix_load_boundary_gate_passed": true,
+    "command": "python scripts/evaluate_optimization_v3_cls_pos_frequency_ridge_v1.py --prepare-predictions",
+    "evaluation_results_written": false,
+    "exception": "EvaluationError: E67 cached original MIX50 fails formula replay",
+    "failure_location": "scripts/evaluate_optimization_v3_cls_pos_frequency_ridge_v1.py:1053",
+    "initial_resource_gates_passed": true,
+    "new_fits": 0,
+    "new_prediction_archive_written": false,
+    "official_train_columns_read": [
+      "record_id",
+      "cycle_code"
+    ],
+    "output_paths_checked_absent_after_exit": [
+      "experiments/runs/optimization_v3_cls_pos_frequency_ridge_eval_v1/predictions_r1.npz",
+      "reports/optimization_v3/cls_pos_frequency_ridge_v1/PREDICTIONS_MANIFEST_R1.json",
+      "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_RESULTS_R1.json"
+    ],
+    "prediction_manifest_written": false,
+    "process_finished": true,
+    "query_target_labels_read": false,
+    "query_target_members_loaded": [],
+    "resource_policy_id": "CLS_EVALUATION_QUERY_REPLAY_R7",
+    "resource_sample_values_note": "Runtime gate functions passed, but their RSS/peak_wset values were not written before the formula exception; values are UNKNOWN and are not reconstructed.",
+    "resource_sample_values_persisted": false,
+    "source_freeze_commit": "be3e1abfe99a8f032d6fe6427f6c21a6387aefdd",
+    "source_freeze_path": "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R7.json",
+    "source_freeze_sha256": "bf683818cc547731a12b27b8216954946adbf63d70d0ec64fa1df69919195133",
+    "stages_reached": [
+      "INITIAL_UNDER_SHARED_LOCK",
+      "E67_AFTER_MATRIX_LOAD_AND_IDENTITY_BOUNDARIES",
+      "E67_HISTORICAL_MIX50_FORMULA_CHECK"
+    ],
+    "stopped_before": [
+      "E67_ORIGIN_BOUNDARY_BEFORE_RELEASE",
+      "E75_LOAD",
+      "PREDICTION_ARCHIVE_SAVE",
+      "PREDICTIONS_MANIFEST_SAVE",
+      "QUERY_TARGET_LABEL_READ"
+    ],
+    "test_or_samplesubmission_accessed": false,
+    "thread_environment_limit": 2
+  },
+  "created_at_utc": "2026-11-05T06:44:01.729030+00:00",
+  "new_fits": 0,
+  "query_target_labels_read": false,
+  "schema_version": 1,
+  "status": "STOPPED_PRELABEL_VALIDATOR_SEMANTIC_MISMATCH",
+  "target_free_formula_audit": {
+    "interpretation": "The archived MIX50 is valid under its historical missing=pP recipe. The new primary competition reference intentionally uses pA on missing rows; it is distinct and must not be used to validate the archived MIX50 cache.",
+    "origins": {
+      "E67": {
+        "cached_equals_historical_formula_bit_exact": true,
+        "current_pA_missing_reference_diff_rows": 1375,
+        "current_pA_missing_reference_max_abs_difference": 0.7965315176202271,
+        "historical_formula_max_abs_error": 0.0,
+        "historical_missing_equals_pP_bit_exact": true,
+        "historical_missing_max_abs_error": 0.0,
+        "historical_present_max_abs_error": 0.0,
+        "incorrect_all_rows_average_max_abs_error_missing": 0.39826575881011356,
+        "incorrect_all_rows_average_max_abs_error_present": 0.0,
+        "missing_rows": 1375,
+        "missing_rows_where_pA_differs_from_pP": 1375,
+        "pA_equals_pP_on_missing_bit_exact": false,
+        "pA_vs_pP_missing_max_abs_difference": 0.7965315176202271,
+        "present_rows": 19528,
+        "rows": 20903
+      },
+      "E75": {
+        "cached_equals_historical_formula_bit_exact": true,
+        "current_pA_missing_reference_diff_rows": 526,
+        "current_pA_missing_reference_max_abs_difference": 0.6413566630551523,
+        "historical_formula_max_abs_error": 0.0,
+        "historical_missing_equals_pP_bit_exact": true,
+        "historical_missing_max_abs_error": 0.0,
+        "historical_present_max_abs_error": 0.0,
+        "incorrect_all_rows_average_max_abs_error_missing": 0.32067833152757613,
+        "incorrect_all_rows_average_max_abs_error_present": 0.0,
+        "missing_rows": 526,
+        "missing_rows_where_pA_differs_from_pP": 526,
+        "pA_equals_pP_on_missing_bit_exact": false,
+        "pA_vs_pP_missing_max_abs_difference": 0.6413566630551523,
+        "present_rows": 7965,
+        "rows": 8491
+      }
+    },
+    "recipe_source": "scripts/optimization_v3_posoffset_a02_endgame_v1.py; MIX50 present=0.5*pP+0.5*pA, missing=pP exactly",
+    "source_hash_matches_r7_freeze": true,
+    "source_path": "experiments/runs/optimization_v3_posoffset_a02_endgame_v1/policy_predictions.npz",
+    "source_sha256": "25d1d2b91348a57d33b3b0e5ce78da29840d115b75e24f9502cc83c1b63ef351"
+  },
+  "test_or_samplesubmission_accessed": false
+}
