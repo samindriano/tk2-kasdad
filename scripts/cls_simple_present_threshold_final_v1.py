@@ -286,7 +286,7 @@ def create_pre_fit_freeze(*, train_path: Path = TRAIN, oof_path: Path = OOF_CACH
         "status": "SYNTHETIC_TEST_FREEZE" if synthetic else "FROZEN_BEFORE_FINAL_CALIBRATION",
         "synthetic_fixture_only": synthetic,
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
-        "authorization": {"path": str(AUTH_PATH), "sha256": AUTH_SHA256, "source_commit": AUTH_COMMIT},
+        "authorization": {"path": _path_label(AUTH_PATH), "sha256": AUTH_SHA256, "source_commit": AUTH_COMMIT},
         "source_commit": _git(ROOT, "rev-parse", "HEAD"),
         "source_hashes": _source_hashes(),
         "input_hashes": input_hashes,
