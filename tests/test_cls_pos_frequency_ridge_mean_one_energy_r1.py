@@ -1,14 +1,40 @@
 from __future__ import annotations
 
 import unittest
+import hashlib
+import tempfile
+from pathlib import Path
 
 import numpy as np
 from scipy import sparse
 
-from scripts.diagnose_cls_pos_frequency_ridge_mean_one_energy_r1 import partitioned_delta_logits
+from scripts.diagnose_cls_pos_frequency_ridge_mean_one_energy_r1 import (
+    canonical_json,
+    partitioned_delta_logits,
+    verify_freeze_signature,
+    verify_pinned_file,
+)
 
 
 class TestMeanOneEnergyDiagnostic(unittest.TestCase):
+    def test_freeze_body_tampering_rejected_by_canonical_signature(self):
+        body = {"schema_version": 1, "rule": "fixed"}
+        frozen = {**body, "freeze_sha256": hashlib.sha256(canonical_json(body)).hexdigest()}
+        self.assertEqual(verify_freeze_signature(frozen), frozen["freeze_sha256"])
+        tampered = {**frozen, "rule": "changed"}
+        with self.assertRaisesRegex(RuntimeError, "self-signature mismatch"):
+            verify_freeze_signature(tampered)
+
+    def test_raw_input_byte_tampering_rejected_by_pinned_file_hash(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "pinned.json"
+            path.write_bytes(b'{"value":1}')
+            expected = hashlib.sha256(path.read_bytes()).hexdigest()
+            self.assertEqual(verify_pinned_file(path, expected), expected)
+            path.write_bytes(b'{ "value":1}')
+            with self.assertRaisesRegex(RuntimeError, "Raw file SHA256 differs"):
+                verify_pinned_file(path, expected)
+
     def test_exact_weight_cut_and_delta_reconstruction(self):
         token_weights = np.asarray([0.5, 1.0, 1.75], dtype=np.float64)
         low_weight = np.tile(token_weights < 1.0, 1)

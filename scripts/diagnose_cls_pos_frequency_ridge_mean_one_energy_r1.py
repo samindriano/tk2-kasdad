@@ -14,10 +14,11 @@ from scipy import sparse
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-FREEZE_REL = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/MEAN_ONE_ENERGY_DIAGNOSTIC_R1_1_FREEZE.json"
-PREVIOUS_FREEZE_REL = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/MEAN_ONE_ENERGY_DIAGNOSTIC_R1_FREEZE.json"
-OUTPUT_JSON_REL = "reports/optimization_v3/cls_pos_frequency_ridge_v1/MEAN_ONE_ENERGY_DIAGNOSTIC_R1_1.json"
-OUTPUT_MD_REL = "reports/optimization_v3/cls_pos_frequency_ridge_v1/MEAN_ONE_ENERGY_DIAGNOSTIC_R1_1.md"
+FREEZE_REL = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/MEAN_ONE_ENERGY_DIAGNOSTIC_R1_2_FREEZE.json"
+PREVIOUS_FREEZE_REL = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/MEAN_ONE_ENERGY_DIAGNOSTIC_R1_1_FREEZE.json"
+OUTPUT_JSON_REL = "reports/optimization_v3/cls_pos_frequency_ridge_v1/MEAN_ONE_ENERGY_DIAGNOSTIC_R1_2.json"
+OUTPUT_MD_REL = "reports/optimization_v3/cls_pos_frequency_ridge_v1/MEAN_ONE_ENERGY_DIAGNOSTIC_R1_2.md"
+PREFLIGHT_REL = "reports/optimization_v3/cls_pos_frequency_ridge_v1/MEAN_ONE_ENERGY_DIAGNOSTIC_R1_2_PREFLIGHT.json"
 R8_FREEZE_REL = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_FREEZE_R8.json"
 R9_ADAPTER_FREEZE_REL = "experiments/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_VERIFIER_ADAPTER_R9_FREEZE.json"
 PRED_MANIFEST_REL = "reports/optimization_v3/cls_pos_frequency_ridge_v1/PREDICTIONS_MANIFEST_R1.json"
@@ -50,6 +51,22 @@ def sha256_file(path: Path) -> str:
         for chunk in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def verify_freeze_signature(freeze: dict[str, Any]) -> str:
+    body = dict(freeze)
+    claim = body.pop("freeze_sha256", None)
+    actual = hashlib.sha256(canonical_json(body)).hexdigest()
+    if claim != actual:
+        raise RuntimeError("Freeze canonical self-signature mismatch")
+    return str(claim)
+
+
+def verify_pinned_file(path: Path, expected_sha256: str) -> str:
+    actual = sha256_file(path)
+    if actual != expected_sha256:
+        raise RuntimeError(f"Raw file SHA256 differs from frozen input: {path.name}")
+    return actual
 
 
 def read_json(rel: str) -> dict[str, Any]:
@@ -113,11 +130,12 @@ def build_freeze() -> dict[str, Any]:
     r8 = read_json(R8_FREEZE_REL)
     read_json(R9_ADAPTER_FREEZE_REL)
     previous = read_json(PREVIOUS_FREEZE_REL)
-    previous_body = dict(previous)
-    previous_claim = previous_body.pop("freeze_sha256", None)
-    if (previous_claim != hashlib.sha256(canonical_json(previous_body)).hexdigest()
-            or previous.get("status") != "FROZEN_ADDITIVE_ZERO_FIT_PRE_DIAGNOSTIC"):
-        raise RuntimeError("Prior R1 diagnostic freeze is invalid")
+    previous_claim = verify_freeze_signature(previous)
+    if previous.get("status") != "FROZEN_ADDITIVE_ZERO_FIT_PRE_DIAGNOSTIC_R1_1":
+        raise RuntimeError("Prior R1.1 diagnostic freeze is invalid")
+    for rel, expected in previous.get("input_hashes", {}).items():
+        if sha256_file(ROOT / rel) != expected:
+            raise RuntimeError(f"Prior R1.1 bound input changed: {rel}")
     old_source_binding = previous.get("source_commits", {}).get(SOURCE_RELS[0], {})
     old_commit = old_source_binding.get("commit")
     if (not old_commit
@@ -165,11 +183,11 @@ def build_freeze() -> dict[str, Any]:
         raise RuntimeError("Current verified result boundary does not match this diagnostic scope")
     body: dict[str, Any] = {
         "schema_version": 1,
-        "diagnostic_id": "CLS_POS_FREQUENCY_RIDGE_MEAN_ONE_ENERGY_R1_1",
-        "status": "FROZEN_ADDITIVE_ZERO_FIT_PRE_DIAGNOSTIC_R1_1",
+        "diagnostic_id": "CLS_POS_FREQUENCY_RIDGE_MEAN_ONE_ENERGY_R1_2",
+        "status": "FROZEN_ADDITIVE_ZERO_FIT_PRE_DIAGNOSTIC_R1_2",
         "supersedes_diagnostic_freeze": PREVIOUS_FREEZE_REL,
         "supersedes_diagnostic_freeze_sha256": previous_claim,
-        "supersession_reason": "R1.1 adds the repository root to sys.path after R1 stopped before loading numerical arrays or labels; measurement logic and selected inputs are unchanged.",
+        "supersession_reason": "R1.2 corrects parent-freeze signature verification after R1.1 stopped before loading numerical arrays or labels; measurement logic and selected inputs are unchanged.",
         "source_commit_at_freeze": git("rev-parse", "HEAD"),
         "parent_r8_freeze_sha256": sha256_file(ROOT / R8_FREEZE_REL),
         "parent_r9_adapter_freeze_sha256": sha256_file(ROOT / R9_ADAPTER_FREEZE_REL),
@@ -206,21 +224,19 @@ def verify_freeze() -> dict[str, Any]:
     rel = FREEZE_REL
     committed_binding(rel)
     freeze = read_json(rel)
-    body = dict(freeze)
-    claim = body.pop("freeze_sha256", None)
-    if claim != hashlib.sha256(canonical_json(body)).hexdigest():
-        raise RuntimeError("Diagnostic freeze signature mismatch")
+    verify_freeze_signature(freeze)
     for name, items in (("source_hashes", freeze.get("source_hashes", {})),
                         ("input_hashes", freeze.get("input_hashes", {}))):
         for item_rel, expected in items.items():
-            if sha256_file(ROOT / item_rel) != expected:
-                raise RuntimeError(f"Frozen {name} changed: {item_rel}")
+            verify_pinned_file(ROOT / item_rel, expected)
     if sha256_file(ROOT / R8_FREEZE_REL) != freeze["parent_r8_freeze_sha256"]:
         raise RuntimeError("Parent R8 freeze changed")
     if sha256_file(ROOT / R9_ADAPTER_FREEZE_REL) != freeze["parent_r9_adapter_freeze_sha256"]:
         raise RuntimeError("Parent R9 verifier freeze changed")
-    if sha256_file(ROOT / PREVIOUS_FREEZE_REL) != freeze["supersedes_diagnostic_freeze_sha256"]:
-        raise RuntimeError("Prior R1 diagnostic freeze changed")
+    previous = read_json(PREVIOUS_FREEZE_REL)
+    previous_claim = verify_freeze_signature(previous)
+    if previous_claim != freeze["supersedes_diagnostic_freeze_sha256"]:
+        raise RuntimeError("Prior R1.1 diagnostic freeze signature changed")
     return freeze
 
 
@@ -394,10 +410,78 @@ def load_position_matrix(origin: int, expected_rows: int) -> tuple[sparse.csr_ma
     }
 
 
+def run_integration_preflight() -> dict[str, Any]:
+    freeze = verify_freeze()
+    results = read_json(RESULTS_REL)
+    checks = {}
+    for origin, view_name, expected_rows in ((67, "E67_H12", 20903), (75, "E75_W6", 8491)):
+        view = results["views"][view_name]
+        if int(view["n"]) != expected_rows or int(view["present_n"]) + int(view["missing_n"]) != expected_rows:
+            raise RuntimeError(f"E{origin} stored result denominators do not reconcile")
+        df, aligned, permuted, _ = load_penalty_map(origin)
+        position, matrix_lineage = load_position_matrix(origin, expected_rows)
+        width = 3 * len(df)
+        gamma_paths = {
+            "UNIFORM": (f"{POS_BAG_ROOT}/units/POS_BAG_OFFSET_V1_E{origin}_REAL.npz",
+                        f"{POS_BAG_ROOT}/receipts/POS_BAG_OFFSET_V1_E{origin}_REAL.json", "REAL"),
+            "ALIGNED": (f"{RIDGE_ROOT}/units/E{origin}_ALIGNED.npz",
+                        f"{RIDGE_ROOT}/receipts/E{origin}_ALIGNED.json", "ALIGNED"),
+            "PERMUTED": (f"{RIDGE_ROOT}/units/E{origin}_PERMUTED.npz",
+                         f"{RIDGE_ROOT}/receipts/E{origin}_PERMUTED.json", "PERMUTED"),
+        }
+        gamma_sizes = {}
+        for candidate, (artifact, receipt, arm) in gamma_paths.items():
+            gamma = _load_gamma(artifact, receipt, fit_id=(
+                f"POS_BAG_OFFSET_V1_E{origin}_REAL" if candidate == "UNIFORM" else f"E{origin}_{candidate}"
+            ), expected_arm=arm)
+            if len(gamma) != width:
+                raise RuntimeError(f"E{origin} {candidate} gamma does not match 3*token_count")
+            gamma_sizes[candidate] = int(len(gamma))
+        if position.shape[1] != width or not np.isclose(float(aligned.mean()), 1.0, atol=1e-14, rtol=0.0):
+            raise RuntimeError(f"E{origin} score-position/map dimension or normalization mismatch")
+        checks[str(origin)] = {
+            "result_rows": expected_rows,
+            "present_rows": int(view["present_n"]),
+            "missing_rows": int(view["missing_n"]),
+            "token_count": int(len(df)),
+            "position_columns": int(position.shape[1]),
+            "gamma_sizes": gamma_sizes,
+            "partition_counts": {
+                "w_below_1": int(np.count_nonzero(aligned < 1.0)),
+                "w_at_least_1": int(np.count_nonzero(aligned >= 1.0)),
+            },
+            "permuted_multiset_matches_aligned": bool(np.array_equal(np.sort(aligned), np.sort(permuted))),
+            "matrix_prefix_and_logical_hashes_pass": matrix_lineage["score_base_prefix_exact"],
+            "matrix_lineage": matrix_lineage,
+        }
+    receipt = {
+        "schema_version": 1,
+        "status": "PASS_R1_2_INTEGRATION_PREFLIGHT_NO_MEASUREMENT",
+        "freeze_sha256": freeze["freeze_sha256"],
+        "origins": checks,
+        "source_and_input_hashes_verified": True,
+        "helper_imports_and_gamma_receipts_verified": True,
+        "score_matrix_manifests_and_base_prefix_verified": True,
+        "target_labels_read": False,
+        "new_predictions_or_counterfactual_performance": 0,
+        "new_fits": 0,
+    }
+    dest = ROOT / PREFLIGHT_REL
+    if dest.exists():
+        raise RuntimeError("Refusing to overwrite integration preflight receipt")
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text(json.dumps(receipt, indent=2, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8")
+    return receipt
+
+
 def analyze() -> dict[str, Any]:
     freeze = verify_freeze()
     from src.models.pos_frequency_ridge_v1 import sha256_array
 
+    preflight = read_json(PREFLIGHT_REL)
+    if (preflight.get("status") != "PASS_R1_2_INTEGRATION_PREFLIGHT_NO_MEASUREMENT"
+            or preflight.get("freeze_sha256") != freeze.get("freeze_sha256")):
+        raise RuntimeError("R1.2 integration preflight is absent or bound to another freeze")
     results = read_json(RESULTS_REL)
     if results.get("status") != "SCORED_DISCLOSED_DEVELOPMENT_EVALUATION":
         raise RuntimeError("Current evaluation results are not the frozen disclosed R1 output")
@@ -407,6 +491,7 @@ def analyze() -> dict[str, Any]:
         "status": "COMPLETED_ZERO_FIT_TARGET_FREE_MECHANISM_DIAGNOSTIC",
         "freeze_sha256": freeze["freeze_sha256"],
         "source_commit_at_freeze": freeze["source_commit_at_freeze"],
+        "integration_preflight_sha256": sha256_file(ROOT / PREFLIGHT_REL),
         "target_labels_read": False,
         "test_or_samplesubmission_accessed": False,
         "new_fits": 0,
@@ -599,6 +684,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--write-freeze", action="store_true")
+    group.add_argument("--preflight", action="store_true")
     group.add_argument("--analyze", action="store_true")
     args = parser.parse_args()
     if args.write_freeze:
@@ -612,11 +698,18 @@ def main() -> int:
                           "sources": len(freeze["source_hashes"]), "inputs": len(freeze["input_hashes"]),
                           "target_labels_read": False}, indent=2))
     else:
-        result = analyze()
-        print(json.dumps({"status": result["status"], "json": OUTPUT_JSON_REL,
-                          "report": OUTPUT_MD_REL, "freeze_sha256": result["freeze_sha256"],
-                          "origins": sorted(result["origins"]), "target_labels_read": False,
-                          "new_fits": 0}, indent=2))
+        from scripts import verify_optimization_v3_cls_pos_frequency_ridge_eval_r9_adapter as adapter
+        with adapter.BASE.SharedJobLock():
+            result = run_integration_preflight() if args.preflight else analyze()
+        if args.preflight:
+            print(json.dumps({"status": result["status"], "receipt": PREFLIGHT_REL,
+                              "freeze_sha256": result["freeze_sha256"],
+                              "origins": sorted(result["origins"]), "target_labels_read": False}, indent=2))
+        else:
+            print(json.dumps({"status": result["status"], "json": OUTPUT_JSON_REL,
+                              "report": OUTPUT_MD_REL, "freeze_sha256": result["freeze_sha256"],
+                              "origins": sorted(result["origins"]), "target_labels_read": False,
+                              "new_fits": 0}, indent=2))
     return 0
 
 
