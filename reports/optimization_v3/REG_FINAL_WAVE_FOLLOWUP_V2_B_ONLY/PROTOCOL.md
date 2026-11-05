@@ -17,9 +17,11 @@ from both saved candidate vectors.
 ## Required order
 
 1. Run the synthetic QA and unit tests. They use only synthetic values.
-2. Commit the application, independent verifier, tests, protocol, and synthetic
-   QA as one source change.
-3. Run `python scripts/reg_final_wave_followup_v2_b_only.py --freeze`. It hashes
+2. Commit the R2 application, independent verifier, tests, protocol, R2 synthetic
+   QA, and append-only R1 failure receipt as a source change. Preserve the R1
+   freeze and R1 synthetic QA byte-for-byte.
+3. Run `python scripts/reg_final_wave_followup_v2_b_only.py --freeze`. It writes
+   `B_ONLY_PREFIT_FREEZE_R2.json` and hashes
    saved input files and validates signed JSON metadata without parsing CSV rows
    or loading NPZ arrays. It also binds the committed source tree and R3
    diagnostic-closure ancestry.
@@ -29,6 +31,15 @@ from both saved candidate vectors.
 6. Run `python scripts/verify_reg_final_wave_followup_v2_b_only.py --verify`
    once. It independently rebuilds the row-aligned formula and writes a
    write-once QA receipt.
+
+The preserved R1 freeze `B_ONLY_PREFIT_FREEZE.json` and
+`APPLICATION_GATE_FAILED_R1.json` record the first fail-closed application
+attempt. R1 loaded the already authorized saved candidate CSVs and E79 arrays,
+then stopped before writing output because it compared the direct manifest's
+raw little-endian float64 digest with the global candidate's shape-tagged
+digest. R2 checks the direct and global source-specific digest formats
+separately. This repair does not change the fixed B-only rule or model output
+sources.
 
 ## Frozen inputs and checks
 

@@ -1,4 +1,5 @@
 import unittest
+import hashlib
 
 import numpy as np
 
@@ -6,6 +7,12 @@ from scripts.reg_final_wave_followup_v2_b_only import (
     GateError,
     compose_present_only,
     same_float_bits,
+    sha_raw_f64,
+    sha_vector,
+)
+from scripts.verify_reg_final_wave_followup_v2_b_only import (
+    VerificationError,
+    verify_row_aligned_output,
 )
 
 
@@ -46,6 +53,30 @@ class PresentOnlyCompositionTests(unittest.TestCase):
             compose_present_only(self.archive_ids, self.global_ids,
                                  self.global_values, self.direct_ids,
                                  self.direct_values, np.asarray([False, True]))
+
+    def test_source_specific_prediction_hashes_are_distinct(self):
+        values = np.asarray([1.0, 2.0, 3.5], dtype=np.float64)
+        raw_digest = hashlib.sha256(np.ascontiguousarray(values, dtype="<f8").tobytes()).hexdigest()
+        self.assertEqual(sha_raw_f64(values), raw_digest)
+        self.assertNotEqual(sha_raw_f64(values), sha_vector(values))
+
+    def test_independent_replay_rejects_wrong_value_and_reordered_output(self):
+        archive_ids = ["d", "b", "a", "c"]
+        missing = np.asarray([False, True, False, True])
+        global_values = np.asarray([40.0, 20.0, 10.0, 30.0])
+        direct_values = np.asarray([400.0, 200.0, 100.0, 300.0])
+        expected = np.asarray([40.0, 200.0, 10.0, 300.0])
+        verify_row_aligned_output(archive_ids, archive_ids, expected, expected,
+                                  missing, global_values, direct_values)
+        wrong_value = expected.copy()
+        wrong_value[1] = np.nextafter(wrong_value[1], np.inf)
+        with self.assertRaises(VerificationError):
+            verify_row_aligned_output(archive_ids, archive_ids, wrong_value, expected,
+                                      missing, global_values, direct_values)
+        reordered_ids = archive_ids[::-1]
+        with self.assertRaises(VerificationError):
+            verify_row_aligned_output(reordered_ids, archive_ids, expected[::-1], expected,
+                                      missing, global_values, direct_values)
 
 
 if __name__ == "__main__":

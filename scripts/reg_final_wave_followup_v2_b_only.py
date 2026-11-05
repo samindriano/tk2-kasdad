@@ -47,6 +47,8 @@ INPUT_PATHS = {
     "r3_diagnostics": ROOT / "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2/DIAGNOSTICS.json",
     "r3_diagnostic_ledger": ROOT / "experiments/runs/REG_FINAL_WAVE_FOLLOWUP_V2/lp_ledger.jsonl",
     "r3_closure": ROOT / "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2/DIAGNOSTIC_PHASE_CLOSURE_R3.md",
+    "previous_r1_freeze": ROOT / "experiments/REG_FINAL_WAVE_FOLLOWUP_V2_B_ONLY/B_ONLY_PREFIT_FREEZE.json",
+    "previous_r1_failure_receipt": ROOT / "experiments/runs/REG_FINAL_WAVE_FOLLOWUP_V2_B_ONLY/APPLICATION_GATE_FAILED_R1.json",
 }
 
 EXPECTED_INPUT_SHA256 = {
@@ -68,6 +70,8 @@ EXPECTED_INPUT_SHA256 = {
     "r3_diagnostics": "136d4a8c7a565413ec550dca1212f7cda22a2c8ca5d70dbfdd6672ceb14961d8",
     "r3_diagnostic_ledger": "961366c4b0e8ed998aa147b624a91fa05bae9a644b04cba9c5612eeafa9fc33b",
     "r3_closure": "02dd7c9117d3f3fb83f98603cb5e0739ef618b505311212312ef44fa04b12243",
+    "previous_r1_freeze": "d6279835f8272ae23ac0e90d42a10f26ae2352bc0cebab47461b65e9e678db1d",
+    "previous_r1_failure_receipt": "751ed2267e665cbfc982a97a3b7ba13ff3866de5b09ca02049a4adfde01e7eca",
 }
 
 SOURCE_PATHS = {
@@ -75,10 +79,11 @@ SOURCE_PATHS = {
     "independent_verifier": ROOT / "scripts/verify_reg_final_wave_followup_v2_b_only.py",
     "tests": ROOT / "tests/test_reg_final_wave_followup_v2_b_only.py",
     "protocol": ROOT / "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2_B_ONLY/PROTOCOL.md",
-    "synthetic_qa": ROOT / "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2_B_ONLY/SYNTHETIC_QA.json",
+    "previous_synthetic_qa": ROOT / "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2_B_ONLY/SYNTHETIC_QA.json",
+    "synthetic_qa": ROOT / "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2_B_ONLY/SYNTHETIC_QA_R2.json",
 }
 
-FREEZE = ROOT / "experiments/REG_FINAL_WAVE_FOLLOWUP_V2_B_ONLY/B_ONLY_PREFIT_FREEZE.json"
+FREEZE = ROOT / "experiments/REG_FINAL_WAVE_FOLLOWUP_V2_B_ONLY/B_ONLY_PREFIT_FREEZE_R2.json"
 OUT_CSV = ROOT / "submissions/reg_final_wave_followup_v2_b_only/global_present_only_e79.csv"
 OUT_MANIFEST = ROOT / "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2_B_ONLY/INFERENCE_MANIFEST_B_ONLY.json"
 APP_RECEIPT = ROOT / "experiments/runs/REG_FINAL_WAVE_FOLLOWUP_V2_B_ONLY/APPLICATION_RECEIPT.json"
@@ -112,6 +117,12 @@ def sha_vector(values: np.ndarray) -> str:
     digest = hashlib.sha256(canonical_bytes({"shape": vector.shape, "dtype": str(vector.dtype)}))
     digest.update(vector.tobytes(order="C"))
     return digest.hexdigest()
+
+
+def sha_raw_f64(values: np.ndarray) -> str:
+    """Match the direct-candidate manifest's raw little-endian byte digest."""
+    vector = np.ascontiguousarray(np.asarray(values, dtype="<f8"))
+    return hashlib.sha256(vector.tobytes(order="C")).hexdigest()
 
 
 def sha_ordered_ids(values: list[str] | np.ndarray) -> str:
@@ -276,6 +287,19 @@ def verify_metadata_and_hash_inputs() -> dict[str, str]:
     root_pass = read_json(INPUT_PATHS["r3_root_source_pass"])
     if root_pass.get("verdict") != "PASS":
         raise GateError("R3 root source-pass receipt is not a PASS")
+    prior_freeze = read_json(INPUT_PATHS["previous_r1_freeze"])
+    prior_failure = read_json(INPUT_PATHS["previous_r1_failure_receipt"])
+    verify_signature(prior_freeze, "prior R1 source/input freeze")
+    verify_signature(prior_failure, "prior R1 fail-closed application receipt")
+    if (prior_freeze.get("source_commit") != "769bcf26440d5396578bc7ef1973028ba5f14774"
+            or prior_freeze.get("status") != "SOURCE_AND_INPUTS_FROZEN_BEFORE_DATA_LOAD"
+            or prior_failure.get("status") != "FAIL_CLOSED_BEFORE_OUTPUT"
+            or prior_failure.get("source_commit") != prior_freeze.get("source_commit")
+            or prior_failure.get("freeze_sha256") != actual["previous_r1_freeze"]
+            or prior_failure.get("b_only_output_artifacts_created") is not False
+            or prior_failure.get("diagnosis", {}).get("direct_manifest_prediction_sha256") !=
+            "fde81b7d9d66c6c428920264151f33aac20331affe9b3185199af923be6abb55"):
+        raise GateError("Prior R1 freeze/failure accounting does not bind the known fail-closed attempt")
     return actual
 
 
@@ -300,11 +324,15 @@ def freeze_source_and_inputs() -> None:
             or synthetic.get("candidate_data_read") is not False
             or synthetic.get("test_or_sample_read") is not False
             or synthetic.get("train_targets_read") is not False
+            or synthetic.get("raw_f64_and_shape_tagged_hashes_are_distinct") is not True
+            or synthetic.get("wrong_value_mutation_rejected") is not True
+            or synthetic.get("reordered_output_ids_rejected") is not True
             or synthetic.get("source_hashes") != expected_synthetic_sources):
         raise GateError("Committed synthetic QA is not an isolated synthetic PASS")
     body = {
         "schema_version": 1,
         "namespace": "KASDAD_REG_FINAL_WAVE_FOLLOWUP_V2_B_ONLY",
+        "application_revision": "R2",
         "status": "SOURCE_AND_INPUTS_FROZEN_BEFORE_DATA_LOAD",
         "created_utc": datetime.now(timezone.utc).isoformat(),
         "branch": BRANCH,
@@ -470,7 +498,7 @@ def apply_frozen_policy() -> None:
             or sha_ordered_ids(archive_ids) != freeze["expected_output"]["ordered_ids_sha256"]
             or global_ids != archive_ids.tolist() or direct_ids != archive_ids.tolist()
             or sha_vector(global_values) != read_json(INPUT_PATHS["global_manifest"])["prediction_sha256"]
-            or sha_vector(direct_values) != read_json(INPUT_PATHS["direct_manifest"])["prediction_sha256"]
+            or sha_raw_f64(direct_values) != read_json(INPUT_PATHS["direct_manifest"])["prediction_sha256"]
             or not np.isfinite(global_values).all() or not np.isfinite(direct_values).all()
             or not np.isfinite(archived_direct).all()
             or np.any((global_values < 0) | (global_values > 100))
@@ -503,6 +531,7 @@ def apply_frozen_policy() -> None:
         "schema_version": 1,
         "namespace": "KASDAD_REG_FINAL_WAVE_FOLLOWUP_V2_B_ONLY",
         "candidate": "GLOBAL_PRESENT_ONLY_RESTORE_DIRECT_MISSING_E79",
+        "application_revision": "R2",
         "status": "B_ONLY_ARTIFACT_READY_PENDING_INDEPENDENT_QA",
         "scientific_status": "TEST_PERFORMANCE_NOT_COMPUTED_OR_CLAIMED",
         "csv_path": str(OUT_CSV),
@@ -608,6 +637,14 @@ def write_synthetic_qa() -> None:
         duplicate_rejected = True
     if not duplicate_rejected:
         raise GateError("Synthetic duplicate-ID mutation was not rejected")
+    wrong_value = result.copy()
+    wrong_value[0] = np.nextafter(wrong_value[0], np.inf)
+    wrong_value_rejected = not same_float_bits(wrong_value, expected)
+    reordered_ids = ids[::-1].tolist()
+    output_order_rejected = reordered_ids != ids_archive.tolist()
+    source_hash_schemes_distinct = sha_raw_f64(values_global) != sha_vector(values_global)
+    if not (wrong_value_rejected and output_order_rejected and source_hash_schemes_distinct):
+        raise GateError("Synthetic source-hash/value/order mutation check failed")
     body = {
         "schema_version": 1,
         "status": "PASS_SYNTHETIC_ONLY",
@@ -619,6 +656,9 @@ def write_synthetic_qa() -> None:
         "direct_missing_bit_exact": True,
         "duplicate_existing_vector_rejected": True,
         "duplicate_id_mutation_rejected": duplicate_rejected,
+        "raw_f64_and_shape_tagged_hashes_are_distinct": source_hash_schemes_distinct,
+        "wrong_value_mutation_rejected": wrong_value_rejected,
+        "reordered_output_ids_rejected": output_order_rejected,
         "candidate_data_read": False,
         "test_or_sample_read": False,
         "train_targets_read": False,

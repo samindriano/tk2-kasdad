@@ -24,6 +24,8 @@ QA_OUT = ROOT / "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2_B_ONLY/INDEP
 GLOBAL_CSV = ROOT / "submissions/reg_final_wave_v2/current_direct_affine_l1_e79.csv"
 DIRECT_CSV = ROOT / "submissions/reg_current_r06_e79_exploratory_v1/direct_position_real_e79.csv"
 DIRECT_ARCHIVE = ROOT / "experiments/runs/REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1/inference_B.npz"
+GLOBAL_MANIFEST = ROOT / "reports/optimization_v3/REG_FINAL_WAVE_V1/INFERENCE_MANIFEST_V2.json"
+DIRECT_MANIFEST = ROOT / "reports/optimization_v3/REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1/INFERENCE_MANIFEST_B.json"
 APPLICATION_SOURCE = ROOT / "scripts/reg_final_wave_followup_v2_b_only.py"
 VERIFIER_SOURCE = ROOT / "scripts/verify_reg_final_wave_followup_v2_b_only.py"
 SOURCE_FILES = {
@@ -31,7 +33,8 @@ SOURCE_FILES = {
     "independent_verifier": VERIFIER_SOURCE,
     "tests": ROOT / "tests/test_reg_final_wave_followup_v2_b_only.py",
     "protocol": ROOT / "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2_B_ONLY/PROTOCOL.md",
-    "synthetic_qa": ROOT / "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2_B_ONLY/SYNTHETIC_QA.json",
+    "previous_synthetic_qa": ROOT / "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2_B_ONLY/SYNTHETIC_QA.json",
+    "synthetic_qa": ROOT / "reports/optimization_v3/REG_FINAL_WAVE_FOLLOWUP_V2_B_ONLY/SYNTHETIC_QA_R2.json",
 }
 
 
@@ -67,6 +70,11 @@ def sha_predictions(values: np.ndarray) -> str:
     return digest.hexdigest()
 
 
+def sha_raw_f64(values: np.ndarray) -> str:
+    vector = np.ascontiguousarray(np.asarray(values, dtype="<f8"))
+    return hashlib.sha256(vector.tobytes(order="C")).hexdigest()
+
+
 def sha_missing(mask: np.ndarray) -> str:
     vector = np.ascontiguousarray(np.asarray(mask, dtype=np.bool_))
     digest = hashlib.sha256(canonical_bytes({"shape": vector.shape, "dtype": "bool"}))
@@ -78,6 +86,18 @@ def same_bits(left: np.ndarray, right: np.ndarray) -> bool:
     a = np.ascontiguousarray(np.asarray(left, dtype="<f8"))
     b = np.ascontiguousarray(np.asarray(right, dtype="<f8"))
     return a.shape == b.shape and a.tobytes(order="C") == b.tobytes(order="C")
+
+
+def verify_row_aligned_output(output_ids: list[str], archive_ids: list[str],
+                              output_values: np.ndarray, expected: np.ndarray,
+                              missing: np.ndarray, global_values: np.ndarray,
+                              direct_values: np.ndarray) -> None:
+    if output_ids != archive_ids:
+        raise VerificationError("Output ID order differs from the saved archive")
+    if (not same_bits(output_values, expected)
+            or not same_bits(output_values[~missing], global_values[~missing])
+            or not same_bits(output_values[missing], direct_values[missing])):
+        raise VerificationError("Output values differ from the ID-aligned frozen formula")
 
 
 def load_csv(path: Path) -> tuple[list[str], np.ndarray]:
@@ -144,6 +164,13 @@ def verify() -> None:
                      if k != "signature" and k != "signature_method"}
     if manifest.get("signature") != canonical_sha(manifest_body):
         raise VerificationError("B-only output manifest signature failed")
+    global_manifest = read_json(GLOBAL_MANIFEST)
+    direct_manifest = read_json(DIRECT_MANIFEST)
+    for label, value in (("global", global_manifest), ("direct", direct_manifest)):
+        body = {k: v for k, v in value.items()
+                if k != "signature" and k != "signature_method"}
+        if value.get("signature") != canonical_sha(body):
+            raise VerificationError(f"Frozen {label} input manifest signature failed")
     if (manifest.get("source_commit") != freeze.get("source_commit")
             or manifest.get("freeze_sha256") != sha_file(FREEZE)
             or manifest.get("csv_sha256") != sha_file(CSV_OUT)
@@ -168,7 +195,9 @@ def verify() -> None:
             or not np.isfinite(output_values).all()
             or np.any((output_values < 0) | (output_values > 100))
             or not same_bits(direct_values, archive_direct)
-            or not same_bits(archive_direct[missing], archive_baseline[missing])):
+            or not same_bits(archive_direct[missing], archive_baseline[missing])
+            or sha_predictions(global_values) != global_manifest.get("prediction_sha256")
+            or sha_raw_f64(direct_values) != direct_manifest.get("prediction_sha256")):
         raise VerificationError("Saved CSV/archive row identity, range, or missing route failed")
 
     # Independently rebuild each output value by its ID, not by assuming file offsets.
@@ -178,10 +207,8 @@ def verify() -> None:
         direct_map[record_id] if missing[index] else global_map[record_id]
         for index, record_id in enumerate(archive_ids)
     ], dtype=np.float64)
-    if (output_ids != archive_ids or not same_bits(output_values, expected)
-            or not same_bits(output_values[~missing], global_values[~missing])
-            or not same_bits(output_values[missing], direct_values[missing])):
-        raise VerificationError("Independent row-aligned B-only formula replay failed")
+    verify_row_aligned_output(output_ids, archive_ids, output_values, expected,
+                              missing, global_values, direct_values)
     if same_bits(output_values, global_values) or same_bits(output_values, direct_values):
         raise VerificationError("B-only output duplicates an existing full candidate vector")
 
@@ -193,6 +220,8 @@ def verify() -> None:
         np.asarray(direct_values, dtype="<f8").view("<u8")))
     expected_global_id_hash = freeze["expected_output"]["ordered_ids_sha256"]
     if (sha_ids(output_ids) != expected_global_id_hash
+            or manifest.get("input_hashes") !=
+            {name: entry["sha256"] for name, entry in freeze["input_hashes"].items()}
             or manifest.get("ordered_ids_sha256") != expected_global_id_hash
             or manifest.get("prediction_sha256") != sha_predictions(output_values)
             or manifest.get("missing_rows") != N_MISSING
