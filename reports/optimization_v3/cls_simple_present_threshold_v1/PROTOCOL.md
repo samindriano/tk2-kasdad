@@ -94,6 +94,10 @@ reviews the callback and issues that release. Later permitted commands are:
 
     python scripts/cls_simple_present_threshold_v1.py --train-csv C:\Users\Sam\Downloads\Train.csv --cache experiments\runs\optimization_v3_posoffset_a02_endgame_v1\policy_predictions.npz fit --stage D1 --release path\to\ROOT_RELEASE.json
     python scripts/cls_simple_present_threshold_v1.py --train-csv C:\Users\Sam\Downloads\Train.csv --cache experiments\runs\optimization_v3_posoffset_a02_endgame_v1\policy_predictions.npz score --stage D1 --release path\to\ROOT_RELEASE.json
+    python scripts/cls_simple_present_threshold_v1.py summarize
 
-Only D1 and D2 are valid pilot stages. There is no final refit, Test inference,
-CSV generation, Kaggle upload, or automatic champion change in this protocol.
+Only D1 and D2 are valid pilot stages. The summarize command combines confusion
+counts across the two disjoint score windows, reports qualification and
+exploratory gates, and retains the complex comparator separately. There is no
+final refit, Test inference, CSV generation, Kaggle upload, or automatic
+champion change in this protocol.

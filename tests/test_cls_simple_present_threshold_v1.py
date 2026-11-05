@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import contextlib
 import hashlib
 import json
 import sys
@@ -102,7 +103,7 @@ def test_ambiguous_fit_started_blocks_resume_before_read_or_refit(tmp_path, monk
         producer.fit_stage("D1", tmp_path / "unused.csv", tmp_path / "unused.npz", release_path)
 
 
-def _write_synthetic_source_inputs(tmp_path: Path):
+def _write_synthetic_source_inputs(tmp_path: Path, valid_targets: bool = False):
     import pandas as pd
 
     train_path = tmp_path / "Train.csv"
@@ -113,7 +114,7 @@ def _write_synthetic_source_inputs(tmp_path: Path):
             "signal_stream": "" if cycle in {68, 72, 76} else "token token2",
             "entry_friction": cycle % 2, "text_load": float(cycle),
             # Deliberately invalid: source-only preflight must never parse this target column.
-            "artifact_signal": "TARGET_MUST_NOT_BE_PARSED",
+            "artifact_signal": cycle % 2 if valid_targets else "TARGET_MUST_NOT_BE_PARSED",
         })
     pd.DataFrame(rows).to_csv(train_path, index=False)
 
@@ -182,3 +183,100 @@ def test_verifier_self_check():
     result = verifier.run_synthetic_self_check()
     assert result["status"] == "PASS"
     assert result["target_accessed"] is False
+
+
+def test_synthetic_fit_score_cli_resume_and_pooled_receipts(tmp_path, monkeypatch, capsys):
+    train, cache = _write_synthetic_source_inputs(tmp_path, valid_targets=True)
+    run = tmp_path / "run"
+    out = tmp_path / "reports"
+    run.mkdir()
+    out.mkdir()
+    ready = out / "SOURCE_READY.json"
+    ready.write_text(json.dumps({"status": "PASS"}), encoding="utf-8")
+    release = tmp_path / "ROOT_RELEASE.json"
+    release.write_text(json.dumps({
+        "status": "ROOT_RELEASED_FOR_D1_D2",
+        "source_ready_sha256": producer.sha256_file(ready),
+        "allowed_stages": ["D1", "D2"],
+    }), encoding="utf-8")
+    freeze = out / "SOURCE_FREEZE.json"
+    freeze.write_text(json.dumps({"source_commit": "synthetic-commit"}), encoding="utf-8")
+
+    for name, value in {
+        "RUN": run, "OUT": out, "READY": ready, "FREEZE": freeze,
+        "LEDGER": run / "LEDGER.jsonl", "FIT_DIR": run / "fits", "SCORE_DIR": run / "scores",
+        "CACHE_SHA256": hashlib.sha256(cache.read_bytes()).hexdigest(),
+        "MIN_PRESENT_PER_CLASS": 1,
+    }.items():
+        monkeypatch.setattr(producer, name, value)
+    monkeypatch.setattr(producer, "_verify_runtime_lineage", lambda *_: None)
+    monkeypatch.setattr(producer, "single_job_resource_gate", contextlib.nullcontext)
+
+    for stage in ("D1", "D2"):
+        assert producer.main(["--train-csv", str(train), "--cache", str(cache), "fit",
+                              "--stage", stage, "--release", str(release)]) == 0
+        capsys.readouterr()
+    assert len([e for e in producer.read_ledger(producer.LEDGER) if e["event"] == "FIT_STARTED"]) == 2
+
+    original_reader = producer._read_selected_labels
+
+    def guarded_reader(path, all_ids, selected_ids):
+        stage = "D1" if any(str(value) == "rec_72" for value in selected_ids) else "D2"
+        frozen = producer.SCORE_DIR / f"{stage}_FROZEN_PREDICTIONS.json"
+        assert frozen.exists(), "score labels must not be read before predictions are frozen"
+        payload = json.loads(frozen.read_text(encoding="utf-8"))
+        assert payload["status"] == "FROZEN_BEFORE_SCORE_LABEL_READ"
+        return original_reader(path, all_ids, selected_ids)
+
+    monkeypatch.setattr(producer, "_read_selected_labels", guarded_reader)
+    for stage in ("D1", "D2"):
+        assert producer.main(["--train-csv", str(train), "--cache", str(cache), "score",
+                              "--stage", stage, "--release", str(release)]) == 0
+        capsys.readouterr()
+
+    pooled = producer.main(["summarize"])
+    capsys.readouterr()
+    summary = json.loads((run / "SUMMARY.json").read_text(encoding="utf-8"))
+    assert summary["score_rows"] == 8
+    assert set(summary["per_window_full_macro_f1_gain_vs_simple_fixed_050"]) == {"D1", "D2"}
+    events = producer.read_ledger(producer.LEDGER)
+    assert {e["event"] for e in events} >= {"FIT_STARTED", "FIT_FROZEN", "SCORE_STARTED", "SCORED", "SUMMARY_CREATED"}
+    assert summary["champion_changed"] is False
+
+
+def test_wrong_origin_and_duplicate_row_cache_vectors_fail_closed(tmp_path):
+    _, cache = _write_synthetic_source_inputs(tmp_path)
+    with np.load(cache, allow_pickle=False) as archive:
+        arrays = {name: np.asarray(archive[name]) for name in archive.files}
+    arrays["E75_cycles"] = arrays["E75_cycles"].copy()
+    arrays["E75_cycles"][0] = 75
+    wrong_origin = tmp_path / "wrong_origin.npz"
+    np.savez_compressed(wrong_origin, **arrays)
+    with pytest.raises(ValueError, match="cycle range"):
+        producer._load_oof_metadata(wrong_origin)
+
+    arrays["E75_cycles"][0] = 76
+    arrays["E75_ids"] = arrays["E75_ids"].copy()
+    arrays["E75_ids"][1] = arrays["E75_ids"][0]
+    duplicate_rows = tmp_path / "duplicate_rows.npz"
+    np.savez_compressed(duplicate_rows, **arrays)
+    with pytest.raises(ValueError, match="duplicate IDs"):
+        producer._load_oof_metadata(duplicate_rows)
+
+
+def test_runtime_source_hash_mismatch_fails_closed(tmp_path, monkeypatch):
+    train = tmp_path / "Train.csv"
+    cache = tmp_path / "cache.npz"
+    train.write_text("train", encoding="utf-8")
+    cache.write_text("cache", encoding="utf-8")
+    freeze = tmp_path / "SOURCE_FREEZE.json"
+    freeze.write_text(json.dumps({
+        "inputs": {
+            "official_train_csv": {"path_at_freeze": str(train), "sha256": hashlib.sha256(b"train").hexdigest()},
+            "a02_oof_cache": {"sha256": "wrong"},
+        },
+        "source_hashes": {},
+    }), encoding="utf-8")
+    monkeypatch.setattr(producer, "FREEZE", freeze)
+    with pytest.raises(RuntimeError, match="OOF cache hash"):
+        producer._verify_runtime_lineage(train, cache)
