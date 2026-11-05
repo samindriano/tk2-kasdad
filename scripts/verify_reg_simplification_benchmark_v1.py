@@ -303,9 +303,17 @@ def verify(candidate: str) -> dict[str, Any]:
     # The runner, tests, input manifest, protocol, and policy must be identical
     # to the source used for the build. Only this independent verifier may be
     # repaired in a later commit, which remains separately recorded below.
-    for name, digest in source_hashes.items():
-        if name != "verifier" and build_source_hashes.get(name) != digest:
-            raise VerificationError(f"Build provenance differs for committed source component: {name}")
+    build_source_name = {
+        "scripts/reg_simplification_benchmark_v1.py": "runner",
+        "scripts/verify_reg_simplification_benchmark_v1.py": "verifier",
+        "tests/test_reg_simplification_benchmark_v1.py": "tests",
+        "reports/optimization_v3/reg_simplification_benchmark_v1/PROTOCOL_R1.md": "protocol",
+        "reports/optimization_v3/reg_simplification_benchmark_v1/EXECUTION_POLICY_R1.json": "execution_policy",
+        "experiments/reg_simplification_benchmark_v1/INPUT_MANIFEST_R1.json": "input_manifest",
+    }
+    for path, digest in source_hashes.items():
+        if build_source_name[path] != "verifier" and build_source_hashes.get(build_source_name[path]) != digest:
+            raise VerificationError(f"Build provenance differs for committed source component: {path}")
     vectors, recomputation = _load_saved_vectors(paths)
     key = "no_pos" if candidate == "NO_POS" else "no_char"
     path = OUTPUTS[candidate]
