@@ -128,6 +128,12 @@ def _verify_source_commit() -> tuple[str, dict[str, str]]:
     return commit, hashes
 
 
+def _is_commit_ancestor(ancestor: str, descendant: str) -> bool:
+    result = subprocess.run(["git", "-C", str(ROOT), "merge-base", "--is-ancestor",
+                             ancestor, descendant], capture_output=True, check=False)
+    return result.returncode == 0
+
+
 def _load_saved_vectors(paths: dict[str, Path]) -> tuple[dict[str, np.ndarray], dict[str, Any]]:
     try:
         with np.load(paths["r06_archive"], allow_pickle=False) as r06_archive:
@@ -201,13 +207,13 @@ def _load_saved_vectors(paths: dict[str, Path]) -> tuple[dict[str, np.ndarray], 
             or r06_manifest.get("status") != "PREPARED_VALIDATED_NOT_SUBMITTED"
             or r06_manifest.get("recipe", {}).get("blend")
             != "clip(0.75*three-component champion + 0.25*R06 rank50, 0, 100)"
-            or source_array_sha(r06_prediction, dtype="<f8")
+            or _source_array_sha(r06_prediction, dtype="<f8")
             != r06_manifest.get("prediction_audit", {}).get("prediction_sha256")
-            or source_array_sha(baseline, dtype="<f8")
+            or _source_array_sha(baseline, dtype="<f8")
             != current_manifest.get("baseline_prediction_member_digest")
-            or source_array_sha(current_prediction, dtype="<f8")
+            or _source_array_sha(current_prediction, dtype="<f8")
             != current_manifest.get("prediction_sha256")
-            or source_array_sha(source_ids)
+            or _source_array_sha(source_ids)
             != current_manifest.get("ordered_official_test_ids_sha256")):
         raise VerificationError("Saved prediction/ID digests differ from source manifests")
 
@@ -290,6 +296,16 @@ def verify(candidate: str) -> dict[str, Any]:
             or build.get("new_preprocessing_fits") != 0
             or build.get("new_calibrator_fits") != 0):
         raise VerificationError("Runner build receipt is missing or outside the frozen scope")
+    build_commit = str(build.get("source_commit", ""))
+    build_source_hashes = build.get("source_hashes", {})
+    if not _is_commit_ancestor(build_commit, source_commit):
+        raise VerificationError("Build source commit is not an ancestor of the verifier commit")
+    # The runner, tests, input manifest, protocol, and policy must be identical
+    # to the source used for the build. Only this independent verifier may be
+    # repaired in a later commit, which remains separately recorded below.
+    for name, digest in source_hashes.items():
+        if name != "verifier" and build_source_hashes.get(name) != digest:
+            raise VerificationError(f"Build provenance differs for committed source component: {name}")
     vectors, recomputation = _load_saved_vectors(paths)
     key = "no_pos" if candidate == "NO_POS" else "no_char"
     path = OUTPUTS[candidate]
@@ -313,6 +329,8 @@ def verify(candidate: str) -> dict[str, Any]:
         "max_abs_prediction_difference": 0.0,
         "independent_recipe_recomputation": True,
         "source_commit": source_commit,
+        "build_source_commit": build_commit,
+        "build_verifier_sha256": build_source_hashes.get("verifier"),
         "source_hashes": source_hashes,
         "input_hashes": {name: _sha(value) for name, value in paths.items()},
         "recomputation": recomputation,
