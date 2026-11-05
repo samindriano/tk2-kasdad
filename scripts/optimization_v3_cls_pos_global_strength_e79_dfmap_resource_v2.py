@@ -150,7 +150,7 @@ def source_freeze_body(root: Path = ROOT) -> dict[str, Any]:
     """Build source-only policy lineage; no Train columns or targets are read."""
     _attestation, v1_lineage = v1.verify_source_freeze(root)
     v1_freeze_path = root / V1_FREEZE_REL
-    v1_freeze = v1.read_json(v1_freeze_path)
+    v1_freeze = json.loads(v1_freeze_path.read_text(encoding="utf-8"))
     v1_freeze_file_sha = v1.sha256_file(v1_freeze_path)
     if v1_freeze.get("freeze_sha256") != V1_FREEZE_SHA256:
         raise ResourceV2Error("Frozen V1 DF-map source must remain byte-identical")
@@ -158,7 +158,7 @@ def source_freeze_body(root: Path = ROOT) -> dict[str, Any]:
     r3_receipt_path = root / R3_RECEIPT_REL
     if not r3_receipt_path.is_file():
         raise ResourceV2Error("Verified R3 descendant replay receipt is missing")
-    r3_receipt = v1.read_json(r3_receipt_path)
+    r3_receipt = json.loads(r3_receipt_path.read_text(encoding="utf-8"))
     if (v1.sha256_file(r3_receipt_path) != v1_freeze.get("r3_receipt_file_sha256")
             or r3_receipt.get("resource_after", {}).get("process_peak_rss_bytes") != R3_REPLAY_PEAK_BYTES
             or r3_receipt.get("target_column_requested_or_loaded") is not False
@@ -230,7 +230,7 @@ def build_freeze(root: Path = ROOT) -> dict[str, Any]:
 
 def verify_source_freeze(root: Path = ROOT) -> dict[str, Any]:
     path = root / FREEZE_REL
-    freeze = v1.read_json(path)
+    freeze = json.loads(path.read_text(encoding="utf-8"))
     body = dict(freeze)
     digest = body.pop("freeze_sha256", None)
     if digest != _canonical_sha256(body):
@@ -339,7 +339,7 @@ def _execute_map(root: Path, *, locks: list[dict[str, Any]], resource_before: di
     resource_after = resource_snapshot("after one Train-only DF-map pass")
     if resource_after["available_ram_bytes"] < FREE_RESERVE_BYTES:
         raise ResourceV2Error("Available memory fell below the unchanged 768 MiB reserve")
-    v1_freeze = v1.read_json(root / V1_FREEZE_REL)
+    v1_freeze = json.loads((root / V1_FREEZE_REL).read_text(encoding="utf-8"))
     r3_receipt_path = root / R3_RECEIPT_REL
     return {
         "schema_version": 1,
