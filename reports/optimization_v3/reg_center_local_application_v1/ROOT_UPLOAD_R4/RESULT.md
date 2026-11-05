@@ -13,3 +13,10 @@ Exactly one authorized exploratory submission was made via authenticated Kaggle 
 Decision: retain the existing full champion. The earlier diagnostic mechanism/exploratory checks passed but candidate qualification failed (pooled local gain0.00615004 below0.01). This benchmark does not change those historical verdicts or establish private performance. A positive but small development effect did not transfer to public here; adaptation, temporal variation and sampling remain possible explanations, not proven causes.
 
 Next work delegated to Luna2 is bounded read-only novelty review of at most six summaries/policies for exactly one genuinely untested mechanism, or an honest NO_NEW_MECHANISM. No new fit, width/delta sweep, Test-label access or submission is authorized by that review. CLS full-champion regularization proceeds independently with Luna1. No push or Kaggle final-slot selection was performed.
+
+
+## Follow-up architecture decision: PARK REG
+
+Luna2 returned NO_GO_AFTER_BROADER_AUDIT after eight targeted historical sources. Root independently checked batch card closure/R24, the frontier decision memo and position-mechanism audit. No sufficiently distinct, executable and evidence-backed next REG mechanism was established by this bounded review. The existing R06-origin comparisons are not faithful wins against today's full5 DIRECT+hinge, and reused E67/E75 development outcomes are not fresh confirmation. Learned FM and cross-task transfer remain uncertain feasibility ideas rather than ready, permitted, validated recipes.
+
+Root parks REG at champion11.01510 with zero further fits, preprocessing fits, current-window rescoring, E79 inference or uploads. This does not establish global optimality or impossibility of improvement. Reopening requires a distinct justified mechanism and a frozen faithful comparator/controls/source-boundary/resource plan. Luna2 was told to stop work without polling or repeated audits; CLS work continues independently with Luna1.
