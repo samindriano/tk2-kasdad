@@ -1,0 +1,205 @@
+{
+  "adapter_metadata": {
+    "adapter_freeze_sha256": "ad57455de8474d254170167f1c53b7b72d5be618610e53a41e049baf82b4c5d1",
+    "adapter_invocation": "--verify-predictions",
+    "adapter_version": "R9_ADDITIVE_HASH_SCHEMA_ADAPTER",
+    "prediction_archive_sha256": "babc77e7052c2a4dd0c16f4de932b9391fce6bf4efbc9816df3322ae5485b685",
+    "query_target_access_forbidden_during_prediction_verification": true,
+    "unmodified_r8_cli_status": "FAILED_PRELABEL_HASH_SCHEMA_MISMATCH; adapter result is distinct"
+  },
+  "independent_prediction_replay": {
+    "origins": {
+      "E67": {
+        "a02_alignment": "PASS",
+        "c2b_max_abs_error": 0.0,
+        "gamma_probability_max_abs_errors": {
+          "ALIGNED": 0.0,
+          "PERMUTED": 0.0,
+          "UNIFORM": 0.0
+        },
+        "historical_mix50_cache_audit": {
+          "historical_max_abs_error_overall": 0.0,
+          "missing_equals_pP_bit_exact": true,
+          "missing_rows": 1375,
+          "present_max_abs_error": 0.0,
+          "present_rows": 19528,
+          "status": "PASS_HISTORICAL_MIX50_CACHE_REPLAY"
+        },
+        "missing_fallback_bit_exact": true,
+        "route_cache_fields_bit_exact": true
+      },
+      "E75": {
+        "a02_alignment": "PASS",
+        "c2b_max_abs_error": 0.0,
+        "gamma_probability_max_abs_errors": {
+          "ALIGNED": 0.0,
+          "PERMUTED": 0.0,
+          "UNIFORM": 0.0
+        },
+        "historical_mix50_cache_audit": {
+          "historical_max_abs_error_overall": 0.0,
+          "missing_equals_pP_bit_exact": true,
+          "missing_rows": 526,
+          "present_max_abs_error": 0.0,
+          "present_rows": 7965,
+          "status": "PASS_HISTORICAL_MIX50_CACHE_REPLAY"
+        },
+        "missing_fallback_bit_exact": true,
+        "route_cache_fields_bit_exact": true
+      }
+    },
+    "status": "PASS_INDEPENDENT_PREDICTION_REPLAY"
+  },
+  "parent_r8_freeze_sha256": "624d5da9d75f8f78996c35e758a97e095740ba4b13c2240c81b6cd995abfe720",
+  "prediction_fields": 28,
+  "resource_snapshot": {
+    "policy_id": "CLS_EVALUATION_QUERY_REPLAY_R7",
+    "rss_samples_are_current_state_not_peak": true,
+    "samples": [
+      {
+        "available_bytes": 4193185792,
+        "estimate_is_measured_peak": false,
+        "estimated_additional_bytes": 536870912,
+        "initial_floor_pass": true,
+        "minimum_available_bytes": 1610612736,
+        "minimum_projected_free_bytes": 805306368,
+        "pass_both_initial_gates": true,
+        "peak_working_set_measurement_available": true,
+        "peak_working_set_source": "psutil.Process().memory_info().peak_wset",
+        "peak_working_set_value_is_os_high_water_mark": true,
+        "policy_id": "CLS_EVALUATION_QUERY_REPLAY_R7",
+        "process_peak_working_set_bytes": 161710080,
+        "process_rss_sample_bytes": 159641600,
+        "process_rss_sample_is_peak": false,
+        "projected_free_bytes": 3656314880,
+        "projected_reserve_pass": true,
+        "sample_kind": "CURRENT_STATE_SNAPSHOT_WITH_OPTIONAL_OS_PEAK",
+        "stage": "INITIAL_UNDER_SHARED_LOCK"
+      },
+      {
+        "available_bytes": 4138921984,
+        "minimum_available_bytes": 805306368,
+        "pass": true,
+        "peak_working_set_measurement_available": true,
+        "peak_working_set_source": "psutil.Process().memory_info().peak_wset",
+        "peak_working_set_value_is_os_high_water_mark": true,
+        "policy_id": "CLS_EVALUATION_QUERY_REPLAY_R7",
+        "process_peak_working_set_bytes": 170115072,
+        "process_rss_sample_bytes": 170115072,
+        "process_rss_sample_is_peak": false,
+        "sample_is_peak": false,
+        "sample_kind": "CURRENT_STATE_SNAPSHOT_WITH_OPTIONAL_OS_PEAK",
+        "stage": "E67_BEFORE_ORIGIN_LOAD"
+      },
+      {
+        "available_bytes": 4112674816,
+        "minimum_available_bytes": 805306368,
+        "pass": true,
+        "peak_working_set_measurement_available": true,
+        "peak_working_set_source": "psutil.Process().memory_info().peak_wset",
+        "peak_working_set_value_is_os_high_water_mark": true,
+        "policy_id": "CLS_EVALUATION_QUERY_REPLAY_R7",
+        "process_peak_working_set_bytes": 284413952,
+        "process_rss_sample_bytes": 221540352,
+        "process_rss_sample_is_peak": false,
+        "sample_is_peak": false,
+        "sample_kind": "CURRENT_STATE_SNAPSHOT_WITH_OPTIONAL_OS_PEAK",
+        "stage": "E67_AFTER_MATRIX_LOAD_AND_IDENTITY_BOUNDARIES"
+      },
+      {
+        "available_bytes": 4103077888,
+        "minimum_available_bytes": 805306368,
+        "pass": true,
+        "peak_working_set_measurement_available": true,
+        "peak_working_set_source": "psutil.Process().memory_info().peak_wset",
+        "peak_working_set_value_is_os_high_water_mark": true,
+        "policy_id": "CLS_EVALUATION_QUERY_REPLAY_R7",
+        "process_peak_working_set_bytes": 284413952,
+        "process_rss_sample_bytes": 231538688,
+        "process_rss_sample_is_peak": false,
+        "sample_is_peak": false,
+        "sample_kind": "CURRENT_STATE_SNAPSHOT_WITH_OPTIONAL_OS_PEAK",
+        "stage": "E67_ORIGIN_BOUNDARY_BEFORE_RELEASE"
+      },
+      {
+        "available_bytes": 4160671744,
+        "minimum_available_bytes": 805306368,
+        "pass": true,
+        "peak_working_set_measurement_available": true,
+        "peak_working_set_source": "psutil.Process().memory_info().peak_wset",
+        "peak_working_set_value_is_os_high_water_mark": true,
+        "policy_id": "CLS_EVALUATION_QUERY_REPLAY_R7",
+        "process_peak_working_set_bytes": 284413952,
+        "process_rss_sample_bytes": 170213376,
+        "process_rss_sample_is_peak": false,
+        "sample_is_peak": false,
+        "sample_kind": "CURRENT_STATE_SNAPSHOT_WITH_OPTIONAL_OS_PEAK",
+        "stage": "E75_BEFORE_ORIGIN_LOAD"
+      },
+      {
+        "available_bytes": 4138831872,
+        "minimum_available_bytes": 805306368,
+        "pass": true,
+        "peak_working_set_measurement_available": true,
+        "peak_working_set_source": "psutil.Process().memory_info().peak_wset",
+        "peak_working_set_value_is_os_high_water_mark": true,
+        "policy_id": "CLS_EVALUATION_QUERY_REPLAY_R7",
+        "process_peak_working_set_bytes": 284413952,
+        "process_rss_sample_bytes": 191336448,
+        "process_rss_sample_is_peak": false,
+        "sample_is_peak": false,
+        "sample_kind": "CURRENT_STATE_SNAPSHOT_WITH_OPTIONAL_OS_PEAK",
+        "stage": "E75_AFTER_MATRIX_LOAD_AND_IDENTITY_BOUNDARIES"
+      },
+      {
+        "available_bytes": 4135559168,
+        "minimum_available_bytes": 805306368,
+        "pass": true,
+        "peak_working_set_measurement_available": true,
+        "peak_working_set_source": "psutil.Process().memory_info().peak_wset",
+        "peak_working_set_value_is_os_high_water_mark": true,
+        "policy_id": "CLS_EVALUATION_QUERY_REPLAY_R7",
+        "process_peak_working_set_bytes": 284413952,
+        "process_rss_sample_bytes": 194772992,
+        "process_rss_sample_is_peak": false,
+        "sample_is_peak": false,
+        "sample_kind": "CURRENT_STATE_SNAPSHOT_WITH_OPTIONAL_OS_PEAK",
+        "stage": "E75_ORIGIN_BOUNDARY_BEFORE_RELEASE"
+      },
+      {
+        "available_bytes": 4155863040,
+        "minimum_available_bytes": 805306368,
+        "pass": true,
+        "peak_working_set_measurement_available": true,
+        "peak_working_set_source": "psutil.Process().memory_info().peak_wset",
+        "peak_working_set_value_is_os_high_water_mark": true,
+        "policy_id": "CLS_EVALUATION_QUERY_REPLAY_R7",
+        "process_peak_working_set_bytes": 284413952,
+        "process_rss_sample_bytes": 171438080,
+        "process_rss_sample_is_peak": false,
+        "sample_is_peak": false,
+        "sample_kind": "CURRENT_STATE_SNAPSHOT_WITH_OPTIONAL_OS_PEAK",
+        "stage": "AFTER_ALL_ORIGINS_RELEASED"
+      },
+      {
+        "available_bytes": 4160557056,
+        "minimum_available_bytes": 805306368,
+        "pass": true,
+        "peak_working_set_measurement_available": true,
+        "peak_working_set_source": "psutil.Process().memory_info().peak_wset",
+        "peak_working_set_value_is_os_high_water_mark": true,
+        "policy_id": "CLS_EVALUATION_QUERY_REPLAY_R7",
+        "process_peak_working_set_bytes": 284413952,
+        "process_rss_sample_bytes": 166739968,
+        "process_rss_sample_is_peak": false,
+        "sample_is_peak": false,
+        "sample_kind": "CURRENT_STATE_SNAPSHOT_WITH_OPTIONAL_OS_PEAK",
+        "stage": "AFTER_R9_ADAPTER_PRELABEL_REPLAY"
+      }
+    ],
+    "samples_are_peak_measurements": false
+  },
+  "status": "PASS_R9_ADAPTER_PRELABEL_PREDICTION_HASH_AND_SCHEMA",
+  "target_labels_loaded": false,
+  "test_or_samplesubmission_accessed": false
+}
