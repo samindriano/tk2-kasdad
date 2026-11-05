@@ -1,0 +1,151 @@
+{
+  "adapter_binding": {
+    "arms": [
+      "ONE_SIDED",
+      "GLOBAL_STRENGTH"
+    ],
+    "binding_source": "src.models.pos_one_sided_ridge_v1.ARMS",
+    "evaluator_module": "scripts/evaluate_optimization_v3_cls_pos_one_sided_ridge_v1.py",
+    "evaluator_source_modified": false,
+    "evaluator_source_sha256": "2445459e845acedb35ebe33bf679b4d506e35a84b4cb9dfa654d57d8823a1cf8"
+  },
+  "adapter_source_hashes": {
+    "scripts/cls_pos_one_sided_eval_adapter_v1.py": "7fdddf5fc829fc1636b597519cf4e2f70bd6892e5dedf1e4a06f15d78d79c356",
+    "scripts/evaluate_optimization_v3_cls_pos_one_sided_ridge_v1.py": "2445459e845acedb35ebe33bf679b4d506e35a84b4cb9dfa654d57d8823a1cf8",
+    "scripts/optimization_v3_cls_pos_one_sided_ridge_v1.py": "1d572b5e18ad60e1d8dbb8fa32d959092a27b642afa576a93dd5ee0e555564dd",
+    "scripts/verify_optimization_v3_cls_pos_one_sided_ridge_v1.py": "2c877ce719d05f44f475a02a8b60683560ebbba7519a4335ebe788945c6eb3cb",
+    "src/models/pos_one_sided_ridge_v1.py": "3dd47aabe71e708da09acf476b085ab1cc233cd2ebc6e5e058485845fe8b7892",
+    "tests/test_cls_pos_one_sided_eval_adapter_v1.py": "f94be55e1aaa665087e47a3f671ecbb1a48d493f09cfbdd11f88399446d055e3"
+  },
+  "kaggle_accessed": false,
+  "official_predictions_created": false,
+  "prior_harness_attempts": [
+    {
+      "campaign_fit_repeated": false,
+      "cause": "synthetic test expected ARMS absent after the same-process real ledger audit had correctly installed the adapter binding",
+      "official_predictions_created": false,
+      "query_labels_scored": false,
+      "status": "FAILED_TEST_HARNESS_PRECONDITION_ONLY"
+    },
+    {
+      "campaign_fit_repeated": false,
+      "cause": "aggregate QA checked manifest_commit_guard_passed while the test emits query_labels_blocked_until_manifest_commit and query_labels_joined_after_commit",
+      "official_predictions_created": false,
+      "status": "FAILED_QA_AGGREGATOR_FIELD_NAME_ONLY",
+      "synthetic_prepare_completed": true
+    }
+  ],
+  "query_labels_scored": false,
+  "real_fit_audit": {
+    "adapter_binding": {
+      "arms": [
+        "ONE_SIDED",
+        "GLOBAL_STRENGTH"
+      ],
+      "binding_source": "src.models.pos_one_sided_ridge_v1.ARMS",
+      "evaluator_module": "scripts/evaluate_optimization_v3_cls_pos_one_sided_ridge_v1.py",
+      "evaluator_source_modified": false,
+      "evaluator_source_sha256": "2445459e845acedb35ebe33bf679b4d506e35a84b4cb9dfa654d57d8823a1cf8"
+    },
+    "evaluator_ledger_audit": {
+      "all_gamma_receipts_validated": true,
+      "campaign_id": "CLS_POS_ONE_SIDED_RIDGE_V1",
+      "cap": 4,
+      "cap_enforced": true,
+      "fit_failures": 0,
+      "fit_ids_in_order": [
+        "E67_ONE_SIDED",
+        "E67_GLOBAL_STRENGTH",
+        "E75_ONE_SIDED",
+        "E75_GLOBAL_STRENGTH"
+      ],
+      "fit_saves": 4,
+      "fit_starts": 4
+    },
+    "official_prediction_started": false,
+    "prediction_bundle_created": false,
+    "query_labels_read": false,
+    "status": "PASS_TARGET_FREE_REAL_FIT_LEDGER_AUDIT",
+    "target_values_opened": false,
+    "test_or_samplesubmission_accessed": false
+  },
+  "resource_snapshot": {
+    "actual_boundary": {
+      "available_bytes": 3356712960,
+      "captured_at_utc": "2026-11-05T09:40:24.271904+00:00",
+      "estimated_additional_bytes": 536870912,
+      "initial_ram_pass": true,
+      "jobs": 1,
+      "minimum_actual_free_at_boundary_bytes": 805306368,
+      "minimum_available_bytes": 1610612736,
+      "minimum_projected_free_bytes": 805306368,
+      "os_peak_working_set_bytes": 165515264,
+      "os_peak_working_set_source": "psutil.Process().memory_info().peak_wset",
+      "policy": "saved_replay",
+      "process_rss_bytes": 164884480,
+      "projected_free_bytes": 2819842048,
+      "projected_reserve_pass": true,
+      "rss_pass": true,
+      "samples_are_peak_measurements": false,
+      "threads": 2,
+      "total_bytes": 33599959040
+    },
+    "initial_under_shared_lock": {
+      "available_bytes": 3456540672,
+      "captured_at_utc": "2026-11-05T09:40:07.145118+00:00",
+      "estimated_additional_bytes": 536870912,
+      "initial_ram_pass": true,
+      "jobs": 1,
+      "minimum_actual_free_at_boundary_bytes": 805306368,
+      "minimum_available_bytes": 1610612736,
+      "minimum_projected_free_bytes": 805306368,
+      "os_peak_working_set_bytes": 161832960,
+      "os_peak_working_set_source": "psutil.Process().memory_info().peak_wset",
+      "policy": "saved_replay",
+      "process_rss_bytes": 161832960,
+      "projected_free_bytes": 2919669760,
+      "projected_reserve_pass": true,
+      "rss_pass": true,
+      "samples_are_peak_measurements": false,
+      "threads": 2,
+      "total_bytes": 33599959040
+    },
+    "policy": {
+      "estimated_additional_bytes": 536870912,
+      "minimum_actual_free_at_boundary_bytes": 805306368,
+      "minimum_available_bytes": 1610612736,
+      "minimum_projected_free_bytes": 805306368
+    },
+    "samples_are_peak_measurements": false
+  },
+  "source_commit": "01f94cce18f084abf9fee8d9aabd36b9b79321f8",
+  "status": "PASS_ADDITIVE_EVALUATION_ADAPTER_SOURCE_QA",
+  "synthetic_prepare_entry": {
+    "adapter_binding": {
+      "arms": [
+        "ONE_SIDED",
+        "GLOBAL_STRENGTH"
+      ],
+      "binding_source": "src.models.pos_one_sided_ridge_v1.ARMS",
+      "evaluator_module": "scripts/evaluate_optimization_v3_cls_pos_one_sided_ridge_v1.py",
+      "evaluator_source_modified": false,
+      "evaluator_source_sha256": "2445459e845acedb35ebe33bf679b4d506e35a84b4cb9dfa654d57d8823a1cf8"
+    },
+    "missing_pos_fallback_bit_exact": true,
+    "prediction_archive_sha256": "7285efe5bdfa52a2802c2ae658c57d6decf3a6c6ddbad7c1bd24d4d85391a167",
+    "prediction_arrays": 26,
+    "prediction_manifest_sha256": "f9725c24811adce52c1827d4778fc0f5ddb25cdb4d17a5d259f05bd068a6d719",
+    "primary_missing_reference_equals_pA_bit_exact": true,
+    "query_labels_blocked_until_manifest_commit": true,
+    "query_labels_joined_after_commit": true,
+    "query_rows_by_origin": {
+      "67": 12,
+      "75": 4
+    },
+    "status": "PASS",
+    "synthetic_train_rows": 33,
+    "test_or_samplesubmission_accessed": false
+  },
+  "target_values_opened_by_real_fit_audit": false,
+  "test_or_samplesubmission_accessed": false
+}
