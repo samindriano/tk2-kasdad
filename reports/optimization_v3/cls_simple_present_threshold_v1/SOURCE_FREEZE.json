@@ -1,0 +1,80 @@
+{
+  "campaign": "CLS_SIMPLE_PRESENT_THRESHOLD_V1",
+  "frozen_at_utc": "2026-11-05T15:24:44.897699+00:00",
+  "inputs": {
+    "a02_oof_cache": {
+      "required_sha256": "25d1d2b91348a57d33b3b0e5ce78da29840d115b75e24f9502cc83c1b63ef351",
+      "sha256": "25d1d2b91348a57d33b3b0e5ce78da29840d115b75e24f9502cc83c1b63ef351"
+    },
+    "official_train_csv": {
+      "path_at_freeze": "C:\\Users\\Sam\\Downloads\\Train.csv",
+      "sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c"
+    },
+    "root_decision": {
+      "required_sha256": "e0e0ac69ce7ce0e148e8edfe2345e21e37addf55807cdcff6b2f2995a08cd0c5",
+      "sha256": "e0e0ac69ce7ce0e148e8edfe2345e21e37addf55807cdcff6b2f2995a08cd0c5"
+    }
+  },
+  "pandas": "2.3.3",
+  "python": "3.13.5",
+  "recipe": {
+    "comparators": [
+      "pA threshold 0.50",
+      "0.5*pP + 0.5*pA present threshold 0.50"
+    ],
+    "minimum_present_fit_support_each_class": 200,
+    "missing_decision": "pA >= 0.53230976129477",
+    "objective": "full-row binary Macro F1 including fixed missing decisions",
+    "present_threshold_interval_inclusive": [
+      0.45,
+      0.55
+    ],
+    "score": "canonical OOF pA",
+    "stages": {
+      "D1": {
+        "fit_cycles": [
+          68,
+          71
+        ],
+        "origin": 67,
+        "score_cycles": [
+          72,
+          75
+        ],
+        "score_origin": 67
+      },
+      "D2": {
+        "fit_cycles": [
+          68,
+          75
+        ],
+        "origin": 67,
+        "score_cycles": [
+          76,
+          79
+        ],
+        "score_origin": 75
+      }
+    },
+    "threshold_operator": ">=",
+    "tie_break": [
+      "maximum exact Macro F1",
+      "minimum distance to 0.50",
+      "higher threshold"
+    ]
+  },
+  "root_lineage": {
+    "artifact_head": "24299cfa7c77049b7b699d010a6cbd11dc66af94",
+    "required_ancestor": "a39721172b6d293cb68ee0d120060082d222699e",
+    "working_tree_clean": true
+  },
+  "schema_version": 1,
+  "source_commit": "aa0bf8a7cb2a7dfec3e41f557921bce31f88f09b",
+  "source_hashes": {
+    "reports/optimization_v3/cls_simple_present_threshold_v1/PROTOCOL.md": "036f8a77b8e518f6da9666caa58163970eab536c247e8d7425f24e25915881b5",
+    "scripts/cls_simple_present_threshold_v1.py": "653d5f8acd05fe7824295886f94763265731d2bccf56a24ee4ff0bddfe28dd9d",
+    "scripts/verify_cls_simple_present_threshold_v1.py": "590a5b4a662b301ec2502028e4e8c3f8b88d156fd0f703e55d119f39a0c7cb27",
+    "tests/test_cls_simple_present_threshold_v1.py": "34066cae2e1e822ec3e7054d713f1e359ce81a94cb4c267caa28fa659e59f76f"
+  },
+  "status": "SOURCE_FROZEN_BEFORE_TARGET_FREE_PREFLIGHT"
+}
