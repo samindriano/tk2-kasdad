@@ -976,6 +976,13 @@ def _synthetic_e2e(output_dir: Path) -> dict[str, Any]:
             "resume_action": "independent readback verified persisted fit; no second fit was run"}
 
 
+def _cli_exit_code(status: str) -> int:
+    """A successfully written source freeze is a successful CLI result."""
+    if status.startswith("PASS") or status == "FROZEN_SOURCE_PACKAGE_FOR_ONE_FULLTRAIN_GAMMA_FIT":
+        return 0
+    return 2
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     group = parser.add_mutually_exclusive_group(required=True)
@@ -1012,7 +1019,7 @@ def main(argv: list[str] | None = None) -> int:
                           "error": str(exc)}, sort_keys=True, ensure_ascii=False, indent=2))
         return 1
     print(json.dumps(result, sort_keys=True, ensure_ascii=False, allow_nan=False, indent=2))
-    return 0 if str(result.get("status", "")).startswith("PASS") else 2
+    return _cli_exit_code(str(result.get("status", "")))
 
 
 if __name__ == "__main__":

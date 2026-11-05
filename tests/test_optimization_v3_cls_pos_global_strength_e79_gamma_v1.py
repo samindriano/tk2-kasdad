@@ -9,6 +9,7 @@ import sys
 import numpy as np
 from scipy import sparse
 
+from scripts import optimization_v3_cls_pos_global_strength_e79_gamma_v1 as gamma_runner
 from src.models import cls_pos_global_strength_e79_v1 as recipe
 
 
@@ -22,6 +23,12 @@ def _sha(path: Path) -> str:
 def _run(*args: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run([sys.executable, *args], cwd=ROOT, text=True,
                           stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+
+
+def test_frozen_source_package_status_returns_success_exit_code() -> None:
+    assert gamma_runner._cli_exit_code("FROZEN_SOURCE_PACKAGE_FOR_ONE_FULLTRAIN_GAMMA_FIT") == 0
+    assert gamma_runner._cli_exit_code("PASS_E79_GAMMA_SOURCE_FREEZE") == 0
+    assert gamma_runner._cli_exit_code("BLOCKED_RESOURCE_GATE") == 2
 
 
 def test_global_strength_penalty_is_one_scalar_repeated_across_three_blocks() -> None:
