@@ -1,0 +1,60 @@
+{
+  "fixed_numeric_rule": {
+    "absolute_acceptance": "gap_bound <= max(1e-4, 1e-8*abs(loss_final))",
+    "absolute_excess_objective_bound": "||gradient||_2**2 / (2*c)",
+    "independent_formula_rtol": 1e-12,
+    "independent_gradient_atol": 1e-10,
+    "independent_loss_atol": 1e-08,
+    "loss_nonincrease_tolerance": 1e-08,
+    "objective": "sum(logaddexp(0, -(2*y-1)*(z0+Xpos@gamma))) + 0.5*c*dot(gamma,gamma)",
+    "penalty_c": 1.1859646641031965,
+    "relative_gap_reporting": "diagnostic only; normalized against attained loss; not a second gate",
+    "strong_convexity_mu": 1.1859646641031965
+  },
+  "freeze_sha256": "6490d59a34a98e01321b0d31a1cac44ed6d7427e8758cd454f52a49dd2fa7eb1",
+  "lineage": {
+    "official_train_rows": 50608,
+    "official_train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "original_attempt_marker_sha256": "6d8528b43f0ced71e5cfdbbf0a3369ab08a38012d8acb363869f69f374a703c9",
+    "original_failure": "KeyError('checks')",
+    "original_failure_receipt_sha256": "05058193fb2cfb32e70d4d2d939fa3abf75b3e1aa77a947eda0a9ccddfb70566",
+    "original_fit_count": 1,
+    "original_gamma_artifact_sha256": "4bc240bb6b53eb623f5f099246b70572f987b8c3b0f8dfc123f49029d3c079ab",
+    "original_gamma_source_commit": "50740b680b5b41dffe40f4e81d04774576c81d10",
+    "original_source_freeze_file_sha256": "c4a2c11b10a3d388419a110f96849b76021d3d97819abe06bc32a02b4a1f9658",
+    "original_source_freeze_sha256": "d5a2861cf63c4b5c14d9d1cd241dd6c80c071744ea576a795aae7f30fb4c6a63",
+    "original_source_pass_file_sha256": "947111a76bcd819d807a4fa56e3d0361d89be33b97f848c2bfc9a7a0ab9600ae",
+    "original_source_pass_sha256": "6ad539f116ed2a6368a0302db8137b6dea0b55a44f17013eecf89adee65c63bb",
+    "original_status": "FAIL_E79_GAMMA_FIT_NO_RETRY",
+    "original_terminal_run_commit": "e5438bc07861562dc90bba7748f394e73ca57107",
+    "retry_authorized": false
+  },
+  "output_root": "experiments/runs/optimization_v3_cls_pos_global_strength_e79_v3/gamma_v1/recovery_v1",
+  "policy_id": "CLS_POS_GLOBAL_STRENGTH_E79_GAMMA_ARTIFACT_RECOVERY_V1",
+  "prepared_from_head": "e5438bc07861562dc90bba7748f394e73ca57107",
+  "prohibited_operations": {
+    "csv_writes": 0,
+    "estimator_fit_calls": 0,
+    "network_calls": 0,
+    "optimizer_calls": 0,
+    "predictor_calls": 0,
+    "preprocessing_fit_calls": 0,
+    "rewrite_original_receipt_or_artifact": true,
+    "test_or_sample_reads": 0
+  },
+  "resource_policy": {
+    "free_reserve_bytes_after_build": 1073741824,
+    "incremental_estimate_bytes": 1073741824,
+    "max_threads": 2,
+    "minimum_available_bytes_before_build": 2147483648,
+    "shared_and_cgeom_locks_required": true
+  },
+  "schema_version": 1,
+  "source_file_sha256": {
+    "reports/optimization_v3/cls_pos_global_strength_e79_v3/GAMMA_ARTIFACT_RECOVERY_PROTOCOL.md": "031515fdea387c2372181f5f9a894f06b9edc90ff6554ff6acfc4bf1debac333",
+    "scripts/audit_optimization_v3_cls_pos_global_strength_e79_gamma_recovery_v1.py": "f70f906c96692ad21914604af707bbaaf19f9e508405d8bf60e347b82a92f849",
+    "scripts/verify_optimization_v3_cls_pos_global_strength_e79_gamma_recovery_v1.py": "3d42c6910dbc14b31253af2d738a59a4388d7703ad6cf44914f8dc8d177cdfd8",
+    "tests/test_optimization_v3_cls_pos_global_strength_e79_gamma_recovery_v1.py": "84f51355e7d77a973cf0e1adb32024ee7ea07cba7d824159550b71a21a97bf65"
+  },
+  "status": "FROZEN_ZERO_OPTIMIZER_ARTIFACT_RECOVERY_AUDIT"
+}
