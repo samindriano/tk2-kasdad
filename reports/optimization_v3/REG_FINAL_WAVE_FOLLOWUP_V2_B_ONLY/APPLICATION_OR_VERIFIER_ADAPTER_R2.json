@@ -1,0 +1,64 @@
+{
+  "adapter_kind": "process_runtime_constant_assignment_only",
+  "boundaries": {
+    "test_metrics_computed": false,
+    "test_or_sample_read": false,
+    "train_targets_read": false,
+    "upload_performed": false
+  },
+  "observed_utc": "2026-11-05T04:38:00+00:00",
+  "preserved_r1": {
+    "failure_receipt_sha256": "751ed2267e665cbfc982a97a3b7ba13ff3866de5b09ca02049a4adfde01e7eca",
+    "freeze_path": "experiments/REG_FINAL_WAVE_FOLLOWUP_V2_B_ONLY/B_ONLY_PREFIT_FREEZE.json",
+    "freeze_sha256": "d6279835f8272ae23ac0e90d42a10f26ae2352bc0cebab47461b65e9e678db1d",
+    "used_as_qa_freeze": false
+  },
+  "r2_bindings": {
+    "candidate": "GLOBAL_PRESENT_ONLY_RESTORE_DIRECT_MISSING_E79",
+    "csv_path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\submissions\\reg_final_wave_followup_v2_b_only\\global_present_only_e79.csv",
+    "csv_sha256": "85e6228e664559ba6ef772b9b2165b8aedabf9a1da4367f67f2408c7cca79a19",
+    "freeze_path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\REG_FINAL_WAVE_FOLLOWUP_V2_B_ONLY\\B_ONLY_PREFIT_FREEZE_R2.json",
+    "freeze_sha256": "fca6b271f5ee4d7a6772e47eed77cf0f83d5d1e66886942c250beb0ea527fb41",
+    "manifest_path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\reports\\optimization_v3\\REG_FINAL_WAVE_FOLLOWUP_V2_B_ONLY\\INFERENCE_MANIFEST_B_ONLY.json",
+    "manifest_sha256": "0afdb699fd9f56ad40668437e106e77add91eac19f3ed03501cb0f15d06b2799",
+    "qa_candidate_bound_via_signed_manifest": true,
+    "qa_freeze_sha256": "fca6b271f5ee4d7a6772e47eed77cf0f83d5d1e66886942c250beb0ea527fb41",
+    "qa_manifest_sha256": "0afdb699fd9f56ad40668437e106e77add91eac19f3ed03501cb0f15d06b2799",
+    "qa_path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\reports\\optimization_v3\\REG_FINAL_WAVE_FOLLOWUP_V2_B_ONLY\\INDEPENDENT_QA.json",
+    "qa_sha256": "e533c9fd2aaa2faf27fc0edd229767b356238b3d9f17dbeb47f64bfa9b3997ba"
+  },
+  "runtime_command": "python -c \"import scripts.verify_reg_final_wave_followup_v2_b_only as v; v.FREEZE = v.ROOT / 'experiments/REG_FINAL_WAVE_FOLLOWUP_V2_B_ONLY/B_ONLY_PREFIT_FREEZE_R2.json'; v.verify()\"",
+  "runtime_override": {
+    "constant": "FREEZE",
+    "freeze_sha256": "fca6b271f5ee4d7a6772e47eed77cf0f83d5d1e66886942c250beb0ea527fb41",
+    "module": "scripts.verify_reg_final_wave_followup_v2_b_only",
+    "reason": "the hash-frozen verifier CLI default still points to preserved R1 freeze; R2 path selected explicitly without changing verifier source or relaxing checks",
+    "value": "experiments/REG_FINAL_WAVE_FOLLOWUP_V2_B_ONLY/B_ONLY_PREFIT_FREEZE_R2.json"
+  },
+  "schema_version": 1,
+  "signature": "3da149a2c8cf1b71bbb3d248c1a0a02d207fde5accd35ec4165c1e9e72afb4c3",
+  "signature_method": "SHA-256 canonical JSON integrity seal",
+  "source_or_output_files_modified": false,
+  "status": "PASS_RUNTIME_VERIFIER_ADAPTER_RECORDED",
+  "verified_counts": {
+    "changed_rows_vs_direct": 28359,
+    "changed_rows_vs_frozen_current_best_global": 1062,
+    "full_vector_duplicate_detected": false,
+    "missing_direct_bit_exact": true,
+    "missing_rows": 1062,
+    "present_global_bit_exact": true,
+    "range": [
+      2.169196428141562,
+      99.61371132560167
+    ],
+    "rows": 29421
+  },
+  "verifier": {
+    "current_head": "ae634b4bb18e4623f2fa510036659af62d1130c6",
+    "current_head_descends_from_source_commit": true,
+    "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\scripts\\verify_reg_final_wave_followup_v2_b_only.py",
+    "source_commit": "5a458990d353988cade1f875b166d740fef410c7",
+    "source_sha256": "4ca390fe1cf6e353d0313fc4f2be9adb5af66aa7b889b2850e8724b9a550be7f",
+    "source_sha256_matches_r2_freeze": true
+  }
+}
