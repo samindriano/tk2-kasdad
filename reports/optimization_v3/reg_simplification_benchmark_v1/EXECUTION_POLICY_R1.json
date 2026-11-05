@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "policy_id": "REG_CACHED_VECTOR_PARALLEL_R1",
+  "authority": "User-directed resource-only steering relayed through task 01a19569-16e0-7253-aa14-57a0a3160e03",
+  "lane": "REG",
+  "scope": "Two authorized cached-vector and CSV simplification jobs, one CLS lane and one REG lane",
+  "maximum_concurrent_light_jobs_total": 2,
+  "reg_candidates_serial_within_lane": true,
+  "incremental_memory_estimate_bytes": 536870912,
+  "parallel_start_available_floor_bytes": 2684354560,
+  "minimum_post_run_available_bytes": 1073741824,
+  "heavy_lock_required": false,
+  "heavy_lock_scope": "Large feature matrices and base fits",
+  "per_lane_idempotency_lock_required": true,
+  "active_polling_or_scheduler_allowed": false,
+  "upload_retry_allowed": false,
+  "new_fits_allowed": 0,
+  "test_labels_allowed": false,
+  "data_guards_changed": false,
+  "notes": [
+    "This receipt changes only the resource policy for the frozen cached-vector and CSV QA stage.",
+    "The 2.5 GiB start floor, 512 MiB estimate, 1 GiB projected and post-run reserve, two-job global cap, and lane-specific lock are required.",
+    "No source, test-label, training, predictor, preprocessing, calibrator, selection, or local-gate boundary is weakened."
+  ]
+}
