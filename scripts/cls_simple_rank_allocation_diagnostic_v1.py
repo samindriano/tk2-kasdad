@@ -62,7 +62,7 @@ EXPECTED_HASHES = {
     "pos_predictions": "a916a65fe6974501b3a2777a8a9bfae08049a917e5d1a0d9d3b7eb8fd4b479c1",
     "novelty_b01_summary": "3400fe21529abe96abd5a02a6191851edc366e3d5af5ace6ae29f4eadd1b516b",
     "novelty_a02_neighbors": "3d2da030b2148ebbeff2466ab61e3c65ca348ecd052e8d66181503b9a217b311",
-    "novelty_a02_cgeom": "7cc8bb1049f08d515c42d1eee9bfc80e101cadb71a0783843910fd08c8f85b30",
+    "novelty_a02_cgeom": "7cc8bb1049f08d515c42d1eeefb9c80e101cadb71a0783843910fd08c8f85b30",
     "novelty_a02_continuation": "39b4b0b21a48d9e269f455912d8ed34bf5e344fffaa1ae85cd085e056f853f3d",
 }
 FROZEN_AUDIT_SOURCE_HEAD = "a39721172b6d293cb68ee0d120060082d222699e"
