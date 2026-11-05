@@ -1,0 +1,147 @@
+{
+  "allowed_npz_members": {
+    "67": [
+      "E67_ids",
+      "E67_cycles",
+      "E67_missing",
+      "E67_y",
+      "E67_pA",
+      "E67_pP"
+    ],
+    "75": [
+      "E75_ids",
+      "E75_cycles",
+      "E75_missing",
+      "E75_y",
+      "E75_pA",
+      "E75_pP"
+    ]
+  },
+  "branch": "codex/cls-simple-rank-allocation-diagnostic-v1",
+  "diagnostic_id": "CLS_SIMPLE_RANK_ALLOCATION_DIAGNOSTIC_V1_CORRECTED",
+  "frozen_at_utc": "2026-11-05T14:20:43.230424+00:00",
+  "input_hashes": {
+    "a02_policy_predictions": "25d1d2b91348a57d33b3b0e5ce78da29840d115b75e24f9502cc83c1b63ef351",
+    "audit_decisions": "e9ef07ff4a364951ca13598f4601aff4d4b005fa5bc3855382e6b028f279157d",
+    "audit_findings": "5073d955f5d2b932bef7e18df1b8498adec3885873867d64da3f5b272e4cc000",
+    "audit_input_freeze": "d1f8f77864c1b2c1df8dc11732ffb61b68ac08f5e0b37ded48abf33f7506ac56",
+    "audit_next_simple_research": "702ea7ca9da8fa647e60d3d4b4c89a33f3b24b05bc03f43c80282a3bc2c04a07",
+    "audit_protocol": "907c2b1323ea759a057527aabb043ae2179039bc67596dcd03a385187da62b55",
+    "audit_results": "6db199169bce9d131d530c77f63d7720cb37e9f98a5f1080a52afdbaa45882af",
+    "audit_script": "b943e16f459d78fec736a801ac917f925737a266d13d3c160f6dae4b06ef3edc",
+    "audit_verification": "3c342d1e30a41fa882a4b6fed241b9212c533a3138980124d91a3ae6fbac35ac",
+    "light_parallel_policy": "235de024810c602635a518851438ffd9e6e45f55e7451b3adffd749cb89f955e",
+    "novelty_a02_cgeom": "7cc8bb1049f08d515c42d1eeefb9c80e101cadb71a0783843910fd08c8f85b30",
+    "novelty_a02_continuation": "39b4b0b21a48d9e269f455912d8ed34bf5e344fffaa1ae85cd085e056f853f3d",
+    "novelty_a02_neighbors": "3d2da030b2148ebbeff2466ab61e3c65ca348ecd052e8d66181503b9a217b311",
+    "novelty_b01_summary": "3400fe21529abe96abd5a02a6191851edc366e3d5af5ace6ae29f4eadd1b516b",
+    "pos_predictions": "a916a65fe6974501b3a2777a8a9bfae08049a917e5d1a0d9d3b7eb8fd4b479c1"
+  },
+  "novelty_review": {
+    "documents": [
+      "novelty_b01_summary",
+      "novelty_a02_neighbors",
+      "novelty_a02_cgeom",
+      "novelty_a02_continuation"
+    ],
+    "exact_duplicate_found": false,
+    "note": "B01 has matched-positive-count tables but compares B01/A02/Sparse25, not the frozen POS half-blend against A02."
+  },
+  "prohibited": {
+    "e79_access": false,
+    "kaggle_access": false,
+    "new_fits": 0,
+    "new_model_inference": 0,
+    "raw_train_label_access": false,
+    "test_or_sample_access": false
+  },
+  "recipe": {
+    "auc_ap": "present rows only; descriptive, not causal",
+    "complex_present": "0.5*pP + 0.5*pA; >= 0.50",
+    "matched_policy": "within complete origin-cycle; compare top-K pA and top-K complex score",
+    "missing_for_all_operational_full_rows": "pA/CB fallback; >= 0.53230976129477",
+    "origin_sensitivity": "within origin and selected view block; unique pool keeps E67/E75 blocks separate",
+    "simple_present": "pA; >= 0.50",
+    "tie_rule": "descending score, then ascending string record_id",
+    "topk_count_source": "fixed-threshold predictions only; labels are excluded from K selection"
+  },
+  "resource_policy": {
+    "max_incremental_bytes": 536870912,
+    "minimum_available_at_boundaries_bytes": 805306368,
+    "minimum_available_at_start_bytes": 1610612736,
+    "per_lane_lock_required": true,
+    "policy_mode": "single-job saved-vector replay; original shared-lock gate",
+    "policy_source": "907c2b1323ea759a057527aabb043ae2179039bc67596dcd03a385187da62b55",
+    "shared_heavy_lock": "C:\\Users\\Sam\\AppData\\Local\\Temp\\kasdad_single_heavy_job.lock"
+  },
+  "root_audit": {
+    "artifact_head_at_freeze": "4a19c727323535c418674d39e72b50fad73a22a4",
+    "source_head": "a39721172b6d293cb68ee0d120060082d222699e",
+    "working_tree_clean": true
+  },
+  "root_audit_input_freeze_sha256": "d1f8f77864c1b2c1df8dc11732ffb61b68ac08f5e0b37ded48abf33f7506ac56",
+  "schema_version": 1,
+  "software_versions": {
+    "matplotlib": "3.10.5",
+    "numpy": "2.4.2",
+    "psutil": "7.0.0",
+    "python": "3.13.5",
+    "scikit-learn": "1.8.0"
+  },
+  "source_commit": "9e88ba50b6825385c42a4a9146a65cf835d438fa",
+  "source_hashes": {
+    "reports/optimization_v3/cls_simple_rank_allocation_diagnostic_v1_corrected/PROTOCOL.md": "616c5e02c6cbae456e0e3b223b68ca182bffa3a89fd46a2c4e31e527793770e6",
+    "scripts/cls_simple_rank_allocation_diagnostic_v1.py": "9dbe434adfc2a4aa0c93c543dd7af1dfae62e72872f0d4c80f788945a9efb17c",
+    "scripts/verify_cls_simple_rank_allocation_diagnostic_v1.py": "2c78cbb84c028ae1fffcfa8d7a137efde4bc1c093fcfcba07e97b55e7fdebfdc"
+  },
+  "status": "FROZEN_BEFORE_CACHED_VECTOR_ACCESS",
+  "views": {
+    "E67_H12": [
+      [
+        67,
+        68,
+        79
+      ]
+    ],
+    "E67_W4": [
+      [
+        67,
+        68,
+        71
+      ]
+    ],
+    "E67_W5": [
+      [
+        67,
+        72,
+        75
+      ]
+    ],
+    "E67_W6": [
+      [
+        67,
+        76,
+        79
+      ]
+    ],
+    "E75_W6": [
+      [
+        75,
+        76,
+        79
+      ]
+    ],
+    "UNIQUE": [
+      [
+        67,
+        68,
+        75
+      ],
+      [
+        75,
+        76,
+        79
+      ]
+    ]
+  }
+}
