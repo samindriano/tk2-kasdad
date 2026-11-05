@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "campaign_id": "CLS_POS_FREQUENCY_RIDGE_V1",
+  "state": "SOURCE_PREPARATION_ONLY",
+  "checkpoint_commit": "a92e5df980d85ff7f4c4e402929d1c7761010b46",
+  "question": "Does prefix-only token document frequency used as a diagonal ridge penalty improve the frozen three-third positional gamma component?",
+  "historical_evidence": {
+    "pos_bag_freeze": "experiments/runs/optimization_v3_research_next_v1/POS_BAG_OFFSET_V1/FREEZE.json",
+    "pos_bag_freeze_sha256": "5d754b99cf1beb789baec9707652cd9c3842ea95933c0ecc21be515f62eaef9d",
+    "pos_bag_signature": "ba58b1e446a6be8546789c5a56596fbdbf075efc0ee19fcc1f41e02af7b419d7",
+    "position_pilot_freeze": "experiments/runs/optimization_v3_research_next_v1/POSITIONAL_TEXT_PILOT_V1/FREEZE.json",
+    "position_pilot_freeze_sha256": "4e362e41b36b28a79be33deae881cfcad353d68bc044129c3f969860733e23b1",
+    "fit_accounting": "reports/optimization_v3/positional_text_pilot_v1/FIT_ACCOUNTING.json",
+    "fit_accounting_sha256": "c7e70dde6f97ec5a391221e4721be726878927200800388eaafcbcb6ae13b76b",
+    "prior_shared_ledger_sha256_at_checkpoint": "6fd0ca3d43cb8145e2c0bc50b278a5eb4b424d71500a80c4414332e87a8aa57a"
+  },
+  "input": {
+    "path": "data/raw/classification/Train.csv",
+    "sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "rows": 50608,
+    "cycle_min": 47,
+    "cycle_max": 79,
+    "fit_target": "artifact_signal",
+    "identity_columns": ["record_id", "cycle_code"]
+  },
+  "pilot_origins": {
+    "E67": {
+      "fit_rows": 29705,
+      "score_rows": 20903,
+      "fit_cycles": [47, 67],
+      "score_cycles": [68, 79],
+      "matrix_manifest_sha256": "d8d672c26771944bc2bb6eee907e9bef903959fbc62d9f5df3aaab7f7cb28028",
+      "prediction_bundle_sha256": "2f22c68aca959baad6cd4244e05f96b702b4b89dfdc83f82c8edde6cf465d444",
+      "fit_base_shape": [29705, 20285],
+      "fit_augmented_shape": [29705, 37310],
+      "vocabulary_size": 5675
+    },
+    "E75": {
+      "fit_rows": 42117,
+      "score_rows": 8491,
+      "fit_cycles": [47, 75],
+      "score_cycles": [76, 79],
+      "matrix_manifest_sha256": "67ec3f9bd376f5f4dad2afbd5e13ee5fd8316126fa3894ef676fa40077166fc5",
+      "prediction_bundle_sha256": "83e5beb9b10be4d395df4a2292cb464625f356e5e77a76a232b92f007c1b1306",
+      "fit_base_shape": [42117, 20371],
+      "fit_augmented_shape": [42117, 37540],
+      "vocabulary_size": 5723
+    }
+  },
+  "new_preprocessing": {
+    "maps": 2,
+    "population": "each origin's fit-prefix position matrix only",
+    "document_frequency": "number of documents with a token present in any of the three ordered positional thirds",
+    "raw_weight": "clip(sqrt(median(df)/df_j), 0.5, 2.0)",
+    "normalization": "divide by mean raw weight so mean penalty equals 1",
+    "aligned": "repeat normalized token weights in original vocabulary order for all three thirds",
+    "permuted": "rng.default_rng(42).permutation(V) applied once per origin, then repeated for all thirds",
+    "no_score_or_test_statistics": true
+  },
+  "objective": {
+    "formula": "sum_i logloss(y_i, z0_i + Xpos_i @ gamma) + 0.5 * sum_k(W_k * gamma_k^2)",
+    "offset": "frozen same-origin C2_B bag logit; unchanged coefficients and intercept",
+    "optimizer": "L-BFGS-B",
+    "options": {"maxiter": 2000, "ftol": 1e-12, "gtol": 1e-6, "maxls": 50},
+    "acceptance": "inherited POS_BAG_OFFSET success, finite gamma/objective/gradient and non-increasing objective; no retry or rescue"
+  },
+  "authorized_fit_ids": [
+    "E67_ALIGNED",
+    "E67_PERMUTED",
+    "E75_ALIGNED",
+    "E75_PERMUTED"
+  ],
+  "fit_cap": 4,
+  "execution_guards": {
+    "requires_committed_root_source_pass": true,
+    "one_project_job": true,
+    "threads": 2,
+    "initial_available_ram_min_bytes": 4294967296,
+    "free_ram_reserve_bytes": 2147483648,
+    "rss_limit_bytes": 6442450944,
+    "target_access": "fit rows only, after frozen source and row-ID verification",
+    "test_or_sample_submission": false,
+    "kaggle": false
+  },
+  "scope_reconciliation": {
+    "user_reply_received": "Ya, otorisasi satu benchmark E79",
+    "current_action": "recorded for Sol review only; does not alter this four-fit source freeze or permit Test access until a separately committed amendment and ROOT_SOURCE_PASS"
+  }
+}
