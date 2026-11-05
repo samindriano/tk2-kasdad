@@ -20,6 +20,11 @@ This is a one-slot, diagnostic benchmark. It does not replace a champion.
 - Commit the source and a pre-fit freeze of Train, OOF, canonical E79, Test,
   SampleSubmission, upstream E79 evidence, root authorization, and comparison
   CSV hashes before the sole official calibration fit.
+- `PRE_FIT_FREEZE_V2.json` supersedes the committed V1 pre-fit snapshot because
+  the audit repo later advanced with an unrelated regression report; the
+  authorization file stayed byte-identical and its authorizing commit remains
+  an ancestor. V1 is retained and the record confirms no official fit or label
+  read happened under it.
 - Do not open E79 probabilities until `fits/FINAL.json` durably freezes the
   learned threshold. Then use only the existing canonical E79 `a02_probability`
   and `missing_mask` arrays. Read Test `record_id` and `signal_stream` only;
@@ -38,7 +43,7 @@ This is a one-slot, diagnostic benchmark. It does not replace a champion.
 
 ## Commands
 
-After `PRE_FIT_FREEZE.json` has been created and committed, run from the repo:
+After `PRE_FIT_FREEZE_V2.json` has been created and committed, run from the repo:
 
 ```powershell
 python scripts/cls_simple_present_threshold_final_v1.py fit

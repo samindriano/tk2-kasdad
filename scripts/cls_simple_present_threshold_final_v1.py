@@ -34,7 +34,7 @@ AUTH_COMMIT = "1facbf6b125b9aba23fc0423226f33687adaefa2"
 
 OUT = ROOT / "reports/optimization_v3/cls_simple_present_threshold_final_v1"
 RUN = ROOT / "experiments/runs/cls_simple_present_threshold_final_v1"
-FREEZE = OUT / "PRE_FIT_FREEZE.json"
+FREEZE = OUT / "PRE_FIT_FREEZE_V2.json"
 FIT_RECEIPT = RUN / "fits/FINAL.json"
 APPLY_RECEIPT = RUN / "apply/E79_APPLIED.json"
 LEDGER = RUN / "LEDGER.jsonl"
@@ -75,6 +75,7 @@ INPUTS = {
     "threshold_d1_d2_release": pilot.OUT / "ROOT_RELEASE_D1_D2.json",
     "threshold_postfit_audit": pilot.OUT / "POSTFIT_INDEPENDENT_AUDIT.json",
     "root_final_authorization": AUTH_PATH,
+    "superseded_pre_fit_freeze_v1": OUT / "PRE_FIT_FREEZE.json",
     "pilot_producer": ROOT / "scripts/cls_simple_present_threshold_v1.py",
     "pilot_independent_verifier": ROOT / "scripts/verify_cls_simple_present_threshold_v1.py",
     "pilot_postfit_auditor": ROOT / "scripts/audit_cls_simple_present_threshold_v1_postfit.py",
@@ -155,8 +156,15 @@ def _git(repo: Path, *args: str) -> str:
 def _auth_check() -> None:
     if not AUTH_PATH.is_file() or sha256_file(AUTH_PATH) != AUTH_SHA256:
         raise RuntimeError("Root final authorization is missing or changed")
-    if _git(AUDIT_ROOT, "rev-parse", "HEAD") != AUTH_COMMIT:
-        raise RuntimeError("Root authorization checkout HEAD changed; verify the new checkpoint before work")
+    status = _git(AUDIT_ROOT, "status", "--porcelain", "--", AUTH_REL)
+    if status:
+        raise RuntimeError("Root authorization file has uncommitted changes")
+    ancestor = subprocess.run(["git", "-C", str(AUDIT_ROOT), "merge-base", "--is-ancestor", AUTH_COMMIT, "HEAD"], check=False)
+    if ancestor.returncode != 0:
+        raise RuntimeError("Authorized root commit is not an ancestor of the current audit checkout")
+    committed_auth = subprocess.check_output(["git", "-C", str(AUDIT_ROOT), "show", f"{AUTH_COMMIT}:{AUTH_REL}"])
+    if hashlib.sha256(committed_auth).hexdigest() != AUTH_SHA256:
+        raise RuntimeError("Authorization commit does not contain the expected final decision")
 
 
 def _validate_upstream_e79() -> None:
@@ -287,6 +295,11 @@ def create_pre_fit_freeze(*, train_path: Path = TRAIN, oof_path: Path = OOF_CACH
         "synthetic_fixture_only": synthetic,
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "authorization": {"path": _path_label(AUTH_PATH), "sha256": AUTH_SHA256, "source_commit": AUTH_COMMIT},
+        "supersedes": {
+            "path": "reports/optimization_v3/cls_simple_present_threshold_final_v1/PRE_FIT_FREEZE.json",
+            "sha256": input_hashes["superseded_pre_fit_freeze_v1"],
+            "reason": "Root audit branch advanced after V1 freeze; the authorized file stayed byte-identical and its commit remains an ancestor. No official fit or label read occurred under V1.",
+        },
         "source_commit": _git(ROOT, "rev-parse", "HEAD"),
         "source_hashes": _source_hashes(),
         "input_hashes": input_hashes,

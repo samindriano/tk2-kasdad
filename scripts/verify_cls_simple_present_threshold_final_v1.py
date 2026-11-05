@@ -20,7 +20,7 @@ AUTH_PATH = AUDIT_ROOT / "reports/simplification_v1/CLS_SIMPLE_THRESHOLD_FINAL_A
 AUTH_SHA256 = "80359910f2befbf694de87fa5180b0c2c6e0c9d3ec40fc1a9c3589d569fc1375"
 AUTH_COMMIT = "1facbf6b125b9aba23fc0423226f33687adaefa2"
 OUT = ROOT / "reports/optimization_v3/cls_simple_present_threshold_final_v1"
-FREEZE = OUT / "PRE_FIT_FREEZE.json"
+FREEZE = OUT / "PRE_FIT_FREEZE_V2.json"
 RUN = ROOT / "experiments/runs/cls_simple_present_threshold_final_v1"
 OUTPUT_CSV = ROOT / "submissions/optimization_v3/cls_simple_present_threshold_final_v1/classification_threshold_final.csv"
 TRAIN = ROOT / "data/raw/classification/Train.csv"
@@ -243,6 +243,7 @@ def _mapped_inputs(freeze: dict[str, Any], train: Path, oof: Path, e79: Path, te
         "threshold_d1_d2_release": ROOT / "reports/optimization_v3/cls_simple_present_threshold_v1/ROOT_RELEASE_D1_D2.json",
         "threshold_postfit_audit": ROOT / "reports/optimization_v3/cls_simple_present_threshold_v1/POSTFIT_INDEPENDENT_AUDIT.json",
         "root_final_authorization": AUTH_PATH,
+        "superseded_pre_fit_freeze_v1": OUT / "PRE_FIT_FREEZE.json",
         "pilot_producer": ROOT / "scripts/cls_simple_present_threshold_v1.py",
         "pilot_independent_verifier": ROOT / "scripts/verify_cls_simple_present_threshold_v1.py",
         "pilot_postfit_auditor": ROOT / "scripts/audit_cls_simple_present_threshold_v1_postfit.py",
@@ -297,8 +298,13 @@ def verify_final_candidate(*, freeze_path: Path = FREEZE, train_path: Path = TRA
             raise ValueError(f"Frozen input provenance mismatch: {key}")
     checks.append("all_source_and_input_hashes")
     if not synthetic:
-        if sha(AUTH_PATH) != AUTH_SHA256 or subprocess.check_output(["git", "-C", str(AUDIT_ROOT), "rev-parse", "HEAD"], text=True).strip() != AUTH_COMMIT:
-            raise ValueError("Root authorization changed")
+        if sha(AUTH_PATH) != AUTH_SHA256 or subprocess.check_output(["git", "-C", str(AUDIT_ROOT), "status", "--porcelain", "--", "reports/simplification_v1/CLS_SIMPLE_THRESHOLD_FINAL_AUTHORIZATION.md"], text=True).strip():
+            raise ValueError("Root authorization file changed or is uncommitted")
+        if subprocess.run(["git", "-C", str(AUDIT_ROOT), "merge-base", "--is-ancestor", AUTH_COMMIT, "HEAD"], check=False).returncode != 0:
+            raise ValueError("Authorized root commit is not an ancestor of the audit checkout")
+        auth_blob = subprocess.check_output(["git", "-C", str(AUDIT_ROOT), "show", f"{AUTH_COMMIT}:reports/simplification_v1/CLS_SIMPLE_THRESHOLD_FINAL_AUTHORIZATION.md"])
+        if hashlib.sha256(auth_blob).hexdigest() != AUTH_SHA256:
+            raise ValueError("Pinned authorization commit does not contain the expected decision")
         checks.append("root_authorization_commit_and_hash")
 
     pool = _load_training_inputs(train_path, oof_path) if not synthetic else _load_synthetic_pool(train_path, oof_path)
