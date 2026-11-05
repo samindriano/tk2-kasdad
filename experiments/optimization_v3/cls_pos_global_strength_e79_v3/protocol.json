@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "experiment_id": "CLS_POS_GLOBAL_STRENGTH_E79_V3",
+  "status": "SOURCE_COMPATIBILITY_REPLAY_R3_AUTHORIZED",
+  "research_question": "Does the mean-matched global-strength positional penalty produce a useful E79 benchmark under the already frozen C2_B/A02 source boundary?",
+  "interpretation": "Exploratory benchmark only. A good result cannot retroactively qualify the retired one-sided arm or establish a rare-token mechanism.",
+  "fit_population": {
+    "source": "official Classification Train",
+    "train_path": "data/raw/classification/Train.csv",
+    "train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "rows": 50608,
+    "cycles": [47, 79],
+    "target_column": "artifact_signal",
+    "target_values_allowed_only_after_separate_root_pass": true
+  },
+  "reused_fulltrain_states": {
+    "a02_model_path": "experiments/runs/optimization_v3_a02_continuation_v1/E79/fulltrain_observed/model.joblib",
+    "a02_model_sha256": "2791eddf410c7e81b119bde2a0b1d33a694eed4de84027c61cee97f6668dcb6e",
+    "a02_fit_receipt_sha256": "11a7e46b6595e92a421e358b8e7e3a5ffbac8a6db69c64c9c33fd3d5c5bd7d77",
+    "c2b_lr_fit_id": "A02_CGEOM_BENCHMARK_V1_E79_C2B_LR_INTEGRATION_R1",
+    "c2b_lr_artifact_sha256": "40b9588e1cd2f93350fe09ffc69efa9bf0bcb6927e6b8a2bc0192a4a6235ca80",
+    "uniform_pos_fit_id": "A02_CGEOM_BENCHMARK_V1_E79_POS_BAG_OFFSET_GAMMA_INTEGRATION_R1",
+    "uniform_pos_artifact_sha256": "d741d016f990d8742208edc919f5c58305b7579980d059b202609df4e5b3e650",
+    "reuse_condition": "Exact frozen full-Train receipt/hash/state verification only; no base model, vocabulary, IDF, or A02 refit."
+  },
+  "positional_design": {
+    "source_feature_transform": "saved E79 A02 text vectorizer and src.models.optimization_v3_positional_text_pilot_v1.build_position_block",
+    "shape": [50608, 17259],
+    "nnz": 1638979,
+    "logical_sha256": "32268550b8220dbfb43f5c92c33cd84554f0bced446d1459c5c55c3eabbf9942",
+    "feature_order": "three segment-major blocks (first, middle, final), with unigrams in saved vectorizer index order",
+    "missing_stream": "zero positional row; all 50,608 Train rows remain in the historical fit population"
+  },
+  "penalty_recipe": {
+    "df": "count a token once per Train row if present in any of the three positional blocks",
+    "aligned_map": "raw=clip(sqrt(median_df/df),0.5,2.0); aligned=raw/mean(raw)",
+    "permutation_seed": 42,
+    "global_strength": "v=max(1,aligned); c=mean(v); penalty=full(3*V,c)",
+    "tuning_allowed": false,
+    "objective_and_optimizer": "Reuse src.models.pos_one_sided_ridge_v1.fit_offset without changes."
+  },
+  "deployment_recipe_after_new_root_pass": {
+    "present_stream_probability": "0.5 * new_global_strength_POS + 0.5 * frozen pA",
+    "present_stream_threshold": 0.5,
+    "missing_stream_probability": "frozen pA exactly",
+    "missing_stream_threshold": 0.53230976129477,
+    "test_or_sample_access": "Not allowed during this source-preparation checkpoint."
+  },
+  "r2_correction_preserved": {
+    "r1_attempt_preserved": true,
+    "canonical_feature_request": "list(dict.fromkeys(['record_id', 'cycle_code', *CLASSIFICATION_FEATURES])) before pandas.read_csv",
+    "target_columns_forbidden_in_request_and_result": ["artifact_signal", "threat_rank"],
+    "returned_columns_must_be_unique_and_exact_set": true,
+    "synthetic_csv_and_matrix_plumbing_qa_required_before_replay": true
+  },
+  "r3_repair": {
+    "r1_and_r2_evidence_preserved": true,
+    "matrix_digests_must_be_derived_from_returned_matrices": true,
+    "synthetic_execute_payload_json_write_readback_and_independent_verifier_required": true,
+    "recursive_symtable_global_check_for_runner_and_verifier_required": true,
+    "retry_count_after_r3_repair": 1
+  },
+  "current_checkpoint": {
+    "source_compatibility_attestation": "committed_before_replay",
+    "saved_state_feature_replay_r1": "failed before transforms; immutable",
+    "saved_state_feature_replay_r2": "matrices passed parity but receipt construction failed; immutable",
+    "saved_state_feature_replay_r3": "one authorized feature-only attempt after synthetic E2E QA and commit",
+    "official_fit_started": false,
+    "e79_inference_started": false,
+    "new_df_map_created": false,
+    "new_gamma_created": false,
+    "test_or_sample_loaded": false,
+    "csv_created": false,
+    "kaggle_contacted": false,
+    "separate_root_source_pass_required": true
+  }
+}
