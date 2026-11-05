@@ -1,0 +1,826 @@
+{
+  "attestation_id": "CLS_POS_GLOBAL_STRENGTH_E79_SOURCE_COMPATIBILITY_V2",
+  "attestation_sha256": "efd340d5ced47ce4959cfc19c89ebc621a0223651621e4f8929673843c32a8b9",
+  "authorization": {
+    "decision": "GO_TARGET_FREE_COMPATIBILITY_REPLAY",
+    "path": "reports/optimization_v3/cls_pos_global_strength_e79_v1/SOL_COMPATIBILITY_REPLAY_AUTHORIZATION.md",
+    "sha256": "9d0729d1f19793dfb79cc3024be868e44f8ff97020147cd0af2d91ff5df6b6e3"
+  },
+  "boundaries": {
+    "estimator_fit_calls": 0,
+    "inference_or_submission": false,
+    "new_df_map": false,
+    "new_gamma": false,
+    "new_vocabulary_or_idf_fit": false,
+    "official_train_columns_only": [
+      "record_id",
+      "cycle_code",
+      "CLASSIFICATION_FEATURES"
+    ],
+    "target_column_read": false,
+    "test_or_sample_read": false
+  },
+  "correction_note": {
+    "fix": "Deduplicate the ordered record_id/cycle_code/feature request before CSV read, then validate exact unique columns and reject target names in both request and result.",
+    "path": "reports/optimization_v3/cls_pos_global_strength_e79_v2/CORRECTION_NOTE.md",
+    "preserves_r1_failure": true,
+    "sha256": "870b55b360a70486e3efcc0e362532ce4fe76367f376b9ca5ae2a3d4df0e9406"
+  },
+  "current_source_sha256": {
+    "experiments/optimization_v3/cls_pos_global_strength_e79_v2/protocol.json": "6cdd19cfdce8351470bf5fd2f3549cf5794a6fc382247c69b05cfa29420c81a9",
+    "reports/optimization_v3/cls_pos_global_strength_e79_v2/CORRECTION_NOTE.md": "870b55b360a70486e3efcc0e362532ce4fe76367f376b9ca5ae2a3d4df0e9406",
+    "scripts/optimization_v3_a02_cgeom_benchmark_v1.py": "d6af3f3e18787c9cd1e5c52b1463fb30e18398cee6e3dc838e5227cf30a50a3f",
+    "scripts/optimization_v3_cls_pos_global_strength_e79_v2.py": "08654eab445b5b3e51574dfa4d7d416f3684670d4dc3722cb821ea44a4d1c59e",
+    "scripts/verify_optimization_v3_cls_pos_global_strength_e79_v2.py": "ac06d3f4136d93d74638b2535aef728f5f14ed9a970bca9f1f03da2753770b8e",
+    "src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+    "src/models/optimization_v3_positional_text_pilot_v1.py": "390d9585a91440cc83314d2fa58acfebf374371032308937489019c2bd242c36",
+    "src/models/positional_text_features.py": "d4ef29f5b8942e04f221cdad5e9d93f7a96f76f485cae8bdc80fbbc8557cb24e",
+    "src/models/round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+    "tests/test_cls_pos_global_strength_e79_v2.py": "c84eb32d6957f9b9a0041f45ae7038c2f2feb16905a4205119029ff911cbbeb7",
+    "tests/test_optimization_v3_a02_cgeom_benchmark_v1.py": "9a651df8fed669c10865244ad5fa60f37039c130d68a22c0bf54007f17ba298a"
+  },
+  "numerical_helper_closure_symbol_sha256": {
+    "scripts/optimization_v3_a02_cgeom_benchmark_v1.py:_state_summary": "6a88489d3c07fe213f97084dc11f0d11aa4fa69eac24fa4b5e2af604f1a6f547",
+    "scripts/optimization_v3_a02_cgeom_benchmark_v1.py:audit_c2b_vectorizer_compatibility": "4e5ff89b9445aa536bfdfc9bdc15e9f67c49ac6c80332ca54e736b3848de4acd",
+    "scripts/optimization_v3_cls_pos_global_strength_e79_v2.py:assemble_and_validate_matrices": "a7206e76d48f82d110048a9e18c100c1789b55963d2f7e70562bf496c9153f54",
+    "scripts/optimization_v3_cls_pos_global_strength_e79_v2.py:canonical_feature_columns": "ba00864199c8b392e5873782f270b7726a1b4e31a1b58558c876fb42eee801d1",
+    "scripts/optimization_v3_cls_pos_global_strength_e79_v2.py:read_feature_csv": "737b895bad95a1376ea5eb12428cbe841d7ca7b6bd20fabcf32c150a0f6e748f",
+    "scripts/optimization_v3_cls_pos_global_strength_e79_v2.py:validate_feature_frame_columns": "4ab6898602afe71950b1ec3ba7e77598c164118fb5b6289cc710b50e89d462cb",
+    "src/models/classification_models.py:ClassificationModel._category_tokens": "5861d3a3726c92f8427a669babe10b00c102bded9fedd1f3bfe1dc5c4bb9b664",
+    "src/models/classification_models.py:_text_values": "e15843ea69ecd7a20bb83368df71f2ac813e69fe4d4bf918661cd7cb7af41a92",
+    "src/models/optimization_v3_positional_text_pilot_v1.py:_c2b_category_tokens": "3e8560cb02f59e00506049384e1f0dd627309a3edc1faaeb45dbebceeea1eded",
+    "src/models/optimization_v3_positional_text_pilot_v1.py:build_position_block": "0d7bc6da82869e7d57263368c1fbeafccac9adfd6c6f0da7ce1869d9f06cd5d5",
+    "src/models/optimization_v3_positional_text_pilot_v1.py:canonical_sha256": "84d37a4a2ac986029b5f54461355b47e65759c9fe87a9f4ca55cd624fc7f83fb",
+    "src/models/optimization_v3_positional_text_pilot_v1.py:sha256_array": "f8af83db80b667b1a3b995c01d1dce05fbb3136503a9ca57c92a210929ecd3b9",
+    "src/models/optimization_v3_positional_text_pilot_v1.py:sha256_csr": "e2cc2760234f3f10d396fbab6a2c63404b478644d4e72580d6a5d622026e8b42",
+    "src/models/optimization_v3_positional_text_pilot_v1.py:structured_state_sha256": "58d2624f77934f6451829ae041cbba0fd21016ddbbbc473ce9ee90c254547562",
+    "src/models/optimization_v3_positional_text_pilot_v1.py:transform_c2b_structured": "c031d695f7ca82b192fbe37daa280d98f3673c740479bfef75fe9bbd6a6aada6",
+    "src/models/optimization_v3_positional_text_pilot_v1.py:transform_c2b_text": "9912fb731e527e7e3c863cce671dc74680941463210a7a946fce5126b0712a60",
+    "src/models/optimization_v3_positional_text_pilot_v1.py:validate_feature_frame": "79b0948f4d7c9683882d884e8bdf0250b14a925b7f2187d0e09014d42709e950",
+    "src/models/positional_text_features.py:token_thirds": "ef1625bfcf986fccc1c2434ec1fe851ec96cd1e269f0c73034f5114645827348",
+    "src/models/round1_models.py:_HGBPreprocessor._raw_matrix": "0d04df5df2ce94174d2e511097c362d621f87e37d0d140035a665c1fee7764ef",
+    "src/models/round1_models.py:_HGBPreprocessor.transform": "8f8505096b4eb3476e9d451e087921105af15af282ee95a32a0afe1e095de063"
+  },
+  "prepared_from_commit": "7766a9e833e54402e534c52240cffd282e4a6b1e",
+  "producer_provenance": {
+    "scaler_ohe": {
+      "commit": "4480f74ac909da4641fb9278dd9b536f66d8889d",
+      "make_fit_payload_body_sha256": "1efc9576dbc0ec08b4c29ee66951a3b0d78a1b1d269170c751d2c3dc08e3b698",
+      "numerical_helper_blob_sha256": {
+        "src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+        "src/models/optimization_v3_positional_text_pilot_v1.py": "390d9585a91440cc83314d2fa58acfebf374371032308937489019c2bd242c36",
+        "src/models/positional_text_features.py": "d4ef29f5b8942e04f221cdad5e9d93f7a96f76f485cae8bdc80fbbc8557cb24e",
+        "src/models/round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4"
+      },
+      "producer_blob_sha256": {
+        "scripts/optimization_v3_a02_cgeom_benchmark_v1.py": "ea011537a29ffd75aa7695dfb7df7a0bc4af4a311cf05158b6b2a8c53a03d694",
+        "tests/test_optimization_v3_a02_cgeom_benchmark_v1.py": "ed96e928e1da80fcd8cd5b57e56975a6ac3b524bab2cd4e534dd7554a3d930a5"
+      }
+    },
+    "structured": {
+      "commit": "88ae68653a02898051a2ac12f780e8b12ec9c2d4",
+      "make_fit_payload_body_sha256": "1efc9576dbc0ec08b4c29ee66951a3b0d78a1b1d269170c751d2c3dc08e3b698",
+      "numerical_helper_blob_sha256": {
+        "src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+        "src/models/optimization_v3_positional_text_pilot_v1.py": "390d9585a91440cc83314d2fa58acfebf374371032308937489019c2bd242c36",
+        "src/models/positional_text_features.py": "d4ef29f5b8942e04f221cdad5e9d93f7a96f76f485cae8bdc80fbbc8557cb24e",
+        "src/models/round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4"
+      },
+      "producer_blob_sha256": {
+        "scripts/optimization_v3_a02_cgeom_benchmark_v1.py": "abc348edbace18cc0b6c08a78746a07cbbafbf694fdd3f1b9a5c0fb513281e5a",
+        "tests/test_optimization_v3_a02_cgeom_benchmark_v1.py": "15c7fd2e11a18147bde05a39dbc44c1d43497b633379102dc9d401d28c26298d"
+      }
+    }
+  },
+  "saved_inputs_and_fitted_state_receipts": {
+    "a02_compatibility_reference": {
+      "fit_documents_sha256": "58391220574a415188cf99240b64ab40fb6ddb8e6d6e8b8d97da21c5a6255ff5",
+      "fit_row_positions_sha256": "b3412a08e9f0877cc37ef9615479de0d182a21b9806068c2d576ed06ae495bb2",
+      "idf_sha256": "cf5d87967ea65aa3a97e940f0024bc7f115c17c758e9129ce6a96fcd8c681c5f",
+      "status": "PASS_A02_FULLTRAIN_TFIDF_FEATURE_COMPATIBILITY",
+      "target_column_requested_or_loaded": false,
+      "uses_test_or_sample": false,
+      "vocabulary_sha256": "63b874f6271cc6cee78f4fb5568e2c388008430d544bc6a127729152ce137688"
+    },
+    "a02_reuse_state_sha256": "23db5edcecbc984042c3d382996783cfd554d2839d57134878a48e17476e8cf4",
+    "immutable_file_sha256": {
+      "data/raw/classification/Train.csv": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+      "experiments/optimization_v3/cls_pos_global_strength_e79_v1/protocol.json": "a78e9e193df3fff51eca3c07ecc6a62bad4d17a973a5d847ee453b5b88fc56df",
+      "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/INTEGRATION_PREFLIGHT_R1.json": "087e1eb82fa65f046aebfb57fd365d95dc417bdf6841b250b1b60440f506e243",
+      "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_C2B_LR_INTEGRATION_R1.joblib": "40b9588e1cd2f93350fe09ffc69efa9bf0bcb6927e6b8a2bc0192a4a6235ca80",
+      "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_C2B_LR_INTEGRATION_R1.json": "d076a1b2bcc29f14aa4be9c6d7621f4b0217b79f528ea9a376765329f4b2c9b9",
+      "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_C2B_OHE.joblib": "85c6f0f7fb4b318d3ffd11bff5f4944cba8a7ea1124355b493d0e92509c3bb77",
+      "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_C2B_OHE.json": "c86e8682fda527dee706231f12078c2b4839c0acdab7b05cd1224daba5e22fae",
+      "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_C2B_SCALER.joblib": "d45db93e7a02c7b3c2662347d0b2b31a87838df3080b0b6150856c75df4883d9",
+      "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_C2B_SCALER.json": "183df7d8a8f6f6936d0d832f293a26e627d9d923dc626b1fb3ec773bcbb2af1b",
+      "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_C2B_STRUCTURED.joblib": "3347262f1df86a70011bebe01e8ec7df38bff1aedf0da8edbf30ab4d4c3a537a",
+      "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_C2B_STRUCTURED.json": "8da5f7ae163577aaecc8db94fd6130188ffeb270e52a30b8cd5925dce8414840",
+      "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_POS_BAG_OFFSET_GAMMA_INTEGRATION_R1.joblib": "d741d016f990d8742208edc919f5c58305b7579980d059b202609df4e5b3e650",
+      "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_POS_BAG_OFFSET_GAMMA_INTEGRATION_R1.json": "f08f1bd3733a20fb8745d40c82190543a48af6bade1df5684ccfef3198c34580",
+      "experiments/runs/optimization_v3_a02_continuation_v1/E79/fulltrain_observed/fit_receipt.json": "11a7e46b6595e92a421e358b8e7e3a5ffbac8a6db69c64c9c33fd3d5c5bd7d77",
+      "experiments/runs/optimization_v3_a02_continuation_v1/E79/fulltrain_observed/model.joblib": "2791eddf410c7e81b119bde2a0b1d33a694eed4de84027c61cee97f6668dcb6e",
+      "experiments/runs/optimization_v3_cls_pos_global_strength_e79_v1/source_compatibility_replay/ATTEMPT.started.json": "9f9f33f573280cab6a57a7fa95e1e6baa17813f4e6a91e04b75d3f91af5de7c7",
+      "experiments/runs/optimization_v3_cls_pos_global_strength_e79_v1/source_compatibility_replay/REPLAY_RECEIPT.json": "a754f0efb85f89bb5991d732518b78d4a3e0e765c77ae4303331c8b86262fdf8",
+      "reports/optimization_v3/cls_pos_global_strength_e79_v1/SOL_COMPATIBILITY_REPLAY_AUTHORIZATION.md": "9d0729d1f19793dfb79cc3024be868e44f8ff97020147cd0af2d91ff5df6b6e3",
+      "reports/optimization_v3/cls_pos_global_strength_e79_v1/SOURCE_COMPATIBILITY_ATTESTATION.json": "6839ef1228cfaffbefa80d9ede9fbddf09d589685d95faa83ee225af2c60703f",
+      "scripts/optimization_v3_cls_pos_global_strength_e79_v1.py": "e3d4f30c15733e7ccd2ace4429277ea006794294bd5cf449681faad420dd9aa9",
+      "scripts/verify_optimization_v3_cls_pos_global_strength_e79_v1.py": "337fa46569647b6875b2e49b81d446144ce794a1637eceeea5a166ea1e04f350",
+      "tests/test_cls_pos_global_strength_e79_v1.py": "b63ccf49501118bdaf2f3e40aa82b25511b2171b5f9dfa6368f2492a88d03856"
+    },
+    "matrix_reference": {
+      "base_logical_sha256": "9d47aa36ff15a0cbeead8cf36049f0a699f7618d0ea8890806a2d82140cff59b",
+      "base_nnz": 3855766,
+      "base_shape": [
+        50608,
+        20427
+      ],
+      "feature_order": "three segment-major blocks: first, middle, final; within each block saved A02 vocabulary-index order filtered to unigrams",
+      "ordered_train_ids_sha256": "9a96fa28e72b08a6022dd005aed877dadcc5e3dd5053200bcdd12711312c26b2",
+      "position_logical_sha256": "32268550b8220dbfb43f5c92c33cd84554f0bced446d1459c5c55c3eabbf9942",
+      "position_nnz": 1638979,
+      "position_shape": [
+        50608,
+        17259
+      ]
+    },
+    "preflight_audit_sha256": "087e1eb82fa65f046aebfb57fd365d95dc417bdf6841b250b1b60440f506e243",
+    "preserved_r1_attempt": {
+      "attempt_marker_sha256": "9f9f33f573280cab6a57a7fa95e1e6baa17813f4e6a91e04b75d3f91af5de7c7",
+      "attestation_file_sha256": "6839ef1228cfaffbefa80d9ede9fbddf09d589685d95faa83ee225af2c60703f",
+      "attestation_internal_sha256": "81e9379da76627283672cd0ee62a4d5584ffe29c4cd40857c09c8c628f31a127",
+      "protocol_sha256": "a78e9e193df3fff51eca3c07ecc6a62bad4d17a973a5d847ee453b5b88fc56df",
+      "replay_receipt_sha256": "a754f0efb85f89bb5991d732518b78d4a3e0e765c77ae4303331c8b86262fdf8",
+      "runner_sha256": "e3d4f30c15733e7ccd2ace4429277ea006794294bd5cf449681faad420dd9aa9",
+      "status": "FAILED_FEATURE_ONLY_REPLAY_NO_RETRY",
+      "test_sha256": "b63ccf49501118bdaf2f3e40aa82b25511b2171b5f9dfa6368f2492a88d03856",
+      "verifier_sha256": "337fa46569647b6875b2e49b81d446144ce794a1637eceeea5a166ea1e04f350"
+    },
+    "saved_units": {
+      "c2b_lr": {
+        "artifact_path": "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_C2B_LR_INTEGRATION_R1.joblib",
+        "artifact_sha256": "40b9588e1cd2f93350fe09ffc69efa9bf0bcb6927e6b8a2bc0192a4a6235ca80",
+        "fit_cycle_min_max": [
+          47,
+          79
+        ],
+        "fit_id": "A02_CGEOM_BENCHMARK_V1_E79_C2B_LR_INTEGRATION_R1",
+        "fit_population_rows": 50608,
+        "receipt_path": "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_C2B_LR_INTEGRATION_R1.json",
+        "receipt_sha256": "d076a1b2bcc29f14aa4be9c6d7621f4b0217b79f528ea9a376765329f4b2c9b9",
+        "source_sha256_audit": {
+          "reports/optimization_v3/a02_cgeom_benchmark_v1/BATCH_AMENDMENT.md": {
+            "authorized_variance": false,
+            "current_sha256": "88b92207c704ce6ec42c963ce15dfd8d541bfead4454e7835da621c46f80bc43",
+            "receipt_expected_sha256": "88b92207c704ce6ec42c963ce15dfd8d541bfead4454e7835da621c46f80bc43"
+          },
+          "reports/optimization_v3/a02_cgeom_benchmark_v1/FROZEN_RECIPES.json": {
+            "authorized_variance": false,
+            "current_sha256": "b7cd4f721d45e982b983bd8f805f3072fc8f80cd3adc12d64f06fe6e8e4bfd49",
+            "receipt_expected_sha256": "b7cd4f721d45e982b983bd8f805f3072fc8f80cd3adc12d64f06fe6e8e4bfd49"
+          },
+          "reports/optimization_v3/a02_cgeom_benchmark_v1/HASHFIX_REPLACEMENT_MAPPING.json": {
+            "authorized_variance": false,
+            "current_sha256": "91278ea8304b1357d6c1ee848af7455944e791708ed308644ac643abbed219b8",
+            "receipt_expected_sha256": "91278ea8304b1357d6c1ee848af7455944e791708ed308644ac643abbed219b8"
+          },
+          "reports/optimization_v3/a02_cgeom_benchmark_v1/INTEGRATION_AMENDMENT.md": {
+            "authorized_variance": false,
+            "current_sha256": "4850d2133a223f5fdd1ba73c727e0edfd95576c3399166996be4f1806b44c840",
+            "receipt_expected_sha256": "4850d2133a223f5fdd1ba73c727e0edfd95576c3399166996be4f1806b44c840"
+          },
+          "reports/optimization_v3/a02_cgeom_benchmark_v1/INTEGRATION_REPLACEMENT_MAPPING.json": {
+            "authorized_variance": false,
+            "current_sha256": "3c9b3e931f432b7ae5055d73a17e0c0099bcd494ac281743e0cf295a29b31210",
+            "receipt_expected_sha256": "3c9b3e931f432b7ae5055d73a17e0c0099bcd494ac281743e0cf295a29b31210"
+          },
+          "reports/optimization_v3/a02_cgeom_benchmark_v1/SOL_HASH_FIX_REPLACEMENT_AUTHORIZATION.md": {
+            "authorized_variance": false,
+            "current_sha256": "206b2d0c3f230b34e6f1273b3d48951905f970b0bae94caffd2f631a04810ba7",
+            "receipt_expected_sha256": "206b2d0c3f230b34e6f1273b3d48951905f970b0bae94caffd2f631a04810ba7"
+          },
+          "reports/optimization_v3/a02_cgeom_benchmark_v1/SOL_INTEGRATION_REPAIR_AUTHORIZATION.md": {
+            "authorized_variance": false,
+            "current_sha256": "225a14c71d3f4cae9ac0ec2ccfadfcb829022878c31e848a495d1eb36f4e0f69",
+            "receipt_expected_sha256": "225a14c71d3f4cae9ac0ec2ccfadfcb829022878c31e848a495d1eb36f4e0f69"
+          },
+          "reports/optimization_v3/a02_coefficient_geometry_v1/RECIPE.json": {
+            "authorized_variance": false,
+            "current_sha256": "595be4e34d528cd235b0a3a2e2ac8fe4f5beaed57a60c6d9fa30137c10b9219e",
+            "receipt_expected_sha256": "595be4e34d528cd235b0a3a2e2ac8fe4f5beaed57a60c6d9fa30137c10b9219e"
+          },
+          "reports/optimization_v3/positional_bag_offset_v1/RECIPE.json": {
+            "authorized_variance": false,
+            "current_sha256": "d30511ecb64502e254ceae5c5834e230cd1176ac7de92cc2820daec36711a0fc",
+            "receipt_expected_sha256": "d30511ecb64502e254ceae5c5834e230cd1176ac7de92cc2820daec36711a0fc"
+          },
+          "reports/optimization_v3/positional_text_pilot_v1/RECIPE.json": {
+            "authorized_variance": false,
+            "current_sha256": "179b746cabdd9e3a8b522ce346dc84978a17886709cca08ad92fecc04e381592",
+            "receipt_expected_sha256": "179b746cabdd9e3a8b522ce346dc84978a17886709cca08ad92fecc04e381592"
+          },
+          "scripts/optimization_v3_a02_cgeom_benchmark_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "d6af3f3e18787c9cd1e5c52b1463fb30e18398cee6e3dc838e5227cf30a50a3f",
+            "receipt_expected_sha256": "d6af3f3e18787c9cd1e5c52b1463fb30e18398cee6e3dc838e5227cf30a50a3f"
+          },
+          "scripts/optimization_v3_a02_coefficient_geometry_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "575a440acbe45a8b07ef40ade6aabfce00dcc280664cb7399eeb9c8e3bfbbeab",
+            "receipt_expected_sha256": "575a440acbe45a8b07ef40ade6aabfce00dcc280664cb7399eeb9c8e3bfbbeab"
+          },
+          "scripts/optimization_v3_a02_continuation.py": {
+            "authorized_variance": false,
+            "current_sha256": "7d0411ba734966cf9db5e009c022c5d874f9f1812cf38486322c05a4341d9175",
+            "receipt_expected_sha256": "7d0411ba734966cf9db5e009c022c5d874f9f1812cf38486322c05a4341d9175"
+          },
+          "scripts/optimization_v3_a02_final_inference_audit.py": {
+            "authorized_variance": false,
+            "current_sha256": "1ffa0e6e7ea021a25c957387a485c4bd0df398b5d75d0d94baa62a489bfd9b3a",
+            "receipt_expected_sha256": "1ffa0e6e7ea021a25c957387a485c4bd0df398b5d75d0d94baa62a489bfd9b3a"
+          },
+          "scripts/optimization_v3_c19_benchmark.py": {
+            "authorized_variance": false,
+            "current_sha256": "4a4636a39ffb310847f3bb95391a58b8fe900578e1415575e927b91b0f161da1",
+            "receipt_expected_sha256": "4a4636a39ffb310847f3bb95391a58b8fe900578e1415575e927b91b0f161da1"
+          },
+          "scripts/optimization_v3_positional_bag_offset_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "c99908bc5af787098d1f39ecb4c495ccdabfc11dfcd9e7976408ec6ba2cc160e",
+            "receipt_expected_sha256": "c99908bc5af787098d1f39ecb4c495ccdabfc11dfcd9e7976408ec6ba2cc160e"
+          },
+          "scripts/optimization_v3_positional_text_pilot_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "b86090ffefe6bc6bb7de4ef966f5838ecf2f7d6c51dd3981401135cd5b0c1c0c",
+            "receipt_expected_sha256": "b86090ffefe6bc6bb7de4ef966f5838ecf2f7d6c51dd3981401135cd5b0c1c0c"
+          },
+          "src/models/a02_coefficient_geometry_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "8848f0db57b030e06b96e5a1c1854a92c622101c403da06e1473ab84911a8815",
+            "receipt_expected_sha256": "8848f0db57b030e06b96e5a1c1854a92c622101c403da06e1473ab84911a8815"
+          },
+          "src/models/classification_a02_neighbors.py": {
+            "authorized_variance": false,
+            "current_sha256": "817263092683779f5f6f3a437ffc2c470dfec16d3b32c67802952b731cc6efaa",
+            "receipt_expected_sha256": "817263092683779f5f6f3a437ffc2c470dfec16d3b32c67802952b731cc6efaa"
+          },
+          "src/models/classification_models.py": {
+            "authorized_variance": false,
+            "current_sha256": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+            "receipt_expected_sha256": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646"
+          },
+          "src/models/optimization_v3_positional_text_pilot_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "390d9585a91440cc83314d2fa58acfebf374371032308937489019c2bd242c36",
+            "receipt_expected_sha256": "390d9585a91440cc83314d2fa58acfebf374371032308937489019c2bd242c36"
+          },
+          "src/models/positional_bag_offset_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "6bd754963580f63375340623bceb33ef2eac6ec181f9ee3d2383c6434c3d2386",
+            "receipt_expected_sha256": "6bd754963580f63375340623bceb33ef2eac6ec181f9ee3d2383c6434c3d2386"
+          },
+          "src/models/research_next_budget.py": {
+            "authorized_variance": false,
+            "current_sha256": "b19ca985ff28a2f3c80415bf48374e04ad064b003876f1f6d6c077dab7ed73a8",
+            "receipt_expected_sha256": "b19ca985ff28a2f3c80415bf48374e04ad064b003876f1f6d6c077dab7ed73a8"
+          },
+          "src/models/round1_models.py": {
+            "authorized_variance": false,
+            "current_sha256": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+            "receipt_expected_sha256": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4"
+          },
+          "tests/test_optimization_v3_a02_cgeom_benchmark_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "9a651df8fed669c10865244ad5fa60f37039c130d68a22c0bf54007f17ba298a",
+            "receipt_expected_sha256": "9a651df8fed669c10865244ad5fa60f37039c130d68a22c0bf54007f17ba298a"
+          }
+        },
+        "state_sha256": "d1e1f86e5b14cd7ab30d623dbd3d48be44f8aaf1bbf3da1fedee469ee04690c1"
+      },
+      "c2b_ohe": {
+        "artifact_path": "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_C2B_OHE.joblib",
+        "artifact_sha256": "85c6f0f7fb4b318d3ffd11bff5f4944cba8a7ea1124355b493d0e92509c3bb77",
+        "fit_cycle_min_max": [
+          47,
+          79
+        ],
+        "fit_id": "A02_CGEOM_BENCHMARK_V1_E79_C2B_OHE",
+        "fit_population_rows": 50608,
+        "receipt_path": "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_C2B_OHE.json",
+        "receipt_sha256": "c86e8682fda527dee706231f12078c2b4839c0acdab7b05cd1224daba5e22fae",
+        "source_sha256_audit": {
+          "reports/optimization_v3/a02_cgeom_benchmark_v1/BATCH_AMENDMENT.md": {
+            "authorized_variance": false,
+            "current_sha256": "88b92207c704ce6ec42c963ce15dfd8d541bfead4454e7835da621c46f80bc43",
+            "receipt_expected_sha256": "88b92207c704ce6ec42c963ce15dfd8d541bfead4454e7835da621c46f80bc43"
+          },
+          "reports/optimization_v3/a02_cgeom_benchmark_v1/FROZEN_RECIPES.json": {
+            "authorized_variance": false,
+            "current_sha256": "b7cd4f721d45e982b983bd8f805f3072fc8f80cd3adc12d64f06fe6e8e4bfd49",
+            "receipt_expected_sha256": "b7cd4f721d45e982b983bd8f805f3072fc8f80cd3adc12d64f06fe6e8e4bfd49"
+          },
+          "reports/optimization_v3/a02_coefficient_geometry_v1/RECIPE.json": {
+            "authorized_variance": false,
+            "current_sha256": "595be4e34d528cd235b0a3a2e2ac8fe4f5beaed57a60c6d9fa30137c10b9219e",
+            "receipt_expected_sha256": "595be4e34d528cd235b0a3a2e2ac8fe4f5beaed57a60c6d9fa30137c10b9219e"
+          },
+          "reports/optimization_v3/positional_bag_offset_v1/RECIPE.json": {
+            "authorized_variance": false,
+            "current_sha256": "d30511ecb64502e254ceae5c5834e230cd1176ac7de92cc2820daec36711a0fc",
+            "receipt_expected_sha256": "d30511ecb64502e254ceae5c5834e230cd1176ac7de92cc2820daec36711a0fc"
+          },
+          "reports/optimization_v3/positional_text_pilot_v1/RECIPE.json": {
+            "authorized_variance": false,
+            "current_sha256": "179b746cabdd9e3a8b522ce346dc84978a17886709cca08ad92fecc04e381592",
+            "receipt_expected_sha256": "179b746cabdd9e3a8b522ce346dc84978a17886709cca08ad92fecc04e381592"
+          },
+          "scripts/optimization_v3_a02_cgeom_benchmark_v1.py": {
+            "authorized_variance": true,
+            "current_sha256": "d6af3f3e18787c9cd1e5c52b1463fb30e18398cee6e3dc838e5227cf30a50a3f",
+            "receipt_expected_sha256": "ea011537a29ffd75aa7695dfb7df7a0bc4af4a311cf05158b6b2a8c53a03d694",
+            "variance_scope": "this unit receipt and this one exact source path only"
+          },
+          "scripts/optimization_v3_a02_coefficient_geometry_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "575a440acbe45a8b07ef40ade6aabfce00dcc280664cb7399eeb9c8e3bfbbeab",
+            "receipt_expected_sha256": "575a440acbe45a8b07ef40ade6aabfce00dcc280664cb7399eeb9c8e3bfbbeab"
+          },
+          "scripts/optimization_v3_a02_continuation.py": {
+            "authorized_variance": false,
+            "current_sha256": "7d0411ba734966cf9db5e009c022c5d874f9f1812cf38486322c05a4341d9175",
+            "receipt_expected_sha256": "7d0411ba734966cf9db5e009c022c5d874f9f1812cf38486322c05a4341d9175"
+          },
+          "scripts/optimization_v3_a02_final_inference_audit.py": {
+            "authorized_variance": false,
+            "current_sha256": "1ffa0e6e7ea021a25c957387a485c4bd0df398b5d75d0d94baa62a489bfd9b3a",
+            "receipt_expected_sha256": "1ffa0e6e7ea021a25c957387a485c4bd0df398b5d75d0d94baa62a489bfd9b3a"
+          },
+          "scripts/optimization_v3_c19_benchmark.py": {
+            "authorized_variance": false,
+            "current_sha256": "4a4636a39ffb310847f3bb95391a58b8fe900578e1415575e927b91b0f161da1",
+            "receipt_expected_sha256": "4a4636a39ffb310847f3bb95391a58b8fe900578e1415575e927b91b0f161da1"
+          },
+          "scripts/optimization_v3_positional_bag_offset_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "c99908bc5af787098d1f39ecb4c495ccdabfc11dfcd9e7976408ec6ba2cc160e",
+            "receipt_expected_sha256": "c99908bc5af787098d1f39ecb4c495ccdabfc11dfcd9e7976408ec6ba2cc160e"
+          },
+          "scripts/optimization_v3_positional_text_pilot_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "b86090ffefe6bc6bb7de4ef966f5838ecf2f7d6c51dd3981401135cd5b0c1c0c",
+            "receipt_expected_sha256": "b86090ffefe6bc6bb7de4ef966f5838ecf2f7d6c51dd3981401135cd5b0c1c0c"
+          },
+          "src/models/a02_coefficient_geometry_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "8848f0db57b030e06b96e5a1c1854a92c622101c403da06e1473ab84911a8815",
+            "receipt_expected_sha256": "8848f0db57b030e06b96e5a1c1854a92c622101c403da06e1473ab84911a8815"
+          },
+          "src/models/classification_a02_neighbors.py": {
+            "authorized_variance": false,
+            "current_sha256": "817263092683779f5f6f3a437ffc2c470dfec16d3b32c67802952b731cc6efaa",
+            "receipt_expected_sha256": "817263092683779f5f6f3a437ffc2c470dfec16d3b32c67802952b731cc6efaa"
+          },
+          "src/models/classification_models.py": {
+            "authorized_variance": false,
+            "current_sha256": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+            "receipt_expected_sha256": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646"
+          },
+          "src/models/optimization_v3_positional_text_pilot_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "390d9585a91440cc83314d2fa58acfebf374371032308937489019c2bd242c36",
+            "receipt_expected_sha256": "390d9585a91440cc83314d2fa58acfebf374371032308937489019c2bd242c36"
+          },
+          "src/models/positional_bag_offset_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "6bd754963580f63375340623bceb33ef2eac6ec181f9ee3d2383c6434c3d2386",
+            "receipt_expected_sha256": "6bd754963580f63375340623bceb33ef2eac6ec181f9ee3d2383c6434c3d2386"
+          },
+          "src/models/research_next_budget.py": {
+            "authorized_variance": false,
+            "current_sha256": "b19ca985ff28a2f3c80415bf48374e04ad064b003876f1f6d6c077dab7ed73a8",
+            "receipt_expected_sha256": "b19ca985ff28a2f3c80415bf48374e04ad064b003876f1f6d6c077dab7ed73a8"
+          },
+          "src/models/round1_models.py": {
+            "authorized_variance": false,
+            "current_sha256": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+            "receipt_expected_sha256": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4"
+          },
+          "tests/test_optimization_v3_a02_cgeom_benchmark_v1.py": {
+            "authorized_variance": true,
+            "current_sha256": "9a651df8fed669c10865244ad5fa60f37039c130d68a22c0bf54007f17ba298a",
+            "receipt_expected_sha256": "ed96e928e1da80fcd8cd5b57e56975a6ac3b524bab2cd4e534dd7554a3d930a5",
+            "variance_scope": "this unit receipt and this one exact source path only"
+          }
+        },
+        "state_sha256": "37b15b2a64e5d77b8fc282cb2637b98a4f9ecb8017bbfc4b7faef96c163c0f28"
+      },
+      "c2b_scaler": {
+        "artifact_path": "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_C2B_SCALER.joblib",
+        "artifact_sha256": "d45db93e7a02c7b3c2662347d0b2b31a87838df3080b0b6150856c75df4883d9",
+        "fit_cycle_min_max": [
+          47,
+          79
+        ],
+        "fit_id": "A02_CGEOM_BENCHMARK_V1_E79_C2B_SCALER",
+        "fit_population_rows": 50608,
+        "receipt_path": "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_C2B_SCALER.json",
+        "receipt_sha256": "183df7d8a8f6f6936d0d832f293a26e627d9d923dc626b1fb3ec773bcbb2af1b",
+        "source_sha256_audit": {
+          "reports/optimization_v3/a02_cgeom_benchmark_v1/BATCH_AMENDMENT.md": {
+            "authorized_variance": false,
+            "current_sha256": "88b92207c704ce6ec42c963ce15dfd8d541bfead4454e7835da621c46f80bc43",
+            "receipt_expected_sha256": "88b92207c704ce6ec42c963ce15dfd8d541bfead4454e7835da621c46f80bc43"
+          },
+          "reports/optimization_v3/a02_cgeom_benchmark_v1/FROZEN_RECIPES.json": {
+            "authorized_variance": false,
+            "current_sha256": "b7cd4f721d45e982b983bd8f805f3072fc8f80cd3adc12d64f06fe6e8e4bfd49",
+            "receipt_expected_sha256": "b7cd4f721d45e982b983bd8f805f3072fc8f80cd3adc12d64f06fe6e8e4bfd49"
+          },
+          "reports/optimization_v3/a02_coefficient_geometry_v1/RECIPE.json": {
+            "authorized_variance": false,
+            "current_sha256": "595be4e34d528cd235b0a3a2e2ac8fe4f5beaed57a60c6d9fa30137c10b9219e",
+            "receipt_expected_sha256": "595be4e34d528cd235b0a3a2e2ac8fe4f5beaed57a60c6d9fa30137c10b9219e"
+          },
+          "reports/optimization_v3/positional_bag_offset_v1/RECIPE.json": {
+            "authorized_variance": false,
+            "current_sha256": "d30511ecb64502e254ceae5c5834e230cd1176ac7de92cc2820daec36711a0fc",
+            "receipt_expected_sha256": "d30511ecb64502e254ceae5c5834e230cd1176ac7de92cc2820daec36711a0fc"
+          },
+          "reports/optimization_v3/positional_text_pilot_v1/RECIPE.json": {
+            "authorized_variance": false,
+            "current_sha256": "179b746cabdd9e3a8b522ce346dc84978a17886709cca08ad92fecc04e381592",
+            "receipt_expected_sha256": "179b746cabdd9e3a8b522ce346dc84978a17886709cca08ad92fecc04e381592"
+          },
+          "scripts/optimization_v3_a02_cgeom_benchmark_v1.py": {
+            "authorized_variance": true,
+            "current_sha256": "d6af3f3e18787c9cd1e5c52b1463fb30e18398cee6e3dc838e5227cf30a50a3f",
+            "receipt_expected_sha256": "ea011537a29ffd75aa7695dfb7df7a0bc4af4a311cf05158b6b2a8c53a03d694",
+            "variance_scope": "this unit receipt and this one exact source path only"
+          },
+          "scripts/optimization_v3_a02_coefficient_geometry_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "575a440acbe45a8b07ef40ade6aabfce00dcc280664cb7399eeb9c8e3bfbbeab",
+            "receipt_expected_sha256": "575a440acbe45a8b07ef40ade6aabfce00dcc280664cb7399eeb9c8e3bfbbeab"
+          },
+          "scripts/optimization_v3_a02_continuation.py": {
+            "authorized_variance": false,
+            "current_sha256": "7d0411ba734966cf9db5e009c022c5d874f9f1812cf38486322c05a4341d9175",
+            "receipt_expected_sha256": "7d0411ba734966cf9db5e009c022c5d874f9f1812cf38486322c05a4341d9175"
+          },
+          "scripts/optimization_v3_a02_final_inference_audit.py": {
+            "authorized_variance": false,
+            "current_sha256": "1ffa0e6e7ea021a25c957387a485c4bd0df398b5d75d0d94baa62a489bfd9b3a",
+            "receipt_expected_sha256": "1ffa0e6e7ea021a25c957387a485c4bd0df398b5d75d0d94baa62a489bfd9b3a"
+          },
+          "scripts/optimization_v3_c19_benchmark.py": {
+            "authorized_variance": false,
+            "current_sha256": "4a4636a39ffb310847f3bb95391a58b8fe900578e1415575e927b91b0f161da1",
+            "receipt_expected_sha256": "4a4636a39ffb310847f3bb95391a58b8fe900578e1415575e927b91b0f161da1"
+          },
+          "scripts/optimization_v3_positional_bag_offset_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "c99908bc5af787098d1f39ecb4c495ccdabfc11dfcd9e7976408ec6ba2cc160e",
+            "receipt_expected_sha256": "c99908bc5af787098d1f39ecb4c495ccdabfc11dfcd9e7976408ec6ba2cc160e"
+          },
+          "scripts/optimization_v3_positional_text_pilot_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "b86090ffefe6bc6bb7de4ef966f5838ecf2f7d6c51dd3981401135cd5b0c1c0c",
+            "receipt_expected_sha256": "b86090ffefe6bc6bb7de4ef966f5838ecf2f7d6c51dd3981401135cd5b0c1c0c"
+          },
+          "src/models/a02_coefficient_geometry_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "8848f0db57b030e06b96e5a1c1854a92c622101c403da06e1473ab84911a8815",
+            "receipt_expected_sha256": "8848f0db57b030e06b96e5a1c1854a92c622101c403da06e1473ab84911a8815"
+          },
+          "src/models/classification_a02_neighbors.py": {
+            "authorized_variance": false,
+            "current_sha256": "817263092683779f5f6f3a437ffc2c470dfec16d3b32c67802952b731cc6efaa",
+            "receipt_expected_sha256": "817263092683779f5f6f3a437ffc2c470dfec16d3b32c67802952b731cc6efaa"
+          },
+          "src/models/classification_models.py": {
+            "authorized_variance": false,
+            "current_sha256": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+            "receipt_expected_sha256": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646"
+          },
+          "src/models/optimization_v3_positional_text_pilot_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "390d9585a91440cc83314d2fa58acfebf374371032308937489019c2bd242c36",
+            "receipt_expected_sha256": "390d9585a91440cc83314d2fa58acfebf374371032308937489019c2bd242c36"
+          },
+          "src/models/positional_bag_offset_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "6bd754963580f63375340623bceb33ef2eac6ec181f9ee3d2383c6434c3d2386",
+            "receipt_expected_sha256": "6bd754963580f63375340623bceb33ef2eac6ec181f9ee3d2383c6434c3d2386"
+          },
+          "src/models/research_next_budget.py": {
+            "authorized_variance": false,
+            "current_sha256": "b19ca985ff28a2f3c80415bf48374e04ad064b003876f1f6d6c077dab7ed73a8",
+            "receipt_expected_sha256": "b19ca985ff28a2f3c80415bf48374e04ad064b003876f1f6d6c077dab7ed73a8"
+          },
+          "src/models/round1_models.py": {
+            "authorized_variance": false,
+            "current_sha256": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+            "receipt_expected_sha256": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4"
+          },
+          "tests/test_optimization_v3_a02_cgeom_benchmark_v1.py": {
+            "authorized_variance": true,
+            "current_sha256": "9a651df8fed669c10865244ad5fa60f37039c130d68a22c0bf54007f17ba298a",
+            "receipt_expected_sha256": "ed96e928e1da80fcd8cd5b57e56975a6ac3b524bab2cd4e534dd7554a3d930a5",
+            "variance_scope": "this unit receipt and this one exact source path only"
+          }
+        },
+        "state_sha256": "15490cc767bb1c640f50204ff01bcbc76c3d4431dfdc776e6fd05026e55728bb"
+      },
+      "c2b_structured": {
+        "artifact_path": "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_C2B_STRUCTURED.joblib",
+        "artifact_sha256": "3347262f1df86a70011bebe01e8ec7df38bff1aedf0da8edbf30ab4d4c3a537a",
+        "fit_cycle_min_max": [
+          47,
+          79
+        ],
+        "fit_id": "A02_CGEOM_BENCHMARK_V1_E79_C2B_STRUCTURED",
+        "fit_population_rows": 50608,
+        "receipt_path": "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_C2B_STRUCTURED.json",
+        "receipt_sha256": "8da5f7ae163577aaecc8db94fd6130188ffeb270e52a30b8cd5925dce8414840",
+        "source_sha256_audit": {
+          "reports/optimization_v3/a02_cgeom_benchmark_v1/BATCH_AMENDMENT.md": {
+            "authorized_variance": false,
+            "current_sha256": "88b92207c704ce6ec42c963ce15dfd8d541bfead4454e7835da621c46f80bc43",
+            "receipt_expected_sha256": "88b92207c704ce6ec42c963ce15dfd8d541bfead4454e7835da621c46f80bc43"
+          },
+          "reports/optimization_v3/a02_cgeom_benchmark_v1/FROZEN_RECIPES.json": {
+            "authorized_variance": false,
+            "current_sha256": "b7cd4f721d45e982b983bd8f805f3072fc8f80cd3adc12d64f06fe6e8e4bfd49",
+            "receipt_expected_sha256": "b7cd4f721d45e982b983bd8f805f3072fc8f80cd3adc12d64f06fe6e8e4bfd49"
+          },
+          "reports/optimization_v3/a02_coefficient_geometry_v1/RECIPE.json": {
+            "authorized_variance": false,
+            "current_sha256": "595be4e34d528cd235b0a3a2e2ac8fe4f5beaed57a60c6d9fa30137c10b9219e",
+            "receipt_expected_sha256": "595be4e34d528cd235b0a3a2e2ac8fe4f5beaed57a60c6d9fa30137c10b9219e"
+          },
+          "reports/optimization_v3/positional_bag_offset_v1/RECIPE.json": {
+            "authorized_variance": false,
+            "current_sha256": "d30511ecb64502e254ceae5c5834e230cd1176ac7de92cc2820daec36711a0fc",
+            "receipt_expected_sha256": "d30511ecb64502e254ceae5c5834e230cd1176ac7de92cc2820daec36711a0fc"
+          },
+          "reports/optimization_v3/positional_text_pilot_v1/RECIPE.json": {
+            "authorized_variance": false,
+            "current_sha256": "179b746cabdd9e3a8b522ce346dc84978a17886709cca08ad92fecc04e381592",
+            "receipt_expected_sha256": "179b746cabdd9e3a8b522ce346dc84978a17886709cca08ad92fecc04e381592"
+          },
+          "scripts/optimization_v3_a02_cgeom_benchmark_v1.py": {
+            "authorized_variance": true,
+            "current_sha256": "d6af3f3e18787c9cd1e5c52b1463fb30e18398cee6e3dc838e5227cf30a50a3f",
+            "receipt_expected_sha256": "abc348edbace18cc0b6c08a78746a07cbbafbf694fdd3f1b9a5c0fb513281e5a",
+            "variance_scope": "this unit receipt and this one exact source path only"
+          },
+          "scripts/optimization_v3_a02_coefficient_geometry_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "575a440acbe45a8b07ef40ade6aabfce00dcc280664cb7399eeb9c8e3bfbbeab",
+            "receipt_expected_sha256": "575a440acbe45a8b07ef40ade6aabfce00dcc280664cb7399eeb9c8e3bfbbeab"
+          },
+          "scripts/optimization_v3_a02_continuation.py": {
+            "authorized_variance": false,
+            "current_sha256": "7d0411ba734966cf9db5e009c022c5d874f9f1812cf38486322c05a4341d9175",
+            "receipt_expected_sha256": "7d0411ba734966cf9db5e009c022c5d874f9f1812cf38486322c05a4341d9175"
+          },
+          "scripts/optimization_v3_a02_final_inference_audit.py": {
+            "authorized_variance": false,
+            "current_sha256": "1ffa0e6e7ea021a25c957387a485c4bd0df398b5d75d0d94baa62a489bfd9b3a",
+            "receipt_expected_sha256": "1ffa0e6e7ea021a25c957387a485c4bd0df398b5d75d0d94baa62a489bfd9b3a"
+          },
+          "scripts/optimization_v3_c19_benchmark.py": {
+            "authorized_variance": false,
+            "current_sha256": "4a4636a39ffb310847f3bb95391a58b8fe900578e1415575e927b91b0f161da1",
+            "receipt_expected_sha256": "4a4636a39ffb310847f3bb95391a58b8fe900578e1415575e927b91b0f161da1"
+          },
+          "scripts/optimization_v3_positional_bag_offset_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "c99908bc5af787098d1f39ecb4c495ccdabfc11dfcd9e7976408ec6ba2cc160e",
+            "receipt_expected_sha256": "c99908bc5af787098d1f39ecb4c495ccdabfc11dfcd9e7976408ec6ba2cc160e"
+          },
+          "scripts/optimization_v3_positional_text_pilot_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "b86090ffefe6bc6bb7de4ef966f5838ecf2f7d6c51dd3981401135cd5b0c1c0c",
+            "receipt_expected_sha256": "b86090ffefe6bc6bb7de4ef966f5838ecf2f7d6c51dd3981401135cd5b0c1c0c"
+          },
+          "src/models/a02_coefficient_geometry_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "8848f0db57b030e06b96e5a1c1854a92c622101c403da06e1473ab84911a8815",
+            "receipt_expected_sha256": "8848f0db57b030e06b96e5a1c1854a92c622101c403da06e1473ab84911a8815"
+          },
+          "src/models/classification_a02_neighbors.py": {
+            "authorized_variance": false,
+            "current_sha256": "817263092683779f5f6f3a437ffc2c470dfec16d3b32c67802952b731cc6efaa",
+            "receipt_expected_sha256": "817263092683779f5f6f3a437ffc2c470dfec16d3b32c67802952b731cc6efaa"
+          },
+          "src/models/classification_models.py": {
+            "authorized_variance": false,
+            "current_sha256": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+            "receipt_expected_sha256": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646"
+          },
+          "src/models/optimization_v3_positional_text_pilot_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "390d9585a91440cc83314d2fa58acfebf374371032308937489019c2bd242c36",
+            "receipt_expected_sha256": "390d9585a91440cc83314d2fa58acfebf374371032308937489019c2bd242c36"
+          },
+          "src/models/positional_bag_offset_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "6bd754963580f63375340623bceb33ef2eac6ec181f9ee3d2383c6434c3d2386",
+            "receipt_expected_sha256": "6bd754963580f63375340623bceb33ef2eac6ec181f9ee3d2383c6434c3d2386"
+          },
+          "src/models/research_next_budget.py": {
+            "authorized_variance": false,
+            "current_sha256": "b19ca985ff28a2f3c80415bf48374e04ad064b003876f1f6d6c077dab7ed73a8",
+            "receipt_expected_sha256": "b19ca985ff28a2f3c80415bf48374e04ad064b003876f1f6d6c077dab7ed73a8"
+          },
+          "src/models/round1_models.py": {
+            "authorized_variance": false,
+            "current_sha256": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+            "receipt_expected_sha256": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4"
+          },
+          "tests/test_optimization_v3_a02_cgeom_benchmark_v1.py": {
+            "authorized_variance": true,
+            "current_sha256": "9a651df8fed669c10865244ad5fa60f37039c130d68a22c0bf54007f17ba298a",
+            "receipt_expected_sha256": "15c7fd2e11a18147bde05a39dbc44c1d43497b633379102dc9d401d28c26298d",
+            "variance_scope": "this unit receipt and this one exact source path only"
+          }
+        },
+        "state_sha256": "507f25453f819813d42e65110ad5ce3c012de342f6360790f09ac704641b03b8"
+      },
+      "uniform_pos": {
+        "artifact_path": "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_POS_BAG_OFFSET_GAMMA_INTEGRATION_R1.joblib",
+        "artifact_sha256": "d741d016f990d8742208edc919f5c58305b7579980d059b202609df4e5b3e650",
+        "fit_cycle_min_max": [
+          47,
+          79
+        ],
+        "fit_id": "A02_CGEOM_BENCHMARK_V1_E79_POS_BAG_OFFSET_GAMMA_INTEGRATION_R1",
+        "fit_population_rows": 50608,
+        "receipt_path": "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_POS_BAG_OFFSET_GAMMA_INTEGRATION_R1.json",
+        "receipt_sha256": "f08f1bd3733a20fb8745d40c82190543a48af6bade1df5684ccfef3198c34580",
+        "source_sha256_audit": {
+          "reports/optimization_v3/a02_cgeom_benchmark_v1/BATCH_AMENDMENT.md": {
+            "authorized_variance": false,
+            "current_sha256": "88b92207c704ce6ec42c963ce15dfd8d541bfead4454e7835da621c46f80bc43",
+            "receipt_expected_sha256": "88b92207c704ce6ec42c963ce15dfd8d541bfead4454e7835da621c46f80bc43"
+          },
+          "reports/optimization_v3/a02_cgeom_benchmark_v1/FROZEN_RECIPES.json": {
+            "authorized_variance": false,
+            "current_sha256": "b7cd4f721d45e982b983bd8f805f3072fc8f80cd3adc12d64f06fe6e8e4bfd49",
+            "receipt_expected_sha256": "b7cd4f721d45e982b983bd8f805f3072fc8f80cd3adc12d64f06fe6e8e4bfd49"
+          },
+          "reports/optimization_v3/a02_cgeom_benchmark_v1/HASHFIX_REPLACEMENT_MAPPING.json": {
+            "authorized_variance": false,
+            "current_sha256": "91278ea8304b1357d6c1ee848af7455944e791708ed308644ac643abbed219b8",
+            "receipt_expected_sha256": "91278ea8304b1357d6c1ee848af7455944e791708ed308644ac643abbed219b8"
+          },
+          "reports/optimization_v3/a02_cgeom_benchmark_v1/INTEGRATION_AMENDMENT.md": {
+            "authorized_variance": false,
+            "current_sha256": "4850d2133a223f5fdd1ba73c727e0edfd95576c3399166996be4f1806b44c840",
+            "receipt_expected_sha256": "4850d2133a223f5fdd1ba73c727e0edfd95576c3399166996be4f1806b44c840"
+          },
+          "reports/optimization_v3/a02_cgeom_benchmark_v1/INTEGRATION_REPLACEMENT_MAPPING.json": {
+            "authorized_variance": false,
+            "current_sha256": "3c9b3e931f432b7ae5055d73a17e0c0099bcd494ac281743e0cf295a29b31210",
+            "receipt_expected_sha256": "3c9b3e931f432b7ae5055d73a17e0c0099bcd494ac281743e0cf295a29b31210"
+          },
+          "reports/optimization_v3/a02_cgeom_benchmark_v1/SOL_HASH_FIX_REPLACEMENT_AUTHORIZATION.md": {
+            "authorized_variance": false,
+            "current_sha256": "206b2d0c3f230b34e6f1273b3d48951905f970b0bae94caffd2f631a04810ba7",
+            "receipt_expected_sha256": "206b2d0c3f230b34e6f1273b3d48951905f970b0bae94caffd2f631a04810ba7"
+          },
+          "reports/optimization_v3/a02_cgeom_benchmark_v1/SOL_INTEGRATION_REPAIR_AUTHORIZATION.md": {
+            "authorized_variance": false,
+            "current_sha256": "225a14c71d3f4cae9ac0ec2ccfadfcb829022878c31e848a495d1eb36f4e0f69",
+            "receipt_expected_sha256": "225a14c71d3f4cae9ac0ec2ccfadfcb829022878c31e848a495d1eb36f4e0f69"
+          },
+          "reports/optimization_v3/a02_coefficient_geometry_v1/RECIPE.json": {
+            "authorized_variance": false,
+            "current_sha256": "595be4e34d528cd235b0a3a2e2ac8fe4f5beaed57a60c6d9fa30137c10b9219e",
+            "receipt_expected_sha256": "595be4e34d528cd235b0a3a2e2ac8fe4f5beaed57a60c6d9fa30137c10b9219e"
+          },
+          "reports/optimization_v3/positional_bag_offset_v1/RECIPE.json": {
+            "authorized_variance": false,
+            "current_sha256": "d30511ecb64502e254ceae5c5834e230cd1176ac7de92cc2820daec36711a0fc",
+            "receipt_expected_sha256": "d30511ecb64502e254ceae5c5834e230cd1176ac7de92cc2820daec36711a0fc"
+          },
+          "reports/optimization_v3/positional_text_pilot_v1/RECIPE.json": {
+            "authorized_variance": false,
+            "current_sha256": "179b746cabdd9e3a8b522ce346dc84978a17886709cca08ad92fecc04e381592",
+            "receipt_expected_sha256": "179b746cabdd9e3a8b522ce346dc84978a17886709cca08ad92fecc04e381592"
+          },
+          "scripts/optimization_v3_a02_cgeom_benchmark_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "d6af3f3e18787c9cd1e5c52b1463fb30e18398cee6e3dc838e5227cf30a50a3f",
+            "receipt_expected_sha256": "d6af3f3e18787c9cd1e5c52b1463fb30e18398cee6e3dc838e5227cf30a50a3f"
+          },
+          "scripts/optimization_v3_a02_coefficient_geometry_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "575a440acbe45a8b07ef40ade6aabfce00dcc280664cb7399eeb9c8e3bfbbeab",
+            "receipt_expected_sha256": "575a440acbe45a8b07ef40ade6aabfce00dcc280664cb7399eeb9c8e3bfbbeab"
+          },
+          "scripts/optimization_v3_a02_continuation.py": {
+            "authorized_variance": false,
+            "current_sha256": "7d0411ba734966cf9db5e009c022c5d874f9f1812cf38486322c05a4341d9175",
+            "receipt_expected_sha256": "7d0411ba734966cf9db5e009c022c5d874f9f1812cf38486322c05a4341d9175"
+          },
+          "scripts/optimization_v3_a02_final_inference_audit.py": {
+            "authorized_variance": false,
+            "current_sha256": "1ffa0e6e7ea021a25c957387a485c4bd0df398b5d75d0d94baa62a489bfd9b3a",
+            "receipt_expected_sha256": "1ffa0e6e7ea021a25c957387a485c4bd0df398b5d75d0d94baa62a489bfd9b3a"
+          },
+          "scripts/optimization_v3_c19_benchmark.py": {
+            "authorized_variance": false,
+            "current_sha256": "4a4636a39ffb310847f3bb95391a58b8fe900578e1415575e927b91b0f161da1",
+            "receipt_expected_sha256": "4a4636a39ffb310847f3bb95391a58b8fe900578e1415575e927b91b0f161da1"
+          },
+          "scripts/optimization_v3_positional_bag_offset_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "c99908bc5af787098d1f39ecb4c495ccdabfc11dfcd9e7976408ec6ba2cc160e",
+            "receipt_expected_sha256": "c99908bc5af787098d1f39ecb4c495ccdabfc11dfcd9e7976408ec6ba2cc160e"
+          },
+          "scripts/optimization_v3_positional_text_pilot_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "b86090ffefe6bc6bb7de4ef966f5838ecf2f7d6c51dd3981401135cd5b0c1c0c",
+            "receipt_expected_sha256": "b86090ffefe6bc6bb7de4ef966f5838ecf2f7d6c51dd3981401135cd5b0c1c0c"
+          },
+          "src/models/a02_coefficient_geometry_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "8848f0db57b030e06b96e5a1c1854a92c622101c403da06e1473ab84911a8815",
+            "receipt_expected_sha256": "8848f0db57b030e06b96e5a1c1854a92c622101c403da06e1473ab84911a8815"
+          },
+          "src/models/classification_a02_neighbors.py": {
+            "authorized_variance": false,
+            "current_sha256": "817263092683779f5f6f3a437ffc2c470dfec16d3b32c67802952b731cc6efaa",
+            "receipt_expected_sha256": "817263092683779f5f6f3a437ffc2c470dfec16d3b32c67802952b731cc6efaa"
+          },
+          "src/models/classification_models.py": {
+            "authorized_variance": false,
+            "current_sha256": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+            "receipt_expected_sha256": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646"
+          },
+          "src/models/optimization_v3_positional_text_pilot_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "390d9585a91440cc83314d2fa58acfebf374371032308937489019c2bd242c36",
+            "receipt_expected_sha256": "390d9585a91440cc83314d2fa58acfebf374371032308937489019c2bd242c36"
+          },
+          "src/models/positional_bag_offset_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "6bd754963580f63375340623bceb33ef2eac6ec181f9ee3d2383c6434c3d2386",
+            "receipt_expected_sha256": "6bd754963580f63375340623bceb33ef2eac6ec181f9ee3d2383c6434c3d2386"
+          },
+          "src/models/research_next_budget.py": {
+            "authorized_variance": false,
+            "current_sha256": "b19ca985ff28a2f3c80415bf48374e04ad064b003876f1f6d6c077dab7ed73a8",
+            "receipt_expected_sha256": "b19ca985ff28a2f3c80415bf48374e04ad064b003876f1f6d6c077dab7ed73a8"
+          },
+          "src/models/round1_models.py": {
+            "authorized_variance": false,
+            "current_sha256": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+            "receipt_expected_sha256": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4"
+          },
+          "tests/test_optimization_v3_a02_cgeom_benchmark_v1.py": {
+            "authorized_variance": false,
+            "current_sha256": "9a651df8fed669c10865244ad5fa60f37039c130d68a22c0bf54007f17ba298a",
+            "receipt_expected_sha256": "9a651df8fed669c10865244ad5fa60f37039c130d68a22c0bf54007f17ba298a"
+          }
+        },
+        "state_sha256": "a29ccd77b75d91bc5a4f825c6c5bf21bc69b65b2802f5d05d0bd70145c6bf1b3"
+      }
+    }
+  },
+  "schema_version": 1,
+  "source_variances": {
+    "c2b_ohe": {
+      "scripts/optimization_v3_a02_cgeom_benchmark_v1.py": {
+        "current_expected": "d6af3f3e18787c9cd1e5c52b1463fb30e18398cee6e3dc838e5227cf30a50a3f",
+        "receipt_expected": "ea011537a29ffd75aa7695dfb7df7a0bc4af4a311cf05158b6b2a8c53a03d694"
+      },
+      "tests/test_optimization_v3_a02_cgeom_benchmark_v1.py": {
+        "current_expected": "9a651df8fed669c10865244ad5fa60f37039c130d68a22c0bf54007f17ba298a",
+        "receipt_expected": "ed96e928e1da80fcd8cd5b57e56975a6ac3b524bab2cd4e534dd7554a3d930a5"
+      }
+    },
+    "c2b_scaler": {
+      "scripts/optimization_v3_a02_cgeom_benchmark_v1.py": {
+        "current_expected": "d6af3f3e18787c9cd1e5c52b1463fb30e18398cee6e3dc838e5227cf30a50a3f",
+        "receipt_expected": "ea011537a29ffd75aa7695dfb7df7a0bc4af4a311cf05158b6b2a8c53a03d694"
+      },
+      "tests/test_optimization_v3_a02_cgeom_benchmark_v1.py": {
+        "current_expected": "9a651df8fed669c10865244ad5fa60f37039c130d68a22c0bf54007f17ba298a",
+        "receipt_expected": "ed96e928e1da80fcd8cd5b57e56975a6ac3b524bab2cd4e534dd7554a3d930a5"
+      }
+    },
+    "c2b_structured": {
+      "scripts/optimization_v3_a02_cgeom_benchmark_v1.py": {
+        "current_expected": "d6af3f3e18787c9cd1e5c52b1463fb30e18398cee6e3dc838e5227cf30a50a3f",
+        "receipt_expected": "abc348edbace18cc0b6c08a78746a07cbbafbf694fdd3f1b9a5c0fb513281e5a"
+      },
+      "tests/test_optimization_v3_a02_cgeom_benchmark_v1.py": {
+        "current_expected": "9a651df8fed669c10865244ad5fa60f37039c130d68a22c0bf54007f17ba298a",
+        "receipt_expected": "15c7fd2e11a18147bde05a39dbc44c1d43497b633379102dc9d401d28c26298d"
+      }
+    }
+  },
+  "status": "PASS_SOURCE_COMPATIBILITY_ATTESTATION_R2_PENDING_REPLAY"
+}
