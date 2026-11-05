@@ -236,8 +236,9 @@ def _verified_df_map(root: Path) -> tuple[dict[str, Any], np.ndarray, float]:
 
 
 def _input_file_hashes(root: Path) -> dict[str, str]:
-    v2_freeze = _read_json(root / DFMAP_RESOURCE_FREEZE_REL)
-    immutable = dict(v2_freeze["immutable_input_sha256"])
+    v1_freeze = _read_json(root / dfv1.FREEZE_REL)
+    immutable = dict(v1_freeze["immutable_input_sha256"])
+    immutable[dfv1.FREEZE_REL] = stable_file_sha256(root / dfv1.FREEZE_REL, dfv1.FREEZE_REL)
     immutable.update({
         DFMAP_RESOURCE_FREEZE_REL: stable_file_sha256(root / DFMAP_RESOURCE_FREEZE_REL, DFMAP_RESOURCE_FREEZE_REL),
         DFMAP_VERIFICATION_REL: sha256_file(root / DFMAP_VERIFICATION_REL),
