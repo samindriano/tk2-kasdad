@@ -1,0 +1,40 @@
+{
+  "status": "ROOT_SOURCE_PASS",
+  "review_decision": "APPROVE_FOUR_TRAIN_PREFIX_FITS_ONLY",
+  "campaign_id": "CLS_POS_FREQUENCY_RIDGE_V1",
+  "at_utc": "2026-11-05T03:51:22.436186+00:00",
+  "source_commit": "721edc30344e62f7365baf91e533080ffe0bf7cc",
+  "source_hashes": {
+    "experiments/optimization_v3/cls_pos_frequency_ridge_v1/protocol.json": "384006cb83d3cb1a3e329f7c54a6e801e5afe40cf7f526576be7b34a0e343474",
+    "scripts/optimization_v3_cls_pos_frequency_ridge_v1.py": "c3e1b61dd78746d2f9b328301bbac383048f18c65b2707418ff4bf96e64ea1c6",
+    "scripts/verify_optimization_v3_cls_pos_frequency_ridge_v1.py": "e1c959db0f443acb73a9e5586803d6342882f9e4cfce3cceb78801a1847fcbb5",
+    "src/models/pos_frequency_ridge_v1.py": "db800c5a671cc3714ea2754a7d1eca2fc287da88908dd0116d2fc447ecc21490",
+    "tests/test_pos_frequency_ridge_v1.py": "cb6f73a1e26755191802d7cfcb0b5c7e314082abfeb97845fa35f373a0bd0006"
+  },
+  "source_preflight_sha256": "065f81e4d20da6559f11983c9cbf0a372e75d16537450bed7999619964383b73",
+  "authorized_fit_ids": [
+    "E67_ALIGNED",
+    "E67_PERMUTED",
+    "E75_ALIGNED",
+    "E75_PERMUTED"
+  ],
+  "fit_cap": 4,
+  "authorized_preprocessing_maps": 2,
+  "root_tests": {
+    "passed": 24,
+    "seconds": 6.52
+  },
+  "independent_source_verifier": "PASS_SOURCE_PREFLIGHT_INDEPENDENT",
+  "runtime_ram_and_shared_lock_required": true,
+  "stop_on_failed_or_unprovable_started_fit": true,
+  "query_target_access": false,
+  "test_access": false,
+  "e79_fit_authorized_by_this_receipt": false,
+  "kaggle_upload": false,
+  "review_notes": [
+    "Weighted penalty mathematics and fixed bag logit inspected.",
+    "Shared REG-compatible OS lock, prefix-only map, immutable state and postpublish recovery inspected and covered by new tests.",
+    "Apply exact fit order and check ledger/receipts before dispatching next fit. No historical verdict altered."
+  ],
+  "review_sha256": "1e31e47387ec4c40e7ac9c67aab566f953cbdc5db57436db6fe841256e6d6be5"
+}
