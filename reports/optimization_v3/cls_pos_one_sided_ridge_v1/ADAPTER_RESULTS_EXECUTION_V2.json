@@ -1,0 +1,1847 @@
+{
+  "adapter": {
+    "freeze_path": "experiments/optimization_v3/cls_pos_one_sided_ridge_v1/EVALUATION_ADAPTER_FREEZE_V2.json",
+    "freeze_sha256": "64162fdada31d99fe04473014e57e9d5f9292fcf060b73209f46ac174071ec0c",
+    "freeze_signature": "953a291dc8873412eec3a0adbe3c8ba6a8d0ce474b95436802c49b9097e3f06f",
+    "input_source_hashes": {
+      "scripts/cls_pos_one_sided_eval_adapter_v1.py": "7fdddf5fc829fc1636b597519cf4e2f70bd6892e5dedf1e4a06f15d78d79c356",
+      "scripts/evaluate_optimization_v3_cls_pos_one_sided_ridge_v1.py": "2445459e845acedb35ebe33bf679b4d506e35a84b4cb9dfa654d57d8823a1cf8",
+      "scripts/optimization_v3_cls_pos_one_sided_ridge_v1.py": "1d572b5e18ad60e1d8dbb8fa32d959092a27b642afa576a93dd5ee0e555564dd",
+      "scripts/verify_optimization_v3_cls_pos_one_sided_ridge_v1.py": "2c877ce719d05f44f475a02a8b60683560ebbba7519a4335ebe788945c6eb3cb",
+      "src/models/pos_one_sided_ridge_v1.py": "3dd47aabe71e708da09acf476b085ab1cc233cd2ebc6e5e058485845fe8b7892",
+      "tests/test_cls_pos_one_sided_eval_adapter_v1.py": "f94be55e1aaa665087e47a3f671ecbb1a48d493f09cfbdd11f88399446d055e3"
+    },
+    "source_path": "scripts/cls_pos_one_sided_eval_adapter_v1.py",
+    "source_sha256": "7fdddf5fc829fc1636b597519cf4e2f70bd6892e5dedf1e4a06f15d78d79c356"
+  },
+  "adapter_id": "CLS_POS_ONE_SIDED_EVALUATION_ADAPTER_V1",
+  "attempt_history": [
+    {
+      "cause": "NameError: TRAIN_REL is not defined before Train path construction/file open",
+      "query_labels_read": false,
+      "results_written": false,
+      "stage": "first evaluator call before TRAIN_REL root pass",
+      "status": "STOPPED_PRE_LABEL"
+    },
+    {
+      "cause": "The wrapper expected adapter_freeze_path in the newer Train binding root pass; lineage is through the previous adapter root pass instead",
+      "outputs_modified": false,
+      "query_labels_read": false,
+      "stage": "first resumed preflight wrapper",
+      "status": "STOPPED_PRE_LOCK"
+    },
+    {
+      "query_labels_read_after_manifest_commit": true,
+      "root_pass": "reports/optimization_v3/cls_pos_one_sided_ridge_v1/EVALUATION_TRAIN_REL_BINDING_ROOT_PASS.json",
+      "stage": "authorized resume",
+      "status": "PASS"
+    }
+  ],
+  "boundary": {
+    "champion_or_gate_changed": false,
+    "csv_submission_created": false,
+    "kaggle_accessed": false,
+    "source_or_recipe_modified": false,
+    "test_or_samplesubmission_accessed": false
+  },
+  "campaign_id": "CLS_POS_ONE_SIDED_RIDGE_V1",
+  "evaluation": {
+    "competition_gate": {
+      "E67_window_harms": {
+        "E67_W4": -0.0,
+        "E67_W5": 0.00013272891920690366,
+        "E67_W6": 0.0002336760953333128
+      },
+      "checks": {
+        "E67_H12_gain_at_least_0.0003": false,
+        "E75_W6_gain_nonnegative": true,
+        "each_E67_window_harm_at_most_0.003": true,
+        "supported_subgroups_within_guards": true,
+        "unique_pool_gain_at_least_0.0003": false
+      },
+      "gains_vs_saved_uniform_reference": {
+        "E67_H12": -0.00014202006690411384,
+        "E75_W6": 3.1026694329305826e-05,
+        "UNIQUE_E67_W4_W5_PLUS_E75_W6": -2.8987835431815157e-05
+      },
+      "pass": false,
+      "supported_subgroup_failures": [],
+      "unsupported_subgroups_unknown": []
+    },
+    "historical_evidence": {
+      "access_incident": "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_ACCESS_INCIDENT_01.json",
+      "adaptively_selected_after_failed_R1_gates": true,
+      "causal_claim": false,
+      "parent_campaign": "CLS_POS_FREQUENCY_RIDGE_V1",
+      "prior_aligned_vs_uniform_negative_results": {
+        "E67_H12": {
+          "competition_gain_vs_primary": -0.001539784491542684,
+          "one_sided_parent_aligned_vs_uniform": -0.0021953928882720852
+        },
+        "E75_W6": {
+          "competition_gain_vs_primary": -0.002676615691797002,
+          "one_sided_parent_aligned_vs_uniform": -0.002057242124576475
+        },
+        "UNIQUE_E67_W4_W5_PLUS_E75_W6": {
+          "competition_gain_vs_primary": -0.0021051191499581456,
+          "one_sided_parent_aligned_vs_uniform": -0.0020304755568633093
+        }
+      },
+      "reused_development_targets_are_fresh_holdout": false
+    },
+    "mechanism_gate": {
+      "checks": {
+        "E67_H12": {
+          "minimum_margin": 1e-12,
+          "one_sided_vs_global_strength_macro_f1": -0.0001002721189438116,
+          "one_sided_vs_uniform_macro_f1": -4.397279675960597e-05,
+          "pass": false
+        },
+        "E75_W6": {
+          "minimum_margin": 1e-12,
+          "one_sided_vs_global_strength_macro_f1": 0.00014239767874979492,
+          "one_sided_vs_uniform_macro_f1": 0.00026378954953754086,
+          "pass": true
+        }
+      },
+      "pass": false
+    },
+    "metrics": {
+      "logloss_epsilon": 1e-15,
+      "post_selected_threshold_is_descriptive_only": true,
+      "primary_threshold": 0.5,
+      "subgroup_support": {
+        "class_0_min": 30,
+        "class_1_min": 30,
+        "n_min": 200
+      }
+    },
+    "new_fits": 0,
+    "query_target_values_read_after_manifest_commit": true,
+    "report_characterization": {
+      "causal_claim": false,
+      "fresh_holdout": false,
+      "repeated_development_evaluation": true,
+      "shared_cycles_not_independent_replications": true
+    },
+    "report_path": "reports/optimization_v3/cls_pos_one_sided_ridge_v1/EVALUATION_REPORT.md",
+    "report_sha256": "7409874221c61f736846e12bbafbb387499e75e8359a9f7e5a518da50c2b24fc",
+    "resource_snapshot": {
+      "actual_boundary_before_save": {
+        "available_bytes": 2952032256,
+        "captured_at_utc": "2026-11-05T10:06:22.397980+00:00",
+        "estimated_additional_bytes": 536870912,
+        "initial_ram_pass": true,
+        "jobs": 1,
+        "minimum_actual_free_at_boundary_bytes": 805306368,
+        "minimum_available_bytes": 1610612736,
+        "minimum_projected_free_bytes": 805306368,
+        "os_peak_working_set_bytes": 204271616,
+        "os_peak_working_set_source": "psutil.Process().memory_info().peak_wset",
+        "policy": "saved_replay",
+        "process_rss_bytes": 178032640,
+        "projected_free_bytes": 2415161344,
+        "projected_reserve_pass": true,
+        "rss_pass": true,
+        "samples_are_peak_measurements": false,
+        "threads": 2,
+        "total_bytes": 33599959040
+      },
+      "initial_under_shared_lock": {
+        "available_bytes": 3002937344,
+        "captured_at_utc": "2026-11-05T10:06:18.217878+00:00",
+        "estimated_additional_bytes": 536870912,
+        "initial_ram_pass": true,
+        "jobs": 1,
+        "minimum_actual_free_at_boundary_bytes": 805306368,
+        "minimum_available_bytes": 1610612736,
+        "minimum_projected_free_bytes": 805306368,
+        "os_peak_working_set_bytes": 164253696,
+        "os_peak_working_set_source": "psutil.Process().memory_info().peak_wset",
+        "policy": "saved_replay",
+        "process_rss_bytes": 162344960,
+        "projected_free_bytes": 2466066432,
+        "projected_reserve_pass": true,
+        "rss_pass": true,
+        "samples_are_peak_measurements": false,
+        "threads": 2,
+        "total_bytes": 33599959040
+      },
+      "policy": {
+        "estimated_additional_bytes": 536870912,
+        "minimum_actual_free_at_boundary_bytes": 805306368,
+        "minimum_available_bytes": 1610612736,
+        "minimum_projected_free_bytes": 805306368
+      },
+      "samples_are_peak_measurements": false
+    },
+    "results_path": "reports/optimization_v3/cls_pos_one_sided_ridge_v1/EVALUATION_RESULTS.json",
+    "results_sha256": "45a2757af3fa7b39ccebcb20c392015e8956e08945718c52bc663ada7a66b66e",
+    "status": "SCORED_REPEATED_DEVELOPMENT_EVALUATION",
+    "target_rows_read_after_manifest_commit": 20903,
+    "views": {
+      "E67_H12": {
+        "competition_gain_macro_f1_vs_uniform": {
+          "GLOBAL_STRENGTH": 2.924683416472007e-05,
+          "ONE_SIDED": -0.00014202006690411384
+        },
+        "competition_macro_f1": {
+          "GLOBAL_STRENGTH": 0.8105817155528777,
+          "ONE_SIDED": 0.8104104486518089,
+          "UNIFORM": 0.810552468718713
+        },
+        "competition_present_gain_macro_f1_vs_uniform": {
+          "GLOBAL_STRENGTH": 3.1643411760540197e-05,
+          "ONE_SIDED": -0.0001532233418869433
+        },
+        "competition_present_only_macro_f1": {
+          "GLOBAL_STRENGTH": 0.8153811120151971,
+          "ONE_SIDED": 0.8151962452615497,
+          "UNIFORM": 0.8153494686034366
+        },
+        "component_macro_f1": {
+          "GLOBAL_STRENGTH": 0.8063139196453522,
+          "ONE_SIDED": 0.8062136475264083,
+          "UNIFORM": 0.806257620323168
+        },
+        "missing_rows": 1375,
+        "per_cycle": {
+          "68": {
+            "class_0": 406,
+            "class_1": 171,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "TIE",
+              "ONE_SIDED": "TIE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.0,
+              "ONE_SIDED": 0.0
+            },
+            "n": 577
+          },
+          "69": {
+            "class_0": 638,
+            "class_1": 441,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "POSITIVE",
+              "ONE_SIDED": "POSITIVE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.0019229809591023717,
+              "ONE_SIDED": 0.0009111165910815622
+            },
+            "n": 1079
+          },
+          "70": {
+            "class_0": 994,
+            "class_1": 611,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "POSITIVE",
+              "ONE_SIDED": "NEGATIVE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.0018410166934255123,
+              "ONE_SIDED": -0.0006131746493179824
+            },
+            "n": 1605
+          },
+          "71": {
+            "class_0": 1059,
+            "class_1": 630,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "TIE",
+              "ONE_SIDED": "TIE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.0,
+              "ONE_SIDED": 0.0
+            },
+            "n": 1689
+          },
+          "72": {
+            "class_0": 1175,
+            "class_1": 636,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "POSITIVE",
+              "ONE_SIDED": "TIE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.0008128227388433107,
+              "ONE_SIDED": 0.0
+            },
+            "n": 1811
+          },
+          "73": {
+            "class_0": 1258,
+            "class_1": 622,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "POSITIVE",
+              "ONE_SIDED": "TIE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.0008780718836569612,
+              "ONE_SIDED": 0.0
+            },
+            "n": 1880
+          },
+          "74": {
+            "class_0": 1259,
+            "class_1": 555,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "NEGATIVE",
+              "ONE_SIDED": "NEGATIVE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": -0.0016963580302840064,
+              "ONE_SIDED": -0.0005658996059532129
+            },
+            "n": 1814
+          },
+          "75": {
+            "class_0": 1396,
+            "class_1": 561,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "NEGATIVE",
+              "ONE_SIDED": "TIE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": -0.0017326449511690933,
+              "ONE_SIDED": 0.0
+            },
+            "n": 1957
+          },
+          "76": {
+            "class_0": 1198,
+            "class_1": 624,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "NEGATIVE",
+              "ONE_SIDED": "POSITIVE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": -0.00018539398761663328,
+              "ONE_SIDED": 0.0007115170218398026
+            },
+            "n": 1822
+          },
+          "77": {
+            "class_0": 1669,
+            "class_1": 666,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "POSITIVE",
+              "ONE_SIDED": "TIE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.000427228637749133,
+              "ONE_SIDED": 0.0
+            },
+            "n": 2335
+          },
+          "78": {
+            "class_0": 1609,
+            "class_1": 537,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "POSITIVE",
+              "ONE_SIDED": "POSITIVE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.000994549447093318,
+              "ONE_SIDED": 0.0004970284547178849
+            },
+            "n": 2146
+          },
+          "79": {
+            "class_0": 1515,
+            "class_1": 673,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "NEGATIVE",
+              "ONE_SIDED": "NEGATIVE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": -0.0019190138682623203,
+              "ONE_SIDED": -0.0019190138682623203
+            },
+            "n": 2188
+          }
+        },
+        "present_rows": 19528,
+        "rows": 20903,
+        "subgroups": {
+          "availability": {
+            "missing": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": 0.0,
+                "ONE_SIDED": 0.0
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.0,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 888,
+                "class_1": 487,
+                "n": 1375
+              }
+            },
+            "present": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": -3.1643411760540197e-05,
+                "ONE_SIDED": 0.0001532233418869433
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": -0.0003205128205128194,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 13288,
+                "class_1": 6240,
+                "n": 19528
+              }
+            }
+          },
+          "entry_friction": {
+            "0": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": -0.0004652589537841312,
+                "ONE_SIDED": 0.00024324218594584668
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": -0.0009701673538685673,
+                "ONE_SIDED": 0.0002425418384671696
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 10221,
+                "class_1": 4123,
+                "n": 14344
+              }
+            },
+            "1": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": 0.0007772516472981383,
+                "ONE_SIDED": -2.661853584351448e-05
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.0007680491551459445,
+                "ONE_SIDED": -0.00038402457757291675
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 3955,
+                "class_1": 2604,
+                "n": 6559
+              }
+            }
+          },
+          "text_load": {
+            "Q1": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": -0.0007901010415164444,
+                "ONE_SIDED": 0.0
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": -0.0014698677119059367,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 3443,
+                "class_1": 2041,
+                "n": 5484
+              }
+            },
+            "Q2": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": 0.0008840789755000245,
+                "ONE_SIDED": 0.0006173972304306385
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.0006635700066356387,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 3334,
+                "class_1": 1507,
+                "n": 4841
+              }
+            },
+            "Q3": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": -0.0005838984341181019,
+                "ONE_SIDED": 0.0
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": -0.0008764241893075564,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 3574,
+                "class_1": 1141,
+                "n": 4715
+              }
+            },
+            "Q4": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": 0.0003894851239832908,
+                "ONE_SIDED": 0.0
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.0004906771344456162,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 3825,
+                "class_1": 2038,
+                "n": 5863
+              }
+            }
+          }
+        }
+      },
+      "E67_W4": {
+        "competition_gain_macro_f1_vs_uniform": {
+          "GLOBAL_STRENGTH": 0.0010277116164235656,
+          "ONE_SIDED": 0.0
+        },
+        "competition_macro_f1": {
+          "GLOBAL_STRENGTH": 0.845137146936573,
+          "ONE_SIDED": 0.8441094353201495,
+          "UNIFORM": 0.8441094353201495
+        },
+        "competition_present_gain_macro_f1_vs_uniform": {
+          "GLOBAL_STRENGTH": 0.0011089927861350768,
+          "ONE_SIDED": 0.0
+        },
+        "competition_present_only_macro_f1": {
+          "GLOBAL_STRENGTH": 0.8521166375443521,
+          "ONE_SIDED": 0.851007644758217,
+          "UNIFORM": 0.851007644758217
+        },
+        "component_macro_f1": {
+          "GLOBAL_STRENGTH": 0.8404065333860546,
+          "ONE_SIDED": 0.8398460020129178,
+          "UNIFORM": 0.8401451489686784
+        },
+        "missing_rows": 342,
+        "per_cycle": {
+          "68": {
+            "class_0": 406,
+            "class_1": 171,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "TIE",
+              "ONE_SIDED": "TIE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.0,
+              "ONE_SIDED": 0.0
+            },
+            "n": 577
+          },
+          "69": {
+            "class_0": 638,
+            "class_1": 441,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "POSITIVE",
+              "ONE_SIDED": "POSITIVE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.0019229809591023717,
+              "ONE_SIDED": 0.0009111165910815622
+            },
+            "n": 1079
+          },
+          "70": {
+            "class_0": 994,
+            "class_1": 611,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "POSITIVE",
+              "ONE_SIDED": "NEGATIVE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.0018410166934255123,
+              "ONE_SIDED": -0.0006131746493179824
+            },
+            "n": 1605
+          },
+          "71": {
+            "class_0": 1059,
+            "class_1": 630,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "TIE",
+              "ONE_SIDED": "TIE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.0,
+              "ONE_SIDED": 0.0
+            },
+            "n": 1689
+          }
+        },
+        "present_rows": 4608,
+        "rows": 4950,
+        "subgroups": {
+          "availability": {
+            "missing": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": 0.0,
+                "ONE_SIDED": 0.0
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.0,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 202,
+                "class_1": 140,
+                "n": 342
+              }
+            },
+            "present": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": -0.0011089927861350768,
+                "ONE_SIDED": 0.0
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": -0.0005837711617046049,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 2895,
+                "class_1": 1713,
+                "n": 4608
+              }
+            }
+          },
+          "entry_friction": {
+            "0": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": -0.000940731889892632,
+                "ONE_SIDED": 0.00029567762437210376
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": -0.0008285004142501995,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 2211,
+                "class_1": 1207,
+                "n": 3418
+              }
+            },
+            "1": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": -0.0012584868672500527,
+                "ONE_SIDED": -0.0006292185469201073
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.0,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 886,
+                "class_1": 646,
+                "n": 1532
+              }
+            }
+          },
+          "text_load": {
+            "Q1": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": -0.0009139914192317633,
+                "ONE_SIDED": 0.0
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.0,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 579,
+                "class_1": 513,
+                "n": 1092
+              }
+            },
+            "Q2": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": -0.0032930379730572445,
+                "ONE_SIDED": 0.0
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": -0.00295857988165682,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 625,
+                "class_1": 338,
+                "n": 963
+              }
+            },
+            "Q3": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": 0.0,
+                "ONE_SIDED": 0.0009727982127979429
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.0,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 808,
+                "class_1": 322,
+                "n": 1130
+              }
+            },
+            "Q4": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": -0.0005521700531665452,
+                "ONE_SIDED": -0.0005521700531665452
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.0,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 1085,
+                "class_1": 680,
+                "n": 1765
+              }
+            }
+          }
+        }
+      },
+      "E67_W5": {
+        "competition_gain_macro_f1_vs_uniform": {
+          "GLOBAL_STRENGTH": -0.0003977568589669245,
+          "ONE_SIDED": -0.00013272891920690366
+        },
+        "competition_macro_f1": {
+          "GLOBAL_STRENGTH": 0.8046970381366811,
+          "ONE_SIDED": 0.8049620660764412,
+          "UNIFORM": 0.8050947949956481
+        },
+        "competition_present_gain_macro_f1_vs_uniform": {
+          "GLOBAL_STRENGTH": -0.00042925226798995464,
+          "ONE_SIDED": -0.00014360867299956226
+        },
+        "competition_present_only_macro_f1": {
+          "GLOBAL_STRENGTH": 0.8091014270115621,
+          "ONE_SIDED": 0.8093870706065525,
+          "UNIFORM": 0.809530679279552
+        },
+        "component_macro_f1": {
+          "GLOBAL_STRENGTH": 0.7993238784103058,
+          "ONE_SIDED": 0.7990176322423327,
+          "UNIFORM": 0.7987987485087452
+        },
+        "missing_rows": 507,
+        "per_cycle": {
+          "72": {
+            "class_0": 1175,
+            "class_1": 636,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "POSITIVE",
+              "ONE_SIDED": "TIE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.0008128227388433107,
+              "ONE_SIDED": 0.0
+            },
+            "n": 1811
+          },
+          "73": {
+            "class_0": 1258,
+            "class_1": 622,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "POSITIVE",
+              "ONE_SIDED": "TIE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.0008780718836569612,
+              "ONE_SIDED": 0.0
+            },
+            "n": 1880
+          },
+          "74": {
+            "class_0": 1259,
+            "class_1": 555,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "NEGATIVE",
+              "ONE_SIDED": "NEGATIVE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": -0.0016963580302840064,
+              "ONE_SIDED": -0.0005658996059532129
+            },
+            "n": 1814
+          },
+          "75": {
+            "class_0": 1396,
+            "class_1": 561,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "NEGATIVE",
+              "ONE_SIDED": "TIE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": -0.0017326449511690933,
+              "ONE_SIDED": 0.0
+            },
+            "n": 1957
+          }
+        },
+        "present_rows": 6955,
+        "rows": 7462,
+        "subgroups": {
+          "availability": {
+            "missing": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": 0.0,
+                "ONE_SIDED": 0.0
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.0,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 331,
+                "class_1": 176,
+                "n": 507
+              }
+            },
+            "present": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": 0.00042925226798995464,
+                "ONE_SIDED": 0.00014360867299956226
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": -0.0013648771610554888,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 4757,
+                "class_1": 2198,
+                "n": 6955
+              }
+            }
+          },
+          "entry_friction": {
+            "0": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": -0.00028610852173027723,
+                "ONE_SIDED": 0.000200951803089211
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": -0.0026773761713521083,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 3694,
+                "class_1": 1494,
+                "n": 5188
+              }
+            },
+            "1": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": 0.0017511907878617894,
+                "ONE_SIDED": 0.0
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.001136363636363713,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 1394,
+                "class_1": 880,
+                "n": 2274
+              }
+            }
+          },
+          "text_load": {
+            "Q1": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": -0.00019803942958074305,
+                "ONE_SIDED": 0.0004522881792209388
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": -0.002702702702702786,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 1376,
+                "class_1": 740,
+                "n": 2116
+              }
+            },
+            "Q2": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": 0.0024731972015689108,
+                "ONE_SIDED": 0.0
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.0017094017094017033,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 1111,
+                "class_1": 585,
+                "n": 1696
+              }
+            },
+            "Q3": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": -0.0027750133483028794,
+                "ONE_SIDED": -0.0007146086529794538
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": -0.005208333333333259,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 1248,
+                "class_1": 384,
+                "n": 1632
+              }
+            },
+            "Q4": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": 0.001441042274946125,
+                "ONE_SIDED": 0.0004806606841214478
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.0,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 1353,
+                "class_1": 665,
+                "n": 2018
+              }
+            }
+          }
+        }
+      },
+      "E67_W6": {
+        "competition_gain_macro_f1_vs_uniform": {
+          "GLOBAL_STRENGTH": -0.00021044826114247073,
+          "ONE_SIDED": -0.0002336760953333128
+        },
+        "competition_macro_f1": {
+          "GLOBAL_STRENGTH": 0.7915485274477501,
+          "ONE_SIDED": 0.7915252996135592,
+          "UNIFORM": 0.7917589757088925
+        },
+        "competition_present_gain_macro_f1_vs_uniform": {
+          "GLOBAL_STRENGTH": -0.00022747212765372726,
+          "ONE_SIDED": -0.00025130163022879515
+        },
+        "competition_present_only_macro_f1": {
+          "GLOBAL_STRENGTH": 0.7951915309757919,
+          "ONE_SIDED": 0.7951677014732168,
+          "UNIFORM": 0.7954190031034456
+        },
+        "component_macro_f1": {
+          "GLOBAL_STRENGTH": 0.7884919337075522,
+          "ONE_SIDED": 0.7888660085257938,
+          "UNIFORM": 0.7889354022818742
+        },
+        "missing_rows": 526,
+        "per_cycle": {
+          "76": {
+            "class_0": 1198,
+            "class_1": 624,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "NEGATIVE",
+              "ONE_SIDED": "POSITIVE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": -0.00018539398761663328,
+              "ONE_SIDED": 0.0007115170218398026
+            },
+            "n": 1822
+          },
+          "77": {
+            "class_0": 1669,
+            "class_1": 666,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "POSITIVE",
+              "ONE_SIDED": "TIE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.000427228637749133,
+              "ONE_SIDED": 0.0
+            },
+            "n": 2335
+          },
+          "78": {
+            "class_0": 1609,
+            "class_1": 537,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "POSITIVE",
+              "ONE_SIDED": "POSITIVE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.000994549447093318,
+              "ONE_SIDED": 0.0004970284547178849
+            },
+            "n": 2146
+          },
+          "79": {
+            "class_0": 1515,
+            "class_1": 673,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "NEGATIVE",
+              "ONE_SIDED": "NEGATIVE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": -0.0019190138682623203,
+              "ONE_SIDED": -0.0019190138682623203
+            },
+            "n": 2188
+          }
+        },
+        "present_rows": 7965,
+        "rows": 8491,
+        "subgroups": {
+          "availability": {
+            "missing": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": 0.0,
+                "ONE_SIDED": 0.0
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.0,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 355,
+                "class_1": 171,
+                "n": 526
+              }
+            },
+            "present": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": 0.00022747212765372726,
+                "ONE_SIDED": 0.00025130163022879515
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.0008587376556461468,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 5636,
+                "class_1": 2329,
+                "n": 7965
+              }
+            }
+          },
+          "entry_friction": {
+            "0": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": -0.0002718463280714234,
+                "ONE_SIDED": 0.0002802098398365649
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.0007032348804500987,
+                "ONE_SIDED": 0.0007032348804500987
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 4316,
+                "class_1": 1422,
+                "n": 5738
+              }
+            },
+            "1": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": 0.0010996806790770641,
+                "ONE_SIDED": 0.0002796146096493146
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.0009276437847866026,
+                "ONE_SIDED": -0.0009276437847867136
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 1675,
+                "class_1": 1078,
+                "n": 2753
+              }
+            }
+          },
+          "text_load": {
+            "Q1": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": -0.001379141250718141,
+                "ONE_SIDED": -0.000430950146050435
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": -0.0012690355329949554,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 1488,
+                "class_1": 788,
+                "n": 2276
+              }
+            },
+            "Q2": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": 0.001568065640190186,
+                "ONE_SIDED": 0.0013791094060058295
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.00171232876712335,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 1598,
+                "class_1": 584,
+                "n": 2182
+              }
+            },
+            "Q3": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": 0.0009095457417201969,
+                "ONE_SIDED": 0.0
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.0022988505747126853,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 1518,
+                "class_1": 435,
+                "n": 1953
+              }
+            },
+            "Q4": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": 0.000226622873013671,
+                "ONE_SIDED": 0.0
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.0014430014430013571,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 1387,
+                "class_1": 693,
+                "n": 2080
+              }
+            }
+          }
+        }
+      },
+      "E75_W6": {
+        "competition_gain_macro_f1_vs_uniform": {
+          "GLOBAL_STRENGTH": 0.0007031385908446985,
+          "ONE_SIDED": 3.1026694329305826e-05
+        },
+        "competition_macro_f1": {
+          "GLOBAL_STRENGTH": 0.8198161039740424,
+          "ONE_SIDED": 0.819143992077527,
+          "UNIFORM": 0.8191129653831977
+        },
+        "competition_present_gain_macro_f1_vs_uniform": {
+          "GLOBAL_STRENGTH": 0.0007521273769937054,
+          "ONE_SIDED": 3.3472353532681964e-05
+        },
+        "competition_present_only_macro_f1": {
+          "GLOBAL_STRENGTH": 0.8215644714194141,
+          "ONE_SIDED": 0.8208458163959531,
+          "UNIFORM": 0.8208123440424204
+        },
+        "component_macro_f1": {
+          "GLOBAL_STRENGTH": 0.8115639077587404,
+          "ONE_SIDED": 0.8117063054374902,
+          "UNIFORM": 0.8114425158879527
+        },
+        "missing_rows": 526,
+        "per_cycle": {
+          "76": {
+            "class_0": 1198,
+            "class_1": 624,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "POSITIVE",
+              "ONE_SIDED": "TIE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.0007135867173055921,
+              "ONE_SIDED": 0.0
+            },
+            "n": 1822
+          },
+          "77": {
+            "class_0": 1669,
+            "class_1": 666,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "POSITIVE",
+              "ONE_SIDED": "NEGATIVE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.001530339300888528,
+              "ONE_SIDED": -0.00018405626718032142
+            },
+            "n": 2335
+          },
+          "78": {
+            "class_0": 1609,
+            "class_1": 537,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "TIE",
+              "ONE_SIDED": "POSITIVE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.0,
+              "ONE_SIDED": 0.0002968006548343949
+            },
+            "n": 2146
+          },
+          "79": {
+            "class_0": 1515,
+            "class_1": 673,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "POSITIVE",
+              "ONE_SIDED": "TIE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.00046502890722333046,
+              "ONE_SIDED": 0.0
+            },
+            "n": 2188
+          }
+        },
+        "present_rows": 7965,
+        "rows": 8491,
+        "subgroups": {
+          "availability": {
+            "missing": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": 0.0,
+                "ONE_SIDED": 0.0
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.0,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 355,
+                "class_1": 171,
+                "n": 526
+              }
+            },
+            "present": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": -0.0007521273769937054,
+                "ONE_SIDED": -3.3472353532681964e-05
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": -0.0008587376556462578,
+                "ONE_SIDED": 0.0008587376556461468
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 5636,
+                "class_1": 2329,
+                "n": 7965
+              }
+            }
+          },
+          "entry_friction": {
+            "0": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": -0.0009756724624354618,
+                "ONE_SIDED": -0.00039340149178745953
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": -0.0014064697609001975,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 4316,
+                "class_1": 1422,
+                "n": 5738
+              }
+            },
+            "1": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": -0.0003495784374705213,
+                "ONE_SIDED": 0.00048324291785351026
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.0,
+                "ONE_SIDED": 0.0018552875695732052
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 1675,
+                "class_1": 1078,
+                "n": 2753
+              }
+            }
+          },
+          "text_load": {
+            "Q1": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": 0.0,
+                "ONE_SIDED": -0.00044945752652214566
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.0,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 1463,
+                "class_1": 781,
+                "n": 2244
+              }
+            },
+            "Q2": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": -0.0009476772647430964,
+                "ONE_SIDED": 0.00017167015326291502
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.0,
+                "ONE_SIDED": 0.0016366612111293755
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 1674,
+                "class_1": 611,
+                "n": 2285
+              }
+            },
+            "Q3": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": -0.0015347226119435398,
+                "ONE_SIDED": 0.0
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": -0.0022573363431150906,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 1526,
+                "class_1": 443,
+                "n": 1969
+              }
+            },
+            "Q4": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": -0.0007058562415618308,
+                "ONE_SIDED": 0.00022243023903634196
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": -0.0015037593984962294,
+                "ONE_SIDED": 0.0015037593984962294
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 1328,
+                "class_1": 665,
+                "n": 1993
+              }
+            }
+          }
+        }
+      },
+      "UNIQUE_E67_W4_W5_PLUS_E75_W6": {
+        "competition_gain_macro_f1_vs_uniform": {
+          "GLOBAL_STRENGTH": 0.00037510907402948934,
+          "ONE_SIDED": -2.8987835431815157e-05
+        },
+        "competition_macro_f1": {
+          "GLOBAL_STRENGTH": 0.8219467281431209,
+          "ONE_SIDED": 0.8215426312336596,
+          "UNIFORM": 0.8215716190690914
+        },
+        "competition_present_gain_macro_f1_vs_uniform": {
+          "GLOBAL_STRENGTH": 0.00040371462043653494,
+          "ONE_SIDED": -3.109135617962444e-05
+        },
+        "competition_present_only_macro_f1": {
+          "GLOBAL_STRENGTH": 0.8259585241469221,
+          "ONE_SIDED": 0.8255237181703059,
+          "UNIFORM": 0.8255548095264855
+        },
+        "component_macro_f1": {
+          "GLOBAL_STRENGTH": 0.8157200183169466,
+          "ONE_SIDED": 0.8155221222077538,
+          "UNIFORM": 0.8154414350088901
+        },
+        "missing_rows": 1375,
+        "per_cycle": {
+          "68": {
+            "class_0": 406,
+            "class_1": 171,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "TIE",
+              "ONE_SIDED": "TIE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.0,
+              "ONE_SIDED": 0.0
+            },
+            "n": 577
+          },
+          "69": {
+            "class_0": 638,
+            "class_1": 441,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "POSITIVE",
+              "ONE_SIDED": "POSITIVE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.0019229809591023717,
+              "ONE_SIDED": 0.0009111165910815622
+            },
+            "n": 1079
+          },
+          "70": {
+            "class_0": 994,
+            "class_1": 611,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "POSITIVE",
+              "ONE_SIDED": "NEGATIVE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.0018410166934255123,
+              "ONE_SIDED": -0.0006131746493179824
+            },
+            "n": 1605
+          },
+          "71": {
+            "class_0": 1059,
+            "class_1": 630,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "TIE",
+              "ONE_SIDED": "TIE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.0,
+              "ONE_SIDED": 0.0
+            },
+            "n": 1689
+          },
+          "72": {
+            "class_0": 1175,
+            "class_1": 636,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "POSITIVE",
+              "ONE_SIDED": "TIE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.0008128227388433107,
+              "ONE_SIDED": 0.0
+            },
+            "n": 1811
+          },
+          "73": {
+            "class_0": 1258,
+            "class_1": 622,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "POSITIVE",
+              "ONE_SIDED": "TIE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.0008780718836569612,
+              "ONE_SIDED": 0.0
+            },
+            "n": 1880
+          },
+          "74": {
+            "class_0": 1259,
+            "class_1": 555,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "NEGATIVE",
+              "ONE_SIDED": "NEGATIVE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": -0.0016963580302840064,
+              "ONE_SIDED": -0.0005658996059532129
+            },
+            "n": 1814
+          },
+          "75": {
+            "class_0": 1396,
+            "class_1": 561,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "NEGATIVE",
+              "ONE_SIDED": "TIE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": -0.0017326449511690933,
+              "ONE_SIDED": 0.0
+            },
+            "n": 1957
+          },
+          "76": {
+            "class_0": 1198,
+            "class_1": 624,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "POSITIVE",
+              "ONE_SIDED": "TIE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.0007135867173055921,
+              "ONE_SIDED": 0.0
+            },
+            "n": 1822
+          },
+          "77": {
+            "class_0": 1669,
+            "class_1": 666,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "POSITIVE",
+              "ONE_SIDED": "NEGATIVE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.001530339300888528,
+              "ONE_SIDED": -0.00018405626718032142
+            },
+            "n": 2335
+          },
+          "78": {
+            "class_0": 1609,
+            "class_1": 537,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "TIE",
+              "ONE_SIDED": "POSITIVE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.0,
+              "ONE_SIDED": 0.0002968006548343949
+            },
+            "n": 2146
+          },
+          "79": {
+            "class_0": 1515,
+            "class_1": 673,
+            "direction_vs_uniform": {
+              "GLOBAL_STRENGTH": "POSITIVE",
+              "ONE_SIDED": "TIE"
+            },
+            "gain_macro_f1_vs_uniform": {
+              "GLOBAL_STRENGTH": 0.00046502890722333046,
+              "ONE_SIDED": 0.0
+            },
+            "n": 2188
+          }
+        },
+        "present_rows": 19528,
+        "rows": 20903,
+        "subgroups": {
+          "availability": {
+            "missing": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": 0.0,
+                "ONE_SIDED": 0.0
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.0,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 888,
+                "class_1": 487,
+                "n": 1375
+              }
+            },
+            "present": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": -0.00040371462043653494,
+                "ONE_SIDED": 3.109135617962444e-05
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": -0.0009615384615384581,
+                "ONE_SIDED": 0.0003205128205128194
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 13288,
+                "class_1": 6240,
+                "n": 19528
+              }
+            }
+          },
+          "entry_friction": {
+            "0": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": -0.0006950266958418716,
+                "ONE_SIDED": 0.0
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": -0.001697792869269965,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 10221,
+                "class_1": 4123,
+                "n": 14344
+              }
+            },
+            "1": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": 0.00017252756525343305,
+                "ONE_SIDED": 5.4181937603092756e-05
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.00038402457757302777,
+                "ONE_SIDED": 0.0007680491551459445
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 3955,
+                "class_1": 2604,
+                "n": 6559
+              }
+            }
+          },
+          "text_load": {
+            "Q1": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": -0.00023600443702309626,
+                "ONE_SIDED": 0.0
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": -0.000983284169124854,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 3418,
+                "class_1": 2034,
+                "n": 5452
+              }
+            },
+            "Q2": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": -0.00020687834782096015,
+                "ONE_SIDED": 5.8757606120729555e-05
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": 0.0,
+                "ONE_SIDED": 0.0006518904823989979
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 3410,
+                "class_1": 1534,
+                "n": 4944
+              }
+            },
+            "Q3": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": -0.0015423224946681247,
+                "ONE_SIDED": 0.0
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": -0.0026109660574412663,
+                "ONE_SIDED": 0.0
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 3582,
+                "class_1": 1149,
+                "n": 4731
+              }
+            },
+            "Q4": {
+              "harm_macro_f1": {
+                "GLOBAL_STRENGTH": 0.00010840488982299945,
+                "ONE_SIDED": 5.9788291030926644e-05
+              },
+              "harm_positive_recall": {
+                "GLOBAL_STRENGTH": -0.0004975124378109319,
+                "ONE_SIDED": 0.0004975124378109319
+              },
+              "status": "SUPPORTED",
+              "support": {
+                "class_0": 3766,
+                "class_1": 2010,
+                "n": 5776
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "evaluation_execution_commit": "366e6e24b8e093bb813c3c0585a7d7f650a52144",
+  "evaluation_outputs_commit": "7d8ad3015e5bc09722e1ee341d296eab80d723be",
+  "independent_verification": {
+    "after_boundary": {
+      "available_bytes": 2934890496,
+      "captured_at_utc": "2026-11-05T10:07:04.257492+00:00",
+      "jobs": 1,
+      "process_rss_bytes": 167919616,
+      "projected_free_bytes": 2398019584,
+      "threads": 2
+    },
+    "initial_under_shared_lock": {
+      "available_bytes": 2974584832,
+      "captured_at_utc": "2026-11-05T10:07:02.464918+00:00",
+      "jobs": 1,
+      "process_rss_bytes": 162283520,
+      "projected_free_bytes": 2437713920,
+      "threads": 2
+    },
+    "maximum_numeric_difference": 0.0,
+    "metric_objects_checked": 1291,
+    "query_labels_read_after_committed_manifest": true,
+    "resource_policy": {
+      "estimated_additional_bytes": 536870912,
+      "minimum_actual_free_at_boundary_bytes": 805306368,
+      "minimum_available_bytes": 1610612736,
+      "minimum_projected_free_bytes": 805306368
+    },
+    "status": "PASS_INDEPENDENT_RESULTS_RECOMPUTATION",
+    "test_accessed": false
+  },
+  "original_lineage": {
+    "fit_failures": [],
+    "fit_ids": [
+      "E67_ONE_SIDED",
+      "E67_GLOBAL_STRENGTH",
+      "E75_ONE_SIDED",
+      "E75_GLOBAL_STRENGTH"
+    ],
+    "fit_ledger_sha256": "7a811b98647b1778d58213416c76d966d482664e9c8c5025449f898de77e495a",
+    "fits": [
+      {
+        "artifact_path": "experiments/runs/optimization_v3_cls_pos_one_sided_ridge_v1/units/E67_ONE_SIDED.npz",
+        "artifact_sha256": "cf89ec7d6f900cf9e0ebbd8f10c5b0d62211cc34e0fc0ff3058146eac5e1274f",
+        "fit_id": "E67_ONE_SIDED",
+        "fit_ids_sha256": "90e75b5ea553548cb8e618222a0bb1525751d80d8537360ee537c69699ba1228",
+        "fit_rows": 29705,
+        "gamma_sha256": "b15602dae1c93a25527949ac07722e3b3598d88f7450feddf59ed9d94bd0f5fd",
+        "receipt_path": "experiments/runs/optimization_v3_cls_pos_one_sided_ridge_v1/receipts/E67_ONE_SIDED.json",
+        "receipt_sha256": "969e58cdb1f85e7c0c9927b911118fa248fbdbe4bc3e5ba0beb8fdebd1ad7e64",
+        "target_hash_is_provenance_only": true,
+        "target_sha256": "ffa4f76065044320a6fa5b059e05f834643c0b49e75bb73db3d8c91859b6f1ce"
+      },
+      {
+        "artifact_path": "experiments/runs/optimization_v3_cls_pos_one_sided_ridge_v1/units/E67_GLOBAL_STRENGTH.npz",
+        "artifact_sha256": "6348e4c462eba98524803e558abe7a206eaf930f5145b889b752684a0a8f13b1",
+        "fit_id": "E67_GLOBAL_STRENGTH",
+        "fit_ids_sha256": "90e75b5ea553548cb8e618222a0bb1525751d80d8537360ee537c69699ba1228",
+        "fit_rows": 29705,
+        "gamma_sha256": "fed2d0970b68093fc721513b72d29fe57e82e31e52bca7cc87222a25a98990e8",
+        "receipt_path": "experiments/runs/optimization_v3_cls_pos_one_sided_ridge_v1/receipts/E67_GLOBAL_STRENGTH.json",
+        "receipt_sha256": "581515d119f25013b8bd572a7afc61ad826084413ac3ba3a68ed6a6f4a301faa",
+        "target_hash_is_provenance_only": true,
+        "target_sha256": "ffa4f76065044320a6fa5b059e05f834643c0b49e75bb73db3d8c91859b6f1ce"
+      },
+      {
+        "artifact_path": "experiments/runs/optimization_v3_cls_pos_one_sided_ridge_v1/units/E75_ONE_SIDED.npz",
+        "artifact_sha256": "999dacdb044e9f9c77699e61a6801f258f76e30009a1e587062f7379b64f077d",
+        "fit_id": "E75_ONE_SIDED",
+        "fit_ids_sha256": "306de4728708b27fa725bf79946c117b3708d6d85ec36b67102638e96a1ccee8",
+        "fit_rows": 42117,
+        "gamma_sha256": "46c2e946de832fdd179167b1441a2e7896e8b4d9df85db18077e8716a20e7f10",
+        "receipt_path": "experiments/runs/optimization_v3_cls_pos_one_sided_ridge_v1/receipts/E75_ONE_SIDED.json",
+        "receipt_sha256": "c6ea5d752585758b01f13ad3f667c46885cb56b8233ed447beaf678644c7c2e1",
+        "target_hash_is_provenance_only": true,
+        "target_sha256": "80a61e4b2f6df3bde627172f6e3f786dcc74b1e0f158538768ff42ae3d21f3f1"
+      },
+      {
+        "artifact_path": "experiments/runs/optimization_v3_cls_pos_one_sided_ridge_v1/units/E75_GLOBAL_STRENGTH.npz",
+        "artifact_sha256": "cc082976bddaf0521242f52c7ea0c47d7646b9f89d2e181f36685eab313a9b5a",
+        "fit_id": "E75_GLOBAL_STRENGTH",
+        "fit_ids_sha256": "306de4728708b27fa725bf79946c117b3708d6d85ec36b67102638e96a1ccee8",
+        "fit_rows": 42117,
+        "gamma_sha256": "66210750ffbc1ea9978ba61f0001279e8988d8769789f1312a72a27ff63d6f28",
+        "receipt_path": "experiments/runs/optimization_v3_cls_pos_one_sided_ridge_v1/receipts/E75_GLOBAL_STRENGTH.json",
+        "receipt_sha256": "2c92a73226db67733e79847eed542406660859294e544e8444e46c449234a247",
+        "target_hash_is_provenance_only": true,
+        "target_sha256": "80a61e4b2f6df3bde627172f6e3f786dcc74b1e0f158538768ff42ae3d21f3f1"
+      }
+    ],
+    "identity_preflight_sha256": "fd87e44da5b04fd92d50b93838d060ac54fb477b7aec1cf9430ec59644827149",
+    "new_fits": 0,
+    "root_source_pass_sha256": "86b92a8e1e5c401fce0661de139976ea4203822f86938716ead8b4badf3599ea",
+    "source_commit": "30f75a4963771a33023c816e5a2e284e9ba9572f",
+    "source_freeze_sha256": "6b7941fb753ec745953a6906097fd48c31daee7ce3abbd2ba87cff0ea67b6843"
+  },
+  "predictions": {
+    "archive_gitignored": true,
+    "archive_path": "experiments/runs/optimization_v3_cls_pos_one_sided_ridge_v1/predictions.npz",
+    "archive_sha256": "a916a65fe6974501b3a2777a8a9bfae08049a917e5d1a0d9d3b7eb8fd4b479c1",
+    "execution_receipt_path": "reports/optimization_v3/cls_pos_one_sided_ridge_v1/ADAPTER_PREDICTION_EXECUTION_V2.json",
+    "execution_receipt_sha256": "adacade856167970b74f616b3fc3e83740d990a19c9c7ac46704f2a6994dc8f2",
+    "manifest_commit": "209aaa66f09631e5ee33367ba5b98e4e77fbe229",
+    "manifest_path": "reports/optimization_v3/cls_pos_one_sided_ridge_v1/PREDICTIONS_MANIFEST.json",
+    "manifest_sha256": "b0eb1254f2b7ef5afd71a0e1083f1bf0c45ec02de8dcc51c84b79eb1fd834043",
+    "maximum_numeric_difference": 0.0,
+    "target_free_verifier_status": "PASS_INDEPENDENT_TARGET_FREE_PREDICTION_REPLAY"
+  },
+  "receipt_signature": "54e185f73a5e2c81289d2eb5ca32d34b8475adccd1687b135e5d95bf7769415b",
+  "recorded_at_utc": "2026-11-05T10:10:03.497572+00:00",
+  "root_passes": {
+    "adapter_binding": {
+      "commit": "27764a7a82ad4bbd95743129810324797386f851",
+      "path": "reports/optimization_v3/cls_pos_one_sided_ridge_v1/EVALUATION_ADAPTER_ROOT_PASS_V2.json",
+      "sha256": "eda8cc866b551c8b1f1d763d88a5c02329a6c0d1ed95a0515adf758c33f383fe",
+      "status": "ROOT_PASS_EVALUATION_ONLY"
+    },
+    "train_path_binding": {
+      "commit": "7cd93d80176d3dc21b3872299a5cb8a8da4334c6",
+      "path": "reports/optimization_v3/cls_pos_one_sided_ridge_v1/EVALUATION_TRAIN_REL_BINDING_ROOT_PASS.json",
+      "runtime_binding": {
+        "exact_value": "data/raw/classification/Train.csv",
+        "field": "EVAL.TRAIN_REL",
+        "source": "RUNNER.TRAIN_REL"
+      },
+      "sha256": "fb3af651733f71ee33412796a095cc06e440e454dec6a9a90ad4f87cc5296c27",
+      "status": "AUTHORIZED_EVALUATION_ONLY_RUNTIME_BINDING"
+    }
+  },
+  "runtime_bindings": {
+    "ARMS": {
+      "evaluator_source_modified": false,
+      "source": "src.models.pos_one_sided_ridge_v1.ARMS",
+      "value": [
+        "ONE_SIDED",
+        "GLOBAL_STRENGTH"
+      ]
+    },
+    "TRAIN_REL": {
+      "evaluator_source_modified": false,
+      "source": "RUNNER.TRAIN_REL",
+      "value": "data/raw/classification/Train.csv"
+    }
+  },
+  "schema_version": 1,
+  "status": "EVALUATION_COMPLETED_INDEPENDENTLY_VERIFIED"
+}
