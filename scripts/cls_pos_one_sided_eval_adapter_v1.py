@@ -32,8 +32,8 @@ from src.models.pos_one_sided_ridge_v1 import ARMS, FIT_IDS
 CAMPAIGN_ID = "CLS_POS_ONE_SIDED_RIDGE_V1"
 ADAPTER_ID = "CLS_POS_ONE_SIDED_EVALUATION_ADAPTER_V1"
 ADAPTER_REL = "scripts/cls_pos_one_sided_eval_adapter_v1.py"
-QA_REL = "reports/optimization_v3/cls_pos_one_sided_ridge_v1/EVALUATION_ADAPTER_QA_V1.json"
-FREEZE_REL = "experiments/optimization_v3/cls_pos_one_sided_ridge_v1/EVALUATION_ADAPTER_FREEZE_V1.json"
+QA_REL = "reports/optimization_v3/cls_pos_one_sided_ridge_v1/EVALUATION_ADAPTER_QA_V2.json"
+FREEZE_REL = "experiments/optimization_v3/cls_pos_one_sided_ridge_v1/EVALUATION_ADAPTER_FREEZE_V2.json"
 EVALUATOR_REL = "scripts/evaluate_optimization_v3_cls_pos_one_sided_ridge_v1.py"
 VERIFIER_REL = "scripts/verify_optimization_v3_cls_pos_one_sided_ridge_v1.py"
 EXPECTED_ROOT_PASS_SHA256 = "86b92a8e1e5c401fce0661de139976ea4203822f86938716ead8b4badf3599ea"
@@ -159,28 +159,38 @@ def _fit_bindings() -> dict[str, Any]:
             "fits": entries}
 
 
+def _adapter_source_hashes() -> dict[str, str]:
+    relatives = (
+        ADAPTER_REL,
+        EVALUATOR_REL,
+        VERIFIER_REL,
+        "scripts/optimization_v3_cls_pos_one_sided_ridge_v1.py",
+        "src/models/pos_one_sided_ridge_v1.py",
+        "tests/test_cls_pos_one_sided_eval_adapter_v1.py",
+    )
+    return {relative: sha256_file(path(relative)) for relative in relatives}
+
+
 def build_adapter_freeze(qa: dict[str, Any]) -> dict[str, Any]:
-    freeze, root_pass = require_frozen_parent()
+    freeze, _ = require_frozen_parent()
     if qa.get("status") != "PASS_ADDITIVE_EVALUATION_ADAPTER_SOURCE_QA":
         raise AdapterError("Passing additive adapter QA is required before adapter freeze")
-    adapter_path = path(ADAPTER_REL)
     adapter_blob = git_text("hash-object", ADAPTER_REL)
     if git_text("rev-parse", f"HEAD:{ADAPTER_REL}") != adapter_blob:
         raise AdapterError("Adapter source must be committed unchanged before its freeze")
     parent_source_hashes = freeze["source_hashes"]
-    inputs: dict[str, str] = {}
-    for relative in (ADAPTER_REL, EVALUATOR_REL, VERIFIER_REL,
-                     "scripts/optimization_v3_cls_pos_one_sided_ridge_v1.py",
-                     "src/models/pos_one_sided_ridge_v1.py",
-                     "tests/test_cls_pos_one_sided_eval_adapter_v1.py"):
-        candidate = path(relative)
-        inputs[relative] = sha256_file(candidate)
+    inputs = _adapter_source_hashes()
+    qa_path = path(QA_REL)
+    if git_text("rev-parse", f"HEAD:{QA_REL}") != git_text("hash-object", QA_REL):
+        raise AdapterError("Additive adapter QA receipt must be committed before freezing its lineage")
+    if qa.get("adapter_source_hashes") != inputs:
+        raise AdapterError("Adapter QA source hashes differ from the committed source bundle")
     if inputs.get(EVALUATOR_REL) != parent_source_hashes.get(EVALUATOR_REL):
         raise AdapterError("Additive adapter freeze detected a change to the frozen evaluator")
     if inputs.get(VERIFIER_REL) != parent_source_hashes.get(VERIFIER_REL):
         raise AdapterError("Additive adapter freeze detected a change to the frozen verifier")
     body: dict[str, Any] = {
-        "schema_version": 1,
+        "schema_version": 2,
         "adapter_id": ADAPTER_ID,
         "campaign_id": CAMPAIGN_ID,
         "status": "SOURCE_READY_ROOT_REVIEW_REQUIRED_BEFORE_REAL_PREDICTIONS",
@@ -188,7 +198,7 @@ def build_adapter_freeze(qa: dict[str, Any]) -> dict[str, Any]:
         "adapter_source_path": ADAPTER_REL,
         "adapter_source_sha256": inputs[ADAPTER_REL],
         "adapter_qa_path": QA_REL,
-        "adapter_qa_sha256": sha256_file(path(QA_REL)),
+        "adapter_qa_sha256": sha256_file(qa_path),
         "frozen_parent_source_commit": freeze["source_commit"],
         "frozen_parent_source_hashes": parent_source_hashes,
         "frozen_source_freeze_sha256": sha256_file(RUNNER._path(RUNNER.SOURCE_FREEZE_REL)),
@@ -211,6 +221,49 @@ def build_adapter_freeze(qa: dict[str, Any]) -> dict[str, Any]:
     }
     body["freeze_signature"] = canonical_sha256(body)
     return body
+
+
+def verify_adapter_freeze(*, require_committed: bool = True) -> dict[str, Any]:
+    freeze_path = path(FREEZE_REL)
+    if not freeze_path.is_file():
+        raise AdapterError("Additive evaluation adapter freeze is missing")
+    if require_committed and git_text("rev-parse", f"HEAD:{FREEZE_REL}") != git_text("hash-object", FREEZE_REL):
+        raise AdapterError("Additive evaluation adapter freeze must be committed unchanged")
+    freeze = json.loads(freeze_path.read_text(encoding="utf-8"))
+    body = dict(freeze)
+    claimed = body.pop("freeze_signature", None)
+    if claimed != canonical_sha256(body):
+        raise AdapterError("Additive evaluation adapter freeze signature mismatch")
+    if (freeze.get("schema_version") != 2
+            or freeze.get("adapter_id") != ADAPTER_ID
+            or freeze.get("campaign_id") != CAMPAIGN_ID
+            or freeze.get("status") != "SOURCE_READY_ROOT_REVIEW_REQUIRED_BEFORE_REAL_PREDICTIONS"):
+        raise AdapterError("Additive evaluation adapter freeze identity or status mismatch")
+    require_frozen_parent()
+    if (_adapter_source_hashes() != freeze.get("adapter_input_source_hashes")
+            or sha256_file(path(QA_REL)) != freeze.get("adapter_qa_sha256")
+            or git_text("rev-parse", f"HEAD:{QA_REL}") != git_text("hash-object", QA_REL)
+            or sha256_file(RUNNER._path(RUNNER.SOURCE_FREEZE_REL)) != freeze.get("frozen_source_freeze_sha256")
+            or sha256_file(RUNNER._path(RUNNER.ROOT_SOURCE_PASS_REL)) != freeze.get("frozen_root_source_pass_sha256")):
+        raise AdapterError("Additive freeze source or parent-pass hash mismatch")
+    if _fit_bindings() != freeze.get("fits"):
+        raise AdapterError("Additive freeze fit ledger/receipt/artifact bindings changed")
+    if (freeze.get("real_prediction_or_evaluation_authorized") is not False
+            or freeze.get("query_predictions_created") is not False
+            or freeze.get("query_labels_read") is not False
+            or freeze.get("test_or_samplesubmission_accessed") is not False
+            or freeze.get("kaggle_accessed") is not False
+            or freeze.get("frozen_originals_modified") is not False
+            or freeze.get("frozen_recipe_or_gates_modified") is not False
+            or freeze.get("requires_separate_root_review_before_real_prediction") is not True):
+        raise AdapterError("Additive freeze no longer records the source-review stop boundary")
+    return {
+        "status": "PASS_INDEPENDENT_ADDITIVE_ADAPTER_FREEZE",
+        "freeze_signature": claimed,
+        "fit_ids": freeze["fits"]["fit_ids"],
+        "real_predictions_authorized": False,
+        "query_labels_read": False,
+    }
 
 
 def write_adapter_freeze(qa: dict[str, Any]) -> dict[str, Any]:
@@ -302,14 +355,18 @@ def main(argv: list[str] | None = None) -> int:
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--source-qa", action="store_true")
     mode.add_argument("--write-adapter-freeze", action="store_true")
+    mode.add_argument("--verify-adapter-freeze", action="store_true")
     args = parser.parse_args(argv)
     try:
         if args.source_qa:
             result = run_source_qa()
+            result["adapter_source_hashes"] = _adapter_source_hashes()
             write_qa_receipt(result)
-        else:
+        elif args.write_adapter_freeze:
             qa = json.loads(path(QA_REL).read_text(encoding="utf-8"))
             result = write_adapter_freeze(qa)
+        else:
+            result = verify_adapter_freeze()
         print(json.dumps(result, ensure_ascii=False, allow_nan=False, sort_keys=True, indent=2))
         return 0
     except (AdapterError, RUNNER.OneSidedRunnerError, EVAL.OneSidedEvaluationError,
