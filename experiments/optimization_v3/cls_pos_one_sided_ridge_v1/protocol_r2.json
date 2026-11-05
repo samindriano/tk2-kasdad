@@ -1,0 +1,218 @@
+{
+  "campaign_id": "CLS_POS_ONE_SIDED_RIDGE_V1",
+  "correction_note": "experiments/optimization_v3/cls_pos_one_sided_ridge_v1/PROTOCOL_R2_CORRECTION.md",
+  "evaluation": {
+    "competition_gate": {
+      "E67_H12_gain_min": 0.0003,
+      "E75_W6_gain_min": 0.0,
+      "candidate": "ONE_SIDED versus same-policy saved UNIFORM reference",
+      "each_E67_window_max_harm": 0.003,
+      "no_automatic_selection": true,
+      "supported_subgroup_max_macro_f1_harm": 0.01,
+      "supported_subgroup_max_positive_recall_harm": 0.02,
+      "unique_pool_gain_min": 0.0003
+    },
+    "competition_policy": "present: 0.5 * candidate POS + 0.5 * same-origin pA; missing: pA exactly",
+    "disclosure": "All origins and query cycles were used in previous development campaigns; no fresh holdout or causal inference claim. Report all windows, per-cycle signs, subgroup support/results, present-only/full results and negative findings.",
+    "mechanism_gate": {
+      "candidate": "ONE_SIDED positional component",
+      "minimum_margin": 1e-12,
+      "must_exceed": [
+        "saved UNIFORM component",
+        "GLOBAL_STRENGTH component"
+      ],
+      "views": [
+        "E67_H12",
+        "E75_W6"
+      ]
+    },
+    "metrics": [
+      "macro_f1",
+      "precision",
+      "positive_recall",
+      "confusion_matrix",
+      "brier",
+      "logloss"
+    ],
+    "post_selected_missing_threshold_descriptive_only": 0.53230976129477,
+    "primary_reference": "same-policy saved UNIFORM POS probabilities blended with pA on present rows, pA on missing rows; do not use historical A02 MIX50 missing=pP as primary",
+    "subgroups": [
+      "availability",
+      "entry_friction",
+      "text_load"
+    ],
+    "support_minimum": {
+      "below_support": "UNKNOWN",
+      "class_0": 30,
+      "class_1": 30,
+      "n": 200
+    },
+    "threshold_present_and_primary_missing": 0.5,
+    "unique_pool": {
+      "excludes": [
+        "E67_W6"
+      ],
+      "members": [
+        "E67_W4",
+        "E67_W5",
+        "E75_W6"
+      ],
+      "overlap_note": "E67 H12 contains E67 W6; E67 W6 and E75 W6 share cycles 76-79 and are not independent replications"
+    },
+    "views": {
+      "E67_H12": [
+        67,
+        68,
+        79
+      ],
+      "E67_W4": [
+        67,
+        68,
+        71
+      ],
+      "E67_W5": [
+        67,
+        72,
+        75
+      ],
+      "E67_W6": [
+        67,
+        76,
+        79
+      ],
+      "E75_W6": [
+        75,
+        76,
+        79
+      ]
+    }
+  },
+  "historical_evidence": {
+    "adaptive_selection": true,
+    "causal_evidence": false,
+    "label_access_incident": "reports/optimization_v3/cls_pos_frequency_ridge_v1/EVALUATION_ACCESS_INCIDENT_01.json",
+    "prior_campaign": "CLS_POS_FREQUENCY_RIDGE_V1",
+    "prior_verdict": "ALIGNED lost its saved mechanism gate versus both UNIFORM and PERMUTED; verdict unchanged",
+    "r1_2_diagnostic": "reports/optimization_v3/cls_pos_frequency_ridge_v1/MEAN_ONE_ENERGY_DIAGNOSTIC_R1_2.md",
+    "r1_2_independent_verification": "reports/optimization_v3/cls_pos_frequency_ridge_v1/MEAN_ONE_ENERGY_DIAGNOSTIC_R1_2_VERIFY.json",
+    "reused_development_targets_are_fresh_holdout": false
+  },
+  "input": {
+    "cycle_max": 79,
+    "cycle_min": 47,
+    "identity_columns": [
+      "record_id",
+      "cycle_code"
+    ],
+    "official_test_access": false,
+    "path": "data/raw/classification/Train.csv",
+    "rows": 50608,
+    "sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "target": "artifact_signal"
+  },
+  "metadata_correction": {
+    "basis": "exact SHA-256 pinned by current raw manifest, historical parent freeze, and target-free parent source preflight",
+    "field": "origins.75.matrix_manifest_sha256",
+    "r1_value": "67ec3f9bd376f5f4dad2afbd5e13ee5fd353d68bc044129c3f969860733e23b1",
+    "r2_value": "67ec3f9bd376f5f4dad2afbd5e13ee5fd8316126fa3894ef676fa40077166fc5"
+  },
+  "origins": {
+    "67": {
+      "fit_cycles": [
+        47,
+        67
+      ],
+      "fit_rows": 29705,
+      "matrix_manifest_sha256": "d8d672c26771944bc2bb6eee907e9bef903959fbc62d9f5df3aaab7f7cb28028",
+      "query_cycles": [
+        68,
+        79
+      ],
+      "query_prediction_bundle_sha256": "2f22c68aca959baad6cd4244e05f96b702b4b89dfdc83f82c8edde6cf465d444",
+      "query_rows": 20903,
+      "vocabulary_size": 5675
+    },
+    "75": {
+      "fit_cycles": [
+        47,
+        75
+      ],
+      "fit_rows": 42117,
+      "matrix_manifest_sha256": "67ec3f9bd376f5f4dad2afbd5e13ee5fd8316126fa3894ef676fa40077166fc5",
+      "query_cycles": [
+        76,
+        79
+      ],
+      "query_prediction_bundle_sha256": "83e5beb9b10be4d395df4a2292cb464625f356e5e77a76a232b92f007c1b1306",
+      "query_rows": 8491,
+      "vocabulary_size": 5723
+    }
+  },
+  "parent_handoff_commit": "8aa97e270a5f7534b725f9f652949859b94407b5",
+  "protocol_revision": "R2_METADATA_CORRECTION",
+  "question": "Does retaining the saved frequency map only above its baseline penalty improve the frozen positional component beyond a matched global-strength control?",
+  "recipe": {
+    "availability_routing": "present rows use expit(saved bag logit + positional score); missing rows use the exact saved same-origin HGB fallback, bit-identical across arms",
+    "fit_acceptance": "finite gamma/objective/gradient; optimizer success; final objective no greater than objective at gamma=0 within 1e-8; no retry or rescue",
+    "fit_cap": 4,
+    "fit_ids_in_order": [
+      "E67_ONE_SIDED",
+      "E67_GLOBAL_STRENGTH",
+      "E75_ONE_SIDED",
+      "E75_GLOBAL_STRENGTH"
+    ],
+    "global_strength_token_weight": "c = mean_j(v_j), a single scalar repeated for every token coordinate",
+    "objective": "sum_i logloss(y_i, z0_i + Xpos_i @ gamma) + 0.5 * sum_k(W_k * gamma_k^2)",
+    "offset": "frozen same-origin C2_B bag logit; coefficients and intercept unchanged",
+    "one_sided_renormalization": "none",
+    "one_sided_token_weight": "v_j = max(1.0, w_j)",
+    "optimizer": "L-BFGS-B",
+    "optimizer_options": {
+      "ftol": 1e-12,
+      "gtol": 1e-06,
+      "maxiter": 2000,
+      "maxls": 50
+    },
+    "penalty_map_source": "reuse exact prefix-only ALIGNED token weights from CLS_POS_FREQUENCY_RIDGE_V1; verify historical receipts and hashes; do not refit DF or map",
+    "position_blocks": 3,
+    "uniform_reference": "reuse saved POS_BAG_OFFSET_V1_REAL coefficients and prediction vectors; no refit"
+  },
+  "resource_policy": {
+    "jobs": 1,
+    "lock": "%TEMP%/kasdad_single_heavy_job.lock",
+    "measurements_are_peak": false,
+    "official_fit_authorized_in_this_source_preparation": false,
+    "small_gamma_fit": {
+      "incremental_estimate_bytes": 1073741824,
+      "minimum_actual_free_at_boundary_bytes": 1073741824,
+      "minimum_available_bytes": 2147483648,
+      "minimum_projected_free_bytes": 1073741824
+    },
+    "source_preflight_and_saved_replay": {
+      "incremental_estimate_bytes": 536870912,
+      "minimum_actual_free_at_boundary_bytes": 805306368,
+      "minimum_available_bytes": 1610612736,
+      "minimum_projected_free_bytes": 805306368
+    },
+    "threads": 2
+  },
+  "schema_version": 1,
+  "staged_boundaries": {
+    "current_action": "source preparation, synthetic end-to-end QA, and target-free identity-only preflight only",
+    "fit_target_access": "fit-prefix labels only, after root source pass, committed preflight, current identity verification, resource gate, and fit-start ledger reservation",
+    "forbidden": [
+      "official model fit",
+      "query label scoring before manifest commit",
+      "Test",
+      "SampleSubmission",
+      "E79",
+      "CSV submission",
+      "Kaggle upload"
+    ],
+    "identity_preflight": "official Train record_id/cycle_code only; no artifact_signal values or target members from NPZ caches",
+    "prediction_manifest": "must be committed before any query/evaluation target access",
+    "synthetic_qa": "may exercise the real orchestration on synthetic data only"
+  },
+  "state": "PREPARE_SOURCE_ONLY",
+  "supersedes_protocol": "experiments/optimization_v3/cls_pos_one_sided_ridge_v1/protocol_r1.json"
+}

@@ -49,7 +49,9 @@ from src.models.pos_one_sided_ridge_v1 import (
 )
 
 
-PROTOCOL_REL = "experiments/optimization_v3/cls_pos_one_sided_ridge_v1/protocol.json"
+PROTOCOL_R1_REL = "experiments/optimization_v3/cls_pos_one_sided_ridge_v1/protocol_r1.json"
+PROTOCOL_REL = "experiments/optimization_v3/cls_pos_one_sided_ridge_v1/protocol_r2.json"
+PROTOCOL_CORRECTION_REL = "experiments/optimization_v3/cls_pos_one_sided_ridge_v1/PROTOCOL_R2_CORRECTION.md"
 EXPERIMENT_ROOT = "experiments/optimization_v3/cls_pos_one_sided_ridge_v1"
 REPORT_ROOT = "reports/optimization_v3/cls_pos_one_sided_ridge_v1"
 RUN_ROOT = "experiments/runs/optimization_v3_cls_pos_one_sided_ridge_v1"
@@ -64,7 +66,9 @@ PRIOR_SHARED_LEDGER_REL = "experiments/runs/optimization_v3_research_next_v1/bud
 PRIOR_SHARED_LEDGER_SHA256 = "6fd0ca3d43cb8145e2c0bc50b278a5eb4b424d71500a80c4414332e87a8aa57a"
 
 SOURCE_FILES = (
+    PROTOCOL_R1_REL,
     PROTOCOL_REL,
+    PROTOCOL_CORRECTION_REL,
     "src/models/pos_one_sided_ridge_v1.py",
     "scripts/optimization_v3_cls_pos_one_sided_ridge_v1.py",
     "scripts/evaluate_optimization_v3_cls_pos_one_sided_ridge_v1.py",
@@ -306,6 +310,16 @@ def _read_identity_frame() -> pd.DataFrame:
     return read_identity_frame(_path(TRAIN_REL), TRAIN_SHA256, 50608, (47, 79))
 
 
+def require_matrix_manifest_digest(origin: int, actual_sha256: str,
+                                   expected_sha256: str) -> None:
+    """Require the one exact manifest digest pinned by the current protocol."""
+    if actual_sha256 != expected_sha256:
+        raise OneSidedRunnerError(
+            f"E{origin} matrix manifest digest mismatch: actual={actual_sha256}, "
+            f"expected={expected_sha256}"
+        )
+
+
 def read_fit_labels(train_path: Path, expected_train_sha256: str,
                     fit_rows: np.ndarray, expected_ids: np.ndarray,
                     expected_target_sha256: str) -> np.ndarray:
@@ -355,9 +369,11 @@ def check_official_identities() -> dict[str, Any]:
         key = str(origin)
         result = OLD_RUNNER._verify_origin_identity_and_files(frame, origin)
         expected = protocol["origins"][key]
+        require_matrix_manifest_digest(
+            origin, result["matrix_manifest_sha256"], expected["matrix_manifest_sha256"]
+        )
         if (result["fit_rows"] != expected["fit_rows"]
                 or result["score_rows"] != expected["query_rows"]
-                or result["matrix_manifest_sha256"] != expected["matrix_manifest_sha256"]
                 or result["prediction_bundle_sha256"] != expected["query_prediction_bundle_sha256"]):
             raise OneSidedRunnerError(f"E{origin} row/cache identity differs from one-sided protocol")
         map_artifact = _path(f"experiments/runs/optimization_v3_cls_pos_frequency_ridge_v1/maps/penalty_map_E{origin}.npz")

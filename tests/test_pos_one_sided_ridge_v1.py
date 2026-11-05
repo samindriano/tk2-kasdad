@@ -94,6 +94,51 @@ def _test_all_ones_and_exact_missing_fallback() -> None:
         raise AssertionError("missing-stream probabilities changed bit-for-bit")
 
 
+def _test_protocol_digest_correction() -> None:
+    r1 = RUNNER.read_json(RUNNER._path(RUNNER.PROTOCOL_R1_REL))
+    r2 = RUNNER.read_json(RUNNER._path(RUNNER.PROTOCOL_REL))
+    parent_blob = subprocess.run(
+        ["git", "show", "7d8513a5903308a80a30ce4b55a11697381ecb95:"
+         "experiments/optimization_v3/cls_pos_one_sided_ridge_v1/protocol.json"],
+        cwd=RUNNER.ROOT, capture_output=True, check=False,
+    )
+    if parent_blob.returncode or parent_blob.stdout != RUNNER._path(RUNNER.PROTOCOL_R1_REL).read_bytes():
+        raise AssertionError("protocol R1 archive is not byte-identical to its committed predecessor")
+    if (r2.get("protocol_revision") != "R2_METADATA_CORRECTION"
+            or r2.get("supersedes_protocol") != RUNNER.PROTOCOL_R1_REL
+            or r2.get("correction_note") != RUNNER.PROTOCOL_CORRECTION_REL):
+        raise AssertionError("R2 revision lineage fields differ from the correction protocol")
+    stale = r1["origins"]["75"]["matrix_manifest_sha256"]
+    expected = r2["origins"]["75"]["matrix_manifest_sha256"]
+    if stale == expected:
+        raise AssertionError("synthetic stale-digest negative case is not distinct")
+    for field in ("schema_version", "campaign_id", "state", "parent_handoff_commit",
+                  "question", "historical_evidence", "input", "recipe", "evaluation"):
+        if r1[field] != r2[field]:
+            raise AssertionError(f"R2 unexpectedly changed frozen scientific section {field}")
+    for field in r1["origins"]["67"]:
+        if r1["origins"]["67"][field] != r2["origins"]["67"][field]:
+            raise AssertionError("R2 unexpectedly changed E67 identity metadata")
+    for field in r1["origins"]["75"]:
+        if field == "matrix_manifest_sha256":
+            continue
+        if r1["origins"]["75"][field] != r2["origins"]["75"][field]:
+            raise AssertionError(f"R2 unexpectedly changed E75 identity metadata {field}")
+    try:
+        RUNNER.require_matrix_manifest_digest(75, stale, expected)
+    except RUNNER.OneSidedRunnerError:
+        pass
+    else:
+        raise AssertionError("protocol R2 accepted the stale R1 manifest digest")
+    RUNNER.require_matrix_manifest_digest(75, expected, expected)
+    try:
+        RUNNER.require_matrix_manifest_digest(75, "0" * 64, expected)
+    except RUNNER.OneSidedRunnerError:
+        pass
+    else:
+        raise AssertionError("protocol R2 accepted a non-pinned alternate digest")
+
+
 def _git(cwd: Path, *args: str) -> str:
     proc = subprocess.run(["git", *args], cwd=cwd, capture_output=True,
                           text=True, check=False)
@@ -200,6 +245,7 @@ def run_synthetic_campaign_qa() -> dict[str, object]:
     _test_penalty_recipe()
     _test_gradient_finite_difference()
     _test_all_ones_and_exact_missing_fallback()
+    _test_protocol_digest_correction()
     fit_calls = 0
     label_calls = 0
     original_fit = RUNNER.fit_offset
@@ -407,7 +453,7 @@ def run_synthetic_campaign_qa() -> dict[str, object]:
 
             return {
                 "status": "PASS",
-                "tests_passed": 6,
+                "tests_passed": 7,
                 "official_data_accessed": False,
                 "test_or_samplesubmission_accessed": False,
                 "target_loader_boundary": "identity-only before FIT_STARTED; fit labels read after reservation; query labels after committed manifest",
@@ -435,6 +481,9 @@ class TestOneSidedRidgeHelpers(unittest.TestCase):
 
     def test_all_ones_and_exact_missing_fallback(self) -> None:
         _test_all_ones_and_exact_missing_fallback()
+
+    def test_protocol_digest_correction(self) -> None:
+        _test_protocol_digest_correction()
 
     def test_synthetic_campaign(self) -> None:
         result = run_synthetic_campaign_qa()

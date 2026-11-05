@@ -38,7 +38,9 @@ RESULTS_REL = "reports/optimization_v3/cls_pos_one_sided_ridge_v1/EVALUATION_RES
 TRAIN_REL = "data/raw/classification/Train.csv"
 TRAIN_SHA = "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c"
 EXPECTED_SOURCES = {
-    "experiments/optimization_v3/cls_pos_one_sided_ridge_v1/protocol.json",
+    "experiments/optimization_v3/cls_pos_one_sided_ridge_v1/protocol_r1.json",
+    "experiments/optimization_v3/cls_pos_one_sided_ridge_v1/protocol_r2.json",
+    "experiments/optimization_v3/cls_pos_one_sided_ridge_v1/PROTOCOL_R2_CORRECTION.md",
     "src/models/pos_one_sided_ridge_v1.py",
     "scripts/optimization_v3_cls_pos_one_sided_ridge_v1.py",
     "scripts/evaluate_optimization_v3_cls_pos_one_sided_ridge_v1.py",
