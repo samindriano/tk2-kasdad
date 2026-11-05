@@ -15,6 +15,11 @@ from scipy import sparse
 from scipy.special import expit
 
 C = 1.1859646641031965
+# Zero-optimizer verification: observed original fit RSS rose from 171,106,304
+# to a lifetime peak of 557,031,424 bytes. 512 MiB incremental includes >120 MiB
+# headroom beyond that observed delta; keep the original 1 GiB actual reserve.
+VERIFY_INCREMENTAL_BYTES = 512 * 1024**2
+VERIFY_RESERVE_BYTES = 1024**3
 RUN = "experiments/runs/optimization_v3_cls_pos_global_strength_e79_v3/gamma_v1"
 PINS = {
     "gamma.npz": "4bc240bb6b53eb623f5f099246b70572f987b8c3b0f8dfc123f49029d3c079ab",
@@ -94,7 +99,7 @@ def audit(repository: Path, output: Path):
     with ExitStack() as stack:
         locks = [stack.enter_context(g.r3._shared_job_lock()), stack.enter_context(g.r3._cgeom_local_lock(root))]
         before = g.resource_snapshot("root R2 verification before rebuild")
-        assert before["gate_pass"], "Resource gate before any target read"
+        assert before["available_ram_bytes"] >= VERIFY_INCREMENTAL_BYTES + VERIFY_RESERVE_BYTES, "Verification resource gate before any target read"
         built = g._build_train_features(root)
         after_features = g.resource_snapshot("root R2 after exact feature rebuild")
         assert after_features["available_ram_bytes"] >= g.FREE_RESERVE_BYTES
@@ -122,6 +127,13 @@ def audit(repository: Path, output: Path):
         "guard_calls": calls, "test_csv_or_kaggle_access": False,
         "original_failure_status_unchanged": True,
         "resources": {"before": before, "after_features": after_features, "after": after},
+        "verification_resource_policy": {
+            "incremental_estimate_bytes": VERIFY_INCREMENTAL_BYTES,
+            "actual_free_reserve_bytes": VERIFY_RESERVE_BYTES,
+            "basis": "original full fit measured RSS delta 385925120 bytes; no optimizer in this verification",
+            "inherited_training_gate_is_not_the_verification_gate": True,
+            "prior_root_command_blocked_before_target_read": True,
+        },
         "locks": locks,
     })
     payload = json.dumps(result, sort_keys=True, ensure_ascii=False, allow_nan=False, indent=2) + "\n"
