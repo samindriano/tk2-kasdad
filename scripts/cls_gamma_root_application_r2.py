@@ -16,7 +16,7 @@ import psutil
 from scipy.special import expit
 
 AUDIT = Path(__file__).resolve().parents[1]
-REPORT = AUDIT / "reports/simplification_v1/CLS_GAMMA_ROOT_APPLICATION_R3"
+REPORT = AUDIT / "reports/simplification_v1/CLS_GAMMA_ROOT_APPLICATION_R4"
 CSV = AUDIT / "submissions/root_cls_gamma_recovered_v2/classification_global_strength_recovered.csv"
 CERT = AUDIT / "reports/simplification_v1/CLS_GAMMA_ROOT_CERTIFICATE_R2.json"
 POLICY = AUDIT / "reports/simplification_v1/RESOURCE_POLICY_USER_REVISED_20261106.json"
@@ -128,6 +128,7 @@ def apply(repository):
     reserve = read(POLICY)["feature_rebuild_or_gamma_application"]
     with ExitStack() as stack:
         locks = [stack.enter_context(g.r3._shared_job_lock()), stack.enter_context(g.r3._cgeom_local_lock(repository))]
+        require(not marker.exists() and not CSV.exists(), "Prior application appeared before locked start")
         before = psutil.virtual_memory().available
         require(before >= reserve['minimum_available_bytes'], 'Before feature read RAM gate')
         for item in manifest["inputs"].values():
