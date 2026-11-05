@@ -14,9 +14,11 @@ omission, so its `PASS` did not detect this routing defect.
 The defect does not affect the fixed-threshold policy results, present-only
 metrics for any policy, present-only matched top-K membership, present-only
 ROC AUC/AP, or ID/overlap calculations that explicitly filter to present rows.
-Those quantities remain archived here but are superseded pending the corrected
-replay.
+Those quantities remain archived here as historical diagnostics. The corrected
+replay is complete in
+`reports/optimization_v3/cls_simple_rank_allocation_diagnostic_v1_corrected/`;
+use its `RESULTS.json`, `INDEPENDENT_QA.json`, and `SUMMARY.md` for interpretation.
 
 No fit, Test access, E79 access, Kaggle access, or new candidate inference was
-performed. The corrected replay will use a separate output namespace and will
-retain the same frozen cached arrays, thresholds, views, and tie rules.
+performed. The corrected replay uses a separate output namespace and retains
+the same frozen cached arrays, thresholds, views, and tie rules.
