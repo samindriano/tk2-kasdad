@@ -1,0 +1,65 @@
+{
+  "decision": "AUTHORIZE_VERSIONED_EVALUATION_ONLY_RESOURCE_POLICY",
+  "at_utc": "2026-11-05T05:33:07.261165+00:00",
+  "scope": [
+    "frozen saved-model query prediction replay",
+    "independent evaluation replay"
+  ],
+  "new_model_fits": 0,
+  "minimum_available_bytes": 3221225472,
+  "incremental_memory_estimate_bytes": 536870912,
+  "minimum_projected_free_bytes": 2147483648,
+  "evidence": [
+    {
+      "origin": 67,
+      "files": [
+        {
+          "key": "score_base",
+          "path": "experiments\\runs\\optimization_v3_research_next_v1\\POSITIONAL_TEXT_PILOT_V1\\E67\\matrices\\score_base.npz",
+          "sha256": "fb2cbd4be457eac308e5de449821dde0fdfb69bf7f45faa94b9959e1ea703e4b",
+          "uncompressed_zip_member_bytes": 18938555
+        },
+        {
+          "key": "score_position",
+          "path": "experiments\\runs\\optimization_v3_research_next_v1\\POSITIONAL_TEXT_PILOT_V1\\E67\\matrices\\score_position.npz",
+          "sha256": "9540fa76b0b56502c24c00674bed5d849d48e5f94d217fb1ac0c2c073f1f5379",
+          "uncompressed_zip_member_bytes": 27040583
+        }
+      ],
+      "four_copies_total_bytes": 183916552
+    },
+    {
+      "origin": 75,
+      "files": [
+        {
+          "key": "score_base",
+          "path": "experiments\\runs\\optimization_v3_research_next_v1\\POSITIONAL_TEXT_PILOT_V1\\E75\\matrices\\score_base.npz",
+          "sha256": "f4ae9dd45c918683a60aebcf37a450cf77606a149d4f7b2b25877e8c413414d3",
+          "uncompressed_zip_member_bytes": 7507807
+        },
+        {
+          "key": "score_position",
+          "path": "experiments\\runs\\optimization_v3_research_next_v1\\POSITIONAL_TEXT_PILOT_V1\\E75\\matrices\\score_position.npz",
+          "sha256": "a582bebda02f52bc3ea8d310d1f092cd710a90e48b82c048cfcbcf1769d8b8cb",
+          "uncompressed_zip_member_bytes": 10677655
+        }
+      ],
+      "four_copies_total_bytes": 72741848
+    }
+  ],
+  "estimate_is_measured_peak": false,
+  "rationale": "Largest query base+augmented sparse payload is about43.85MiB; four payload copies about175.40MiB. Retain conservative512MiB additional estimate plus2GiB free reserve, with3GiB initial floor. This stage performs no optimizer or base-model training.",
+  "required_guards": [
+    "Acquire shared OS job lock before memory/target work.",
+    "Recheck RAM under lock before allocations; require both initial floor and projected reserve.",
+    "Process origins serially and release matrix references between origins.",
+    "After matrix load and at origin boundary verify actual available RAM>=2GiB; stop safely before further work if breached.",
+    "Record sampled process RSS and available RAM at boundaries; do not claim samples as measured peak."
+  ],
+  "unchanged": [
+    "All model-training and calibration-LP gates remain4GiB minimum plus2GiB reserve.",
+    "Scientific recipes,penalties,comparators,thresholds,windows and support/gates unchanged.",
+    "Prior R1/R2/R3 source/access/resource records remain immutable."
+  ],
+  "next": "Create versioned evaluator resource adapter/successorfreeze and candidate-blind boundary tests before further prediction/target access. No poll/schedule or user question."
+}
