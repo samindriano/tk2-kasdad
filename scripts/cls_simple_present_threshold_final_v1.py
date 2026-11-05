@@ -295,11 +295,6 @@ def create_pre_fit_freeze(*, train_path: Path = TRAIN, oof_path: Path = OOF_CACH
         "synthetic_fixture_only": synthetic,
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "authorization": {"path": _path_label(AUTH_PATH), "sha256": AUTH_SHA256, "source_commit": AUTH_COMMIT},
-        "supersedes": {
-            "path": "reports/optimization_v3/cls_simple_present_threshold_final_v1/PRE_FIT_FREEZE.json",
-            "sha256": input_hashes["superseded_pre_fit_freeze_v1"],
-            "reason": "Root audit branch advanced after V1 freeze; the authorized file stayed byte-identical and its commit remains an ancestor. No official fit or label read occurred under V1.",
-        },
         "source_commit": _git(ROOT, "rev-parse", "HEAD"),
         "source_hashes": _source_hashes(),
         "input_hashes": input_hashes,
@@ -326,6 +321,12 @@ def create_pre_fit_freeze(*, train_path: Path = TRAIN, oof_path: Path = OOF_CACH
             "test_label_access": False,
         },
     }
+    if not synthetic:
+        freeze["supersedes"] = {
+            "path": "reports/optimization_v3/cls_simple_present_threshold_final_v1/PRE_FIT_FREEZE.json",
+            "sha256": input_hashes["superseded_pre_fit_freeze_v1"],
+            "reason": "Root audit branch advanced after V1 freeze; the authorized file stayed byte-identical and its commit remains an ancestor. No official fit or label read occurred under V1.",
+        }
     write_json_exclusive(freeze_path, freeze)
     return freeze
 
