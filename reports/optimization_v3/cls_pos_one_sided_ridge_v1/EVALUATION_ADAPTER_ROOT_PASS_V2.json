@@ -1,0 +1,27 @@
+{
+  "adapter_freeze_path": "experiments/optimization_v3/cls_pos_one_sided_ridge_v1/EVALUATION_ADAPTER_FREEZE_V2.json",
+  "adapter_freeze_sha256": "64162fdada31d99fe04473014e57e9d5f9292fcf060b73209f46ac174071ec0c",
+  "adapter_id": "CLS_POS_ONE_SIDED_EVALUATION_ADAPTER_V1",
+  "adapter_source_sha256": "7fdddf5fc829fc1636b597519cf4e2f70bd6892e5dedf1e4a06f15d78d79c356",
+  "authorized": [
+    "Verify exact adapter freeze and fit provenance before each stage",
+    "Install exact frozen ARMS binding at runtime without source mutation",
+    "Call original prepare_predictions; independently verify prediction bundle; commit manifest before query labels",
+    "Call original evaluate_results then independent results verifier; persist additive execution provenance with each stage"
+  ],
+  "fit_ledger_sha256": "7a811b98647b1778d58213416c76d966d482664e9c8c5025449f898de77e495a",
+  "prohibited": [
+    "new or repeated fits",
+    "source/recipe/threshold/metric changes",
+    "Test/SampleSubmission/E79/CSV/Kaggle/push"
+  ],
+  "resource_policy": "current saved replay1.5GiB initial/0.75GiB reserve; shared lock",
+  "reviewed_head": "c56911bf73f08f6b6fb379f9b38dbb8b2c3cbc3d",
+  "root_qa": {
+    "freeze_verification": "PASS_INDEPENDENT_ADDITIVE_ADAPTER_FREEZE",
+    "pytest": "3 passed",
+    "real_fit_audit": "call succeeded; subsequent root display lookup fit_starts raised KeyError because audit schema differs; no fit/data mutations"
+  },
+  "scientific_boundary": "post-result adaptive development evaluation; preserve previous failures/verdicts",
+  "status": "ROOT_PASS_EVALUATION_ONLY"
+}
