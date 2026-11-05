@@ -1,0 +1,15 @@
+# Root source review R1 — numerical core PASS, execution preparation REWORK
+
+Reviewed core4f5a7aa6f3df2c3c156e1138dbff23919e59c8d2, identityfreezecommit31da88fa6bccf927035c306b701607f44f56be56. Root reran10unittest cases, allPASS. Sparse LP residual signs, free intercept, two bounded slopes0..2, fixed50knot, application-only clip and180sHiGHS limit match the handoff. No official fit/target/Test access by root. No ROOT_SOURCE_PASS issued yet.
+
+Three required readiness fixes:
+
+1. The current510-line module implements pure helpers and an identity freeze, but explicitly says official execution is absent. CLI only supports synthetic QA/freeze. Implement a minimal executable diagnostic runner (or additive wrapper) with --run-diagnostics, source/input/row identity verification and stage-specific ROOT_SOURCE_PASS check BEFORE label access/reservation, shared OS lock, actual RAM4GiB/reserve2GiB, and the exact two fit IDs. Reuse stored same-history GLOBAL controls, generate predictions/metrics/reports and independent diagnostics verifier. Do not require a further source implementation after execution approval. Source readiness must include the runnable pipeline while execution remains gated. Final HINGE_FINAL remains separately root-gated; prepare entrypoint without running it if useful.
+
+2. CSV helper and verifier currently use record_id,prediction; official Regression schema is record_id,threat_rank. Fix BOTH and tests to assert exact official target name and reject prediction/artifact_signal headers. No CSV yet exists, so this is a pre-execution schema correction. Do not mutate any historical submission.
+
+3. Pure fit_or_recover_published_state cannot account for an optimizer started but killed before publication. Add a small real stage ledger wrapper: reserve/start BEFORE solver, persist source/input-bound result atomically, append terminal; reuse a valid postpublish result with zero solver calls, and fail closed for started-without-proof. No reset/refit consumed slots. Tests must exercise the actual stage path at postpublish/premetadata interruption and ambiguous prepublish interruption, not only a pure callback replay. No broad optimizer warning suppression: retain warnings; exempt only the known thread-option passthrough warning if needed, not all OptimizeWarning categories.
+
+Create independent raw and routed prediction formula/metric replay for the actual diagnostic artifacts, including unique pooled15953 denominator and guards from SOL_HANDOFF, not just synthetic objective helpers. Pin existing R3 controls and identity hashes with explicit dtype/schema; use selective NPZ keys and no cached-target materialization during metadata scan. Reused labels are adaptive development, never fresh holdout.
+
+Keep fixed model math/gates/cap3; no new research. Version successor source/identityfreeze and preserve the old source-prep freeze as no-official-start predecessor. Complete only implementation/syntheticQA/identity readiness then callback root for source review. No user question, no official fit, no Test/Kaggle. CLS evaluation retains compute priority; source prep is independent.
