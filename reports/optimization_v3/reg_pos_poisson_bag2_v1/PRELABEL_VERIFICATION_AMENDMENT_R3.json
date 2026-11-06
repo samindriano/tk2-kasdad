@@ -1,0 +1,66 @@
+{
+  "amendment_sha256": "008cb845c682ad4dead5978b12ff42833f96fa2b2e9ed30611ebad0a665bdad7",
+  "authorized_separate_target_blind_correction": true,
+  "candidate_vs_local_direct_mismatch_evidence": {
+    "E67": {
+      "max_abs_difference": 3.021719,
+      "mismatch_rows": 6943,
+      "rows": 7462
+    },
+    "E75": {
+      "max_abs_difference": 1.792213,
+      "mismatch_rows": 7959,
+      "rows": 8491
+    }
+  },
+  "correction": "Reconstruct the original champion direct values from frozen R06 plus rank50(original POS42 raw), compare them to local.direct_predictions, and replay the frozen local hinge from local.direct_predictions/local.missing_mask. Keep candidate replay as a separate check.",
+  "effective_verifier_path": "scripts/verify_reg_pos_poisson_bag2_prelabel_r3.py",
+  "effective_verifier_sha256": "9cd207b97bd5d6f3c819eb42425a23eab396591fc364e36387e32df5f76cc98a",
+  "first_failure_origin": "E67",
+  "fit_ids": [
+    "REG_POS_POISSON_BAG2_V1_E67_P17",
+    "REG_POS_POISSON_BAG2_V1_E67_P137",
+    "REG_POS_POISSON_BAG2_V1_E75_P17",
+    "REG_POS_POISSON_BAG2_V1_E75_P137"
+  ],
+  "incorrect_assertion": "Candidate direct predictions were equated with the frozen POS42/R06 champion direct predictions, and candidate hinge values were replayed as if they were the champion.",
+  "official_additional_fit_units": 0,
+  "original_artifacts_modified": false,
+  "original_failure_stage": "target_blind comparator replay before validation or score label access",
+  "original_prelabel_report_at_adjudication": "ABSENT",
+  "original_prelabel_report_path": "reports/optimization_v3/reg_pos_poisson_bag2_v1/PRELABEL_VERIFICATION_R1.json",
+  "original_verifier_error": "Saved same-history comparator replay differs at E67",
+  "original_verifier_path": "scripts/verify_reg_pos_poisson_bag2_v1.py",
+  "original_verifier_sha256": "2f253df7ff0e8d41aa25b664b4d3616f18222da7cbe1bec549487121e5712bdb",
+  "original_verifier_status": "FAIL",
+  "prediction_signature": "9c016894823b1382efd6a673f1075c9d5c64dad261e040fd6b355b250878c9e3",
+  "prelabel_audit_status_at_amendment_creation": "NOT_RUN",
+  "root_review_status": "PENDING",
+  "row_identity_checks_preserved_and_extended": [
+    "physical_rows",
+    "record_ids",
+    "prediction_origins",
+    "original_bundle_indices",
+    "cycles",
+    "missing_mask"
+  ],
+  "schema_version": 1,
+  "scientific_gate_changed": false,
+  "score_access_authorized": false,
+  "score_labels_read": false,
+  "source_commit": "edffc8ae5c0ebf26ee11d49ab493a2a32ef22693",
+  "source_freeze_signature": "aeacf1bf9d9b9c20af4823a3dcb65e7329d38f62c052127ed58f6637d2f80b83",
+  "source_revision": 3,
+  "status": "SOURCE_CORRECTION_DECLARED",
+  "synthetic_test_scope": [
+    "candidate differs from champion and passes",
+    "candidate formula corruption fails",
+    "champion mismatch fails",
+    "hinge mismatch fails",
+    "missing-mask mismatch fails",
+    "row/ID/cycle/origin/index mismatch fails"
+  ],
+  "target_labels_read_before_correction": false,
+  "test_path": "tests/test_reg_pos_poisson_bag2_prelabel_r3.py",
+  "test_sha256": "914960c7c6b46ff718d3e662f7c8bdf8528aea103dbdb8a9d6eabe93af58a55d"
+}
