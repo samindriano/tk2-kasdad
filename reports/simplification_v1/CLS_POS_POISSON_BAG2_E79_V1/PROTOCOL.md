@@ -20,7 +20,9 @@ synthetic QA do not perform either official action.
 - Reuse the full-Train CGeom E79 `POS_BAG_OFFSET` gamma package member
   `payload["gamma"]` (artifact SHA-256
   `d741d016f990d8742208edc919f5c58305b7579980d059b202609df4e5b3e650`, logical
-  array SHA-256 `31f8bde49ca3fa85f866e7fb685d44825bd77e5cc2d11ae848494aca687ac0b3`).
+  array SHA-256 `2171d72a0168f0ce43980a9c416fd64d673e1a7d9e9a213b226f843b55bf1bb1`).
+  The logical hash was independently reproduced with the official
+  `optimization_v3_positional_text_pilot_v1.sha256_array` implementation.
   The recovered global-strength gamma is not admissible.
 - Fit only two new positional gamma vectors, with Poisson(1) row counts seeded
   17 and 137 and weights normalized to sum to 50,608. Use the inherited
