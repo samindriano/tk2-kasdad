@@ -206,7 +206,13 @@ def _verify_unit(origin: int, arm: str, freeze: dict[str, Any], frame: pd.DataFr
     fit_receipt = load_json(base / "fit_receipt.json")
     pos_verify = load_json(POS_ROOT / f"PREDICTION_VERIFICATION_E{origin}.json")
     a02_npz = load_npz_allowlisted(base / "predictions.npz", allowed_members=A02_MEMBERS)
-    pos_npz = load_npz_allowlisted(POS_ROOT / f"E{origin}/predictions_E{origin}.npz", allowed_members=POS_MEMBERS)
+    pos_path = POS_ROOT / f"E{origin}/predictions_E{origin}.npz"
+    if pos_verify.get("prediction_file_sha256") != sha_file(pos_path):
+        raise PrelabelError(f"Original POS prediction file hash mismatch for {unit_id}")
+    pos_npz = load_npz_allowlisted(
+        pos_path, allowed_members=POS_MEMBERS,
+        expected_sha256=pos_verify["prediction_file_sha256"], allow_closed_extras=True,
+    )
     model = joblib.load(base / "model.joblib")
     if model.audit_state() != fit_state or model.origin_cycle != origin:
         raise PrelabelError(f"Historical A02 saved state mismatch for {unit_id}")
@@ -373,6 +379,7 @@ def _verify_unit(origin: int, arm: str, freeze: dict[str, Any], frame: pd.DataFr
         "fit_id": unit_id,
         "artifact_sha256": sha_file(bundle_path),
         "receipt_sha256": sha_file(receipt_path),
+        "pos_archive_unused_member_names": list(pos_npz.unused_member_names),
         "rows": int(len(qrows)),
         "missing_rows": int(missing.sum()),
         "bank_rows": int(len(bank_rows)),
@@ -453,6 +460,10 @@ def verify() -> dict[str, Any]:
         "freeze_sha256": sha_file(FREEZE_PATH),
         "budget_ledger_sha256": sha_file(LEDGER_PATH),
         "four_unit_receipts_and_outputs": reports,
+        "closed_pos_archive_members_left_unread": {
+            f"E{origin}": reports[f"E{origin}_REAL"]["pos_archive_unused_member_names"]
+            for origin in ORIGINS
+        },
         "unique_primary_rows": len(unique_ids),
         "overlap_e67_e75_w6_rows": int(m67.sum()),
         "all_four_outputs_target_free": True,

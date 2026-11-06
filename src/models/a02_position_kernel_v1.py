@@ -5,6 +5,7 @@ This module fits no vectorizer, estimator, threshold, or calibration component.
 """
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 from typing import Any, Sequence
 
@@ -58,27 +59,51 @@ def load_npz_allowlisted(
     *,
     allowed_members: Sequence[str],
     known_unread_members: Sequence[str] = ("labels", "artifact_signal", "y_true", "target"),
-) -> dict[str, np.ndarray]:
+    expected_sha256: str | None = None,
+    allow_closed_extras: bool = False,
+) -> "AllowlistedArrays":
     """Load only named non-target arrays; target members are never indexed.
 
     NPZ member names are safe to enumerate. Values are retrieved exclusively
     through the explicit allowlist, so a label/object member may remain closed.
+    Unclassified surplus members are rejected unless the complete archive SHA
+    is supplied and ``allow_closed_extras`` is true. In that case all surplus
+    members stay closed, and only their names are returned as audit metadata.
     """
+    path = Path(path)
     allowed = tuple(str(name) for name in allowed_members)
     if len(set(allowed)) != len(allowed) or not allowed:
         raise ValueError("NPZ allowlist must contain unique nonempty member names")
     unread = set(str(name) for name in known_unread_members)
     if set(allowed) & unread:
         raise ValueError("target-bearing members are forbidden in an NPZ allowlist")
-    with np.load(Path(path), allow_pickle=False) as archive:
+    if allow_closed_extras and not expected_sha256:
+        raise ValueError("closed surplus NPZ members require a pinned full-archive SHA-256")
+    if expected_sha256 is not None:
+        digest = hashlib.sha256()
+        with path.open("rb") as stream:
+            for block in iter(lambda: stream.read(1024 * 1024), b""):
+                digest.update(block)
+        if digest.hexdigest() != expected_sha256:
+            raise ValueError("NPZ archive SHA-256 differs from its frozen manifest")
+    with np.load(path, allow_pickle=False) as archive:
         available = set(archive.files)
         missing = set(allowed) - available
         unknown = available - set(allowed) - unread
         if missing:
             raise ValueError(f"NPZ is missing allowed members: {sorted(missing)}")
-        if unknown:
+        if unknown and not allow_closed_extras:
             raise ValueError(f"NPZ contains unclassified members: {sorted(unknown)}")
-        return {name: archive[name].copy() for name in allowed}
+        values = {name: archive[name].copy() for name in allowed}
+    return AllowlistedArrays(values, unused_member_names=sorted(available - set(allowed)))
+
+
+class AllowlistedArrays(dict[str, np.ndarray]):
+    """Dictionary of loaded arrays plus the names of values left closed."""
+
+    def __init__(self, values: dict[str, np.ndarray], *, unused_member_names: Sequence[str]) -> None:
+        super().__init__(values)
+        self.unused_member_names = tuple(str(name) for name in unused_member_names)
 
 
 def assemble_full_champion(p_pos: Any, p_a02: Any, missing_mask: Any) -> tuple[np.ndarray, np.ndarray]:

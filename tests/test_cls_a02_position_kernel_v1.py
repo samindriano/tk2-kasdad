@@ -148,6 +148,63 @@ def test_npz_allowlist_never_indexes_poisoned_label_member(tmp_path, monkeypatch
     assert accessed == ["score"]
 
 
+def test_pinned_npz_keeps_surplus_members_closed_and_rejects_missing_or_tampered(tmp_path, monkeypatch):
+    path = tmp_path / "pinned.npz"
+    np.savez(path, required=np.asarray([7]), closed_metadata=np.asarray(["unused"]),
+             labels=np.asarray([object()], dtype=object))
+    pinned_sha = hashlib.sha256(path.read_bytes()).hexdigest()
+    original_np_load = np.load
+    accessed = []
+
+    class ArchiveSpy:
+        def __init__(self, inner):
+            self.inner = inner
+            self.files = inner.files
+
+        def __getitem__(self, key):
+            accessed.append(key)
+            if key in {"labels", "closed_metadata"}:
+                raise AssertionError(f"closed NPZ member was accessed: {key}")
+            return self.inner[key]
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            self.inner.close()
+
+    def spy_load(*args, **kwargs):
+        assert kwargs.get("allow_pickle") is False
+        return ArchiveSpy(original_np_load(*args, **kwargs))
+
+    monkeypatch.setattr(np, "load", spy_load)
+    arrays = load_npz_allowlisted(
+        path, allowed_members=("required",), expected_sha256=pinned_sha,
+        allow_closed_extras=True,
+    )
+    assert np.array_equal(arrays["required"], np.asarray([7]))
+    assert set(arrays.unused_member_names) == {"closed_metadata", "labels"}
+    assert accessed == ["required"]
+
+    try:
+        load_npz_allowlisted(path, allowed_members=("missing",), expected_sha256=pinned_sha,
+                             allow_closed_extras=True)
+    except ValueError as exc:
+        assert "missing allowed members" in str(exc)
+    else:
+        raise AssertionError("missing required NPZ member must fail closed")
+
+    monkeypatch.setattr(np, "load", original_np_load)
+    path.write_bytes(path.read_bytes() + b"tamper")
+    try:
+        load_npz_allowlisted(path, allowed_members=("required",), expected_sha256=pinned_sha,
+                             allow_closed_extras=True)
+    except ValueError as exc:
+        assert "SHA-256" in str(exc)
+    else:
+        raise AssertionError("tampered pinned NPZ archive must fail closed")
+
+
 def test_npz_target_member_cannot_be_explicitly_allowlisted(tmp_path):
     path = tmp_path / "has_label.npz"
     np.savez(path, labels=np.asarray([0, 1], dtype=np.int8))

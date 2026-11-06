@@ -192,6 +192,7 @@ def _source_file_hashes() -> dict[str, str]:
         REPO_ROOT / "tests/test_cls_a02_position_kernel_v1.py",
         OFFICIAL_ROOT / "src/models/classification_a02_neighbors.py",
         OFFICIAL_ROOT / "src/models/optimization_v3_positional_text_pilot_v1.py",
+        OFFICIAL_ROOT / "scripts/optimization_v3_positional_text_pilot_v1.py",
         OFFICIAL_ROOT / "src/models/positional_text_features.py",
         OFFICIAL_ROOT / "src/models/a02_coefficient_geometry_v1.py",
         OFFICIAL_ROOT / "src/models/classification_models.py",
@@ -256,7 +257,10 @@ def _validate_historical_artifacts(origin: int, *, input_hashes: dict[str, str] 
 
     # This allowlist intentionally omits the cached query `labels` member.
     a02 = load_npz_allowlisted(paths["a02_predictions"], allowed_members=A02_MEMBERS)
-    pos = load_npz_allowlisted(paths["pos_predictions"], allowed_members=POS_MEMBERS)
+    pos = load_npz_allowlisted(
+        paths["pos_predictions"], allowed_members=POS_MEMBERS,
+        expected_sha256=pos_verify["prediction_file_sha256"], allow_closed_extras=True,
+    )
 
     if not np.array_equal(a02["score_rows"], pos["score_rows"]):
         raise PilotError(f"A02 and POS query row positions differ for E{origin}")
@@ -281,6 +285,7 @@ def _validate_historical_artifacts(origin: int, *, input_hashes: dict[str, str] 
                 raise PilotError(f"Frozen input hash changed after freeze: {label}")
     return model, a02, pos, {"fit_receipt": fit_receipt, "fit_state": fit_state,
                               "a02_manifest": a02_manifest, "pos_verify": pos_verify,
+                              "pos_unused_member_names": list(pos.unused_member_names),
                               "pos_manifest": pos_manifest, "pos_freeze": pos_freeze}
 
 
@@ -509,6 +514,7 @@ def _freeze_payload() -> dict[str, Any]:
             "query_cycle_max": int(np.max(inputs["query_cycles"])),
             "rows_sha256": _canonical_sha(inputs["query_rows"].astype(int).tolist()),
             "record_ids_sha256": _canonical_sha(inputs["a02"]["score_record_ids"].astype(str).tolist()),
+            "pos_archive_unused_member_names": inputs["lineage"]["pos_unused_member_names"],
         }
     e67_rows = loaded[67]
     e75_rows = loaded[75]
