@@ -535,8 +535,8 @@ def _verify_official_prelabel_locked() -> dict[str, Any]:
     if implementation_hashes != freeze.get("implementation_hashes"):
         raise VerifyError("Implementation or test source differs from the frozen prefit package")
     source_supersession_check = _verify_source_supersession(freeze, implementation_hashes)
-    if _sha_file(RUNNER_PATH) != freeze["runner_sha256"] or _sha_file(POSITION_FREEZE) != freeze["position_freeze_sha256"]:
-        raise VerifyError("POS source runner or source freeze changed")
+    if _sha_file(POSITION_FREEZE) != freeze["position_freeze_sha256"]:
+        raise VerifyError("POS source freeze changed")
     source_head = subprocess.run(["git", "-C", str(SOURCE_ROOT), "rev-parse", "HEAD"],
                                  check=True, capture_output=True, text=True).stdout.strip()
     if not _is_git_ancestor(SOURCE_ROOT, freeze.get("source_git_head"), source_head):

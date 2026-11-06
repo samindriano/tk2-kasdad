@@ -445,7 +445,7 @@ def _verify_prefit_snapshot() -> dict[str, Any]:
     runner = _runner()
     current_impl = {key: _sha_file(path) for key, path in IMPLEMENTATION_PATHS.items()}
     if (current_impl != freeze.get("implementation_hashes")
-            or _sha_file(RUNNER_PATH) != freeze.get("runner_sha256")
+            or _sha_file(Path(__file__)) != freeze.get("runner_sha256")
             or freeze.get("source_revision") != 2
             or _sha_file(POSITION_FREEZE) != freeze.get("position_freeze_sha256")
             or _assert_frozen_training_source(SOURCE_ROOT, freeze, runner)
@@ -791,7 +791,7 @@ def _preflight_body(runner: Any, position_freeze: Mapping[str, Any],
         "source_worktree_status_sha256": _canonical_sha(
             _git(SOURCE_ROOT, "status", "--porcelain").splitlines()),
         "frontier_root": str(FRONTIER_ROOT.resolve()),
-        "runner_sha256": _sha_file(RUNNER_PATH),
+        "runner_sha256": _sha_file(Path(__file__)),
         "position_freeze_path": str(POSITION_FREEZE.resolve()),
         "position_freeze_sha256": _sha_file(POSITION_FREEZE),
         "position_freeze_signature": position_freeze["freeze_signature"],
