@@ -1,0 +1,15 @@
+{
+  "captured_output": ".......F.                                                                [100%]\n================================== FAILURES ===================================\n____ test_route_keeps_missing_probability_bit_exact_and_thresholds_frozen _____\n\n    def test_route_keeps_missing_probability_bit_exact_and_thresholds_frozen() -> None:\n        present = np.asarray([True, False, True, False])\n        p_a02 = np.asarray([0.2, 0.53230976129477, 0.8, 0.1], dtype=np.float64)\n        p_pos = np.asarray([0.8, 0.9, 0.2, 0.9], dtype=np.float64)\n        probability = e79.route_probabilities(present, p_a02, p_pos)\n        assert np.array_equal(probability[~present].view(np.uint64), p_a02[~present].view(np.uint64))\n        labels = e79.apply_frozen_thresholds(probability, present)\n>       np.testing.assert_array_equal(labels, np.asarray([1, 1, 0, 0], dtype=np.int8))\nE       AssertionError: \nE       Arrays are not equal\nE       \nE       Mismatched elements: 1 / 4 (25%)\nE       Mismatch at index:\nE        [2]: 1 (ACTUAL), 0 (DESIRED)\nE       Max absolute difference among violations: 1\nE       Max relative difference among violations: inf\nE        ACTUAL: array([1, 1, 1, 0], dtype=int8)\nE        DESIRED: array([1, 1, 0, 0], dtype=int8)\n\ntests\\test_cls_pos_recency_e79_v1.py:49: AssertionError\n=========================== short test summary info ===========================\nFAILED tests/test_cls_pos_recency_e79_v1.py::test_route_keeps_missing_probability_bit_exact_and_thresholds_frozen\n1 failed, 8 passed in 1.35s",
+  "command": [
+    "C:\\Users\\Sam\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+    "-m",
+    "pytest",
+    "-q",
+    "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-simplification-audit-v1\\tests\\test_cls_pos_recency_e79_v1.py"
+  ],
+  "passed": 1,
+  "returncode": 1,
+  "schema_version": 1,
+  "status": "FAIL_UNIT_TESTS",
+  "target_or_test_data_access": false
+}
