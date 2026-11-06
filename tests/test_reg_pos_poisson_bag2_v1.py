@@ -7,7 +7,7 @@ from pathlib import Path
 import subprocess
 import sys
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from scripts import reg_pos_poisson_bag2_v1 as pilot
 from scripts import verify_reg_pos_poisson_bag2_v1 as verifier
@@ -164,6 +164,22 @@ class TestRegPosPoissonBag2V1(unittest.TestCase):
             -0.01, -0.050001, 0.01, True, 0.25, True, True)[1])
         self.assertFalse(pilot._decision_gates(
             -0.01, -0.05, 0.01, True, 0.250001, True, True)[1])
+
+    def test_score_prevalidation_fails_before_any_target_read(self):
+        freeze = {"status": "PREFIT_FROZEN", "source_artifacts": {}}
+        prediction_freeze = {"status": "PREDICTIONS_FROZEN"}
+        runner = SimpleNamespace(_read_targets_for_rows=Mock())
+        with (patch.object(pilot, "_validate_signed_json", side_effect=[freeze, prediction_freeze]),
+              patch.object(pilot, "_score_gate", return_value={"status": "PASS"}),
+              patch.object(pilot, "_runner", return_value=runner),
+              patch.object(pilot, "_assert_frozen_training_source"),
+              patch.object(pilot, "_source_artifact_hashes", return_value={}),
+              patch.object(pilot, "_prevalidate_score_inputs",
+                            side_effect=pilot.PilotError("E75 score input hash mismatch")) as prevalidate):
+            with self.assertRaisesRegex(pilot.PilotError, "E75 score input hash mismatch"):
+                pilot.score_official()
+        self.assertEqual(prevalidate.call_count, 1)
+        runner._read_targets_for_rows.assert_not_called()
 
     def test_synthetic_train_receipt_readback_prediction_metric_and_independent_verifier(self):
         with tempfile.TemporaryDirectory(prefix="reg-pos-poisson-report-") as temporary:

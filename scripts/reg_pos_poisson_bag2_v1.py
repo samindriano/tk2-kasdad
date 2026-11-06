@@ -490,8 +490,20 @@ def _verify_prefit_snapshot() -> dict[str, Any]:
     old_freeze_sha = _sha_file(old_freeze_path)
     old_report_sha = _sha_file(old_report_path)
     if (receipt.get("status") != "PASS"
+            or freeze.get("query_targets_read") is not False
+            or freeze.get("official_train_target_column_loaded") is not False
+            or freeze.get("official_fits_started") != 0
+            or freeze.get("official_ledger_mutated") is not False
+            or freeze.get("test_or_sample_accessed") is not False
+            or freeze.get("csv_created") is not False
             or old_freeze_sha != superseded_freeze.get("sha256")
             or old_freeze["freeze_signature"] != superseded_freeze.get("freeze_signature")
+            or old_freeze.get("query_targets_read") is not False
+            or old_freeze.get("official_train_target_column_loaded") is not False
+            or old_freeze.get("official_fits_started") != 0
+            or old_freeze.get("official_ledger_mutated") is not False
+            or old_freeze.get("test_or_sample_accessed") is not False
+            or old_freeze.get("csv_created") is not False
             or old_report_sha != superseded_report.get("sha256")
             or old_report.get("status") != "PASS"
             or old_report.get("freeze_signature") != old_freeze["freeze_signature"]
@@ -511,6 +523,12 @@ def _verify_prefit_snapshot() -> dict[str, Any]:
             or receipt.get("source_revision") != freeze.get("source_revision")
             or receipt.get("implementation_hashes") != current_impl
             or receipt.get("target_blind_integrity_only") is not True
+            or receipt.get("query_targets_read") is not False
+            or receipt.get("official_target_column_loaded") is not False
+            or receipt.get("official_fit_units_started") != 0
+            or receipt.get("official_ledger_mutated") is not False
+            or receipt.get("test_or_sample_accessed") is not False
+            or receipt.get("csv_created") is not False
             or report.get("supersession_receipt_sha256") != _sha_file(SUPERSESSION_RECEIPT_PATH)):
         raise PilotError("Source supersession receipt does not bind preserved freeze history")
     synthetic = _read_json(SYNTHETIC_REPORT)
@@ -1387,6 +1405,91 @@ def _target_groups(y: np.ndarray, missing: np.ndarray, fit_group: Mapping[str, n
     return groups
 
 
+def _prevalidate_score_inputs(runner: Any, source_root: Path,
+                             freeze: Mapping[str, Any],
+                             prediction_freeze: Mapping[str, Any],
+                             approval: Mapping[str, Any]) -> tuple[Any, dict[int, dict[str, Any]]]:
+    """Validate every origin's score inputs and row identity before reading any target labels."""
+    frame = runner._load_feature_frame(source_root)
+    if "threat_rank" in frame.columns:
+        raise PilotError("Feature loader exposed target column during score-input prevalidation")
+    approved_score_hashes = approval.get("score_input_sha256", {})
+    if set(approved_score_hashes) != {str(origin) for origin in ORIGINS}:
+        raise PilotError("Root score approval does not bind every score input")
+    manifest_artifacts = prediction_freeze.get("artifacts", {})
+    prepared: dict[int, dict[str, Any]] = {}
+    for origin in ORIGINS:
+        path, receipt_path = _prediction_paths(OFFICIAL_RUN, origin)
+        if not path.is_file() or not receipt_path.is_file():
+            raise PilotError(f"Frozen candidate prediction is incomplete for E{origin}")
+        prediction_sha = _sha_file(path)
+        receipt_sha = _sha_file(receipt_path)
+        receipt = _read_json(receipt_path)
+        receipt_body = {key: value for key, value in receipt.items() if key != "receipt_sha256"}
+        manifest = manifest_artifacts.get(str(origin), {})
+        if (receipt.get("receipt_sha256") != _canonical_sha(receipt_body)
+                or receipt.get("freeze_signature") != freeze.get("freeze_signature")
+                or receipt.get("origin") != origin
+                or receipt.get("prediction_sha256") != prediction_sha
+                or receipt.get("query_targets_read") is not False
+                or manifest.get("prediction_path") != path.relative_to(ROOT).as_posix()
+                or manifest.get("prediction_sha256") != prediction_sha
+                or manifest.get("receipt_path") != receipt_path.relative_to(ROOT).as_posix()
+                or manifest.get("receipt_sha256") != receipt_sha):
+            raise PilotError(f"Prediction receipt or freeze manifest differs at E{origin}")
+        arrays = _explicit_npz(path, ("query_rows", "query_ids", "query_cycles", "missing_mask",
+                                      "full_direct", "same_history_hinge"))
+        item = runner._load_origin(source_root, frame, origin)
+        expected = freeze["origins"][str(origin)]
+        if (_sha_array(item.query_rows) != expected["query_row_indices_sha256"]
+                or _sha_array(item.query_ids) != expected["query_ids_sha256"]
+                or not np.array_equal(arrays["query_rows"], item.query_rows)
+                or not np.array_equal(arrays["query_ids"].astype(str), item.query_ids.astype(str))
+                or not np.array_equal(arrays["query_cycles"], item.query_cycles)
+                or not np.array_equal(arrays["missing_mask"].astype(bool), item.query_missing.astype(bool))):
+            raise PilotError(f"Candidate prediction query identity differs from the freeze at E{origin}")
+        row_identity_sha = _canonical_sha({
+            "rows": _sha_array(arrays["query_rows"]),
+            "ids": _sha_array(arrays["query_ids"]),
+            "cycles": _sha_array(arrays["query_cycles"]),
+        })
+        if (receipt.get("query_rows") != len(arrays["query_rows"])
+                or receipt.get("query_rows_sha256") != _sha_array(arrays["query_rows"])
+                or receipt.get("query_ids_sha256") != _sha_array(arrays["query_ids"])
+                or receipt.get("query_cycles_sha256") != _sha_array(arrays["query_cycles"])
+                or receipt.get("row_identity_sha256") != row_identity_sha
+                or manifest.get("row_identity_sha256") != row_identity_sha):
+            raise PilotError(f"Prediction row-identity receipt differs at E{origin}")
+        local = _explicit_npz(LOCAL_PREDICTION_PATHS[origin], (
+            "physical_rows", "record_ids", "cycles", "missing_mask", "direct_predictions", "hinge_baseline"))
+        row_map = {int(row): index for index, row in enumerate(item.query_rows)}
+        try:
+            positions = np.asarray([row_map[int(row)] for row in local["physical_rows"]], dtype=np.int64)
+        except KeyError as exc:
+            raise PilotError(f"Frozen local score rows are absent from candidate query at E{origin}") from exc
+        rows = np.asarray(local["physical_rows"], dtype=np.int64)
+        ids = local["record_ids"].astype(str)
+        if (not np.array_equal(item.query_ids[positions].astype(str), ids)
+                or not np.array_equal(arrays["query_ids"][positions].astype(str), ids)
+                or not np.array_equal(arrays["query_cycles"][positions], local["cycles"])
+                or not np.array_equal(arrays["missing_mask"][positions].astype(bool),
+                                      local["missing_mask"].astype(bool))):
+            raise PilotError(f"Candidate/local score row identity differs at E{origin}")
+        score_file = R4_SCORE_PATHS[origin]
+        expected_score_sha = approved_score_hashes[str(origin)]
+        if (expected_score_sha != AUTHORIZED_SCORE_SHA256[origin]
+                or not score_file.is_file()
+                or _sha_file(score_file) != expected_score_sha):
+            raise PilotError(f"Authorized score source hash differs at E{origin}")
+        prepared[origin] = {
+            "arrays": arrays, "local": local, "positions": positions,
+            "rows": rows, "ids": ids, "receipt": receipt,
+            "score_file": score_file, "score_sha256": expected_score_sha,
+        }
+        del item
+    return frame, prepared
+
+
 def score_official(source_root: Path = SOURCE_ROOT) -> dict[str, Any]:
     freeze = _validate_signed_json(FREEZE_PATH, "freeze_signature")
     prediction_freeze = _validate_signed_json(PREDICTION_FREEZE, "prediction_signature")
@@ -1403,33 +1506,18 @@ def score_official(source_root: Path = SOURCE_ROOT) -> dict[str, Any]:
     score_champion: dict[int, np.ndarray] = {}
     missing_invariant_pass = True
     finite_outputs_pass = True
+    frame, prepared_inputs = _prevalidate_score_inputs(
+        runner, source_root, freeze, prediction_freeze, approval)
     for origin in ORIGINS:
-        path, receipt_path = _prediction_paths(OFFICIAL_RUN, origin)
-        if not path.is_file() or not receipt_path.is_file():
-            raise PilotError(f"Frozen candidate prediction is incomplete for E{origin}")
-        receipt = _read_json(receipt_path)
-        if receipt.get("prediction_sha256") != _sha_file(path):
-            raise PilotError(f"Prediction artifact hash failed at E{origin}")
-        arrays = _explicit_npz(path, ("query_rows", "query_ids", "query_cycles", "missing_mask",
-                                      "full_direct", "same_history_hinge"))
-        frame = runner._load_feature_frame(source_root)
+        prepared = prepared_inputs[origin]
+        arrays = prepared["arrays"]
+        local = prepared["local"]
+        positions = prepared["positions"]
+        rows = prepared["rows"]
+        ids = prepared["ids"]
+        receipt = prepared["receipt"]
+        score_file = prepared["score_file"]
         item = runner._load_origin(source_root, frame, origin)
-        row_map = {int(row): i for i, row in enumerate(item.query_rows)}
-        # Score windows are exactly the frozen local-hinge rows, kept target-blind until this gate.
-        local = _explicit_npz(LOCAL_PREDICTION_PATHS[origin], (
-            "physical_rows", "record_ids", "cycles", "missing_mask", "direct_predictions", "hinge_baseline"))
-        positions = np.asarray([row_map[int(row)] for row in local["physical_rows"]], dtype=np.int64)
-        rows = np.asarray(local["physical_rows"], dtype=np.int64)
-        ids = local["record_ids"].astype(str)
-        if (not np.array_equal(item.query_ids[positions].astype(str), ids)
-                or not np.array_equal(arrays["query_ids"][positions].astype(str), ids)
-                or not np.array_equal(arrays["query_cycles"][positions], local["cycles"])):
-            raise PilotError(f"Score row identity differs from frozen predictions at E{origin}")
-        score_file = R4_SCORE_PATHS[origin]
-        expected_score_sha = approval.get("score_input_sha256", {}).get(str(origin))
-        if (expected_score_sha != AUTHORIZED_SCORE_SHA256[origin]
-                or _sha_file(score_file) != expected_score_sha):
-            raise PilotError(f"Authorized score source hash differs at E{origin}")
         # This is the first official read of evaluation labels, after score approval and prediction freeze.
         _assert_frozen_training_source(source_root, freeze, runner)
         y = runner._read_targets_for_rows(runner._contained_file(source_root, runner.TRAIN_REL),
@@ -1474,7 +1562,7 @@ def score_official(source_root: Path = SOURCE_ROOT) -> dict[str, Any]:
                 "candidate_hinge": _metric(y[local["cycles"] == c], cand_hinge[local["cycles"] == c]),
                 "champion_hinge": _metric(y[local["cycles"] == c], champ[local["cycles"] == c]),
             } for c in np.unique(local["cycles"])},
-            "groups": group_metrics, "score_input_sha256": _sha_file(score_file),
+            "groups": group_metrics, "score_input_sha256": prepared["score_sha256"],
             "score_target_rows_read": len(y), "row_identity_sha256": receipt["row_identity_sha256"],
         }
         score_targets[origin] = y

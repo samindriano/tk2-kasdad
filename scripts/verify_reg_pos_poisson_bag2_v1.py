@@ -340,8 +340,20 @@ def _verify_source_supersession(freeze: Mapping[str, Any], implementation_hashes
     receipt = _signed(SUPERSEDENCE_RECEIPT_PATH, "receipt_sha256")
     current_freeze_sha = _sha_file(FREEZE_PATH)
     current_report = _read_json(PREFIT_REPORT)
-    if (old_freeze_sha != superseded_freeze.get("sha256")
+    if (freeze.get("query_targets_read") is not False
+            or freeze.get("official_train_target_column_loaded") is not False
+            or freeze.get("official_fits_started") != 0
+            or freeze.get("official_ledger_mutated") is not False
+            or freeze.get("test_or_sample_accessed") is not False
+            or freeze.get("csv_created") is not False
+            or old_freeze_sha != superseded_freeze.get("sha256")
             or old_freeze["freeze_signature"] != superseded_freeze.get("freeze_signature")
+            or old_freeze.get("query_targets_read") is not False
+            or old_freeze.get("official_train_target_column_loaded") is not False
+            or old_freeze.get("official_fits_started") != 0
+            or old_freeze.get("official_ledger_mutated") is not False
+            or old_freeze.get("test_or_sample_accessed") is not False
+            or old_freeze.get("csv_created") is not False
             or old_report_sha != superseded_report.get("sha256")
             or old_report.get("status") != "PASS"
             or old_report.get("freeze_signature") != old_freeze["freeze_signature"]
@@ -362,6 +374,12 @@ def _verify_source_supersession(freeze: Mapping[str, Any], implementation_hashes
             or receipt.get("source_commit") != freeze.get("base_commit")
             or receipt.get("implementation_hashes") != dict(implementation_hashes)
             or receipt.get("target_blind_integrity_only") is not True
+            or receipt.get("query_targets_read") is not False
+            or receipt.get("official_target_column_loaded") is not False
+            or receipt.get("official_fit_units_started") != 0
+            or receipt.get("official_ledger_mutated") is not False
+            or receipt.get("test_or_sample_accessed") is not False
+            or receipt.get("csv_created") is not False
             or current_report.get("status") != "PASS"
             or current_report.get("freeze_signature") != freeze.get("freeze_signature")
             or current_report.get("freeze_sha256") != current_freeze_sha
