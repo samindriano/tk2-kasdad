@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import importlib
 import subprocess
+import sys
 
 import pytest
 
 from scripts.score_cls_a02_position_kernel_v1_runtime_adapter_01 import (
+    ROOT,
     inject_subprocess_compatibility,
     unresolved_standard_module_names,
 )
@@ -13,6 +15,16 @@ from scripts.score_cls_a02_position_kernel_v1_runtime_adapter_01 import (
 
 def test_only_frozen_scorer_subprocess_global_is_missing():
     assert unresolved_standard_module_names() == {"subprocess"}
+
+
+def test_adapter_cli_initializes_without_entering_score_path():
+    script = ROOT / "scripts/score_cls_a02_position_kernel_v1_runtime_adapter_01.py"
+    result = subprocess.run([sys.executable, str(script), "--help"], cwd=ROOT,
+                            text=True, capture_output=True, check=False)
+    assert result.returncode == 0
+    assert "--prepare-manifest" in result.stdout
+    assert "one missing stdlib module global" in result.stdout
+    assert not (ROOT / "reports/simplification_v1/CLS_POST_BAG2_NEXT_V1/SCORING_ATTEMPT.json").exists()
 
 
 def test_runtime_adapter_injects_only_subprocess_and_git_helper_works():
