@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "amendment_id": "CLS_POS_EF_CONTEXT_V1_EXEC_GUARD_AMENDMENT_01",
+  "candidate_id": "CLS_POS_EF_CONTEXT_V1",
+  "status": "OPERATIONAL_GUARD_ONLY",
+  "authorization_source": "Sol confirmation in companion KASDAD chat; exact operational guard repair approved",
+  "created_after_observation": {
+    "timing": "After E67 REAL optimizer diagnostics were observed",
+    "outcome_blind": false,
+    "query_labels_or_task_metrics_seen": false,
+    "test_or_sample_access": false,
+    "reason": "A completed FIT_STARTED event was incorrectly treated as an active fit"
+  },
+  "parent_source_commit": "21001878edbf7685c23453abb8897ecb999cfdfd",
+  "parent_freeze_signature": "d5a6d6165b26a7d1b1f6faa6e793a503ce15a963b2d75a24e4b099e553c4b30c",
+  "frozen_driver_sha256": "39c33be29bc999252c8adb38277414271c36054c41774fcd6f05c7bcf1037532",
+  "adapter_path": "scripts/run_cls_pos_ef_context_v1_amended.py",
+  "adapter_sha256": "24b0a46e50565b301d3d466476c7896a5123c378905e681043ac78a494ccada6",
+  "verifier_path": "scripts/verify_cls_pos_ef_context_v1_execution_amendment.py",
+  "verifier_sha256": "da5b827044897e981b1861bd56557d1fc7d93ca4e3cb73100add81a31504210b",
+  "original_fit_id": "CLS_POS_EF_CONTEXT_V1_E67_REAL",
+  "authorized_fit_ids": [
+    "CLS_POS_EF_CONTEXT_V1_E67_SHUFFLED",
+    "CLS_POS_EF_CONTEXT_V1_E75_REAL",
+    "CLS_POS_EF_CONTEXT_V1_E75_SHUFFLED"
+  ],
+  "reservation": {
+    "fit_cap": 4,
+    "fit_ids_unchanged": true,
+    "saved_before_amendment": 1,
+    "remaining_before_amendment": 3,
+    "new_slots_added": 0,
+    "retry_allowed": false
+  },
+  "guard_change": {
+    "old_rule": "Reject if any other frozen FIT_STARTED row exists, including starts with terminal FIT_SAVED or FIT_FAILED rows",
+    "amended_rule": "Reject when started fit IDs minus terminal FIT_SAVED/FIT_FAILED IDs is nonempty; validate the full unchanged ledger before permitting the frozen fit call",
+    "ledger_filtered_or_rewritten": false
+  },
+  "recipe_and_data_boundary_unchanged": true,
+  "execution_lineage_path": "experiments/CLS_POS_EF_CONTEXT_V1/execution_lineage.jsonl",
+  "independent_verifier_required": true,
+  "amendment_tests_before_resume": {
+    "command": "python -m pytest -q tests/test_cls_pos_ef_context_v1_execution_amendment.py",
+    "passed": 4,
+    "failed": 0
+  }
+}
