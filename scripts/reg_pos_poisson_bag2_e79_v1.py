@@ -43,10 +43,11 @@ R06_BASELINE_CSV = Path(r"C:\Users\Sam\OneDrive\Documents\KASDAD\TP 2\submission
 SCORE_REPLAY = ROOT / "reports/optimization_v3/reg_pos_poisson_bag2_v1/ROOT_INDEPENDENT_SCORE_REPLAY_R1.json"
 SCORE_REPORT = ROOT / "reports/optimization_v3/reg_pos_poisson_bag2_v1/SCORE_R1.json"
 POS_FREEZE = ROOT / "experiments/reg_pos_poisson_bag2_v1/FREEZE_R1.json"
-SOURCE_REPORT = ROOT / "reports/optimization_v3/REG_POS_POISSON_BAG2_E79_V1/SOURCE_PREPARATION_R3.json"
+SOURCE_REPORT = ROOT / "reports/optimization_v3/REG_POS_POISSON_BAG2_E79_V1/SOURCE_PREPARATION_R4.json"
 SUPERSEDED_SOURCE_REPORT_R1_SHA256 = "5f07200715f08733abd2cd810ca9cf5dcf6d01efcc68c84f2fe02b2eb95b8fd2"
 SUPERSEDED_SOURCE_REPORT_R2_SHA256 = "a60d6989b213196fb21dcb5eb0d08d5ac3f598bb3bb521f2198afdc38dcb68de"
-FINAL_PASS = ROOT / "experiments/reg_pos_poisson_bag2_e79_v1/ROOT_FINAL_SOURCE_PASS_R1.json"
+PREVIOUS_FINAL_PASS_R1 = ROOT / "experiments/reg_pos_poisson_bag2_e79_v1/ROOT_FINAL_SOURCE_PASS_R1.json"
+FINAL_PASS = ROOT / "experiments/reg_pos_poisson_bag2_e79_v1/ROOT_FINAL_SOURCE_PASS_R2.json"
 RUN_ROOT = ROOT / "experiments/runs/REG_POS_POISSON_BAG2_E79_V1"
 CSV_PATH = ROOT / "submissions/reg_pos_poisson_bag2_e79_v1/pos_poisson_bag2_final_e79.csv"
 FIT_IDS = (
@@ -67,6 +68,11 @@ EXPECTED = {
     "score_report": "e1b6260bb6a9868a98f7633b47ce12ce6e17637dc933e45461943103d31dcc59",
     "pos_freeze": "ba347046ba25d2f0a4fc1ec2ef35dd38f69bef0999ed1b3d75856a6b149a41e8",
     "pos_freeze_signature": "aeacf1bf9d9b9c20af4823a3dcb65e7329d38f62c052127ed58f6637d2f80b83",
+    "source_preparation_r3": "d8f21f25eb0f1b98a8835e226c1f7dac5e70d2567307e56d944bfaedc58625b8",
+    "source_preparation_r3_signature": "a0e6891be05287b15718fd5ae164ba12552694ceba2b91d6f0646a931adf1adc",
+    "source_script_r3": "8924248b77e3720103f782991482418fce82445fa78de5a318caf27e70cf5af0",
+    "final_source_pass_r1": "bcb09c7e52dd4930f706e4b928f7a5563172df55e08aefaaf970dff3e23ab190",
+    "final_source_pass_r1_signature": "e678a8718012b5282f38578a9a14639eaf9fd42698f5d92d1bdfe6be7beb8559",
 }
 FINAL_HINGE = {
     "intercept": 1.7288079036674198,
@@ -174,6 +180,10 @@ def _check_source_contract(*, run_synthetic: bool) -> dict[str, Any]:
         "score_replay": _verify_hashed(SCORE_REPLAY, EXPECTED["score_replay"], "independent score replay"),
         "score_report": _verify_hashed(SCORE_REPORT, EXPECTED["score_report"], "official Poisson score report"),
         "pos_freeze": _verify_hashed(POS_FREEZE, EXPECTED["pos_freeze"], "POS Poisson fit/parameter freeze"),
+        "source_preparation_r3": _verify_hashed(SOURCE_REPORT.parent / "SOURCE_PREPARATION_R3.json",
+                                                  EXPECTED["source_preparation_r3"], "prior approved source report R3"),
+        "final_source_pass_r1": _verify_hashed(PREVIOUS_FINAL_PASS_R1,
+                                                EXPECTED["final_source_pass_r1"], "prior final source pass R1"),
     }
     parent = _verify_signed(PARENT_MANIFEST)
     trained = _verify_signed(TRAINED_FREEZE)
@@ -184,6 +194,19 @@ def _check_source_contract(*, run_synthetic: bool) -> dict[str, Any]:
     if (pos_freeze.get("freeze_signature") != _canonical_sha(pos_body)
             or pos_freeze.get("freeze_signature") != EXPECTED["pos_freeze_signature"]):
         raise SourceError("POS Poisson source freeze signature mismatch")
+    r3 = _read_json(SOURCE_REPORT.parent / "SOURCE_PREPARATION_R3.json")
+    r3_body = {k: v for k, v in r3.items() if k != "source_preparation_sha256"}
+    if (r3.get("source_preparation_sha256") != EXPECTED["source_preparation_r3_signature"]
+            or _canonical_sha(r3_body) != EXPECTED["source_preparation_r3_signature"]
+            or r3.get("source_script_sha256") != EXPECTED["source_script_r3"]):
+        raise SourceError("Prior approved R3 source report bytes/signature differ")
+    prior_pass = _read_json(PREVIOUS_FINAL_PASS_R1)
+    prior_pass_body = {k: v for k, v in prior_pass.items() if k != "approval_sha256"}
+    if (prior_pass.get("approval_sha256") != EXPECTED["final_source_pass_r1_signature"]
+            or _canonical_sha(prior_pass_body) != EXPECTED["final_source_pass_r1_signature"]
+            or prior_pass.get("source_preparation_sha256") != EXPECTED["source_preparation_r3_signature"]
+            or prior_pass.get("source_script_sha256") != EXPECTED["source_script_r3"]):
+        raise SourceError("Prior final source pass R1 binding differs")
 
     if (parent.get("namespace") != "REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1"
             or parent.get("candidate") != "B"
@@ -330,6 +353,14 @@ def _rank50(raw: np.ndarray, cycles: np.ndarray) -> np.ndarray:
         mask = cycles == cycle
         mapped[mask] = 100.0 * rankdata(raw[mask], method="average") / int(mask.sum())
     return mapped
+
+
+def _assert_parent_raw_digest(parent_runner: Any, raw: np.ndarray, expected_sha256: str) -> str:
+    """Compare with the parent producer's bytes-only raw-array digest format."""
+    actual = parent_runner.sha_array(raw, dtype="<f8")
+    if not expected_sha256 or actual != expected_sha256:
+        raise SourceError("Original POS raw digest differs from the parent producer receipt")
+    return actual
 
 
 def _direct_candidate(mean_raw: np.ndarray, baseline: np.ndarray, cycles: np.ndarray,
@@ -565,6 +596,18 @@ def _write_source_report(contract: Mapping[str, Any]) -> dict[str, Any]:
         "source_script_sha256": script_sha,
         "supersedes_source_preparation_r1_sha256": SUPERSEDED_SOURCE_REPORT_R1_SHA256,
         "supersedes_source_preparation_r2_sha256": SUPERSEDED_SOURCE_REPORT_R2_SHA256,
+        "supersedes_source_preparation_r3_sha256": EXPECTED["source_preparation_r3"],
+        "supersedes_final_source_pass_r1_sha256": EXPECTED["final_source_pass_r1"],
+        "source_repair_authority": {
+            "root_chat_id": "01a19569-16e0-7253-aa14-57a0a3160e03",
+            "authority": "explicit Sol root approval for exact parent raw digest repair and refreshed R2 pass",
+            "old_source_report_sha256": EXPECTED["source_preparation_r3"],
+            "old_source_preparation_sha256": EXPECTED["source_preparation_r3_signature"],
+            "old_source_script_sha256": EXPECTED["source_script_r3"],
+            "old_final_source_pass_file_sha256": EXPECTED["final_source_pass_r1"],
+            "old_final_source_pass_approval_sha256": EXPECTED["final_source_pass_r1_signature"],
+            "approved_repair": "use parent_runner.sha_array(original_raw, dtype='<f8') for parent raw_score_sha256; retain exact array, row, direct, and champion parity checks",
+        },
         "parent_namespace": "REG_CURRENT_R06_E79_EXPLORATORY_BATCH_V1",
         "parent_candidate_id": "DIRECT_POSITION_REAL_E79",
         "parent_baseline_member_used": "manifest-bound final mapped R06 four-learner prediction",
@@ -780,10 +823,12 @@ def _execute_final() -> dict[str, Any]:
     if (not np.array_equal(archive["record_id"].astype(str), test_ids)
             or not np.array_equal(archive["cycle_code"], cycles)
             or not np.array_equal(archive["missing"].astype(bool), missing)
-            or not np.array_equal(archive["baseline"].astype(np.float64), baseline)
-            or not np.array_equal(original_raw, archive["raw"].astype(np.float64))
-            or _sha_array(original_raw, dtype="<f8") != parent_manifest.get("raw_score_sha256")):
-        raise SourceError("Cached-transform original POS raw replay differs from frozen R06 E79 parent")
+            or not np.array_equal(archive["baseline"].astype(np.float64), baseline)):
+        raise SourceError("Cached-transform original POS row/mask/baseline alignment differs from frozen R06 E79 parent")
+    if not np.array_equal(original_raw, archive["raw"].astype(np.float64)):
+        raise SourceError("Cached-transform original POS raw values differ from frozen R06 E79 parent")
+    parent_raw_digest = _assert_parent_raw_digest(
+        parent_runner, original_raw, str(parent_manifest.get("raw_score_sha256", "")))
     original_direct = parent_runner._candidate_output_prediction("B", original_raw, cycles, missing, baseline)
     if not np.array_equal(original_direct, archive["prediction"].astype(np.float64)):
         raise SourceError("Reconstructed original R06 DIRECT differs from the frozen parent prediction")
@@ -793,6 +838,7 @@ def _execute_final() -> dict[str, Any]:
         raise SourceError("Original final champion hinge parity failed; no replicas were fitted")
     original_checks = {
         "parent_raw_sha256": _sha_array(original_raw, dtype="<f8"),
+        "parent_raw_bytes_sha256": parent_raw_digest,
         "parent_direct_sha256": _sha_array(original_direct, dtype="<f8"),
         "champion_ids_sha256": _sha_array(champion_ids),
         "champion_values_sha256": _sha_array(champion_values, dtype="<f8"),
