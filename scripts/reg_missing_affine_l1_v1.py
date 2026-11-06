@@ -21,8 +21,10 @@ ROOT = Path(__file__).resolve().parents[1]
 LANE = "REG_MISSING_AFFINE_L1_V1"
 REPORT_ROOT = ROOT / "reports" / "optimization_v3" / LANE
 ARTIFACT_ROOT = ROOT / "experiments" / "runs" / LANE
-SOURCE_REPORT = REPORT_ROOT / "SOURCE_FREEZE_R1.json"
-SOURCE_QA = REPORT_ROOT / "SOURCE_QA_R1.json"
+SOURCE_REPORT_R1 = REPORT_ROOT / "SOURCE_FREEZE_R1.json"
+SOURCE_QA_R1 = REPORT_ROOT / "SOURCE_QA_R1.json"
+SOURCE_REPORT = REPORT_ROOT / "SOURCE_FREEZE_R2.json"
+SOURCE_QA = REPORT_ROOT / "SOURCE_QA_R2.json"
 PRELABEL_QA = REPORT_ROOT / "PRELABEL_QA_R1.json"
 SCORE_REPORT = REPORT_ROOT / "SCORE_R1.json"
 METRIC_QA = REPORT_ROOT / "METRIC_QA_R1.json"
@@ -276,6 +278,15 @@ def _support_stats(x0: np.ndarray) -> dict[str, Any]:
                                   and iqr >= MIN_BASELINE_IQR)}
 
 
+def _prefit_support_pass(roles: Mapping[str, Mapping[str, Mapping[str, np.ndarray]]]) -> bool:
+    """Recompute support directly from the immutable role arrays."""
+    return all(
+        _support_stats(np.asarray(roles[name]["fit"]["baseline"], dtype=np.float64))["support_pass"]
+        and int(np.asarray(roles[name]["score"]["missing"], dtype=bool).sum()) >= MIN_SUPPORT
+        for name in ("D1", "D2")
+    )
+
+
 def _source_code_hashes() -> dict[str, str]:
     paths = {
         "runner": Path(__file__),
@@ -373,6 +384,14 @@ def _source_stage() -> dict[str, Any]:
     if any(path.exists() for path in (SOURCE_REPORT, SOURCE_QA, PRELABEL_QA, SCORE_REPORT, METRIC_QA,
                                       ARTIFACT_ROOT / "FIT_APPLICATION_R1.json")):
         raise PilotError("Source cannot be re-prepared after immutable outputs exist")
+    prior_source = _read_json(SOURCE_REPORT_R1)
+    _verify_signed(prior_source, "source_signature", "superseded affine source freeze R1")
+    prior_qa = _read_json(SOURCE_QA_R1)
+    _verify_signed(prior_qa, "qa_signature", "superseded affine source QA R1")
+    if (prior_source.get("status") != "SOURCE_FROZEN_PRELABEL" or prior_qa.get("status") != "PASS"
+            or prior_qa.get("source_signature") != prior_source.get("source_signature")
+            or prior_qa.get("score_labels_read") is not False):
+        raise PilotError("Cannot supersede invalid or label-exposed R1 source freeze")
     base, parent_source, source_arrays, parent_score, parent_metric, parent_pre, extra = _parent_context()
     parent_control = extra["outputs"]
     roles: dict[str, Any] = {}
@@ -428,6 +447,12 @@ def _source_stage() -> dict[str, Any]:
     train_hash = parent_source.get("parent_official_train_sha256")
     body = {
         "schema_version": 1, "experiment_id": LANE, "status": "SOURCE_FROZEN_PRELABEL",
+        "source_revision": 2,
+        "supersedes_source_signature": prior_source["source_signature"],
+        "supersedes_source_freeze_sha256": _sha_file(SOURCE_REPORT_R1),
+        "supersedes_source_qa_signature": prior_qa["qa_signature"],
+        "supersedes_source_qa_sha256": _sha_file(SOURCE_QA_R1),
+        "source_revision_reason": "R1 fit preflight stopped before the selection target reader, operation ledger, and LP because runtime role arrays omit a stored support field. R2 recomputes the same frozen row-count, distinct-baseline, and linear-IQR support gate directly from the frozen baseline arrays. No labels or fit/application units were consumed.",
         "recipe_sha256": _sha_file(RECIPE_PATH), "recipe_signature": recipe["recipe_signature"],
         "root_plan_sha256": _sha_file(ROOT_PLAN_PATH),
         "parent_lane": PARENT_LANE,
@@ -745,9 +770,7 @@ def _fit_apply_stage() -> dict[str, Any]:
     qa = _read_json(SOURCE_QA); _verify_signed(qa, "qa_signature", "independent source QA")
     if qa.get("status") != "PASS" or qa.get("source_signature") != source["source_signature"]:
         raise PilotError("Affine target access blocked until matching source QA PASS")
-    support_pass = all(roles[name]["fit"]["support"]["support_pass"]
-                       and int(np.asarray(roles[name]["score"]["missing"], dtype=bool).sum()) >= MIN_SUPPORT
-                       for name in ("D1", "D2"))
+    support_pass = _prefit_support_pass(roles)
     if not support_pass:
         raise PilotError("Frozen pre-fit support gate is false; labels and fit operations remain closed")
     available = int(psutil.virtual_memory().available)

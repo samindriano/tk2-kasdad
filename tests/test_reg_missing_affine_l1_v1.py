@@ -38,6 +38,23 @@ def test_support_requires_rows_distinct_predictions_and_iqr():
     assert pilot._support_stats(np.linspace(40.0, 44.0, 120))["support_pass"] is False
 
 
+def test_prefit_gate_recomputes_support_from_frozen_baseline_arrays():
+    baseline = np.linspace(2.0, 98.0, 120)
+    roles = {
+        name: {
+            "fit": {"baseline": baseline.copy()},
+            "score": {"missing": np.ones(120, dtype=bool)},
+        }
+        for name in ("D1", "D2")
+    }
+    assert pilot._prefit_support_pass(roles) is True
+    roles["D2"]["fit"]["baseline"] = baseline[:99]
+    assert pilot._prefit_support_pass(roles) is False
+    roles["D2"]["fit"]["baseline"] = baseline.copy()
+    roles["D2"]["score"]["missing"] = np.ones(99, dtype=bool)
+    assert pilot._prefit_support_pass(roles) is False
+
+
 def test_application_changes_missing_only_and_clips():
     baseline = np.asarray([0.5, 99.0, 70.0, 25.0], dtype=np.float64)
     champion = np.asarray([0.5, 99.0, 42.0, 62.0], dtype=np.float64)

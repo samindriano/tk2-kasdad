@@ -16,8 +16,10 @@ ROOT = Path(__file__).resolve().parents[1]
 LANE = "REG_MISSING_AFFINE_L1_V1"
 REPORT_ROOT = ROOT / "reports" / "optimization_v3" / LANE
 ARTIFACT_ROOT = ROOT / "experiments" / "runs" / LANE
-SOURCE_REPORT = REPORT_ROOT / "SOURCE_FREEZE_R1.json"
-SOURCE_QA = REPORT_ROOT / "SOURCE_QA_R1.json"
+SOURCE_REPORT_R1 = REPORT_ROOT / "SOURCE_FREEZE_R1.json"
+SOURCE_QA_R1 = REPORT_ROOT / "SOURCE_QA_R1.json"
+SOURCE_REPORT = REPORT_ROOT / "SOURCE_FREEZE_R2.json"
+SOURCE_QA = REPORT_ROOT / "SOURCE_QA_R2.json"
 PRELABEL_QA = REPORT_ROOT / "PRELABEL_QA_R1.json"
 SCORE_REPORT = REPORT_ROOT / "SCORE_R1.json"
 METRIC_QA = REPORT_ROOT / "METRIC_QA_R1.json"
@@ -189,6 +191,10 @@ def _expected_source_code_hashes() -> dict[str, str]:
 
 def _source() -> tuple[dict[str, Any], Any, dict[str, Any], dict[str, dict[str, dict[str, np.ndarray]]]]:
     report = _read_json(SOURCE_REPORT); _verify_signed(report, "source_signature", "affine source freeze")
+    prior_source = _read_json(SOURCE_REPORT_R1)
+    _verify_signed(prior_source, "source_signature", "superseded affine source freeze R1")
+    prior_qa = _read_json(SOURCE_QA_R1)
+    _verify_signed(prior_qa, "qa_signature", "superseded affine source QA R1")
     recipe = _read_json(RECIPE_PATH); _verify_signed(recipe, "recipe_signature", "affine recipe")
     base, parent_source, parent_arrays, _score, _metric, parent_meta, controls = _parent()
     expected_references = {
@@ -201,6 +207,14 @@ def _source() -> tuple[dict[str, Any], Any, dict[str, Any], dict[str, dict[str, 
         "parent_all_view_guard_r3_sha256": _sha_file(PARENT_GUARD_REPORT),
     }
     if (report.get("status") != "SOURCE_FROZEN_PRELABEL"
+            or report.get("source_revision") != 2
+            or report.get("supersedes_source_signature") != prior_source.get("source_signature")
+            or report.get("supersedes_source_freeze_sha256") != _sha_file(SOURCE_REPORT_R1)
+            or report.get("supersedes_source_qa_signature") != prior_qa.get("qa_signature")
+            or report.get("supersedes_source_qa_sha256") != _sha_file(SOURCE_QA_R1)
+            or prior_qa.get("status") != "PASS"
+            or prior_qa.get("source_signature") != prior_source.get("source_signature")
+            or prior_qa.get("score_labels_read") is not False
             or report.get("recipe_sha256") != _sha_file(RECIPE_PATH)
             or report.get("recipe_signature") != recipe.get("recipe_signature")
             or report.get("root_plan_sha256") != _sha_file(ROOT_PLAN_PATH)
