@@ -282,3 +282,136 @@ def test_consumed_fit_without_terminal_event_cannot_be_retried(monkeypatch, tmp_
     runner.append_event({"event": "FIT_STARTED", "fit_id": fit_id})
     with pytest.raises(runner.PilotError, match="consumed start"):
         runner.fit_one(official_root, fit_id)
+
+
+def test_prefit_report_assembly_and_r1_replay_lineage_reject_a_third_read(monkeypatch, tmp_path):
+    report_root = tmp_path / "reports"
+    run_root = tmp_path / "experiments"
+    official_root = tmp_path / "official"
+    train_path = official_root / "data/raw/classification/Train.csv"
+    train_path.parent.mkdir(parents=True)
+    nfit = 120
+    nquery = 32
+    total = nfit + nquery
+    record_ids = np.array([f"row-{i:04d}" for i in range(total)])
+    streams = np.array(["synthetic tokens" if (i % 5) else " " for i in range(total)])
+    target = np.array([i % 2 for i in range(total)], dtype=np.int8)
+    cycles = np.r_[np.arange(47, 47 + 21, dtype=np.int64)[np.arange(80) % 21],
+                   np.arange(47, 47 + 29, dtype=np.int64)[np.arange(40) % 29],
+                   np.arange(68, 68 + 12, dtype=np.int64)[np.arange(nquery) % 12]]
+    pd.DataFrame({"record_id": record_ids, "signal_stream": streams,
+                  "artifact_signal": target}).to_csv(train_path, index=False)
+    train_sha = runner.sha256_file(train_path)
+
+    monkeypatch.setattr(runner, "AUDIT_ROOT", tmp_path)
+    monkeypatch.setattr(runner, "REPORT_ROOT", report_root)
+    monkeypatch.setattr(runner, "RUN_ROOT", run_root)
+    monkeypatch.setattr(runner, "FREEZE_PATH", report_root / "FREEZE.json")
+    monkeypatch.setattr(runner, "PREFIT_QA_PATH", report_root / "PREFIT_QA.json")
+    monkeypatch.setattr(runner, "LEDGER_PATH", run_root / "fit_ledger.jsonl")
+    monkeypatch.setattr(runner, "ROOT_PLAN_PATH", report_root / "ROOT_PLAN.md")
+    monkeypatch.setattr(runner, "ROOT_PREFIT_REPLAY_PATH", report_root / "ROOT_PREFIT_REPLAY_R1.json")
+    report_root.mkdir(parents=True)
+    runner.ROOT_PLAN_PATH.write_text("synthetic frozen plan", encoding="utf-8")
+    monkeypatch.setattr(runner, "OFFICIAL_TRAIN_SHA256", train_sha)
+    monkeypatch.setattr(runner, "_assert_committed_sources", lambda: "synthetic-audit-source")
+    monkeypatch.setattr(runner, "_source_hashes", lambda: {
+        "synthetic-source": "fixed-source-hash",
+        runner.ROOT_PREFIT_REPLAY_REL: runner.sha256_file(runner.ROOT_PREFIT_REPLAY_PATH),
+    })
+    monkeypatch.setattr(runner, "_is_ancestor", lambda _commit: True)
+    monkeypatch.setattr(runner, "git_in", lambda _path, *_args: "synthetic-official-source")
+
+    input_hashes = {"data/raw/classification/Train.csv": train_sha}
+    class Parent:
+        @staticmethod
+        def _external_file_inventory(_root):
+            return input_hashes
+
+        @staticmethod
+        def _validate_metadata_only(_root, _hashes):
+            return {"synthetic_metadata": "PASS"}
+
+    monkeypatch.setattr(runner, "_parent_runner", lambda: Parent)
+    fit_rows = {67: np.arange(80, dtype=np.int64), 75: np.arange(120, dtype=np.int64)}
+    contexts = {}
+    identity = pd.DataFrame({"cycle_code": cycles})
+
+    class OldRunner:
+        @staticmethod
+        def _read_identity_frame():
+            return identity
+
+    for origin in core.ORIGINS:
+        rows = fit_rows[origin]
+        contexts[origin] = {
+            "fit_rows": rows,
+            "fit_ids": record_ids[rows],
+            "old_runner": OldRunner,
+        }
+    monkeypatch.setattr(runner, "_parent_context", lambda _root, origin: contexts[origin])
+    monkeypatch.setattr(runner, "_validate_origin_context", lambda _root, origin, _ctx: {
+        "score_rows": 20903 if origin == 67 else 8491,
+        "score_present_rows": 19528 if origin == 67 else 7965,
+    })
+
+    prior_rows = fit_rows[75][streams[fit_rows[75]] != " "]
+    prior_ids = record_ids[prior_rows]
+    prior_target = target[prior_rows]
+    row_sha = runner.sha256_array(prior_rows)
+    ids_sha = runner.sha256_array(prior_ids)
+    target_sha = runner.sha256_array(prior_target)
+    runner.append_event({"event": "PREFIT_PREFIX_LABELS_OPENED", "candidate_id": core.CANDIDATE_ID,
+        "origin": 75, "purpose": "single prefix-only weight/ESS preflight",
+        "rows": len(prior_rows), "rows_sha256": row_sha, "ids_sha256": ids_sha,
+        "query_labels_read": False, "test_or_sample_access": False})
+    runner.append_event({"event": "PREFIT_PREFIX_LABELS_READ", "candidate_id": core.CANDIDATE_ID,
+        "origin": 75, "rows": len(prior_rows), "rows_sha256": row_sha, "ids_sha256": ids_sha,
+        "target_sha256": target_sha, "query_labels_read": False, "test_or_sample_access": False})
+    prior = runner.events()
+    authority = {
+        "status": "APPROVED_ONE_SAME_PREFIX_PREFIT_REPLAY",
+        "candidate_id": core.CANDIDATE_ID,
+        "prior_source_commit": "synthetic-audit-source",
+        "prior_ledger_sha256": runner.sha256_file(runner.LEDGER_PATH),
+        "prior_prefix_open_event": prior[0],
+        "prior_prefix_read_event": prior[1],
+        "prefix_rows": len(prior_rows),
+        "prefix_rows_sha256": row_sha,
+        "prefix_ids_sha256": ids_sha,
+        "prefix_target_sha256": target_sha,
+        "additional_same_prefix_reads_allowed": 1,
+        "expected_total_prefit_reads_after_replay": 2,
+        "optimizer_starts_before_replay": 0,
+        "remaining_authorized_predictor_slots": runner.FIT_CAP,
+        "recipe_threshold_gate_changes_allowed": False,
+        "evaluation_metric_computation_before_committed_prelabel_allowed": False,
+        "disclosure": "E75 fit-prefix labels overlap some E67 query cycles but are used only within the E75 fitting boundary.",
+    }
+    runner.write_once(runner.ROOT_PREFIT_REPLAY_PATH, authority)
+    monkeypatch.setattr(runner, "ROOT_PREFIT_REPLAY_REL",
+        "reports/simplification_v1/CLS_POS_RECENCY_V1/ROOT_PREFIT_REPLAY_R1.json")
+
+    result = runner.preflight_and_freeze(official_root)
+    qa = result["prefit_qa"]
+    freeze = result["freeze"]
+    assert qa["prefix_labels_read"] == 2
+    assert qa["prefix_label_replay_count"] == 1
+    assert qa["prefix_label_rows_per_read"] == len(prior_rows)
+    assert qa["prefix_label_rows_read_total"] == 2 * len(prior_rows)
+    assert qa["prefix_label_target_sha256"] == target_sha
+    assert freeze["prefit_replay_authorization_sha256"] == runner.sha256_file(runner.ROOT_PREFIT_REPLAY_PATH)
+    assert runner.verify_freeze(official_root)["freeze_signature"] == freeze["freeze_signature"]
+
+    event_count = len(runner.events())
+    resumed = runner.preflight_and_freeze(official_root)
+    assert resumed["resumed_existing"] is True
+    assert len(runner.events()) == event_count
+    assert sum(event.get("event") == "PREFIT_PREFIX_LABELS_READ" for event in runner.events()) == 1
+    assert sum(event.get("event") == "PREFIT_PREFIX_LABELS_REPLAY_READ" for event in runner.events()) == 1
+
+    runner.append_event({"event": "PREFIT_PREFIX_LABELS_REPLAY_READ", "candidate_id": core.CANDIDATE_ID,
+        "origin": 75, "rows": len(prior_rows), "rows_sha256": row_sha, "ids_sha256": ids_sha,
+        "target_sha256": target_sha, "query_labels_read": False, "test_or_sample_access": False})
+    with pytest.raises(runner.PilotError, match="replay lineage"):
+        runner.verify_freeze(official_root)

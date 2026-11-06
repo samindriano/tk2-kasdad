@@ -52,12 +52,25 @@ least 1 GiB available before start and retains at least 512 MiB afterward, under
 the shared OS lock and a two-thread limit. Scoring starts at 512 MiB and records
 whether 256 MiB remains after metric construction.
 
-The prefit check reads one prefix-only target vector for the ESS/class-mass
-preflight. Each of four training fits and its independent objective verifier
-reads its own prefix-present targets. Query labels are not opened until both
-prediction bundles and independent prelabel verification are durable and
-committed; scoring opens the unique 20,903-row Train query once. The ledger and
-reports must reconcile every read. Query verification does not reopen labels.
+The initial prefit computed the weight/ESS checks from E75's prefix-present
+target vector, then report assembly stopped before a durable QA/freeze was
+written because a target-hash field was missing. Root authorization
+`ROOT_PREFIT_REPLAY_R1.json` permits exactly one replay of that same E75 prefix.
+The runner verifies identical row, ID, and target hashes, keeps the original
+events, and records two target reads of the same 39,239 prefix-present rows
+(78,478 row reads total). The E75 fitting prefix includes cycles also used by
+E67 query views; those labels were used only for
+the E75 fit/class-weight preflight boundary, not to calculate evaluation
+metrics. These windows are not fresh holdouts.
+
+Each of four training fits and its independent objective verifier reads its
+own prefix-present targets. Query labels are not opened until both prediction
+bundles and independent prelabel verification are durable and committed;
+scoring opens the unique 20,903-row Train query once. The ledger and reports
+must reconcile every read. Query verification does not reopen labels. The
+synthetic integration test also executes prefit report/freeze assembly, checks
+the authorized two-read lineage, verifies resume without another read, and
+rejects a third prefit read.
 
 ## Required local QA
 

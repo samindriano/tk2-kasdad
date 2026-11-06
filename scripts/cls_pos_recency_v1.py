@@ -41,6 +41,8 @@ LEDGER_PATH = RUN_ROOT / "fit_ledger.jsonl"
 ROOT_PLAN_REL = "reports/simplification_v1/CLS_POS_RECENCY_V1/ROOT_PLAN.md"
 ROOT_PLAN_PATH = AUDIT_ROOT / ROOT_PLAN_REL
 ROOT_PLAN_COMMIT = "e68b4baa6fa4a5862d07b27fbc0415424435d27c"
+ROOT_PREFIT_REPLAY_REL = "reports/simplification_v1/CLS_POS_RECENCY_V1/ROOT_PREFIT_REPLAY_R1.json"
+ROOT_PREFIT_REPLAY_PATH = AUDIT_ROOT / ROOT_PREFIT_REPLAY_REL
 SOURCE_FILES = (
     "src/models/cls_pos_recency_v1.py",
     "scripts/cls_pos_recency_v1.py",
@@ -48,6 +50,7 @@ SOURCE_FILES = (
     "tests/test_cls_pos_recency_v1.py",
     "tests/test_cls_pos_recency_v1_synthetic.py",
     "reports/simplification_v1/CLS_POS_RECENCY_V1/PROTOCOL.md",
+    ROOT_PREFIT_REPLAY_REL,
 )
 EXTRA_LOCAL_INPUTS = (
     "src/models/classification_models.py",
@@ -320,6 +323,7 @@ def _read_selected_targets(train_path: Path, rows: Sequence[int], record_ids: Se
 
 def _preflight_weight_checks(
     official_root: Path, contexts: Mapping[int, Mapping[str, Any]],
+    replay_authorization: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     payload: dict[int, dict[str, np.ndarray]] = {}
     for origin, context in contexts.items():
@@ -334,8 +338,27 @@ def _preflight_weight_checks(
     ids75 = payload[75]["ids"]
     require(np.all(np.isin(payload[67]["rows"], rows75)),
             "E67 prefix-present rows are not a subset of E75 prefix-present rows")
-    preflight_event = {"event": "PREFIT_PREFIX_LABELS_OPENED", "candidate_id": core.CANDIDATE_ID,
-        "origin": 75, "purpose": "single prefix-only weight/ESS preflight",
+    replay = replay_authorization is not None
+    expected_rows_sha = sha256_array(rows75)
+    expected_ids_sha = sha256_array(ids75)
+    if replay:
+        require(expected_rows_sha == replay_authorization.get("prefix_rows_sha256")
+                and expected_ids_sha == replay_authorization.get("prefix_ids_sha256"),
+                "Authorized prefit replay rows/IDs differ; refusing target read")
+        prior_ledger_sha256 = replay_authorization["prior_ledger_sha256"]
+        authority_sha256 = sha256_file(ROOT_PREFIT_REPLAY_PATH)
+        append_event({"event": "PREFIT_REPLAY_AUTHORIZED", "candidate_id": core.CANDIDATE_ID,
+            "authority_path": ROOT_PREFIT_REPLAY_REL, "authority_sha256": authority_sha256,
+            "prior_ledger_sha256": prior_ledger_sha256,
+            "prefix_rows_sha256": expected_rows_sha, "prefix_ids_sha256": expected_ids_sha,
+            "expected_prefix_target_sha256": replay_authorization["prefix_target_sha256"],
+            "prior_fit_starts": 0, "replay_slot_consumed": True,
+            "query_labels_read": False, "test_or_sample_access": False})
+    open_event_name = "PREFIT_PREFIX_LABELS_REPLAY_OPENED" if replay else "PREFIT_PREFIX_LABELS_OPENED"
+    read_event_name = "PREFIT_PREFIX_LABELS_REPLAY_READ" if replay else "PREFIT_PREFIX_LABELS_READ"
+    preflight_event = {"event": open_event_name, "candidate_id": core.CANDIDATE_ID,
+        "origin": 75, "purpose": "same-prefix prefit replay authorized by R1" if replay
+            else "single prefix-only weight/ESS preflight",
         "rows": int(len(rows75)), "rows_sha256": sha256_array(rows75),
         "ids_sha256": sha256_array(ids75), "query_labels_read": False,
         "test_or_sample_access": False}
@@ -343,13 +366,21 @@ def _preflight_weight_checks(
     try:
         y75 = _read_selected_targets(Path(official_root) / "data/raw/classification/Train.csv", rows75, ids75)
     except BaseException as exc:
-        append_event({"event": "PREFIT_PREFIX_LABELS_READ_FAILED", "candidate_id": core.CANDIDATE_ID,
+        append_event({"event": "PREFIT_PREFIX_LABELS_REPLAY_FAILED" if replay
+            else "PREFIT_PREFIX_LABELS_READ_FAILED", "candidate_id": core.CANDIDATE_ID,
             "origin": 75, "error_type": type(exc).__name__, "error": str(exc),
             "retry_allowed": False, "query_labels_read": False})
         raise
-    append_event({"event": "PREFIT_PREFIX_LABELS_READ", "candidate_id": core.CANDIDATE_ID,
+    target_sha256 = sha256_array(y75)
+    if replay and target_sha256 != replay_authorization.get("prefix_target_sha256"):
+        append_event({"event": "PREFIT_PREFIX_LABELS_REPLAY_MISMATCH", "candidate_id": core.CANDIDATE_ID,
+            "origin": 75, "rows_sha256": expected_rows_sha, "ids_sha256": expected_ids_sha,
+            "observed_target_sha256": target_sha256, "retry_allowed": False,
+            "query_labels_read": False})
+        raise PilotError("Authorized prefit replay target digest differs; no further read is allowed")
+    append_event({"event": read_event_name, "candidate_id": core.CANDIDATE_ID,
         "origin": 75, "rows": int(len(y75)), "rows_sha256": sha256_array(rows75),
-        "ids_sha256": sha256_array(ids75), "target_sha256": sha256_array(y75),
+        "ids_sha256": sha256_array(ids75), "target_sha256": target_sha256,
         "query_labels_read": False, "test_or_sample_access": False})
     target_map = {int(row): int(label) for row, label in zip(rows75.tolist(), y75.tolist())}
     origin_weight_checks: dict[str, Any] = {}
@@ -393,10 +424,14 @@ def _preflight_weight_checks(
         }
     return {
         "status": "PASS_PREFIX_WEIGHT_PREFLIGHT",
-        "prefix_label_reads": 1,
-        "prefix_label_read_rows": int(len(rows75)),
+        "prefix_label_reads": 2 if replay else 1,
+        "prefix_label_replay_count": int(replay),
+        "prefix_label_rows_per_read": int(len(rows75)),
+        "prefix_label_rows_read_total": int(len(rows75) * (2 if replay else 1)),
         "prefix_label_read_rows_sha256": sha256_array(rows75),
         "prefix_label_read_ids_sha256": sha256_array(ids75),
+        "prefix_label_target_sha256": target_sha256,
+        "prefix_label_replay_authorization_sha256": sha256_file(ROOT_PREFIT_REPLAY_PATH) if replay else None,
         "query_labels_read": False,
         "origins": origin_weight_checks,
     }
@@ -411,8 +446,36 @@ def preflight_and_freeze(official_root: Path) -> dict[str, Any]:
         freeze = verify_freeze(root)
         qa = read_json(PREFIT_QA_PATH)
         return {"prefit_qa": qa, "freeze": freeze, "resumed_existing": True}
-    require(not any(event.get("event", "").startswith("PREFIT_PREFIX_LABELS_") for event in events()),
-            "A preflight label read was already opened without a durable freeze; refusing to repeat it")
+    existing_events = events()
+    replay_authorization: dict[str, Any] | None = None
+    prefit_events = [event for event in existing_events if event.get("event", "").startswith("PREFIT_")]
+    if prefit_events:
+        replay_authorization = read_json(ROOT_PREFIT_REPLAY_PATH)
+        require(replay_authorization.get("status") == "APPROVED_ONE_SAME_PREFIX_PREFIT_REPLAY"
+                and replay_authorization.get("candidate_id") == core.CANDIDATE_ID
+                and replay_authorization.get("additional_same_prefix_reads_allowed") == 1
+                and replay_authorization.get("expected_total_prefit_reads_after_replay") == 2
+                and replay_authorization.get("optimizer_starts_before_replay") == 0
+                and replay_authorization.get("remaining_authorized_predictor_slots") == FIT_CAP
+                and replay_authorization.get("recipe_threshold_gate_changes_allowed") is False
+                and replay_authorization.get("evaluation_metric_computation_before_committed_prelabel_allowed") is False,
+                "R1 does not authorize the exact one-time prefit replay")
+        require(_is_ancestor(replay_authorization.get("prior_source_commit", ""))
+                and sha256_file(LEDGER_PATH) == replay_authorization.get("prior_ledger_sha256"),
+                "R1 prior source/ledger binding failed; no replay permitted")
+        prior_opened = [event for event in existing_events if event.get("event") == "PREFIT_PREFIX_LABELS_OPENED"]
+        prior_read = [event for event in existing_events if event.get("event") == "PREFIT_PREFIX_LABELS_READ"]
+        require(len(existing_events) == 2 and len(prior_opened) == 1 and len(prior_read) == 1
+                and existing_events == [replay_authorization.get("prior_prefix_open_event"),
+                                        replay_authorization.get("prior_prefix_read_event")]
+                and prior_opened[0].get("rows") == replay_authorization.get("prefix_rows")
+                and prior_opened[0].get("rows_sha256") == replay_authorization.get("prefix_rows_sha256")
+                and prior_opened[0].get("ids_sha256") == replay_authorization.get("prefix_ids_sha256")
+                and prior_read[0].get("target_sha256") == replay_authorization.get("prefix_target_sha256")
+                and not any(event.get("event") == "FIT_STARTED" for event in existing_events),
+                "Prior prefit ledger does not exactly match the R1 replay authority")
+    else:
+        require(not LEDGER_PATH.exists(), "Unexpected fit ledger without replay-authorized prefit state")
     train_path = root / "data/raw/classification/Train.csv"
     require(train_path.is_file() and sha256_file(train_path) == OFFICIAL_TRAIN_SHA256,
             "Official Classification Train is absent or hash-mismatched")
@@ -433,7 +496,7 @@ def preflight_and_freeze(official_root: Path) -> dict[str, Any]:
     require(origin_checks["E67"]["score_present_rows"] == 19528
             and origin_checks["E75"]["score_present_rows"] == 7965,
             "Frozen query availability counts differ from the verified parent route")
-    prefix_weight_preflight = _preflight_weight_checks(root, contexts)
+    prefix_weight_preflight = _preflight_weight_checks(root, contexts, replay_authorization)
     contexts.clear()
     body = {
         "schema_version": 1,
@@ -453,8 +516,11 @@ def preflight_and_freeze(official_root: Path) -> dict[str, Any]:
         "optimizer_starts": 0,
         "preprocessing_fits": 0,
         "prefix_labels_read": prefix_weight_preflight["prefix_label_reads"],
-        "prefix_label_rows_read": prefix_weight_preflight["prefix_label_read_rows"],
+        "prefix_label_rows_per_read": prefix_weight_preflight["prefix_label_rows_per_read"],
+        "prefix_label_rows_read_total": prefix_weight_preflight["prefix_label_rows_read_total"],
         "prefix_label_target_sha256": prefix_weight_preflight["prefix_label_target_sha256"],
+        "prefix_label_replay_count": prefix_weight_preflight["prefix_label_replay_count"],
+        "prefix_label_replay_authorization_sha256": prefix_weight_preflight["prefix_label_replay_authorization_sha256"],
         "query_labels_read": False,
         "test_or_sample_access": False,
         "kaggle_access": False,
@@ -479,6 +545,7 @@ def preflight_and_freeze(official_root: Path) -> dict[str, Any]:
         "score_cycles": {"E67": [68, 79], "E75": [76, 79]},
         "source_hashes": _source_hashes(),
         "parent_input_file_hashes": parent_hashes,
+        "prefit_replay_authorization_sha256": prefix_weight_preflight["prefix_label_replay_authorization_sha256"],
         "parent_metadata_checks": metadata,
         "origin_checks": origin_checks,
         "prefix_weight_preflight": prefix_weight_preflight,
@@ -503,7 +570,7 @@ def preflight_and_freeze(official_root: Path) -> dict[str, Any]:
             "query_scoring": "one unique E67 row pool; E75 rows reused by ID; no Test/Sample/Kaggle",
         },
         "boundary": {
-            "fit_labels": "prefix-present rows only; a single committed preflight label read plus recorded fit-prefix reads",
+            "fit_labels": "prefix-present rows only; original prefit read plus the single R1-authorized identical-prefix replay, then recorded fit-prefix reads",
             "query_labels": "closed until both origins' predictions and independent committed prelabel verify",
             "test_or_sample_access": False,
             "kaggle_access": False,
@@ -541,18 +608,57 @@ def verify_freeze(official_root: Path, *, require_committed_freeze: bool = False
     require(qa_sig == canonical_sha256(qa_body) and qa.get("status") == "PASS_PREFIT_SOURCE_QA"
             and sha256_file(PREFIT_QA_PATH) == freeze["prefit_qa_sha256"],
             "Prefit source QA is missing or was modified")
-    prefit_opened = [event for event in events() if event.get("event") == "PREFIT_PREFIX_LABELS_OPENED"]
-    prefit_read = [event for event in events() if event.get("event") == "PREFIT_PREFIX_LABELS_READ"]
-    if (len(prefit_opened) != 1 or len(prefit_read) != 1
-        or any(event.get("event") == "PREFIT_PREFIX_LABELS_READ_FAILED" for event in events())
-        or qa.get("prefix_labels_read") != 1
-        or qa.get("prefix_label_rows_read") != prefit_read[0].get("rows")
-        or qa.get("prefix_label_target_sha256") != prefit_read[0].get("target_sha256")
-        or prefit_opened[0].get("rows_sha256") != prefit_read[0].get("rows_sha256")
-        or prefit_opened[0].get("ids_sha256") != prefit_read[0].get("ids_sha256")
-        or prefit_opened[0].get("query_labels_read") is not False
-        or prefit_read[0].get("query_labels_read") is not False):
-        raise PilotError("Single prefix preflight label read does not match its durable QA receipt")
+    ledger = events()
+    prefit_events = [event for event in ledger if event.get("event", "").startswith("PREFIT_")]
+    prefit_names = [event.get("event") for event in prefit_events]
+    regular_open = [event for event in prefit_events if event.get("event") == "PREFIT_PREFIX_LABELS_OPENED"]
+    regular_read = [event for event in prefit_events if event.get("event") == "PREFIT_PREFIX_LABELS_READ"]
+    replay_claims = [event for event in prefit_events if event.get("event") == "PREFIT_REPLAY_AUTHORIZED"]
+    replay_open = [event for event in prefit_events if event.get("event") == "PREFIT_PREFIX_LABELS_REPLAY_OPENED"]
+    replay_read = [event for event in prefit_events if event.get("event") == "PREFIT_PREFIX_LABELS_REPLAY_READ"]
+    if qa.get("prefix_labels_read") == 1:
+        expected_names = ["PREFIT_PREFIX_LABELS_OPENED", "PREFIT_PREFIX_LABELS_READ"]
+        bound_read = regular_read[0] if len(regular_read) == 1 else {}
+        bound_open = regular_open[0] if len(regular_open) == 1 else {}
+    elif qa.get("prefix_labels_read") == 2:
+        expected_names = ["PREFIT_PREFIX_LABELS_OPENED", "PREFIT_PREFIX_LABELS_READ",
+                          "PREFIT_REPLAY_AUTHORIZED", "PREFIT_PREFIX_LABELS_REPLAY_OPENED",
+                          "PREFIT_PREFIX_LABELS_REPLAY_READ"]
+        bound_read = replay_read[0] if len(replay_read) == 1 else {}
+        bound_open = replay_open[0] if len(replay_open) == 1 else {}
+        authorization = read_json(ROOT_PREFIT_REPLAY_PATH)
+        authorization_sha = sha256_file(ROOT_PREFIT_REPLAY_PATH)
+        claim = replay_claims[0] if len(replay_claims) == 1 else {}
+        if (authorization.get("status") != "APPROVED_ONE_SAME_PREFIX_PREFIT_REPLAY"
+            or authorization_sha != qa.get("prefix_label_replay_authorization_sha256")
+            or authorization_sha != freeze.get("prefit_replay_authorization_sha256")
+            or claim.get("authority_sha256") != authorization_sha
+            or claim.get("prior_ledger_sha256") != authorization.get("prior_ledger_sha256")
+            or claim.get("expected_prefix_target_sha256") != authorization.get("prefix_target_sha256")
+            or regular_open != [authorization.get("prior_prefix_open_event")]
+            or regular_read != [authorization.get("prior_prefix_read_event")]
+            or bound_read.get("target_sha256") != authorization.get("prefix_target_sha256")
+            or bound_open.get("rows_sha256") != authorization.get("prefix_rows_sha256")
+            or bound_read.get("rows_sha256") != authorization.get("prefix_rows_sha256")
+            or bound_open.get("ids_sha256") != authorization.get("prefix_ids_sha256")
+            or bound_read.get("ids_sha256") != authorization.get("prefix_ids_sha256")):
+            raise PilotError("R1 two-read replay lineage does not match its exact prior ledger/data hashes")
+    else:
+        raise PilotError("Prefit label-read count is outside the frozen one-read or R1 two-read state")
+    if (prefit_names != expected_names
+        or len(regular_open) != 1 or len(regular_read) != 1
+        or len(replay_claims) != int(qa.get("prefix_labels_read") == 2)
+        or len(replay_open) != int(qa.get("prefix_labels_read") == 2)
+        or len(replay_read) != int(qa.get("prefix_labels_read") == 2)
+        or qa.get("prefix_label_replay_count") != int(qa.get("prefix_labels_read") == 2)
+        or qa.get("prefix_label_rows_per_read") != bound_read.get("rows")
+        or qa.get("prefix_label_rows_read_total") != bound_read.get("rows") * qa.get("prefix_labels_read")
+        or qa.get("prefix_label_target_sha256") != bound_read.get("target_sha256")
+        or bound_open.get("rows_sha256") != bound_read.get("rows_sha256")
+        or bound_open.get("ids_sha256") != bound_read.get("ids_sha256")
+        or bound_open.get("query_labels_read") is not False
+        or bound_read.get("query_labels_read") is not False):
+        raise PilotError("Prefix preflight label reads do not match the durable one/two-read QA receipt")
     if require_committed_freeze:
         require_committed("reports/simplification_v1/CLS_POS_RECENCY_V1/FREEZE.json")
         require_committed("reports/simplification_v1/CLS_POS_RECENCY_V1/PREFIT_QA.json")
