@@ -26,8 +26,8 @@ or additional model/preprocessing fit is part of this protocol.
 
 ## Ordered local commands
 
-Run from the repository root, with the official KASDAD root as the default
-`--official-root` (`..` from this repository):
+Run from the repository root, with the official TP2 repository as the default
+`--official-root` (`..\TP 2` from this repository):
 
 ```powershell
 py -m scripts.cls_pos_recency_v1 prefit

@@ -1404,7 +1404,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run one explicit stage of the fixed CLS_POS_RECENCY_V1 lifecycle.")
     parser.add_argument("command", choices=("prefit", "reserve", "fit-all", "predict",
         "prelabel", "score", "verify-score"), help="Frozen lifecycle stage to execute")
-    parser.add_argument("--official-root", type=Path, default=AUDIT_ROOT.parent,
+    parser.add_argument("--official-root", type=Path, default=AUDIT_ROOT.parent / "TP 2",
         help="KASDAD project root containing data/raw/classification/Train.csv")
     args = parser.parse_args(argv)
     root = args.official_root.resolve()
