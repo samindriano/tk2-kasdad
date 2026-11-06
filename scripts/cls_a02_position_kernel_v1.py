@@ -48,6 +48,13 @@ LEDGER = REPORT_ROOT / "BUDGET_LEDGER.jsonl"
 RUN_ROOT = REPO_ROOT / "experiments/runs/simplification_v1/CLS_POST_BAG2_NEXT_V1"
 TRAIN = OFFICIAL_ROOT / "data/raw/classification/Train.csv"
 POS_ROOT = OFFICIAL_ROOT / "experiments/runs/optimization_v3_research_next_v1/POSITIONAL_TEXT_PILOT_V1"
+POS_OFFSET_ROOT = OFFICIAL_ROOT / "experiments/runs/optimization_v3_research_next_v1/POS_BAG_OFFSET_V1"
+POISSON_PARENT_ROOT = REPO_ROOT / "experiments/CLS_POS_POISSON_BAG2_V1"
+POISSON_PARENT_REPORT = REPO_ROOT / "reports/simplification_v1/CLS_POS_POISSON_BAG2_V1"
+POISSON_PARENT_FREEZE = POISSON_PARENT_REPORT / "PREFIT_FREEZE.json"
+POISSON_PARENT_ROOT_PASS = POISSON_PARENT_REPORT / "ROOT_PREFIT_PASS.json"
+POISSON_PARENT_READY = POISSON_PARENT_ROOT / "PREDICTIONS_READY.json"
+POISSON_PARENT_READBACK = POISSON_PARENT_ROOT / "READBACK_VERIFICATION.json"
 ORIGINS = (67, 75)
 ARMS = ("REAL", "SHUFFLED")
 FIT_IDS = tuple(f"E{origin}_{arm}" for origin in ORIGINS for arm in ARMS)
@@ -63,7 +70,15 @@ A02_MEMBERS = (
     "neighbor_source_rows", "neighbor_ids", "neighbor_similarities", "correction",
     "correction_unclipped",
 )
-POS_MEMBERS = ("score_rows", "score_record_ids", "score_cycles", "present_mask", "prob_position")
+POS_MEMBERS = ("score_rows", "score_record_ids", "score_cycles", "present_mask")
+POS_OFFSET_MEMBERS = (
+    "score_rows", "score_record_ids", "score_cycles", "present_mask", "prob_offset_real",
+)
+POISSON_PARENT_MEMBERS = (
+    "origin", "row_positions", "record_ids", "cycles", "present_mask", "p_a02",
+    "p_pos_original", "p_champion", "label_champion", "matrix_manifest_sha256",
+    "input_freeze_signature",
+)
 OUTPUT_MEMBERS = (
     "score_rows", "score_record_ids", "score_cycles", "missing_mask", "entry_friction",
     "text_load_group", "p_sparse25", "p_a02_original", "p_pos_original",
@@ -173,8 +188,21 @@ def _historical_paths(origin: int) -> dict[str, Path]:
         "pos_prediction_verification": POS_ROOT / f"PREDICTION_VERIFICATION_E{origin}.json",
         "pos_matrix_manifest": POS_ROOT / f"MATRIX_MANIFEST_E{origin}.json",
         "pos_freeze": POS_ROOT / "FREEZE.json",
+        "pos_offset_predictions": POS_OFFSET_ROOT / f"E{origin}/predictions_E{origin}.npz",
+        "pos_offset_receipt": POS_OFFSET_ROOT / f"receipts/POS_BAG_OFFSET_V1_E{origin}_REAL.json",
+        "pos_offset_unit": POS_OFFSET_ROOT / f"units/POS_BAG_OFFSET_V1_E{origin}_REAL.npz",
+        "poisson_parent_predictions": POISSON_PARENT_ROOT / f"E{origin}/predictions_E{origin}.npz",
         "train": TRAIN,
     }
+
+
+def _input_path_label(path: Path) -> str:
+    path = path.resolve()
+    if path.is_relative_to(REPO_ROOT):
+        return f"REPO::{path.relative_to(REPO_ROOT).as_posix()}"
+    if path.is_relative_to(OFFICIAL_ROOT):
+        return f"OFFICIAL::{path.relative_to(OFFICIAL_ROOT).as_posix()}"
+    raise PilotError(f"Frozen input is outside both source repositories: {path}")
 
 
 def _source_file_hashes() -> dict[str, str]:
@@ -190,10 +218,22 @@ def _source_file_hashes() -> dict[str, str]:
         REPO_ROOT / "scripts/score_cls_a02_position_kernel_v1.py",
         REPO_ROOT / "scripts/verify_cls_a02_position_kernel_v1_metrics.py",
         REPO_ROOT / "tests/test_cls_a02_position_kernel_v1.py",
+        REPO_ROOT / "scripts/cls_pos_poisson_bag2_v1.py",
+        REPO_ROOT / "scripts/verify_cls_pos_poisson_bag2_v1.py",
+        REPO_ROOT / "src/models/cls_pos_poisson_bag2_v1.py",
+        POISSON_PARENT_REPORT / "PROTOCOL.md",
+        POISSON_PARENT_FREEZE,
+        POISSON_PARENT_ROOT_PASS,
+        REPORT_ROOT / "ROOT_PARENT_SOURCE_REVIEW.md",
         OFFICIAL_ROOT / "src/models/classification_a02_neighbors.py",
         OFFICIAL_ROOT / "src/models/optimization_v3_positional_text_pilot_v1.py",
         OFFICIAL_ROOT / "scripts/optimization_v3_positional_text_pilot_v1.py",
         OFFICIAL_ROOT / "src/models/positional_text_features.py",
+        OFFICIAL_ROOT / "src/models/positional_bag_offset_v1.py",
+        OFFICIAL_ROOT / "scripts/optimization_v3_positional_bag_offset_v1.py",
+        OFFICIAL_ROOT / "scripts/verify_optimization_v3_positional_bag_offset_v1.py",
+        OFFICIAL_ROOT / "reports/optimization_v3/positional_bag_offset_v1/RECIPE.json",
+        OFFICIAL_ROOT / "reports/optimization_v3/positional_text_diagnostic_v1/SOL_OFFSET_PILOT_AUTHORIZATION.md",
         OFFICIAL_ROOT / "src/models/a02_coefficient_geometry_v1.py",
         OFFICIAL_ROOT / "src/models/classification_models.py",
         OFFICIAL_ROOT / "reports/optimization_v3/posoffset_a02_endgame_v1/RECIPE.json",
@@ -206,17 +246,30 @@ def _source_file_hashes() -> dict[str, str]:
 
 
 def _input_file_hashes() -> dict[str, str]:
-    paths: list[Path] = [TRAIN, POS_ROOT / "FREEZE.json", POS_ROOT / "PREDICTIONS_READY.json"]
+    paths: list[Path] = [
+        TRAIN,
+        POS_ROOT / "FREEZE.json",
+        POS_ROOT / "PREDICTIONS_READY.json",
+        POS_OFFSET_ROOT / "FREEZE.json",
+        POS_OFFSET_ROOT / "PREDICTIONS_READY.json",
+        POS_OFFSET_ROOT / "PRELABEL_VERIFICATION.json",
+        POISSON_PARENT_FREEZE,
+        POISSON_PARENT_ROOT_PASS,
+        POISSON_PARENT_READY,
+        POISSON_PARENT_READBACK,
+    ]
     for origin in ORIGINS:
         paths.extend(_historical_paths(origin).values())
         paths.append(POS_ROOT / f"receipts/POSITIONAL_TEXT_PILOT_V1_E{origin}_POSITION_LR.json")
         paths.append(POS_ROOT / f"units/POSITIONAL_TEXT_PILOT_V1_E{origin}_POSITION_LR.joblib")
+        paths.append(POS_OFFSET_ROOT / f"receipts/POS_BAG_OFFSET_V1_E{origin}_REAL.json")
+        paths.append(POS_OFFSET_ROOT / f"units/POS_BAG_OFFSET_V1_E{origin}_REAL.npz")
     unique = sorted(set(paths))
     result: dict[str, str] = {}
     for path in unique:
         if not path.is_file():
             raise PilotError(f"Frozen input is missing: {path}")
-        label = f"OFFICIAL::{path.relative_to(OFFICIAL_ROOT).as_posix()}"
+        label = _input_path_label(path)
         result[label] = _sha_file(path)
     return result
 
@@ -225,13 +278,32 @@ def _normal_text(series: pd.Series) -> list[str]:
     return ["" if pd.isna(value) else str(value) for value in series.tolist()]
 
 
-def _canonical_raw_id(value: Any) -> str:
-    if pd.isna(value):
-        raise PilotError("record_id contains a null value")
-    return f"str:{str(value)}"
+def _producer_canonical_ids(raw_values: Any) -> tuple[str, ...]:
+    """Reproduce A02's exact NumPy-string IDs, including the ``str_`` type tag."""
+    raw = np.asarray(raw_values)
+    if raw.ndim != 1 or pd.isna(raw).any():
+        raise PilotError("A02 donor record IDs must be a nonnull one-dimensional array")
+    producer_values = raw.astype(str)
+    return tuple(f"{type(value).__name__}:{value}" for value in producer_values)
 
 
-def _validate_historical_artifacts(origin: int, *, input_hashes: dict[str, str] | None = None) -> tuple[Any, dict[str, np.ndarray], dict[str, np.ndarray], dict[str, Any]]:
+def _validate_donor_identity(
+    raw_ids: Any,
+    raw_cycles: Any,
+    expected_ids: Any,
+    expected_cycles: Any,
+    *,
+    origin: int,
+) -> None:
+    if _producer_canonical_ids(raw_ids) != tuple(expected_ids):
+        raise PilotError(f"Original A02 donor IDs differ from official Train row identity for E{origin}")
+    cycles = np.asarray(raw_cycles, dtype=np.int64)
+    frozen_cycles = np.asarray(expected_cycles, dtype=np.int64)
+    if cycles.shape != frozen_cycles.shape or not np.array_equal(cycles, frozen_cycles):
+        raise PilotError(f"Original A02 donor cycles differ from official Train for E{origin}")
+
+
+def _validate_historical_artifacts(origin: int, *, input_hashes: dict[str, str] | None = None) -> tuple[Any, dict[str, np.ndarray], dict[str, np.ndarray], dict[str, np.ndarray], dict[str, Any]]:
     paths = _historical_paths(origin)
     fit_receipt = _safe_json(paths["a02_fit_receipt"])
     fit_state = _safe_json(paths["a02_fit_state"])
@@ -239,6 +311,13 @@ def _validate_historical_artifacts(origin: int, *, input_hashes: dict[str, str] 
     pos_verify = _safe_json(paths["pos_prediction_verification"])
     pos_manifest = _safe_json(paths["pos_matrix_manifest"])
     pos_freeze = _safe_json(paths["pos_freeze"])
+    offset_freeze = _safe_json(POS_OFFSET_ROOT / "FREEZE.json")
+    offset_ready = _safe_json(POS_OFFSET_ROOT / "PREDICTIONS_READY.json")
+    offset_prelabel = _safe_json(POS_OFFSET_ROOT / "PRELABEL_VERIFICATION.json")
+    parent_freeze = _safe_json(POISSON_PARENT_FREEZE)
+    parent_root_pass = _safe_json(POISSON_PARENT_ROOT_PASS)
+    parent_ready = _safe_json(POISSON_PARENT_READY)
+    parent_readback = _safe_json(POISSON_PARENT_READBACK)
 
     if fit_receipt.get("fit_id") != f"A02_E{origin}_OBSERVED":
         raise PilotError(f"A02 fit receipt identity is invalid for E{origin}")
@@ -255,11 +334,95 @@ def _validate_historical_artifacts(origin: int, *, input_hashes: dict[str, str] 
     if pos_freeze.get("pilot_id") != "POSITIONAL_TEXT_PILOT_V1":
         raise PilotError("Original POS cache is not bound to its frozen pilot")
 
-    # This allowlist intentionally omits the cached query `labels` member.
+    if (offset_freeze.get("card_id") != "POS_BAG_OFFSET_V1"
+            or offset_ready.get("card_id") != "POS_BAG_OFFSET_V1"
+            or offset_ready.get("freeze_signature") != offset_freeze.get("freeze_signature")
+            or offset_ready.get("source_commit") != offset_freeze.get("source_commit")
+            or offset_ready.get("query_labels_opened") is not False
+            or offset_ready.get("all_four_gamma_receipts_durable") is not True):
+        raise PilotError("Frozen original POS offset prediction lineage is incomplete")
+    if (offset_prelabel.get("status") != "PASS"
+            or offset_prelabel.get("query_labels_read") is not False
+            or offset_prelabel.get("preprocessing_fits") != 0
+            or offset_prelabel.get("optimizer_refits") != 0
+            or offset_prelabel.get("predictions_ready_sha256") != _sha_file(POS_OFFSET_ROOT / "PREDICTIONS_READY.json")):
+        raise PilotError("Original POS offset prelabel verification is incomplete")
+    if (parent_freeze.get("candidate_id") != "CLS_POS_POISSON_BAG2_V1"
+            or parent_root_pass.get("status") != "PASS_ROOT_PREFIT_APPROVED"
+            or parent_root_pass.get("freeze_signature") != parent_freeze.get("freeze_signature")
+            or parent_ready.get("candidate_id") != "CLS_POS_POISSON_BAG2_V1"
+            or parent_ready.get("freeze_signature") != parent_freeze.get("freeze_signature")
+            or parent_ready.get("query_labels_opened") is not False
+            or parent_ready.get("test_or_sample_access") is not False
+            or parent_ready.get("all_four_fit_receipts_durable") is not True):
+        raise PilotError("Verified Poisson original-only champion cache lineage is incomplete")
+    if (parent_readback.get("status") != "PASS_INDEPENDENT_PREDICTION_READBACK"
+            or parent_readback.get("predictions_ready_sha256") != _sha_file(POISSON_PARENT_READY)):
+        raise PilotError("Poisson original-only champion cache lacks independent readback")
+
+    # Bind the cached original-only comparator to the exact code frozen when it
+    # was created, and its original POS parent to the source verified below.
+    for relative in (
+        "scripts/cls_pos_poisson_bag2_v1.py",
+        "scripts/verify_cls_pos_poisson_bag2_v1.py",
+        "src/models/cls_pos_poisson_bag2_v1.py",
+    ):
+        expected = parent_freeze.get("audit_source_hashes", {}).get(relative)
+        if not expected or expected != _sha_file(REPO_ROOT / relative):
+            raise PilotError(f"Poisson parent source hash does not match its prefit freeze: {relative}")
+    for relative in (
+        "scripts/optimization_v3_positional_bag_offset_v1.py",
+        "scripts/verify_optimization_v3_positional_bag_offset_v1.py",
+        "src/models/positional_bag_offset_v1.py",
+        "reports/optimization_v3/positional_bag_offset_v1/RECIPE.json",
+    ):
+        expected = offset_freeze.get("source_hashes", {}).get(relative)
+        parent_expected = parent_freeze.get("external_source_hashes", {}).get(relative)
+        if (not expected or expected != _sha_file(OFFICIAL_ROOT / relative)
+                or parent_expected != expected):
+            raise PilotError(f"Original POS offset source hash does not match its freeze: {relative}")
+
+    # Ground-truth members stay closed; label_champion below is a prediction.
     a02 = load_npz_allowlisted(paths["a02_predictions"], allowed_members=A02_MEMBERS)
     pos = load_npz_allowlisted(
         paths["pos_predictions"], allowed_members=POS_MEMBERS,
         expected_sha256=pos_verify["prediction_file_sha256"], allow_closed_extras=True,
+    )
+    offset_key = f"E{origin}"
+    offset_output = offset_ready.get("predictions", {}).get(offset_key, {})
+    offset_readback_hash = offset_prelabel.get("prediction_output_sha256s", {}).get(offset_key)
+    if (offset_output.get("path") != f"experiments/runs/optimization_v3_research_next_v1/POS_BAG_OFFSET_V1/E{origin}/predictions_E{origin}.npz"
+            or offset_output.get("sha256") != offset_readback_hash
+            or offset_output.get("sha256") != _sha_file(paths["pos_offset_predictions"])
+            or int(offset_output.get("rows", -1)) != int(len(a02["score_rows"]))
+            or int(offset_output.get("present_rows", -1)) != int(np.sum(pos["present_mask"]))
+            or int(offset_output.get("fallback_rows", -1)) != int(np.sum(~pos["present_mask"]))):
+        raise PilotError(f"Original POS offset output hash is not bound to its frozen/readback receipt for E{origin}")
+    offset_receipt = _safe_json(paths["pos_offset_receipt"])
+    if (offset_receipt.get("fit_id") != f"POS_BAG_OFFSET_V1_E{origin}_REAL"
+            or offset_receipt.get("origin") != origin
+            or offset_receipt.get("card_id") != "POS_BAG_OFFSET_V1"
+            or offset_receipt.get("freeze_signature") != offset_freeze.get("freeze_signature")
+            or offset_receipt.get("artifact_sha256") != _sha_file(paths["pos_offset_unit"])):
+        raise PilotError(f"Original POS offset gamma receipt is invalid for E{origin}")
+    offset = load_npz_allowlisted(
+        paths["pos_offset_predictions"], allowed_members=POS_OFFSET_MEMBERS,
+        expected_sha256=offset_output["sha256"], allow_closed_extras=True,
+    )
+
+    parent_key = f"E{origin}"
+    parent_output = parent_ready.get("predictions", {}).get(parent_key, {})
+    parent_readback_output = parent_readback.get("predictions", {}).get(parent_key, {})
+    if (parent_output.get("path") != f"experiments/CLS_POS_POISSON_BAG2_V1/E{origin}/predictions_E{origin}.npz"
+            or parent_output.get("sha256") != parent_readback_output.get("bundle_sha256")
+            or parent_output.get("sha256") != _sha_file(paths["poisson_parent_predictions"])
+            or parent_readback_output.get("has_label_values") is not False
+            or int(parent_output.get("rows", -1)) != int(len(a02["score_rows"]))
+            or int(parent_output.get("missing_rows", -1)) != int(np.sum(a02["missing_mask"]))):
+        raise PilotError(f"Poisson original-only cache hash/readback is invalid for E{origin}")
+    parent = load_npz_allowlisted(
+        paths["poisson_parent_predictions"], allowed_members=POISSON_PARENT_MEMBERS,
+        expected_sha256=parent_output["sha256"], allow_closed_extras=True,
     )
 
     if not np.array_equal(a02["score_rows"], pos["score_rows"]):
@@ -272,6 +435,35 @@ def _validate_historical_artifacts(origin: int, *, input_hashes: dict[str, str] 
         raise PilotError(f"Original POS availability route differs for E{origin}")
     if len(a02["score_rows"]) != int(pos_verify["score_rows"]):
         raise PilotError(f"Historical prediction row count mismatch for E{origin}")
+    if (not np.array_equal(offset["score_rows"], a02["score_rows"])
+            or not np.array_equal(offset["score_record_ids"].astype(str), a02["score_record_ids"].astype(str))
+            or not np.array_equal(offset["score_cycles"], a02["score_cycles"])
+            or not np.array_equal(offset["present_mask"], pos["present_mask"])):
+        raise PilotError(f"Original POS offset rows/IDs/cycles/availability differ for E{origin}")
+    if (int(parent["origin"].reshape(-1)[0]) != origin
+            or not np.array_equal(parent["row_positions"], a02["score_rows"])
+            or not np.array_equal(parent["record_ids"].astype(str), a02["score_record_ids"].astype(str))
+            or not np.array_equal(parent["cycles"], a02["score_cycles"])
+            or not np.array_equal(parent["present_mask"], pos["present_mask"])
+            or str(parent["input_freeze_signature"].reshape(-1)[0]) != parent_freeze["freeze_signature"]
+            or str(parent["matrix_manifest_sha256"].reshape(-1)[0]) != parent_output.get("matrix_manifest_sha256")
+            or parent_readback_output.get("ids_sha256") != _canonical_sha(parent["record_ids"].astype(str).tolist())):
+        raise PilotError(f"Poisson original-only cache rows/IDs/cycles/availability differ for E{origin}")
+    if not np.array_equal(parent["p_a02"], a02["prediction"]):
+        raise PilotError(f"Poisson full champion does not use the exact original A02 probabilities for E{origin}")
+    present = pos["present_mask"]
+    if not np.array_equal(parent["p_pos_original"][present], offset["prob_offset_real"][present]):
+        raise PilotError(f"Poisson original POS branch differs from frozen prob_offset_real for E{origin}")
+    champion_score, champion_class = assemble_full_champion(
+        parent["p_pos_original"], a02["prediction"], a02["missing_mask"],
+    )
+    if not np.array_equal(champion_score.view(np.uint64), parent["p_champion"].view(np.uint64)):
+        raise PilotError(f"Poisson cached p_champion does not exactly reconstruct from the original POS/A02 route for E{origin}")
+    cached_champion_class = np.asarray(parent["label_champion"])
+    if (cached_champion_class.shape != champion_class.shape
+            or not np.isin(cached_champion_class, [0, 1]).all()
+            or not np.array_equal(champion_class, cached_champion_class.astype(np.int8))):
+        raise PilotError(f"Poisson cached champion decisions do not reconstruct at the frozen thresholds for E{origin}")
 
     model = joblib.load(paths["a02_model"])
     if model.origin_cycle != origin or model.audit_state() != fit_state:
@@ -279,14 +471,43 @@ def _validate_historical_artifacts(origin: int, *, input_hashes: dict[str, str] 
     if len(model.bank_ids) != int(fit_state["bank_rows"]):
         raise PilotError(f"A02 donor-bank size mismatch for E{origin}")
     if input_hashes is not None:
-        for path in paths.values():
-            label = f"OFFICIAL::{path.relative_to(OFFICIAL_ROOT).as_posix()}"
+        global_inputs = (
+            POS_ROOT / "FREEZE.json",
+            POS_ROOT / "PREDICTIONS_READY.json",
+            POS_OFFSET_ROOT / "FREEZE.json",
+            POS_OFFSET_ROOT / "PREDICTIONS_READY.json",
+            POS_OFFSET_ROOT / "PRELABEL_VERIFICATION.json",
+            POISSON_PARENT_FREEZE,
+            POISSON_PARENT_ROOT_PASS,
+            POISSON_PARENT_READY,
+            POISSON_PARENT_READBACK,
+        )
+        for path in (*paths.values(), *global_inputs):
+            label = _input_path_label(path)
             if input_hashes.get(label) != _sha_file(path):
                 raise PilotError(f"Frozen input hash changed after freeze: {label}")
-    return model, a02, pos, {"fit_receipt": fit_receipt, "fit_state": fit_state,
-                              "a02_manifest": a02_manifest, "pos_verify": pos_verify,
-                              "pos_unused_member_names": list(pos.unused_member_names),
-                              "pos_manifest": pos_manifest, "pos_freeze": pos_freeze}
+    lineage = {
+        "fit_receipt": fit_receipt,
+        "fit_state": fit_state,
+        "a02_manifest": a02_manifest,
+        "pos_verify": pos_verify,
+        "pos_unused_member_names": list(pos.unused_member_names),
+        "pos_manifest": pos_manifest,
+        "pos_freeze": pos_freeze,
+        "pos_offset_ready": offset_ready,
+        "pos_offset_prelabel": offset_prelabel,
+        "pos_offset_receipt": offset_receipt,
+        "pos_offset_unused_member_names": list(offset.unused_member_names),
+        "poisson_parent_freeze_signature": parent_freeze["freeze_signature"],
+        "poisson_parent_readback_status": parent_readback["status"],
+        "poisson_parent_prediction_sha256": parent_output["sha256"],
+        "poisson_parent_unused_member_names": list(parent.unused_member_names),
+        "p_pos_present_exact_with_prob_offset_real": True,
+        "p_a02_bit_exact_with_original_a02": True,
+        "p_champion_bit_exact_reconstruction": True,
+        "champion_decisions_exact_reconstruction": True,
+    }
+    return model, a02, pos, parent, lineage
 
 
 def _load_target_free_frame(required_rows: np.ndarray) -> pd.DataFrame:
@@ -299,7 +520,7 @@ def _load_target_free_frame(required_rows: np.ndarray) -> pd.DataFrame:
 
 
 def _load_origin_inputs(origin: int, *, input_hashes: dict[str, str] | None = None) -> dict[str, Any]:
-    model, a02, pos, lineage = _validate_historical_artifacts(origin, input_hashes=input_hashes)
+    model, a02, pos, parent, lineage = _validate_historical_artifacts(origin, input_hashes=input_hashes)
     query_rows = np.asarray(a02["score_rows"], dtype=np.int64)
     bank_rows = np.asarray(model.bank_row_positions, dtype=np.int64)
     frame = _load_target_free_frame(np.concatenate((query_rows, bank_rows)))
@@ -311,11 +532,13 @@ def _load_origin_inputs(origin: int, *, input_hashes: dict[str, str] | None = No
         raise PilotError(f"Official Train query record IDs differ from frozen caches for E{origin}")
     if not np.array_equal(query_cycles, a02["score_cycles"]):
         raise PilotError(f"Official Train query cycles differ from frozen caches for E{origin}")
-    expected_bank_ids = tuple(_canonical_raw_id(x) for x in bank_raw["record_id"].tolist())
-    if expected_bank_ids != tuple(model.bank_ids):
-        raise PilotError(f"Original A02 donor IDs differ from official Train row identity for E{origin}")
-    if not np.array_equal(bank_raw["cycle_code"].to_numpy(dtype=np.int64), model.bank_cycles):
-        raise PilotError(f"Original A02 donor cycles differ from official Train for E{origin}")
+    _validate_donor_identity(
+        bank_raw["record_id"].to_numpy(),
+        bank_raw["cycle_code"].to_numpy(dtype=np.int64),
+        model.bank_ids,
+        model.bank_cycles,
+        origin=origin,
+    )
     if np.any(model.bank_cycles > origin) or np.any(query_cycles <= origin):
         raise PilotError(f"Original A02 bank/query temporal boundary is invalid for E{origin}")
     query_docs, query_missing = model.text_space.transform(_normal_text(query_raw["signal_stream"]))
@@ -340,6 +563,7 @@ def _load_origin_inputs(origin: int, *, input_hashes: dict[str, str] | None = No
         "model": model,
         "a02": a02,
         "pos": pos,
+        "poisson_parent": parent,
         "lineage": lineage,
         "train_frame": frame,
         "query_raw": query_raw,
@@ -349,7 +573,7 @@ def _load_origin_inputs(origin: int, *, input_hashes: dict[str, str] | None = No
         "query_ids": query_ids,
         "query_rows": query_rows,
         "query_cycles": query_cycles,
-        "p_pos": np.asarray(pos["prob_position"], dtype=np.float64),
+        "p_pos": np.asarray(parent["p_pos_original"], dtype=np.float64),
         "missing": np.asarray(a02["missing_mask"], dtype=bool),
     }
 
@@ -515,6 +739,18 @@ def _freeze_payload() -> dict[str, Any]:
             "rows_sha256": _canonical_sha(inputs["query_rows"].astype(int).tolist()),
             "record_ids_sha256": _canonical_sha(inputs["a02"]["score_record_ids"].astype(str).tolist()),
             "pos_archive_unused_member_names": inputs["lineage"]["pos_unused_member_names"],
+            "pos_offset_archive_unused_member_names": inputs["lineage"]["pos_offset_unused_member_names"],
+            "poisson_parent_archive_unused_member_names": inputs["lineage"]["poisson_parent_unused_member_names"],
+            "champion_parent": {
+                "source": "CLS_POS_POISSON_BAG2_V1 original-only p_pos_original and p_champion",
+                "poisson_freeze_signature": inputs["lineage"]["poisson_parent_freeze_signature"],
+                "poisson_prediction_sha256": inputs["lineage"]["poisson_parent_prediction_sha256"],
+                "readback_status": inputs["lineage"]["poisson_parent_readback_status"],
+                "p_pos_matches_prob_offset_real_present": inputs["lineage"]["p_pos_present_exact_with_prob_offset_real"],
+                "p_a02_matches_original_a02": inputs["lineage"]["p_a02_bit_exact_with_original_a02"],
+                "p_champion_reconstructs_bit_exactly": inputs["lineage"]["p_champion_bit_exact_reconstruction"],
+                "champion_decisions_reconstruct_exactly": inputs["lineage"]["champion_decisions_exact_reconstruction"],
+            },
         }
     e67_rows = loaded[67]
     e75_rows = loaded[75]

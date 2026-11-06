@@ -19,7 +19,12 @@ from src.models.a02_position_kernel_v1 import (
     load_npz_allowlisted,
 )
 from src.models.optimization_v3_positional_text_pilot_v1 import build_position_block
-from scripts.cls_a02_position_kernel_v1 import PilotError, persist_or_resume_unit
+from scripts.cls_a02_position_kernel_v1 import (
+    PilotError,
+    _producer_canonical_ids,
+    _validate_donor_identity,
+    persist_or_resume_unit,
+)
 from scripts.score_cls_a02_position_kernel_v1 import (
     ScoreError,
     _assert_prelabel_artifact_hash,
@@ -83,6 +88,33 @@ def _synthetic_case():
         arm="REAL",
         block_rows=2,
     )
+
+
+def test_a02_donor_identity_reproduces_numpy_string_tags_and_rejects_mutations():
+    raw_ids = np.asarray(["row-a", "row-b", "row-c"], dtype=object)
+    producer_ids = _producer_canonical_ids(raw_ids)
+    assert producer_ids == ("str_:row-a", "str_:row-b", "str_:row-c")
+    assert type(np.asarray(raw_ids).astype(str)[0]).__name__ == "str_"
+    native_python_tags = tuple(f"{type(value).__name__}:{value}" for value in raw_ids.tolist())
+    assert native_python_tags == ("str:row-a", "str:row-b", "str:row-c")
+    assert native_python_tags != producer_ids
+
+    cycles = np.asarray([53, 54, 55], dtype=np.int64)
+    _validate_donor_identity(raw_ids, cycles, producer_ids, cycles.copy(), origin=55)
+    invalid_cases = (
+        (np.asarray(["row-a", "tampered", "row-c"], dtype=object), cycles.copy(), producer_ids, cycles.copy(), "payload"),
+        (raw_ids[::-1].copy(), cycles.copy(), producer_ids, cycles.copy(), "order"),
+        (raw_ids.copy(), np.asarray([53, 54, 56], dtype=np.int64), producer_ids, cycles.copy(), "cycle"),
+        (raw_ids.copy(), cycles.copy(), native_python_tags, cycles.copy(), "native Python str tags"),
+    )
+    for altered_ids, altered_cycles, expected_ids, expected_cycles, reason in invalid_cases:
+        try:
+            _validate_donor_identity(altered_ids, altered_cycles, expected_ids,
+                                     expected_cycles, origin=55)
+        except PilotError:
+            pass
+        else:
+            raise AssertionError(f"donor identity mismatch was accepted: {reason}")
 
 
 def test_full_bank_mass_formula_and_exact_fallbacks():
