@@ -1,0 +1,42 @@
+{
+  "candidate_id": "CLS_POS_RECENCY_E79_V1",
+  "csv_path": "submissions/cls_pos_recency_e79_v1/classification_cls_pos_recency_e79_v1.csv",
+  "csv_sha256": "6e8f6b08e769135717de4ce1f821af8ec696b847849b516d0f8749da4b59da55",
+  "fit_qa_sha256": "b0bf2c8f508c7d1c6e3650e0af783f40e5fc04eaa8bb0677d72526ee817de208",
+  "fit_receipt_sha256": "9d1458e36c442315503b671abd2699bd495eee7724b504fed48e7552da762467",
+  "freeze_sha256": "80f9f94c47b12291588ab232203ce63fbf740deecac038b65912263cd2ab93c9",
+  "input_hashes": {
+    "a02_fit_receipt_sha256": "11a7e46b6595e92a421e358b8e7e3a5ffbac8a6db69c64c9c33fd3d5c5bd7d77",
+    "a02_test_npz_sha256": "c267a4b998aca64982b6f63b10bedb2f3b3061007166db7731d221788ac89e47",
+    "a02_test_receipt_sha256": "8aae0a6e2f16b707da53b16b0aef8f7395dc3a1d76fc1c7609edaed2304e84bc",
+    "official_test_sha256": "4e6c381d582ed24f92d17f620f4f0ad25e2e0def29eb57a91a5482867f6afe3c",
+    "official_train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "original_champion_csv_sha256": "189a779b6100333a2fecfe443689fe7d340a331e828167221c81281a7ece4a4a",
+    "sample_submission_sha256": "889f97d69659a64945421d841dcf96e5813020606f29b2992d4b9560cecdcba7",
+    "uniform_gamma_artifact_sha256": "d741d016f990d8742208edc919f5c58305b7579980d059b202609df4e5b3e650",
+    "uniform_gamma_receipt_sha256": "f08f1bd3733a20fb8745d40c82190543a48af6bade1df5684ccfef3198c34580"
+  },
+  "kaggle_contacted": false,
+  "manifest_file_bindings": {
+    "application_arrays_sha256": "8c090dd9ea63d23d7e44633af046d996b7ab1aea004ae9441dc401d3652e5839",
+    "application_receipt_sha256": "e71c7b7b6f59d0962c30d0d599a342f37f4d7ef3d13c00e5893add635b6f8bc0"
+  },
+  "manifest_sha256": "e46d5f64e77ed246da0acb12f32de3f8727490c6473570bbe4743f25a13efe8c",
+  "recipe": {
+    "base_weight": "max(0.25, 2**(-(79-cycle_code)/8))",
+    "control_or_comparator_fit_count": 0,
+    "normalization": "divide by mean base weight separately within each target class on stream-present fit rows",
+    "objective": "sum_i w_i*logaddexp(0,-(2*y_i-1)*(z_BAG_i + X_position_i@gamma)) + 0.5*dot(gamma,gamma)",
+    "offset": "frozen C2_B positive-class logit z_BAG = X_base @ coef_[0] + intercept_[0]",
+    "optimizer": "the frozen CLS_POS_RECENCY_V1 float64 L-BFGS-B helper; zero initialization; maxiter=2000, ftol=1e-12, gtol=1e-6, maxls=50",
+    "preprocessing_fit_count": 0,
+    "test_threshold_selection": false
+  },
+  "root_decision_commit": "7a8ad5b6437db1c3bb8d716fb879252935615e34",
+  "schema_version": 1,
+  "source_commit": "5af6cabdfaa3962177bc822d538d5499615269d3",
+  "source_inventory_sha256": "1e77b7f68362e8595bd9b79d00ebcae799eed9c663d58442e0869e52c55181d4",
+  "status": "LOCAL_CSV_PREPARED_NOT_UPLOADED",
+  "submission_uploaded": false,
+  "test_or_sample_target_read": false
+}

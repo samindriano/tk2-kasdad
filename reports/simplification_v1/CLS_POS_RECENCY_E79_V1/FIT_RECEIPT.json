@@ -1,0 +1,102 @@
+{
+  "C": 1.0,
+  "attempt_file_sha256": "a2d4a9139be66e53db1520f881e404ac6a2015c74c4ba91fe95fb39536d86634",
+  "candidate_id": "CLS_POS_RECENCY_E79_V1",
+  "fit_id": "CLS_POS_RECENCY_E79_V1_E79_RECENCY",
+  "gamma_artifact_file_sha256": "e597a8b0e8e9bb55672174260cb4780dfcdef042e9ab458880063150f9c96d83",
+  "gamma_artifact_path": "experiments/CLS_POS_RECENCY_E79_V1/GAMMA_E79.npz",
+  "gamma_dtype": "float64",
+  "gamma_sha256": "146434e0ac49e2248bbe24c5bffd5193ff7c7e58dd3d456915077527704bfefb",
+  "gamma_shape": [
+    17259
+  ],
+  "inputs": {
+    "base_matrix_sha256": "9d47aa36ff15a0cbeead8cf36049f0a699f7618d0ea8890806a2d82140cff59b",
+    "cycles_sha256": "68859945ea82e0a94b7a8ce1caa8d2f36466dfe342068781ed24c222667f3661",
+    "fit_target_sha256": "c8aac012dddf93e98b801c74a1fdf9a362e4a79d0ab1ef5a44bbf47baa839fe7",
+    "normalized_weights_sha256": "10cae5b347a213fcfe3ed0ad6cacca22dc8cacf5c1fd3e8082cccfdbe6b200f3",
+    "official_train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "original_uniform_gamma_sha256": "2171d72a0168f0ce43980a9c416fd64d673e1a7d9e9a213b226f843b55bf1bb1",
+    "position_fit_indices_sha256": "2bf8e8043d616d35fe0f497b59f72826967b019d130ee7b305fd318d4b764601",
+    "position_fit_indptr_sha256": "9798677072a3396cfe1ace590a0743421e1faec381a3b2233a733959ddca00ce",
+    "position_fit_values_sha256": "f3759a5549f48dbfa8d4de3f43d586ec3ba0c64e4cc24f18e53be6600d86dad5",
+    "position_matrix_sha256": "32268550b8220dbfb43f5c92c33cd84554f0bced446d1459c5c55c3eabbf9942",
+    "present_mask_sha256": "0b14357b2bbfe96898dcbcaf4c57de89c2c8f6236927d0c15198f997be6d3e84",
+    "record_ids_sha256": "d30f5268bfebf81efcbc92cce16205e56ffb4faa25b2954808f4cd2d4765c43b",
+    "weight_diagnostics_by_class": {
+      "0": {
+        "ess": 23758.23991492992,
+        "ess_ratio": 0.7680796558557456,
+        "rows": 30932,
+        "weight_max": 2.210535126498987,
+        "weight_min": 0.5526337816247467,
+        "weight_sum": 30932.0
+      },
+      "1": {
+        "ess": 12507.572459678937,
+        "ess_ratio": 0.7686561246115374,
+        "rows": 16272,
+        "weight_max": 2.3716784821931314,
+        "weight_min": 0.5929196205482828,
+        "weight_sum": 16272.0
+      }
+    },
+    "z_bag_fit_sha256": "52b67c12aa8f9fa78cbf3cc6241a672f991494e3b17fbb210aa8b26a8b7d63c0"
+  },
+  "kaggle_contact": false,
+  "mode": "official",
+  "objective": "sum_i w_i*logaddexp(0,-(2*y_i-1)*(z_BAG_i + X_position_i@gamma)) + 0.5*dot(gamma,gamma)",
+  "optimizer": {
+    "gradient_inf_norm": 3.305551249732641e-05,
+    "loss_change": -1311.830413496673,
+    "loss_final": 11004.216689843077,
+    "loss_gamma0": 12316.04710333975,
+    "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+    "nfev": 64,
+    "nit": 56,
+    "optimizer": "scipy.optimize.minimize:L-BFGS-B",
+    "options": {
+      "ftol": 1e-12,
+      "gtol": 1e-06,
+      "maxiter": 2000,
+      "maxls": 50
+    },
+    "penalty": "0.5 * sum(gamma**2)",
+    "ridge_c": 1.0,
+    "success": true,
+    "weight_sum": 47204.0
+  },
+  "population": {
+    "class_rows": {
+      "0": 30932,
+      "1": 16272
+    },
+    "cycles": [
+      47,
+      79
+    ],
+    "official_train_rows": 50608,
+    "stream_missing_rows_excluded": 3404,
+    "stream_present_rows": 47204
+  },
+  "prefit_qa_sha256": "975d0634da7561c8cbf32f17cf1a65378469b6f0c8c31b8ac2072a461fcc6c82",
+  "read_accounting": {
+    "official_train_feature_only_reads": 1,
+    "official_train_target_vector_reads": 1,
+    "sample_submission_reads": 0,
+    "target_rows_used_by_gamma_fit": 47204,
+    "target_vector_rows_read": 50608,
+    "test_target_reads": 0
+  },
+  "receipt_sha256": "06d32a5d80dbe3da77c9eafd994ef7434f3c5d47fe562fc0367d1a1852223cab",
+  "resource_after": {
+    "available_ram_bytes": 16145068032
+  },
+  "resource_reserve_pass": true,
+  "retry_authorized": false,
+  "schema_version": 1,
+  "source_commit": "fd96e261d8cdd709f4b431fd9b6c066b72c253be",
+  "source_freeze_sha256": "80f9f94c47b12291588ab232203ce63fbf740deecac038b65912263cd2ab93c9",
+  "status": "PASS_E79_RECENCY_GAMMA_FIT_PERSISTED",
+  "test_or_sample_access": false
+}
