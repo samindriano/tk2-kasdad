@@ -1,0 +1,75 @@
+{
+  "amendment_id": "CLS_A02_POSITION_KERNEL_V1_PRELABEL_AMENDMENT_01",
+  "authorization": "Sol KASDAD chat explicitly approved a verifier-only amendment after the source mismatch was discovered and before any target labels were opened.",
+  "budget_event_counts": {
+    "PREDICTOR_RESERVED": 4,
+    "PREDICTOR_SAVED": 4,
+    "PREDICTOR_STARTED": 4
+  },
+  "budget_event_ids": {
+    "PREDICTOR_RESERVED": [
+      "E67_REAL",
+      "E67_SHUFFLED",
+      "E75_REAL",
+      "E75_SHUFFLED"
+    ],
+    "PREDICTOR_SAVED": [
+      "E67_REAL",
+      "E67_SHUFFLED",
+      "E75_REAL",
+      "E75_SHUFFLED"
+    ],
+    "PREDICTOR_STARTED": [
+      "E67_REAL",
+      "E67_SHUFFLED",
+      "E75_REAL",
+      "E75_SHUFFLED"
+    ]
+  },
+  "budget_event_sha256": {
+    "PREDICTOR_RESERVED": "7add42f856d3583bac095a46a6e5dcebc83915ad31b53171accf6d9a591ce62a",
+    "PREDICTOR_SAVED": "0f98881815823119f57ff28f3a68449ee761eab5e8aace85afb1df0bc3f0d8fb",
+    "PREDICTOR_STARTED": "89f082ab234779b7b8e5aed106ed7723893779c6a329c0d177e39d7c16ed44c9"
+  },
+  "budget_ledger_sha256": "f39ccab1dfc7784f4179e57b2ad9e4123b010043800f4c482844a612e989a549",
+  "candidate_runner_or_outputs_changed": false,
+  "created_at_utc": "2026-11-06T11:18:42.570802+00:00",
+  "four_units": {
+    "E67_REAL": {
+      "bundle_sha256": "b45b4ec30b254a1b6dc85bfe19296b6ef5f7c1d1241f3163e8f51b069780173a",
+      "receipt_sha256": "6ecae0b4cfe44052fa8ec417e8ddd48b5fab6cd9c7099bc8e63acdee945ec30a"
+    },
+    "E67_SHUFFLED": {
+      "bundle_sha256": "304cd306b88329141f691543505b0f9b39dcd361d72627c1be074add1539ac28",
+      "receipt_sha256": "4b5e0f13f9e7520cc8ffab57e9c929146c3a5dc85105f8e48cdd07edce6613bf"
+    },
+    "E75_REAL": {
+      "bundle_sha256": "9e80cb778d4fcee2e2d36e83613e39d66153f1c5da31a624cf56f0d2bd98e63d",
+      "receipt_sha256": "a281274e05bee36c793b4b472d0c805d1577bfe91af159ac9ef515fef2f21037"
+    },
+    "E75_SHUFFLED": {
+      "bundle_sha256": "f1a2891a548598d98a7e264d22a2896a33910cb2e6808901452cae0bb85acc28",
+      "receipt_sha256": "fb83642d4a63135246453522edd2bb1782bf3bf2bc8a77f8fec41e429d2719ea"
+    }
+  },
+  "identified_incompatibilities": [
+    "The old verifier binds POS p_pos to POSITIONAL_TEXT_PILOT_V1 prob_position instead of the champion POS_BAG_OFFSET_V1 prob_offset_real / verified original-only p_pos_original.",
+    "The old verifier canonicalizes A02 bank IDs with str: tags instead of the producer's NumPy str_ tags."
+  ],
+  "implementation_commit": "bff3e4b92dea1b9d0e6e2d06f560bc503357ba25",
+  "kaggle_accessed": false,
+  "new_verifier_path": "scripts/verify_cls_a02_position_kernel_v1_prelabel_amended_01.py",
+  "new_verifier_sha256": "d7ba84dbcca1d52fbefaa9c9f5f750dfd81a72eaa20ca78e881780d1720949e3",
+  "official_source_commit": "7108c276c9904556a1d6eb186c46588ddf2ef6fb",
+  "old_freeze_sha256": "dcfb2cdd81f76ec3763ee660ed338c7e6c2fbe008db7684b1c2864e957fab16e",
+  "old_freeze_source_commit": "5ef136bc1265cd1f1d607d7fd9b600f11d5f29f8",
+  "old_verifier_invoked": false,
+  "old_verifier_path": "scripts/verify_cls_a02_position_kernel_v1_prelabel.py",
+  "old_verifier_sha256": "11dab5a52f75f619c089f65be1c1d3d6fde4162542f963d786979c83152367cd",
+  "original_prelabel_boundary_compliant": false,
+  "query_labels_accessed": false,
+  "recipe_or_freeze_changed": false,
+  "scientific_qualification": false,
+  "status": "APPROVED_VERIFIER_ONLY",
+  "test_or_sample_accessed": false
+}
