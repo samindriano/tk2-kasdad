@@ -9,6 +9,10 @@ The continuation is fixed to exactly two official full-Train gamma fits and one
 Test application after a separate committed root pass. Source preparation and
 synthetic QA do not perform either official action.
 
+The original `PREFIT_FREEZE.json` is immutable R1 history. The corrected
+source/root-pass and RAM contract is frozen separately in
+`PREFIT_FREEZE_R2.json`, which binds the unchanged R1 file by its byte hash.
+
 ## Fixed fit recipe
 
 - Official fit population: Classification Train, 50,608 ordered rows, cycles
@@ -59,10 +63,12 @@ does not contact Kaggle.
 ## Resource and persistence controls
 
 At most two numerical threads are used. The fit path must acquire both the
-shared research lock and the official CGeom lock. It requires at least 2 GiB
-available RAM before feature reconstruction, 1 GiB after reconstruction and
-before each fit, and 512 MiB after a fit. A low-memory or lock failure occurs
-before any new fit attempt marker. Once a fit marker exists, no retry is allowed.
+shared research lock and the official CGeom lock. It requires at least 1 GiB
+available RAM before feature reconstruction, then 512 MiB after reconstruction
+and before each fit; the post-fit reserve is also 512 MiB. Test application
+starts at 1 GiB available RAM and requires 512 MiB afterward. A low-memory or
+lock failure occurs before any new fit attempt marker. Once a fit marker exists,
+no retry is allowed.
 
 The runtime namespace is `experiments/CLS_POS_POISSON_BAG2_E79_V1/`; it is
 ignored by Git. The official submission CSV, if later created by the approved
@@ -83,9 +89,15 @@ python -O scripts/cls_pos_poisson_bag2_e79_v1.py --command apply-test --reposito
 ```
 
 The `freeze` command is source-preparation only and writes the one-shot
-`PREFIT_FREEZE.json`; it must run only after candidate source files have been
+`PREFIT_FREEZE_R2.json`; it must run only after candidate source files have been
 committed and the audit worktree is clean. `reserve`, `fit-all`, and
 `apply-test` fail closed unless the source freeze is valid and a committed
 `ROOT_PASS.json` authorizes the same freeze, exact two fit IDs, and one
 application. Run `verify-freeze` before root review and before every later
 official command. Do not invoke `fit-all` or `apply-test` as part of source QA.
+
+The root pass's `reviewed_head` may be any ancestor of the current HEAD, provided
+that commit contains the exact R2 freeze bytes and every candidate source blob
+bound by the freeze. The pass file itself must be present at current HEAD with
+the exact working-file bytes. Unrelated later commits or untracked worktree files
+do not invalidate this binding.

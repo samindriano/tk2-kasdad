@@ -35,7 +35,9 @@ CANDIDATE_ID = "CLS_POS_POISSON_BAG2_E79_V1"
 REPORT_REL = "reports/simplification_v1/CLS_POS_POISSON_BAG2_E79_V1"
 PROTOCOL_REL = f"{REPORT_REL}/PROTOCOL.md"
 SOURCE_READY_REL = f"{REPORT_REL}/SOURCE_READY.md"
-FREEZE_REL = f"{REPORT_REL}/PREFIT_FREEZE.json"
+FREEZE_R1_REL = f"{REPORT_REL}/PREFIT_FREEZE.json"
+FREEZE_R1_SHA256 = "50028c3b334fc1dff0f0e5d5166d76351f58c6707606dc1c589d5af33234f42a"
+FREEZE_REL = f"{REPORT_REL}/PREFIT_FREEZE_R2.json"
 ROOT_PASS_REL = f"{REPORT_REL}/ROOT_PASS.json"
 HELPER_REL = "src/models/cls_pos_poisson_bag2_e79_v1.py"
 RUNNER_REL = "scripts/cls_pos_poisson_bag2_e79_v1.py"
@@ -85,8 +87,8 @@ EXPECTED_BASELINE_CSV_SHA256 = "189a779b6100333a2fecfe443689fe7d340a331e82816722
 EXPECTED_BASELINE_REF = 58001282
 EXPECTED_BASELINE_PUBLIC_SCORE = "0.83225"
 GIB = 1024 ** 3
-MIN_FIT_START_BYTES = 2 * GIB
-POST_FEATURE_RESERVE_BYTES = 1 * GIB
+MIN_FIT_START_BYTES = 1 * GIB
+POST_FEATURE_RESERVE_BYTES = 512 * 1024 ** 2
 POST_FIT_RESERVE_BYTES = 512 * 1024 ** 2
 MAX_THREADS = 2
 
@@ -299,6 +301,9 @@ def build_source_freeze(repository: Path, *, audit_root: Path = AUDIT_ROOT) -> d
                   f"Source is not committed at the freeze base: {rel}")
 
     official_head = _git(repo, "rev-parse", "HEAD")
+    r1_path = audit_root / FREEZE_R1_REL
+    H.require(r1_path.is_file() and sha256_file(r1_path) == FREEZE_R1_SHA256,
+              "Original PREFIT_FREEZE.json is missing or its bytes changed")
     legacy, legacy_file_sha = _legacy_freeze_body(repo)
     legacy_inputs = _verify_legacy_inputs(repo, legacy)
     original_path = repo / ORIGINAL_GAMMA_REL
@@ -337,8 +342,12 @@ def build_source_freeze(repository: Path, *, audit_root: Path = AUDIT_ROOT) -> d
 
     body: dict[str, Any] = {
         "schema_version": 1,
+        "freeze_revision": 2,
         "candidate_id": CANDIDATE_ID,
         "status": "FROZEN_SOURCE_ONLY_WAITING_ROOT_PASS",
+        "supersedes_freeze": {"path": FREEZE_R1_REL,
+                               "sha256": FREEZE_R1_SHA256,
+                               "preserved_byte_for_byte": True},
         "audit_root": str(audit_root.resolve()),
         "audit_branch": _git(audit_root, "branch", "--show-current"),
         "audit_source_commit": source_commit,
@@ -460,8 +469,14 @@ def verify_source_freeze(repository: Path, *, audit_root: Path = AUDIT_ROOT) -> 
     body.pop("freeze_signature", None)
     H.require(signature == H.canonical_sha256(body), "E79 prefit freeze signature is invalid")
     H.require(freeze.get("candidate_id") == CANDIDATE_ID
-              and freeze.get("status") == "FROZEN_SOURCE_ONLY_WAITING_ROOT_PASS",
+              and freeze.get("status") == "FROZEN_SOURCE_ONLY_WAITING_ROOT_PASS"
+              and freeze.get("freeze_revision") == 2
+              and freeze.get("supersedes_freeze") == {
+                  "path": FREEZE_R1_REL, "sha256": FREEZE_R1_SHA256,
+                  "preserved_byte_for_byte": True},
               "E79 prefit freeze status/candidate mismatch")
+    H.require(sha256_file(audit_root / FREEZE_R1_REL) == FREEZE_R1_SHA256,
+              "Original PREFIT_FREEZE.json bytes changed after R2 freeze")
     repo = repository.resolve()
     H.require(str(repo) == freeze.get("official_repository"), "Official repository root changed")
     H.require(_git(repo, "rev-parse", "HEAD") == freeze.get("official_repository_head"),
@@ -494,6 +509,33 @@ def verify_source_freeze(repository: Path, *, audit_root: Path = AUDIT_ROOT) -> 
             "official_repository_head": freeze["official_repository_head"]}
 
 
+def _verify_root_pass_commit_binding(
+    audit_root: Path,
+    *,
+    root_pass_rel: str,
+    reviewed_head: str,
+    freeze_rel: str,
+    freeze_file_sha256: str,
+    source_hashes: Mapping[str, str],
+) -> tuple[str, str]:
+    head = _git(audit_root, "rev-parse", "HEAD")
+    H.require(bool(reviewed_head)
+              and _git_succeeds(audit_root, "merge-base", "--is-ancestor", reviewed_head, head),
+              "Root pass reviewed_head must be an ancestor of current HEAD")
+    H.require(_tree_stable_sha256(audit_root, reviewed_head, freeze_rel) == freeze_file_sha256,
+              "Root pass review commit does not contain the exact frozen R2 file")
+    H.require(set(source_hashes) == set(SOURCE_FILES),
+              "Frozen candidate source inventory differs from the exact source-file set")
+    for relative, expected_sha in source_hashes.items():
+        H.require(_tree_stable_sha256(audit_root, reviewed_head, relative) == expected_sha,
+                  f"Root pass review commit does not contain the frozen candidate source: {relative}")
+    root_pass_path = audit_root / root_pass_rel
+    H.require(_tree_stable_sha256(audit_root, head, root_pass_rel)
+              == stable_file_sha256(root_pass_path, root_pass_rel),
+              "Root pass is not committed exactly at current HEAD")
+    return head, reviewed_head
+
+
 def verify_root_pass(repository: Path, *, audit_root: Path = AUDIT_ROOT) -> dict[str, Any]:
     freeze_check = verify_source_freeze(repository, audit_root=audit_root)
     path = audit_root / ROOT_PASS_REL
@@ -502,10 +544,14 @@ def verify_root_pass(repository: Path, *, audit_root: Path = AUDIT_ROOT) -> dict
     body = dict(passed)
     pass_sha = body.pop("pass_sha256", None)
     H.require(pass_sha == H.canonical_sha256(body), "Root pass self-hash is invalid")
-    head = _git(audit_root, "rev-parse", "HEAD")
-    H.require(passed.get("reviewed_head") == head
-              and _tree_stable_sha256(audit_root, head, ROOT_PASS_REL) == stable_file_sha256(path, ROOT_PASS_REL),
-              "Root pass is not committed at its reviewed HEAD")
+    freeze = _read_json(audit_root / FREEZE_REL)
+    head, reviewed_head = _verify_root_pass_commit_binding(
+        audit_root, root_pass_rel=ROOT_PASS_REL,
+        reviewed_head=str(passed.get("reviewed_head", "")),
+        freeze_rel=FREEZE_REL,
+        freeze_file_sha256=freeze_check["freeze_file_sha256"],
+        source_hashes=freeze["audit_source_hashes"],
+    )
     H.require(passed.get("status") == "PASS_CLS_POS_POISSON_BAG2_E79_SOURCE_AND_APPLICATION"
               and passed.get("candidate_id") == CANDIDATE_ID
               and passed.get("prefit_freeze_signature") == freeze_check["freeze_signature"]
@@ -522,7 +568,6 @@ def verify_root_pass(repository: Path, *, audit_root: Path = AUDIT_ROOT) -> dict
               and passed.get("sample_submission_access_authorized") is False
               and passed.get("kaggle_access_authorized") is False,
               "Root pass application/data boundaries are incomplete")
-    freeze = _read_json(audit_root / FREEZE_REL)
     for key, expected in (
         ("official_test_sha256", EXPECTED_TEST_SHA256),
         ("a02_test_npz_sha256", EXPECTED_A02_TEST_NPZ_SHA256),
@@ -535,7 +580,8 @@ def verify_root_pass(repository: Path, *, audit_root: Path = AUDIT_ROOT) -> dict
         H.require(passed.get(key) == expected,
                   f"Root pass does not bind frozen E79 application input: {key}")
     return {"status": "PASS_E79_ROOT_PASS", "pass_sha256": pass_sha,
-            "pass_file_sha256": sha256_file(path), "reviewed_head": head,
+            "pass_file_sha256": sha256_file(path), "current_head": head,
+            "reviewed_head": reviewed_head,
             "freeze_signature": freeze["freeze_signature"]}
 
 

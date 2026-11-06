@@ -28,10 +28,12 @@ leaderboard use in this workstream.
 - `reports/simplification_v1/CLS_POS_POISSON_BAG2_E79_V1/PROTOCOL.md`: exact
   recipe and execution/data boundaries.
 
-The final source commit and source-freeze commit are recorded in Git and in
-`PREFIT_FREEZE.json`. The freeze records the pinned official repository HEAD,
-old gamma source and data hashes, exact Train identity, and expected A02/Test
-application-chain hashes without opening Test or A02 pA values.
+The final R2 source commit and source-freeze commit are recorded in Git and in
+`PREFIT_FREEZE_R2.json`. The original R1 `PREFIT_FREEZE.json` remains byte-for-
+byte unchanged and is hash-bound by R2. The new freeze records the pinned
+official repository HEAD, old gamma source and data hashes, exact Train
+identity, and expected A02/Test application-chain hashes without opening Test
+or A02 pA values.
 
 ## Synthetic QA expected
 
@@ -47,9 +49,11 @@ assert statements.
 
 ## Next gated action
 
-After review, the root pass must be written, committed, and bound to the exact
-`PREFIT_FREEZE.json`. Then run `verify-freeze`, `reserve`, and `fit-all` in
-sequence. Verify both persisted fit receipts independently before the one
-authorized `apply-test` call. Stop after the CSV and application manifest pass
-readback. Do not upload to Kaggle from this script; Kaggle access is explicitly
-outside this candidate protocol.
+The root pass must be committed and bind the exact `PREFIT_FREEZE_R2.json`.
+Its `reviewed_head` may be an ancestor of the current HEAD if that reviewed
+commit contains the exact freeze and candidate source blobs; the pass itself
+must be present exactly at current HEAD. Then run `verify-freeze`, `reserve`,
+and `fit-all` in sequence. Verify both persisted fit receipts independently
+before the one authorized `apply-test` call. Stop after the CSV and application
+manifest pass readback. Do not upload to Kaggle from this script; Kaggle access
+is explicitly outside this candidate protocol.

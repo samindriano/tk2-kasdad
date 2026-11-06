@@ -63,6 +63,83 @@ def test_original_cgeom_recipe_requires_symbolic_objective_and_uniform_c_one() -
         runner._verify_cgeom_recipe({**recipe, "optimizer": recipe["optimizer"].replace("C=1", "C=2")})
 
 
+def test_root_pass_accepts_ancestor_review_and_requires_current_head_blob(tmp_path: Path) -> None:
+    root = tmp_path / "audit"
+    root.mkdir()
+
+    def git(*args: str) -> str:
+        return subprocess.run(["git", "-C", str(root), *args], check=True,
+                              capture_output=True, text=True).stdout.strip()
+
+    git("init", "-q")
+    git("config", "user.email", "e79-test@example.invalid")
+    git("config", "user.name", "E79 test")
+    source_hashes = {}
+    for relative in runner.SOURCE_FILES:
+        path = root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(f"frozen source {relative}\n".encode("utf-8"))
+        source_hashes[relative] = runner.stable_file_sha256(path, relative)
+    freeze_path = root / runner.FREEZE_REL
+    freeze_path.parent.mkdir(parents=True, exist_ok=True)
+    freeze_path.write_bytes(b'{"freeze_revision":2}\n')
+    freeze_sha = runner.stable_file_sha256(freeze_path, runner.FREEZE_REL)
+    git("add", "--all")
+    git("commit", "-m", "source and R2 freeze")
+    reviewed_head = git("rev-parse", "HEAD")
+
+    unrelated = root / "review_notes.txt"
+    unrelated.write_bytes(b"unrelated committed note\n")
+    git("add", "review_notes.txt")
+    git("commit", "-m", "unrelated commit between review and pass")
+    pass_path = root / runner.ROOT_PASS_REL
+    pass_path.parent.mkdir(parents=True, exist_ok=True)
+    pass_path.write_bytes(b'{"pass_sha256":"synthetic"}\n')
+    git("add", runner.ROOT_PASS_REL)
+    git("commit", "-m", "commit root pass")
+    current_head = git("rev-parse", "HEAD")
+    stray = root / "untracked_note.txt"
+    stray.write_bytes(b"unrelated untracked worktree note\n")
+
+    head, reviewed = runner._verify_root_pass_commit_binding(
+        root, root_pass_rel=runner.ROOT_PASS_REL, reviewed_head=reviewed_head,
+        freeze_rel=runner.FREEZE_REL, freeze_file_sha256=freeze_sha,
+        source_hashes=source_hashes)
+    assert head == current_head
+    assert reviewed == reviewed_head
+    assert head != reviewed
+
+    altered_sources = dict(source_hashes)
+    first_source = runner.SOURCE_FILES[0]
+    altered_sources[first_source] = "0" * 64
+    with pytest.raises(RuntimeError, match="does not contain the frozen candidate source"):
+        runner._verify_root_pass_commit_binding(
+            root, root_pass_rel=runner.ROOT_PASS_REL, reviewed_head=reviewed_head,
+            freeze_rel=runner.FREEZE_REL, freeze_file_sha256=freeze_sha,
+            source_hashes=altered_sources)
+    with pytest.raises(RuntimeError, match="exact frozen R2 file"):
+        runner._verify_root_pass_commit_binding(
+            root, root_pass_rel=runner.ROOT_PASS_REL, reviewed_head=reviewed_head,
+            freeze_rel=runner.FREEZE_REL, freeze_file_sha256="0" * 64,
+            source_hashes=source_hashes)
+
+    pass_path.write_bytes(b'{"pass_sha256":"tampered"}\n')
+    with pytest.raises(RuntimeError, match="not committed exactly at current HEAD"):
+        runner._verify_root_pass_commit_binding(
+            root, root_pass_rel=runner.ROOT_PASS_REL, reviewed_head=reviewed_head,
+            freeze_rel=runner.FREEZE_REL, freeze_file_sha256=freeze_sha,
+            source_hashes=source_hashes)
+
+
+def test_r2_resource_gates_and_r1_freeze_are_pinned() -> None:
+    assert runner.MIN_FIT_START_BYTES == 1 * runner.GIB
+    assert runner.POST_FEATURE_RESERVE_BYTES == 512 * 1024 ** 2
+    assert runner.POST_FIT_RESERVE_BYTES == 512 * 1024 ** 2
+    assert runner.MAX_THREADS == 2
+    r1 = runner.AUDIT_ROOT / runner.FREEZE_R1_REL
+    assert runner.sha256_file(r1) == runner.FREEZE_R1_SHA256
+
+
 def test_synthetic_cli_end_to_end_and_resume_without_additional_fits(tmp_path: Path) -> None:
     output = tmp_path / "synthetic"
     command = [sys.executable, "-O", str(runner.AUDIT_ROOT / runner.RUNNER_REL),
