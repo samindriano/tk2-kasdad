@@ -1,0 +1,40 @@
+{
+  "allowed_recovery_reads": 1,
+  "authorization_signature": "3c9827509dd7ea202ef1aabc5d01893d8e614314b035a68511c8e1e075038ec1",
+  "frozen_metric_verifier_sha256": "29a23575ffa9789cb028cea3f41c062c2e47490a8b4c0a73e630b4de2c471567",
+  "frozen_score_source_sha256": "39c33be29bc999252c8adb38277414271c36054c41774fcd6f05c7bcf1037532",
+  "historical_failed_read_preserved": true,
+  "metric_formula_or_gate_changes": false,
+  "metric_verifier_patch": {
+    "ledger_guard_replacement_count": 1,
+    "metric_formula_or_gate_changed": false,
+    "patched_ast_sha256": "fe9e66a3416dd0d410a02c7598bad9ab1bc601cf7a8167d944956032bcd0d2c7",
+    "replacement": "require the recovery wrapper's exact two-event/same-row ledger validation",
+    "reported_query_label_reads": "len(opened): failed original plus authorized recovery",
+    "source_path": "scripts/verify_cls_pos_ef_context_v1.py"
+  },
+  "metric_verifier_wrapper_sha256": "b17b2e03e48078bd614d2a067a6b4febace1e7ff35c3f06c8666aa2cbc4654ce",
+  "new_fits": 0,
+  "notes": "One logical fixed-policy evaluation; one failed original label read plus one explicitly approved same-row recovery. Verifier truthfully reports both reads.",
+  "original_prelabel_boundary_respected": true,
+  "parent_freeze_signature": "d5a6d6165b26a7d1b1f6faa6e793a503ce15a963b2d75a24e4b099e553c4b30c",
+  "parent_source_commit": "21001878edbf7685c23453abb8897ecb999cfdfd",
+  "patch": {
+    "no_metric_formula_or_gate_changes": true,
+    "patched_ast_sha256": "b18d22cdd0cf7e514ffdbcc4912ed19519a58e4ad8175f5fa9e86810a76b7cf8",
+    "prior_guard_change_count": 1,
+    "source_path": "scripts/cls_pos_ef_context_v1.py",
+    "subgroup_key_expression": "f'{kind}={value}'",
+    "subgroup_key_move_count": 1,
+    "subgroup_metric_id_uses_key_after_assignment": true
+  },
+  "patched_ast_sha256": "b18d22cdd0cf7e514ffdbcc4912ed19519a58e4ad8175f5fa9e86810a76b7cf8",
+  "patched_metric_verifier_ast_sha256": "fe9e66a3416dd0d410a02c7598bad9ab1bc601cf7a8167d944956032bcd0d2c7",
+  "prediction_changes": false,
+  "recovery_id": "CLS_POS_EF_CONTEXT_V1_SCORE_RECOVERY_01",
+  "recovery_wrapper_sha256": "0a51304ff23de2779594df95a91467aca21ca5e1cbd0c6c90f3fc3569685fd9d",
+  "root_authority_commit": "bfdde7915f80b31ef665e3be804dc0fd412b9c44",
+  "root_authority_path": "reports/simplification_v1/CLS_POS_EF_CONTEXT_V1/ROOT_SCORE_RECOVERY_R1.json",
+  "root_authority_sha256": "fea379ed88f854db954162677613b115f1060453d5f6c0982c6acc9defe5421c",
+  "status": "ONE_SCORE_RECOVERY_AUTHORIZED"
+}
