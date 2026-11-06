@@ -190,7 +190,7 @@ def repo_head(root: Path) -> str:
 
 
 def audit_sources() -> list[str]:
-    return [".gitignore", "src/models/cls_pos_ef_context_v1.py", "scripts/cls_pos_ef_context_v1.py",
+    return ["src/models/cls_pos_ef_context_v1.py", "scripts/cls_pos_ef_context_v1.py",
             "scripts/verify_cls_pos_ef_context_v1.py", "scripts/score_cls_pos_ef_context_v1.py",
             "tests/test_cls_pos_ef_context_v1.py",
             "reports/simplification_v1/CLS_POS_EF_CONTEXT_V1/PROTOCOL.md"]
