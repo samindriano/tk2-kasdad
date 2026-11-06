@@ -6,11 +6,13 @@ import builtins
 import hashlib
 import importlib
 import importlib.util
+import inspect
+import json
 from pathlib import Path
 import subprocess
 import symtable
 import sys
-from typing import Any
+from typing import Any, Mapping
 
 AUDIT_ROOT = Path(__file__).resolve().parents[1]
 REPORT_ROOT = AUDIT_ROOT / "reports/simplification_v1/CLS_POS_EF_CONTEXT_V1"
@@ -83,7 +85,24 @@ def verified_verifier_module(runner, pilot, freeze: dict[str, Any]):
     verifier.sha256_csr = pilot.sha256_csr
     pilot.require(verifier.sha256_array is pilot.sha256_array and verifier.sha256_csr is pilot.sha256_csr,
                   "Verifier helper binding does not match the frozen producer helpers")
-    return verifier, unresolved
+    frozen_q = verifier._independent_q
+    signature = list(inspect.signature(frozen_q).parameters)
+    pilot.require(signature == ["ef", "mu", "scale"], "Frozen independent context helper signature changed")
+
+    def compatible_q(ef, mu_or_state, scale=None):
+        if isinstance(mu_or_state, Mapping):
+            pilot.require(scale is None and {"mu", "scale"}.issubset(mu_or_state),
+                          "Context-state callsite has an unexpected argument shape")
+            return frozen_q(ef, float(mu_or_state["mu"]), float(mu_or_state["scale"]))
+        pilot.require(scale is not None, "Independent context helper needs both mu and scale")
+        return frozen_q(ef, float(mu_or_state), float(scale))
+
+    compatible_q.__wrapped__ = frozen_q
+    verifier._independent_q = compatible_q
+    callsite = {"function": "_independent_q", "frozen_signature": signature,
+        "caller_argument": "context_state mapping", "mapping_keys": ["mu", "scale"],
+        "delegates_to_frozen_function": True}
+    return verifier, unresolved, callsite
 
 
 def verify_committed_amendment(runner, pilot, freeze: dict[str, Any]) -> tuple[dict[str, Any], str]:
@@ -117,7 +136,7 @@ def run(official_root: Path) -> dict[str, Any]:
     freeze = pilot.verify_freeze(root)
     runner.load_audit_core(pilot, freeze)
     amendment, head = verify_committed_amendment(runner, pilot, freeze)
-    verifier, unresolved = verified_verifier_module(runner, pilot, freeze)
+    verifier, unresolved, callsite = verified_verifier_module(runner, pilot, freeze)
 
     result = verifier.verify_prelabel_outputs(root, write=False)
     pilot.require(result.get("status") == "PASS_TARGET_FREE_PRELABEL"
@@ -131,6 +150,7 @@ def run(official_root: Path) -> dict[str, Any]:
         "frozen_verifier_sha256": freeze["source_hashes"][FROZEN_VERIFIER_REL],
         "bound_helper_names": sorted(unresolved),
         "helper_source": "hash-pinned frozen producer module functions",
+        "argument_shape_compatibility": callsite,
         "verifier_source_modified": False,
     }
     result["verification_signature"] = pilot.canonical_sha256(result)
@@ -143,7 +163,7 @@ def main() -> int:
     parser.add_argument("--official-root", required=True)
     args = parser.parse_args()
     result = run(Path(args.official_root))
-    print(__import__("json").dumps(result, sort_keys=True, indent=2, allow_nan=False))
+    print(json.dumps(result, sort_keys=True, indent=2, allow_nan=False))
     return 0
 
 

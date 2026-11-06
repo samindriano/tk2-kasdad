@@ -17,6 +17,14 @@
     ],
     "other_unresolved_globals": []
   },
+  "callsite_compatibility": {
+    "function": "_independent_q",
+    "frozen_signature": ["ef", "mu", "scale"],
+    "caller_argument": "context_state mapping",
+    "mapping_keys": ["mu", "scale"],
+    "behavior": "Unpack the two scalar values and delegate to the same frozen function",
+    "invalid_shape_rejected": true
+  },
   "bound_helper_names": [
     "sha256_array",
     "sha256_csr"
@@ -24,11 +32,18 @@
   "helper_source_path": "scripts/cls_pos_ef_context_v1.py",
   "helper_source_sha256": "39c33be29bc999252c8adb38277414271c36054c41774fcd6f05c7bcf1037532",
   "wrapper_path": "scripts/run_cls_pos_ef_context_v1_prelabel_amended.py",
-  "wrapper_sha256": "a56b8b4871f014f4f341f304655eb38728fbd03f92ff743dc7c4d0ca9671cd77",
+  "wrapper_sha256": "5b9d38e4fad69a021d29f090968580b33b8b359b983e9b7b0fd957dceffc2e96",
   "verification_entry_point": "verify_prelabel_outputs",
   "frozen_verifier_modified": false,
   "model_fit_or_recipe_change": false,
   "query_labels_read": false,
   "test_or_sample_access": false,
-  "test_command": "python -m pytest -q tests/test_cls_pos_ef_context_v1_prelabel_compat.py"
+  "first_full_verifier_run": {
+    "fit_prefix_labels_read_for_objective_qa": true,
+    "query_labels_read": false,
+    "prelabel_report_written": false,
+    "failure": "TypeError at the one mismatched _independent_q callsite"
+  },
+  "test_command": "python -m pytest -q tests/test_cls_pos_ef_context_v1_prelabel_compat.py",
+  "tests_passed_before_resume": 3
 }
