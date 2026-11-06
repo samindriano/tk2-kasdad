@@ -1,0 +1,85 @@
+{
+  "bound_source_hashes": {
+    "current_model_sha256": "0a98bc0a52517eb2e41be8535d6d9562b8e27655b76ecf4768555a3f7a5d4c81",
+    "current_runner_sha256": "46f6fdce4021745fcdad2b978bc2580b47f333ed7f66f52e034d4ffe5908f38b",
+    "r1_commit_model_content_sha256_matches": true,
+    "r1_commit_runner_content_sha256_matches": true,
+    "r1_frozen_model_sha256": "0a98bc0a52517eb2e41be8535d6d9562b8e27655b76ecf4768555a3f7a5d4c81",
+    "r1_frozen_runner_sha256": "284a24da240dd6600d1c074eadcdecf1af681218c9d24056941a3e57b598f2a0"
+  },
+  "evaluation_labels_opened": false,
+  "experiment": "REG_IMPACT_MONOTONE_L2_V1",
+  "frozen_cache_replay_report_sha256": "5495a7eae4ee6065c00fdd31ae27c0f94aa0d7a5fb68f96d81c3867d8e13858f",
+  "new_lgb_head_mapping": {
+    "fit_artifact_callsite": "scripts/reg_impact_monotone_l2_v1.py:_save_fit_artifacts (rank50_map(raw, bundle.query_cycles))",
+    "formula": "clip(0.5*raw + 0.5*100*average_rank(raw)/cycle_size, 0, 100)",
+    "mapping_weight_source": "R16 frozen base LGB recipe, bound by SOURCE_FREEZE_R1; R01 accepted component manifest independently agrees",
+    "population": "complete query rows grouped by query cycle, independently for each prefix",
+    "present_only_replacement_callsite": "src/models/reg_impact_monotone_l2_v1.py:replace_lgb_slot_present_only (rank50_map(new_lgb_raw, cycles))",
+    "rank50_map_definition": "src/models/reg_impact_monotone_l2_v1.py:rank50_map",
+    "same_weight_for_e67_and_e75": true,
+    "ties": "average rank"
+  },
+  "no_new_mapping_selection": true,
+  "no_official_fits_started": true,
+  "preserved_r1_prefix_bundles": {
+    "67": {
+      "design_sha256": "a937f3959482b5b83f3d4b4f287fac21ed43240197454c47847f174348b3bc0d",
+      "fit_rows": 29705,
+      "query_rows": 20903,
+      "receipt_sha256": "ba8bcdc6150a60534da51e8d6b5b9428e8f9fc3293065e907f3fc7f314613c13",
+      "transforms_sha256": "1bc48281caea648f7b54646e6371dfe0a41b3f9620bd0a629250719916812e11"
+    },
+    "75": {
+      "design_sha256": "17dae6e29273c77227c275291c650a731044db700c270096d7ec65cd56b15fff",
+      "fit_rows": 42117,
+      "query_rows": 8491,
+      "receipt_sha256": "45c94be7e9939785ebd3e51811427bdb6cc583fd9c00046a3d6f2166dcc8647f",
+      "transforms_sha256": "b2235de5492de1169ea9c2fe6a51720a22308319d7ed28d534f9e9354dff2c70"
+    }
+  },
+  "purpose": "Bind the new LGB head to the existing R16/R01 base-LGB within-cycle rank blend without new selection.",
+  "r01_accepted_manifest": {
+    "component_recipe_matches_r16": true,
+    "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\reports\\optimization_v2\\kaggle\\v2_reg_sparse_lgb25.json",
+    "runner_path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\scripts\\optimization_v3_batch1_r01.py",
+    "runner_sha256": "e8511478d2b8e2489e70d2ab2c03f30724f3e516af99f3893d3a9f8750531341",
+    "sha256": "dd166e92089f24978244496a9a0afabc0d06551dbdc326579a7c898a8844e19a",
+    "sha256_pinned_by_r01_runner": "dd166e92089f24978244496a9a0afabc0d06551dbdc326579a7c898a8844e19a"
+  },
+  "r16_freeze": {
+    "binding_matches": true,
+    "components": [
+      {
+        "model": "lgb",
+        "params_id": "base",
+        "rank_weight": 0.5,
+        "weight": 0.5625
+      },
+      {
+        "model": "ridge",
+        "rank_weight": 0.75,
+        "weight": 0.1875
+      },
+      {
+        "model": "lgbm_sparse_l1",
+        "rank_weight": 0.5,
+        "weight": 0.25
+      }
+    ],
+    "lgb_outer_component_weight": 0.5625,
+    "lgb_rank_weight": 0.5,
+    "path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\experiments\\optimization_v3\\batch1\\R16\\freeze.json",
+    "recipe_components_path": "identity.control_lineage.recipe.components",
+    "sha256": "9158275bd14f44336cc4c664f6164c3d958b427f33f76ace457c6972c09a4af4",
+    "source_freeze_r1_file_binding_sha256": "9158275bd14f44336cc4c664f6164c3d958b427f33f76ace457c6972c09a4af4"
+  },
+  "schema_version": 1,
+  "source_freeze_r1_path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\reports\\optimization_v3\\REG_IMPACT_MONOTONE_L2_V1\\SOURCE_FREEZE_R1.json",
+  "source_freeze_r1_sha256": "dd5fdbb5f6a508b0048442311acefc35afa21a776cdecd3473c32146dbbe65c6",
+  "source_ready_r1_path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\tk2-reg-position-failure-mechanism-v1\\reports\\optimization_v3\\REG_IMPACT_MONOTONE_L2_V1\\SOURCE_READY_R1.json",
+  "source_ready_r1_sha256": "39ede23de081438851aa4b6adc081200e49651fda8fccefb27399b8bd14b010a",
+  "status": "PASS",
+  "synthetic_lifecycle_report_sha256": "ee0e1e6d6ca8e9078edcdad6d87cfd498a6ba94a12827c7c916995f28108dae5",
+  "test_or_sample_opened": false
+}

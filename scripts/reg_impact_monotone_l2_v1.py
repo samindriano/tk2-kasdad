@@ -18,8 +18,9 @@ import sys
 import threading
 import tempfile
 import time
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 import lightgbm
 import numpy as np
@@ -492,6 +493,294 @@ def _fit_authorization(
         "authorization_sha256": file_sha256(str(authorization_path)),
         "source_freeze_sha256": file_sha256(str(source_freeze_path)),
         "bundle_design_sha256": bundle_receipt["design_sha256"],
+        "authorization_path": str(Path(authorization_path).resolve()),
+        "authorization": authorization,
+    }
+
+
+def _fit_lifecycle_paths(output_root: Path) -> tuple[Path, Path]:
+    lifecycle_root = output_root / ".fit_lifecycle"
+    return lifecycle_root / "events.jsonl", lifecycle_root / "claims"
+
+
+def _append_fit_lifecycle_event(path: Path, event: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8", newline="\n") as stream:
+        stream.write(json.dumps(json_safe(event), sort_keys=True, allow_nan=False))
+        stream.write("\n")
+        stream.flush()
+        os.fsync(stream.fileno())
+
+
+def _read_fit_lifecycle(
+    ledger_path: Path,
+    approved_fit_ids: list[str],
+    bindings_by_id: dict[str, dict[str, Any]],
+) -> tuple[list[dict[str, Any]], dict[str, str], dict[str, dict[str, Any]], list[str]]:
+    canonical_ids = [f"E{origin}_{arm}" for origin in ORIGINS for arm in ARM_IDS]
+    if approved_fit_ids != canonical_ids or len(approved_fit_ids) != 6:
+        raise RuntimeError("fit lifecycle requires the exact six approved fit IDs in canonical order")
+    if set(bindings_by_id) != set(approved_fit_ids):
+        raise RuntimeError("fit lifecycle bindings must cover exactly the six approved fit IDs")
+    for fit_id in approved_fit_ids:
+        if bindings_by_id[fit_id].get("fit_id") != fit_id:
+            raise RuntimeError(f"fit lifecycle binding identity mismatch: {fit_id}")
+
+    events: list[dict[str, Any]] = []
+    states: dict[str, str] = {}
+    terminal_events: dict[str, dict[str, Any]] = {}
+    started_ids: list[str] = []
+    if ledger_path.is_file():
+        with ledger_path.open("r", encoding="utf-8") as stream:
+            for line_number, line in enumerate(stream, start=1):
+                if not line.strip():
+                    raise RuntimeError(f"fit lifecycle ledger contains a blank row at line {line_number}")
+                try:
+                    event = json.loads(line)
+                except json.JSONDecodeError as exc:
+                    raise RuntimeError(f"fit lifecycle ledger is incomplete at line {line_number}") from exc
+                if not isinstance(event, dict) or event.get("schema_version") != 1:
+                    raise RuntimeError(f"fit lifecycle event schema mismatch at line {line_number}")
+                if event.get("event_seq") != line_number or event.get("event_seq") != len(events) + 1:
+                    raise RuntimeError(f"fit lifecycle event sequence mismatch at line {line_number}")
+                fit_id = event.get("fit_id")
+                if fit_id not in approved_fit_ids:
+                    raise RuntimeError(f"fit lifecycle contains an unauthorized fit ID: {fit_id}")
+                expected_binding_sha = json_digest(bindings_by_id[fit_id])
+                if event.get("binding_sha256") != expected_binding_sha:
+                    raise RuntimeError(f"fit lifecycle binding changed for {fit_id}")
+                event_status = event.get("status")
+                if event_status == "FIT_STARTED":
+                    if states.get(fit_id) is not None:
+                        raise RuntimeError(f"duplicate fit lifecycle start for {fit_id}")
+                    next_index = len(started_ids)
+                    if next_index >= len(approved_fit_ids) or fit_id != approved_fit_ids[next_index]:
+                        raise RuntimeError("fit lifecycle starts are not in canonical approved order")
+                    started_ids.append(fit_id)
+                    states[fit_id] = "PENDING"
+                elif event_status in {"FIT_SAVED", "FIT_FAILED"}:
+                    if states.get(fit_id) != "PENDING":
+                        raise RuntimeError(f"fit lifecycle terminal event has no unique start: {fit_id}")
+                    states[fit_id] = event_status
+                    terminal_events[fit_id] = event
+                else:
+                    raise RuntimeError(f"unknown fit lifecycle status at line {line_number}")
+                events.append(event)
+
+    return events, states, terminal_events, started_ids
+
+
+def run_fit_lifecycle(
+    *,
+    output_root: Path,
+    fit_id: str,
+    approved_fit_ids: list[str],
+    bindings_by_id: dict[str, dict[str, Any]],
+    prepare_fn: Callable[[], Any],
+    fit_and_save_fn: Callable[[Any], Path],
+    readback_fn: Callable[[str, Path, dict[str, Any]], dict[str, Any]],
+    lock_path: Path | None = None,
+) -> dict[str, Any]:
+    """Run one fit through the durable, fail-closed lifecycle shared by CLI and smoke QA."""
+    if fit_id not in approved_fit_ids:
+        raise RuntimeError(f"fit id is not in the approved lifecycle: {fit_id}")
+    output_root = Path(output_root).resolve()
+    ledger_path, claims_root = _fit_lifecycle_paths(output_root)
+    shared_lock = lock_path or (Path(tempfile.gettempdir()) / "kasdad_single_heavy_job.lock")
+    with exclusive_training_slot(shared_lock):
+        events, states, terminal_events, started_ids = _read_fit_lifecycle(
+            ledger_path, approved_fit_ids, bindings_by_id
+        )
+        for approved_id in approved_fit_ids:
+            claim_path = claims_root / f"{approved_id}.json"
+            artifact_dir = output_root / approved_id
+            state = states.get(approved_id)
+            if state is None and (claim_path.exists() or artifact_dir.exists()):
+                raise RuntimeError(f"orphan fit claim/artifacts found for {approved_id}")
+            if state is not None and not claim_path.is_file():
+                raise RuntimeError(f"fit lifecycle claim is missing for consumed ID {approved_id}")
+            if state is not None:
+                claim = _read_json(claim_path)
+                if (claim.get("fit_id") != approved_id
+                        or claim.get("binding_sha256") != json_digest(bindings_by_id[approved_id])):
+                    raise RuntimeError(f"fit lifecycle claim binding differs for {approved_id}")
+            if state == "FIT_SAVED" and not artifact_dir.is_dir():
+                raise RuntimeError(f"saved fit artifacts are missing for {approved_id}")
+
+        if any(state == "PENDING" for state in states.values()):
+            pending = [fit for fit, state in states.items() if state == "PENDING"]
+            raise RuntimeError(f"fit lifecycle has interrupted/pending IDs with no retry allowed: {pending}")
+        if any(state == "FIT_FAILED" for state in states.values()):
+            failed = [fit for fit, state in states.items() if state == "FIT_FAILED"]
+            raise RuntimeError(f"fit lifecycle has consumed failed IDs; no retry or later fit allowed: {failed}")
+
+        saved_readbacks: dict[str, dict[str, Any]] = {}
+        for saved_id in approved_fit_ids:
+            if states.get(saved_id) != "FIT_SAVED":
+                continue
+            receipt_path = output_root / saved_id / "receipt.json"
+            event = terminal_events[saved_id]
+            readback = readback_fn(saved_id, receipt_path, bindings_by_id[saved_id])
+            if event.get("receipt_path") != str(receipt_path.resolve()):
+                raise RuntimeError(f"saved fit ledger receipt path differs for {saved_id}")
+            if event.get("artifacts") != readback.get("artifacts"):
+                raise RuntimeError(f"saved fit ledger artifact hashes/readback differ for {saved_id}")
+            saved_readbacks[saved_id] = readback
+
+        if states.get(fit_id) == "FIT_SAVED":
+            return {"status": "READBACK", "fit_id": fit_id, **saved_readbacks[fit_id]}
+        if states.get(fit_id) is not None:
+            raise RuntimeError(f"fit ID {fit_id} is already consumed; no retry is allowed")
+
+        next_index = len(started_ids)
+        if next_index >= 6:
+            raise RuntimeError("the approved six-fit lifecycle cap has been reached")
+        if fit_id != approved_fit_ids[next_index]:
+            raise RuntimeError(
+                f"fit order violation: next approved ID is {approved_fit_ids[next_index]}, got {fit_id}"
+            )
+
+        prepared = prepare_fn()
+        output_root.mkdir(parents=True, exist_ok=True)
+        claims_root.mkdir(parents=True, exist_ok=True)
+        claim_path = claims_root / f"{fit_id}.json"
+        if claim_path.exists() or (output_root / fit_id).exists():
+            raise RuntimeError(f"fit ID {fit_id} became claimed/orphaned before start")
+        binding_sha = json_digest(bindings_by_id[fit_id])
+        start_payload = {
+            "schema_version": 1,
+            "fit_id": fit_id,
+            "binding_sha256": binding_sha,
+            "pid": os.getpid(),
+            "claimed_at_utc": datetime.now(timezone.utc).isoformat(),
+        }
+        with claim_path.open("x", encoding="utf-8", newline="\n") as stream:
+            json.dump(start_payload, stream, indent=2, sort_keys=True, allow_nan=False)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        started = {
+            "schema_version": 1,
+            "event_seq": len(events) + 1,
+            "event_time_utc": datetime.now(timezone.utc).isoformat(),
+            "fit_id": fit_id,
+            "status": "FIT_STARTED",
+            "binding_sha256": binding_sha,
+            "claim_path": str(claim_path.resolve()),
+        }
+        _append_fit_lifecycle_event(ledger_path, started)
+        events.append(started)
+
+        try:
+            receipt_path = Path(fit_and_save_fn(prepared)).resolve()
+            expected_receipt = (output_root / fit_id / "receipt.json").resolve()
+            if receipt_path != expected_receipt:
+                raise RuntimeError(f"fit saver returned an unexpected receipt path for {fit_id}")
+            readback = readback_fn(fit_id, receipt_path, bindings_by_id[fit_id])
+        except BaseException as exc:
+            failed = {
+                "schema_version": 1,
+                "event_seq": len(events) + 1,
+                "event_time_utc": datetime.now(timezone.utc).isoformat(),
+                "fit_id": fit_id,
+                "status": "FIT_FAILED",
+                "binding_sha256": binding_sha,
+                "error_type": type(exc).__name__,
+                "error_message": str(exc)[:500],
+            }
+            _append_fit_lifecycle_event(ledger_path, failed)
+            raise RuntimeError(f"fit ID {fit_id} failed and is now consumed; no retry is allowed") from exc
+
+        saved = {
+            "schema_version": 1,
+            "event_seq": len(events) + 1,
+            "event_time_utc": datetime.now(timezone.utc).isoformat(),
+            "fit_id": fit_id,
+            "status": "FIT_SAVED",
+            "binding_sha256": binding_sha,
+            "receipt_path": str(receipt_path),
+            "artifacts": readback["artifacts"],
+            "model_readback_max_abs_diff": readback["model_readback_max_abs_diff"],
+            "mapped_prediction_max_abs_diff": readback["mapped_prediction_max_abs_diff"],
+        }
+        _append_fit_lifecycle_event(ledger_path, saved)
+        return {"status": "FITTED", "fit_id": fit_id, **readback}
+
+
+def _readback_fit_artifacts(
+    fit_id: str,
+    receipt_path: Path,
+    bundle_receipt_path: Path,
+    bundle: PrefixDesignBundle,
+    binding: dict[str, Any],
+) -> dict[str, Any]:
+    receipt = _read_json(receipt_path)
+    expected_root = receipt_path.parent.resolve()
+    if receipt.get("fit_id") != fit_id or receipt.get("source_kind") != binding["source_kind"]:
+        raise RuntimeError(f"{fit_id} saved receipt identity/source kind mismatch")
+    if receipt.get("lifecycle_binding_sha256") != json_digest(binding):
+        raise RuntimeError(f"{fit_id} saved receipt has a different lifecycle binding")
+    if (receipt.get("source_freeze_sha256") != binding["source_freeze_sha256"]
+            or receipt.get("root_plan_sha256") != binding["root_plan_sha256"]
+            or receipt.get("bundle_design_sha256") != binding["bundle_design_sha256"]
+            or receipt.get("bundle_receipt_sha256") != binding["bundle_receipt_sha256"]):
+        raise RuntimeError(f"{fit_id} saved receipt is detached from its frozen source/bundle")
+    if receipt.get("bundle_sha256") != bundle.preprocessing_state["fit_design_sha256"]:
+        raise RuntimeError(f"{fit_id} saved receipt fit-design digest differs from the prefix bundle")
+    if file_sha256(str(bundle_receipt_path)) != binding["bundle_receipt_sha256"]:
+        raise RuntimeError(f"{fit_id} prefix bundle receipt changed after lifecycle binding")
+    if receipt.get("model_path") != str((expected_root / "model.txt").resolve()):
+        raise RuntimeError(f"{fit_id} saved model path differs from its exclusive output directory")
+    if receipt.get("predictions_path") != str((expected_root / "predictions.npz").resolve()):
+        raise RuntimeError(f"{fit_id} saved prediction path differs from its exclusive output directory")
+    model_path = Path(receipt["model_path"])
+    prediction_path = Path(receipt["predictions_path"])
+    if (file_sha256(str(model_path)) != receipt.get("model_sha256")
+            or file_sha256(str(prediction_path)) != receipt.get("predictions_sha256")):
+        raise RuntimeError(f"{fit_id} saved model/prediction hash mismatch")
+    if binding["source_kind"] == "official":
+        authorization_path = Path(binding["authorization_path"])
+        if (receipt.get("official_fit_authorization_path") != str(authorization_path.resolve())
+                or receipt.get("official_fit_authorization_sha256") != binding["authorization_sha256"]
+                or file_sha256(str(authorization_path)) != binding["authorization_sha256"]):
+            raise RuntimeError(f"{fit_id} saved receipt is detached from its approved authorization")
+
+    with np.load(prediction_path, allow_pickle=False) as saved:
+        if "fit_id" not in saved.files or np.asarray(saved["fit_id"]).astype(str).tolist() != [fit_id]:
+            raise RuntimeError(f"{fit_id} saved predictions lack the exact fit identity")
+        query_ids = np.asarray(saved["query_ids"]).astype(str)
+        query_rows = np.asarray(saved["query_rows"], dtype=np.int64)
+        query_cycles = np.asarray(saved["query_cycles"], dtype=np.int64)
+        raw = np.asarray(saved["raw_prediction"], dtype=np.float64)
+        mapped = np.asarray(saved["mapped_prediction"], dtype=np.float64)
+    if (not np.array_equal(query_ids, bundle.query_ids)
+            or not np.array_equal(query_rows, bundle.query_rows)
+            or not np.array_equal(query_cycles, bundle.query_cycles)):
+        raise RuntimeError(f"{fit_id} saved query identity/order differs from its frozen bundle")
+    if raw.shape != bundle.query_cycles.shape or mapped.shape != raw.shape or not np.isfinite(raw).all():
+        raise RuntimeError(f"{fit_id} saved predictions are misaligned or nonfinite")
+    model = lightgbm.Booster(model_file=str(model_path))
+    query_frame = pd.DataFrame(bundle.query_design, columns=list(bundle.feature_names))
+    readback = np.asarray(model.predict(query_frame), dtype=np.float64)
+    model_difference = float(np.max(np.abs(readback - raw))) if len(raw) else 0.0
+    if not np.allclose(readback, raw, rtol=0.0, atol=1e-12):
+        raise RuntimeError(f"{fit_id} saved model does not read back to its raw predictions")
+    expected_mapped = rank50_map(raw, bundle.query_cycles)
+    mapped_difference = float(np.max(np.abs(expected_mapped - mapped))) if len(raw) else 0.0
+    if not np.allclose(expected_mapped, mapped, rtol=0.0, atol=1e-12):
+        raise RuntimeError(f"{fit_id} saved rank-map output differs from the frozen mapping")
+    meta = receipt.get("meta", {})
+    expected_arm = fit_id[len(f"E{bundle.origin}_"):]
+    if meta.get("arm_id") != expected_arm or int(meta.get("origin", -1)) != bundle.origin:
+        raise RuntimeError(f"{fit_id} saved fit metadata identity differs")
+    return {
+        "model_readback_max_abs_diff": model_difference,
+        "mapped_prediction_max_abs_diff": mapped_difference,
+        "artifacts": {
+            "receipt_sha256": file_sha256(str(receipt_path)),
+            "model_sha256": file_sha256(str(model_path)),
+            "predictions_sha256": file_sha256(str(prediction_path)),
+        },
     }
 
 
@@ -536,22 +825,82 @@ def _read_prefix_target(train_path: Path, bundle: PrefixDesignBundle) -> np.ndar
 
 def cmd_fit_arm(args: argparse.Namespace) -> int:
     bundle_receipt_path = Path(args.bundle_receipt)
-    bundle_receipt = _read_json(bundle_receipt_path)
     bundle = _load_bundle(bundle_receipt_path)
     fit_id = f"E{bundle.origin}_{args.arm}"
     source_freeze, train_path = _check_source_freeze(
         Path(args.source_freeze), Path(args.data_dir)
     )
+    if source_freeze.get("source_freeze_revision") != 2:
+        raise RuntimeError("official fits require the additive R2 source freeze with lifecycle guard proof")
+    lifecycle_binding = source_freeze.get("fit_lifecycle_guard", {})
+    lifecycle_report_path = Path(lifecycle_binding.get("report_path", ""))
+    if (lifecycle_binding.get("status") != "PASS"
+            or not lifecycle_report_path.is_file()
+            or file_sha256(str(lifecycle_report_path)) != lifecycle_binding.get("report_sha256")):
+        raise RuntimeError("R2 source freeze is missing a current passing lifecycle smoke report")
+    mapping_binding = source_freeze.get("mapping_binding", {})
+    mapping_proof_path = Path(mapping_binding.get("report_path", ""))
+    if (mapping_binding.get("status") != "PASS"
+            or mapping_binding.get("lgb_rank_weight") != 0.5
+            or not mapping_proof_path.is_file()
+            or file_sha256(str(mapping_proof_path)) != mapping_binding.get("report_sha256")):
+        raise RuntimeError("R2 source freeze is missing the exact frozen LGB rank-mapping proof")
     gate = _fit_authorization(
         Path(args.authorization), Path(args.source_freeze), bundle_receipt_path, fit_id
     )
-    lock_path = Path(tempfile.gettempdir()) / "kasdad_single_heavy_job.lock"
-    with exclusive_training_slot(lock_path):
+    authorization = gate["authorization"]
+    approved_fit_ids = list(authorization["approved_fit_ids"])
+    bundle_receipts: dict[int, tuple[Path, dict[str, Any]]] = {}
+    bundles: dict[int, PrefixDesignBundle] = {bundle.origin: bundle}
+    bindings_by_id: dict[str, dict[str, Any]] = {}
+    for origin in ORIGINS:
+        receipt_path = bundle_receipt_path if origin == bundle.origin else bundle_receipt_path.parent / f"E{origin}_receipt.json"
+        receipt = _read_json(receipt_path)
+        if (receipt.get("source_kind") != "official"
+                or receipt.get("source_train_sha256") != EXPECTED_TRAIN_SHA256
+                or receipt.get("design_sha256") != authorization["bundle_design_sha256"].get(str(origin))):
+            raise RuntimeError(f"E{origin} bundle receipt does not match exact approval bindings")
+        if file_sha256(str(Path(receipt["design_path"]))) != receipt["design_sha256"]:
+            raise RuntimeError(f"E{origin} design bundle digest changed before fit lifecycle")
+        if file_sha256(str(Path(receipt["transforms_path"]))) != receipt["transforms_sha256"]:
+            raise RuntimeError(f"E{origin} transform bundle digest changed before fit lifecycle")
+        preserved = source_freeze.get("preserved_prefix_bundles", {}).get(str(origin), {})
+        if (preserved.get("design_sha256") != receipt["design_sha256"]
+                or preserved.get("transforms_sha256") != receipt["transforms_sha256"]
+                or preserved.get("receipt_sha256") != file_sha256(str(receipt_path))):
+            raise RuntimeError(f"E{origin} existing R1 prefix bundle changed after the R2 source amendment")
+        bundle_receipts[origin] = (receipt_path, receipt)
+        for arm in ARM_IDS:
+            planned_id = f"E{origin}_{arm}"
+            bindings_by_id[planned_id] = {
+                "fit_id": planned_id,
+                "source_kind": "official",
+                "authorization_path": gate["authorization_path"],
+                "authorization_sha256": gate["authorization_sha256"],
+                "source_freeze_sha256": gate["source_freeze_sha256"],
+                "root_plan_sha256": source_freeze["root_plan_sha256"],
+                "bundle_design_sha256": receipt["design_sha256"],
+                "bundle_receipt_sha256": file_sha256(str(receipt_path)),
+                "train_sha256": EXPECTED_TRAIN_SHA256,
+            }
+
+    def readback(saved_id: str, receipt_path: Path, binding: dict[str, Any]) -> dict[str, Any]:
+        origin = int(saved_id.split("_", 1)[0][1:])
+        saved_receipt_path, _saved_receipt = bundle_receipts[origin]
+        if origin not in bundles:
+            bundles[origin] = _load_bundle(saved_receipt_path)
+        return _readback_fit_artifacts(
+            saved_id, receipt_path, saved_receipt_path, bundles[origin], binding
+        )
+
+    def prepare_training_target() -> np.ndarray:
         import psutil
         available = int(psutil.virtual_memory().available)
         if available < 1024 ** 3:
             raise MemoryError(f"fit RAM preflight failed: {available} available; need 1 GiB initial free RAM")
-        target = _read_prefix_target(train_path, bundle)
+        return _read_prefix_target(train_path, bundle)
+
+    def fit_and_save(target: np.ndarray) -> Path:
         model, raw, meta = fit_arm(bundle, target, args.arm)
         meta["official_fit_authorization_sha256"] = gate["authorization_sha256"]
         meta["source_freeze_sha256"] = gate["source_freeze_sha256"]
@@ -570,13 +919,30 @@ def cmd_fit_arm(args: argparse.Namespace) -> int:
                 "official_fit_authorization_path": str(Path(args.authorization).resolve()),
                 "source_freeze_sha256": gate["source_freeze_sha256"],
                 "root_plan_sha256": source_freeze["root_plan_sha256"],
+                "bundle_design_sha256": bindings_by_id[fit_id]["bundle_design_sha256"],
+                "bundle_receipt_sha256": bindings_by_id[fit_id]["bundle_receipt_sha256"],
+                "lifecycle_binding_sha256": json_digest(bindings_by_id[fit_id]),
                 "target_rows_materialized": len(target),
                 "query_target_rows_materialized": 0,
             },
         )
-        print(json.dumps({"fit_id": fit_id, "status": "FITTED", "receipt": str((directory / "receipt.json").resolve()),
-                          "model_sha256": file_sha256(str(directory / "model.txt")),
-                          "predictions_sha256": file_sha256(str(directory / "predictions.npz"))}, sort_keys=True))
+        return directory / "receipt.json"
+
+    result = run_fit_lifecycle(
+        output_root=Path(args.output_root),
+        fit_id=fit_id,
+        approved_fit_ids=approved_fit_ids,
+        bindings_by_id=bindings_by_id,
+        prepare_fn=prepare_training_target,
+        fit_and_save_fn=fit_and_save,
+        readback_fn=readback,
+    )
+    receipt_path = Path(args.output_root).resolve() / fit_id / "receipt.json"
+    print(json.dumps({"fit_id": fit_id, "status": result["status"],
+                      "receipt": str(receipt_path.resolve()),
+                      "model_readback_max_abs_diff": result.get("model_readback_max_abs_diff"),
+                      "mapped_prediction_max_abs_diff": result.get("mapped_prediction_max_abs_diff"),
+                      "artifacts": result.get("artifacts")}, sort_keys=True))
     return 0
 
 
@@ -967,6 +1333,153 @@ def _synthetic_incumbent(bundle: PrefixDesignBundle, seed: int) -> dict[str, np.
     return incumbent
 
 
+def _exercise_fit_lifecycle_faults(
+    temp: Path,
+    approved_fit_ids: list[str],
+    bindings_by_id: dict[str, dict[str, Any]],
+    readback_fn: Callable[[str, Path, dict[str, Any]], dict[str, Any]],
+) -> dict[str, Any]:
+    fit_id = approved_fit_ids[0]
+    binding_sha = json_digest(bindings_by_id[fit_id])
+    calls = {"prepare": 0, "fit": 0}
+
+    def prepare() -> None:
+        calls["prepare"] += 1
+        return None
+
+    def fit(_prepared: Any) -> Path:
+        calls["fit"] += 1
+        raise RuntimeError("synthetic-fit-lifecycle-sentinel")
+
+    def rejected_before_callbacks(output_root: Path, ids: list[str] = approved_fit_ids,
+                                  bindings: dict[str, dict[str, Any]] = bindings_by_id) -> None:
+        try:
+            run_fit_lifecycle(
+                output_root=output_root,
+                fit_id=fit_id,
+                approved_fit_ids=ids,
+                bindings_by_id=bindings,
+                prepare_fn=prepare,
+                fit_and_save_fn=fit,
+                readback_fn=readback_fn,
+            )
+        except (RuntimeError, FileExistsError):
+            if calls != {"prepare": 0, "fit": 0}:
+                raise RuntimeError("lifecycle rejected an invalid state after prepare/fit callback")
+            return
+        raise RuntimeError("lifecycle unexpectedly accepted an invalid state")
+
+    duplicate_root = temp / "guard_duplicate"
+    ledger, claims = _fit_lifecycle_paths(duplicate_root)
+    claims.mkdir(parents=True, exist_ok=True)
+    claim_path = claims / f"{fit_id}.json"
+    _write_json_exclusive(claim_path, {
+        "schema_version": 1,
+        "fit_id": fit_id,
+        "binding_sha256": binding_sha,
+        "pid": os.getpid(),
+    })
+    duplicate_event = {
+        "schema_version": 1,
+        "event_seq": 1,
+        "event_time_utc": datetime.now(timezone.utc).isoformat(),
+        "fit_id": fit_id,
+        "status": "FIT_STARTED",
+        "binding_sha256": binding_sha,
+        "claim_path": str(claim_path.resolve()),
+    }
+    _append_fit_lifecycle_event(ledger, duplicate_event)
+    _append_fit_lifecycle_event(ledger, {**duplicate_event, "event_seq": 2})
+    rejected_before_callbacks(duplicate_root)
+    duplicate_rejected = True
+
+    orphan_root = temp / "guard_orphan"
+    orphan_dir = orphan_root / fit_id
+    orphan_dir.mkdir(parents=True, exist_ok=True)
+    with (orphan_dir / "partial.bin").open("xb") as stream:
+        stream.write(b"orphan")
+    rejected_before_callbacks(orphan_root)
+    orphan_rejected = True
+
+    interrupted_root = temp / "guard_interrupted"
+    interrupted_ledger, interrupted_claims = _fit_lifecycle_paths(interrupted_root)
+    interrupted_claims.mkdir(parents=True, exist_ok=True)
+    interrupted_claim = interrupted_claims / f"{fit_id}.json"
+    _write_json_exclusive(interrupted_claim, {
+        "schema_version": 1,
+        "fit_id": fit_id,
+        "binding_sha256": binding_sha,
+        "pid": os.getpid(),
+    })
+    _append_fit_lifecycle_event(interrupted_ledger, {
+        "schema_version": 1,
+        "event_seq": 1,
+        "event_time_utc": datetime.now(timezone.utc).isoformat(),
+        "fit_id": fit_id,
+        "status": "FIT_STARTED",
+        "binding_sha256": binding_sha,
+        "claim_path": str(interrupted_claim.resolve()),
+    })
+    rejected_before_callbacks(interrupted_root)
+    interrupted_rejected = True
+
+    failed_root = temp / "guard_failed"
+    failed_attempts = 0
+
+    def failed_fit(_prepared: Any) -> Path:
+        nonlocal failed_attempts
+        failed_attempts += 1
+        raise RuntimeError("synthetic-fit-lifecycle-sentinel")
+
+    try:
+        run_fit_lifecycle(
+            output_root=failed_root,
+            fit_id=fit_id,
+            approved_fit_ids=approved_fit_ids,
+            bindings_by_id=bindings_by_id,
+            prepare_fn=lambda: None,
+            fit_and_save_fn=failed_fit,
+            readback_fn=readback_fn,
+        )
+    except RuntimeError as exc:
+        if "consumed" not in str(exc):
+            raise
+    else:
+        raise RuntimeError("synthetic fit failure was not recorded as consumed")
+    failure_events = [json.loads(line) for line in _fit_lifecycle_paths(failed_root)[0].read_text(encoding="utf-8").splitlines()]
+    if [event["status"] for event in failure_events] != ["FIT_STARTED", "FIT_FAILED"]:
+        raise RuntimeError("synthetic fit failure did not persist STARTED then FAILED")
+    try:
+        run_fit_lifecycle(
+            output_root=failed_root,
+            fit_id=fit_id,
+            approved_fit_ids=approved_fit_ids,
+            bindings_by_id=bindings_by_id,
+            prepare_fn=prepare,
+            fit_and_save_fn=fit,
+            readback_fn=readback_fn,
+        )
+    except RuntimeError:
+        if failed_attempts != 1 or calls != {"prepare": 0, "fit": 0}:
+            raise RuntimeError("consumed failed fit was retried")
+        failed_retry_rejected = True
+    else:
+        raise RuntimeError("consumed failed fit was unexpectedly retried")
+
+    extra_id = "E79_FORBIDDEN"
+    rejected_before_callbacks(temp / "guard_cap", approved_fit_ids + [extra_id], bindings_by_id)
+    cap_rejected = True
+    return {
+        "duplicate_start_rejected_before_callbacks": duplicate_rejected,
+        "orphan_output_rejected_before_callbacks": orphan_rejected,
+        "interrupted_start_rejected_before_callbacks": interrupted_rejected,
+        "failed_id_consumed_without_retry": failed_retry_rejected,
+        "failure_ledger_statuses": [event["status"] for event in failure_events],
+        "six_fit_cap_enforced_before_callbacks": cap_rejected,
+        "invalid_state_callback_counts": calls,
+    }
+
+
 def _synthetic_smoke(report_path: Path) -> dict[str, Any]:
     if lightgbm.__version__ != EXPECTED_LIGHTGBM_VERSION:
         raise RuntimeError(f"expected LightGBM {EXPECTED_LIGHTGBM_VERSION}, got {lightgbm.__version__}")
@@ -984,6 +1497,8 @@ def _synthetic_smoke(report_path: Path) -> dict[str, Any]:
         ensemble_root.mkdir()
         fit_outputs: dict[tuple[int, str], tuple[PrefixDesignBundle, np.ndarray]] = {}
         query_truth: dict[int, np.ndarray] = {}
+        bundles_by_origin: dict[int, PrefixDesignBundle] = {}
+        bundle_receipts_by_origin: dict[int, Path] = {}
         for origin in ORIGINS:
             bundle = prepare_prefix_design(
                 frame,
@@ -997,6 +1512,48 @@ def _synthetic_smoke(report_path: Path) -> dict[str, Any]:
                 raise RuntimeError("synthetic prefix bundle round-trip changed fit design bits")
             if not np.array_equal(bundle.query_design, roundtrip_bundle.query_design):
                 raise RuntimeError("synthetic prefix bundle round-trip changed query design bits")
+            bundles_by_origin[origin] = bundle
+            bundle_receipts_by_origin[origin] = bundle_receipt
+
+        approved_fit_ids = [f"E{origin}_{arm}" for origin in ORIGINS for arm in ARM_IDS]
+        synthetic_authorization_sha = hashlib.sha256(b"REG_IMPACT_MONOTONE_L2_V1 synthetic lifecycle only").hexdigest()
+        root_plan_sha = file_sha256(str(PLAN_PATH))
+        bindings_by_id: dict[str, dict[str, Any]] = {}
+        for origin in ORIGINS:
+            bundle_receipt_path = bundle_receipts_by_origin[origin]
+            bundle_receipt = _read_json(bundle_receipt_path)
+            for arm in ARM_IDS:
+                fit_id = f"E{origin}_{arm}"
+                bindings_by_id[fit_id] = {
+                    "fit_id": fit_id,
+                    "source_kind": "synthetic",
+                    "authorization_path": "SYNTHETIC_ONLY",
+                    "authorization_sha256": synthetic_authorization_sha,
+                    "source_freeze_sha256": synthetic_sha,
+                    "root_plan_sha256": root_plan_sha,
+                    "bundle_design_sha256": bundle_receipt["design_sha256"],
+                    "bundle_receipt_sha256": file_sha256(str(bundle_receipt_path)),
+                    "train_sha256": synthetic_sha,
+                }
+
+        def synthetic_readback(
+            saved_id: str,
+            receipt_path: Path,
+            binding: dict[str, Any],
+        ) -> dict[str, Any]:
+            origin = int(saved_id.split("_", 1)[0][1:])
+            return _readback_fit_artifacts(
+                saved_id,
+                receipt_path,
+                bundle_receipts_by_origin[origin],
+                bundles_by_origin[origin],
+                binding,
+            )
+
+        fit_optimizer_call_count = 0
+        lifecycle_runs: list[dict[str, Any]] = []
+        for origin in ORIGINS:
+            bundle = bundles_by_origin[origin]
             query_truth[origin] = target[bundle.query_rows]
             incumbent = _synthetic_incumbent(bundle, seed=5000 + origin)
             hinge = {"intercept": 1.5, "slope_low": 0.82, "slope_high": 0.94}
@@ -1004,21 +1561,58 @@ def _synthetic_smoke(report_path: Path) -> dict[str, Any]:
             raw_predictions: dict[str, np.ndarray] = {}
             mapped_predictions: dict[str, np.ndarray] = {}
             for arm_id in ARM_IDS:
-                model, raw, meta = fit_arm(
-                    bundle,
-                    target[bundle.fit_rows],
-                    arm_id,
-                    synthetic_params=SYNTHETIC_FIT_PARAMS,
+                fit_id = f"E{origin}_{arm_id}"
+                binding = bindings_by_id[fit_id]
+
+                def fit_and_save_synthetic(
+                    fit_target: np.ndarray,
+                    _bundle: PrefixDesignBundle = bundle,
+                    _arm_id: str = arm_id,
+                    _fit_id: str = fit_id,
+                    _binding: dict[str, Any] = binding,
+                ) -> Path:
+                    nonlocal fit_optimizer_call_count
+                    fit_optimizer_call_count += 1
+                    model, raw_prediction, metadata = fit_arm(
+                        _bundle,
+                        fit_target,
+                        _arm_id,
+                        synthetic_params=SYNTHETIC_FIT_PARAMS,
+                    )
+                    directory = _save_fit_artifacts(
+                        _bundle,
+                        model,
+                        raw_prediction,
+                        metadata,
+                        fit_root,
+                        synthetic=True,
+                        receipt_metadata={
+                            "source_freeze_sha256": _binding["source_freeze_sha256"],
+                            "root_plan_sha256": _binding["root_plan_sha256"],
+                            "bundle_design_sha256": _binding["bundle_design_sha256"],
+                            "bundle_receipt_sha256": _binding["bundle_receipt_sha256"],
+                            "lifecycle_binding_sha256": json_digest(_binding),
+                        },
+                    )
+                    return directory / "receipt.json"
+
+                lifecycle_result = run_fit_lifecycle(
+                    output_root=fit_root,
+                    fit_id=fit_id,
+                    approved_fit_ids=approved_fit_ids,
+                    bindings_by_id=bindings_by_id,
+                    prepare_fn=lambda _bundle=bundle: target[_bundle.fit_rows].copy(),
+                    fit_and_save_fn=fit_and_save_synthetic,
+                    readback_fn=synthetic_readback,
                 )
-                fit_dir = _save_fit_artifacts(
-                    bundle,
-                    model,
-                    raw,
-                    meta,
-                    fit_root,
-                    synthetic=True,
-                )
+                if lifecycle_result["status"] != "FITTED":
+                    raise RuntimeError(f"fresh synthetic fit unexpectedly returned {lifecycle_result['status']}")
+                lifecycle_runs.append({"fit_id": fit_id, "status": lifecycle_result["status"]})
+                fit_dir = fit_root / fit_id
+                saved_receipt = _read_json(fit_dir / "receipt.json")
+                meta = saved_receipt["meta"]
                 with np.load(fit_dir / "predictions.npz", allow_pickle=False) as saved:
+                    raw = np.asarray(saved["raw_prediction"], dtype=np.float64)
                     mapped = np.asarray(saved["mapped_prediction"], dtype=np.float64)
                 if not np.isfinite(mapped).all() or len(mapped) != len(bundle.query_rows):
                     raise RuntimeError("synthetic saved mapped query output failed basic QA")
@@ -1068,6 +1662,30 @@ def _synthetic_smoke(report_path: Path) -> dict[str, Any]:
                 mapped_B=mapped_predictions["B_L2_CONTROL"],
                 mapped_C=mapped_predictions["C_L2_MONOTONE"],
             )
+
+        saved_calls_before_readback = fit_optimizer_call_count
+        saved_readback = run_fit_lifecycle(
+            output_root=fit_root,
+            fit_id=approved_fit_ids[0],
+            approved_fit_ids=approved_fit_ids,
+            bindings_by_id=bindings_by_id,
+            prepare_fn=lambda: (_ for _ in ()).throw(RuntimeError("saved readback called prepare")),
+            fit_and_save_fn=lambda _prepared: (_ for _ in ()).throw(RuntimeError("saved readback called optimizer")),
+            readback_fn=synthetic_readback,
+        )
+        if saved_readback["status"] != "READBACK" or fit_optimizer_call_count != saved_calls_before_readback:
+            raise RuntimeError("saved synthetic fit did not read back without an optimizer call")
+        lifecycle_fault_checks = _exercise_fit_lifecycle_faults(
+            temp, approved_fit_ids, bindings_by_id, synthetic_readback
+        )
+        lifecycle_fault_checks.update({
+            "sequential_fit_ids": [x["fit_id"] for x in lifecycle_runs[:2]],
+            "fit_count": len(lifecycle_runs),
+            "actual_synthetic_optimizer_calls": fit_optimizer_call_count,
+            "saved_id_readback_status": saved_readback["status"],
+            "saved_id_readback_optimizer_calls": fit_optimizer_call_count - saved_calls_before_readback,
+            "official_cli_and_synthetic_use_same_public_function": True,
+        })
 
         # Independent durable pre-label QA is executed before toy query labels are scored.
         qa_path = temp / "PRELABEL_QA.json"
@@ -1151,6 +1769,7 @@ def _synthetic_smoke(report_path: Path) -> dict[str, Any]:
                 str(o): int(next(v[0] for k, v in fit_outputs.items() if k[0] == o).svd_components.shape[0])
                 for o in ORIGINS
             },
+            "fit_lifecycle": lifecycle_fault_checks,
             "fits": all_fits,
             "synthetic_score_rows": all_scored,
             "pooled_synthetic_rows": len(pooled_truth),
