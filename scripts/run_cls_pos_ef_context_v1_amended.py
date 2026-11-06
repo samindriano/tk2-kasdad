@@ -46,8 +46,11 @@ def git(*args: str) -> str:
 
 
 def load_frozen_driver():
-    if str(AUDIT_ROOT) not in sys.path:
-        sys.path.insert(0, str(AUDIT_ROOT))
+    try:
+        sys.path.remove(str(AUDIT_ROOT))
+    except ValueError:
+        pass
+    sys.path.insert(0, str(AUDIT_ROOT))
     path = AUDIT_ROOT / FROZEN_DRIVER_REL
     spec = importlib.util.spec_from_file_location("cls_pos_ef_context_v1_frozen_driver", path)
     if spec is None or spec.loader is None:
@@ -55,6 +58,25 @@ def load_frozen_driver():
     module = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = module
     spec.loader.exec_module(module)
+    return module
+
+
+def load_audit_core(pilot, freeze: Mapping[str, Any]):
+    """Load only the freeze-hash-pinned audit core under its canonical module name."""
+    rel = "src/models/cls_pos_ef_context_v1.py"
+    path = AUDIT_ROOT / rel
+    expected = freeze["source_hashes"].get(rel)
+    pilot.require(expected is not None and sha256_file(path) == expected,
+                  "Audit model core does not match the frozen source hash")
+    parent_models = importlib.import_module("src.models")
+    qualified_name = "src.models.cls_pos_ef_context_v1"
+    spec = importlib.util.spec_from_file_location(qualified_name, path)
+    pilot.require(spec is not None and spec.loader is not None, "Cannot load freeze-pinned audit model core")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[qualified_name] = module
+    spec.loader.exec_module(module)
+    setattr(parent_models, "cls_pos_ef_context_v1", module)
+    pilot.require(Path(module.__file__).resolve() == path.resolve(), "Loaded model core came from a different tree")
     return module
 
 
@@ -76,8 +98,48 @@ def read_lineage() -> list[dict[str, Any]]:
     return rows
 
 
+def reconcile_prefit_aborts(pilot, freeze: Mapping[str, Any], fit_id: str,
+                            lineage: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Record why a pre-fit adapter abort may be resumed without retrying an estimator."""
+    ledger = pilot.events(RUN_ROOT / "fit_ledger.jsonl")
+    fit_events = [e for e in ledger if e.get("fit_id") == fit_id]
+    pilot.require(not fit_events, f"Cannot resume {fit_id}: official fit ledger already contains this ID")
+    attempts = [e for e in lineage if e.get("fit_id") == fit_id and e.get("event") in {
+        "AMENDMENT_EXECUTION_STARTED", "AMENDMENT_EXECUTION_RETURNED", "AMENDMENT_EXECUTION_RAISED"}]
+    pilot.require(len(attempts) % 2 == 0
+                  and all(attempts[i].get("event") == "AMENDMENT_EXECUTION_STARTED"
+                          and attempts[i + 1].get("event") in {"AMENDMENT_EXECUTION_RETURNED", "AMENDMENT_EXECUTION_RAISED"}
+                          for i in range(0, len(attempts), 2)),
+                  f"Prior amendment attempts are incomplete or misordered: {fit_id}")
+    reconciled = [e for e in lineage if e.get("event") == "AMENDMENT_PREFIT_ABORT_RECONCILED"
+                  and e.get("fit_id") == fit_id]
+    newly_added = []
+    for start, outcome in zip(attempts[::2], attempts[1::2]):
+        if outcome.get("event") != "AMENDMENT_EXECUTION_RAISED":
+            continue
+        pilot.require(outcome.get("fit_started") is False and outcome.get("fit_terminal_events") == [],
+                      f"A prior attempt may have consumed a fit; no resume allowed for {fit_id}")
+        if any(e.get("prior_execution_commit") == start.get("execution_commit") for e in reconciled):
+            continue
+        row = {"event": "AMENDMENT_PREFIT_ABORT_RECONCILED", "fit_id": fit_id,
+            "amendment_id": start.get("amendment_id"), "freeze_signature": freeze["freeze_signature"],
+            "prior_execution_code_sha256": start.get("execution_code_sha256"),
+            "prior_execution_commit": start.get("execution_commit"),
+            "prior_error_type": outcome.get("error_type"), "official_fit_started": False,
+            "official_terminal_events": [], "fit_slot_consumed": False, "optimizer_invocations": 0,
+            "optimizer_retry": False, "adapter_plumbing_resume": True,
+            "official_fit_ledger_event_count": len(ledger),
+            "official_fit_ledger_sha256": sha256_file(RUN_ROOT / "fit_ledger.jsonl"),
+            "recorded_at_unix": time.time()}
+        append_lineage(row)
+        reconciled.append(row)
+        newly_added.append(row)
+    return newly_added
+
+
 def verify_amendment(pilot, repository: Path, fit_id: str) -> tuple[dict[str, Any], dict[str, Any], str]:
     freeze = pilot.verify_freeze(repository)
+    load_audit_core(pilot, freeze)
     amendment = pilot.read_json(AMENDMENT_PATH)
     pilot.require(amendment.get("status") == "OPERATIONAL_GUARD_ONLY",
                   "Execution amendment is not approved for use")
@@ -139,6 +201,8 @@ def run_one(repository: Path, fit_id: str) -> dict[str, Any]:
 
     prior_ids = [candidate for candidate in freeze["fit_ids"] if candidate in starts]
     lineage = read_lineage()
+    reconcile_prefit_aborts(pilot, freeze, fit_id, lineage)
+    lineage = read_lineage()
     known = {e.get("fit_id") for e in lineage if e.get("event") in {
         "ORIGINAL_FROZEN_FIT_RECONCILED", "AMENDMENT_EXECUTION_RETURNED"}}
     for previous_id in prior_ids:
@@ -164,6 +228,8 @@ def run_one(repository: Path, fit_id: str) -> dict[str, Any]:
         matching_terminal = [e for e in ledger if e.get("event") in {"FIT_SAVED", "FIT_FAILED"} and e.get("fit_id") == fit_id]
         append_lineage({"event": "AMENDMENT_EXECUTION_RAISED", "fit_id": fit_id,
             "amendment_id": amendment["amendment_id"], "freeze_signature": freeze["freeze_signature"],
+            "execution_code": ADAPTER_REL, "execution_code_sha256": adapter_hash,
+            "execution_commit": head, "raised_at_unix": time.time(),
             "fit_started": bool(matching_starts), "fit_terminal_events": [e["event"] for e in matching_terminal],
             "error_type": type(exc).__name__, "error": str(exc), "retry_allowed": False})
         raise

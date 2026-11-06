@@ -15,9 +15,9 @@
   "parent_freeze_signature": "d5a6d6165b26a7d1b1f6faa6e793a503ce15a963b2d75a24e4b099e553c4b30c",
   "frozen_driver_sha256": "39c33be29bc999252c8adb38277414271c36054c41774fcd6f05c7bcf1037532",
   "adapter_path": "scripts/run_cls_pos_ef_context_v1_amended.py",
-  "adapter_sha256": "24b0a46e50565b301d3d466476c7896a5123c378905e681043ac78a494ccada6",
+  "adapter_sha256": "745fef8990534e6ec4de8857596a30ea1717cf716735637c7fd4b1b2199945a5",
   "verifier_path": "scripts/verify_cls_pos_ef_context_v1_execution_amendment.py",
-  "verifier_sha256": "da5b827044897e981b1861bd56557d1fc7d93ca4e3cb73100add81a31504210b",
+  "verifier_sha256": "c41c664799db0d7f61c3fe9d5b874dd170b5cb67aa400a678a5fb0814271004b",
   "original_fit_id": "CLS_POS_EF_CONTEXT_V1_E67_REAL",
   "authorized_fit_ids": [
     "CLS_POS_EF_CONTEXT_V1_E67_SHUFFLED",
@@ -32,6 +32,18 @@
     "new_slots_added": 0,
     "retry_allowed": false
   },
+  "prefit_abort": {
+    "fit_id": "CLS_POS_EF_CONTEXT_V1_E67_SHUFFLED",
+    "execution_commit": "0329c5eea76e4943f3b3e5889ff6ab5acfbed0bd",
+    "execution_code_sha256": "24b0a46e50565b301d3d466476c7896a5123c378905e681043ac78a494ccada6",
+    "error_type": "ImportError",
+    "fit_started": false,
+    "official_fit_ledger_contains_start": false,
+    "optimizer_invocations": 0,
+    "fit_slot_consumed": false,
+    "remedy": "Load only the source-hash-pinned audit core at its exact file path under its canonical module name",
+    "reconciliation": "Before resuming plumbing, append a prefix event count and hash proving the fit ID had no FIT_STARTED or terminal event; do not retry an optimizer"
+  },
   "guard_change": {
     "old_rule": "Reject if any other frozen FIT_STARTED row exists, including starts with terminal FIT_SAVED or FIT_FAILED rows",
     "amended_rule": "Reject when started fit IDs minus terminal FIT_SAVED/FIT_FAILED IDs is nonempty; validate the full unchanged ledger before permitting the frozen fit call",
@@ -42,7 +54,7 @@
   "independent_verifier_required": true,
   "amendment_tests_before_resume": {
     "command": "python -m pytest -q tests/test_cls_pos_ef_context_v1_execution_amendment.py",
-    "passed": 4,
+    "passed": 6,
     "failed": 0
   }
 }

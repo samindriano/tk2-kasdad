@@ -41,8 +41,11 @@ def git(*args: str) -> str:
 
 
 def load_driver():
-    if str(AUDIT_ROOT) not in sys.path:
-        sys.path.insert(0, str(AUDIT_ROOT))
+    try:
+        sys.path.remove(str(AUDIT_ROOT))
+    except ValueError:
+        pass
+    sys.path.insert(0, str(AUDIT_ROOT))
     spec = importlib.util.spec_from_file_location("cls_pos_ef_context_v1_independent_driver", AUDIT_ROOT / FROZEN_DRIVER_REL)
     if spec is None or spec.loader is None:
         raise RuntimeError("Cannot load frozen pilot verifier")
@@ -93,9 +96,6 @@ def verify(official_root: Path) -> dict[str, Any]:
     pilot.require(all(e.get("source_commit") == freeze["source_commit"]
                       and e.get("freeze_signature") == freeze["freeze_signature"] for e in starts),
                   "Fit ledger source/freeze lineage differs")
-    pilot.require(not any(e.get("event") == "AMENDMENT_EXECUTION_RAISED" for e in lineage),
-                  "An amendment execution raised; inspect its durable receipt before proceeding")
-
     original_id = freeze["fit_ids"][0]
     amended_ids = amendment["authorized_fit_ids"]
     pilot.require(amended_ids == freeze["fit_ids"][1:], "Amendment scope is not exactly the three unstarted fits")
@@ -120,23 +120,66 @@ def verify(official_root: Path) -> dict[str, Any]:
 
     execution_commit: str | None = None
     for fit_id in amended_ids:
-        starts_for = [e for e in lineage if e.get("event") == "AMENDMENT_EXECUTION_STARTED" and e.get("fit_id") == fit_id]
-        returned_for = [e for e in lineage if e.get("event") == "AMENDMENT_EXECUTION_RETURNED" and e.get("fit_id") == fit_id]
-        pilot.require(len(starts_for) == len(returned_for) == 1,
-                      f"Execution lineage is missing or duplicated for {fit_id}")
-        start, returned = starts_for[0], returned_for[0]
-        for row in (start, returned):
-            pilot.require(row.get("amendment_id") == amendment["amendment_id"]
-                          and row.get("freeze_signature") == freeze["freeze_signature"]
-                          and row.get("execution_code") == ADAPTER_REL
-                          and row.get("execution_code_sha256") == amendment["adapter_sha256"],
+        attempts = [e for e in lineage if e.get("fit_id") == fit_id and e.get("event") in {
+            "AMENDMENT_EXECUTION_STARTED", "AMENDMENT_EXECUTION_RETURNED", "AMENDMENT_EXECUTION_RAISED"}]
+        pilot.require(attempts and len(attempts) % 2 == 0
+                      and all(attempts[i].get("event") == "AMENDMENT_EXECUTION_STARTED"
+                              and attempts[i + 1].get("event") in {"AMENDMENT_EXECUTION_RETURNED", "AMENDMENT_EXECUTION_RAISED"}
+                              for i in range(0, len(attempts), 2)),
+                      f"Execution lineage attempts are incomplete or misordered for {fit_id}")
+        successful = []
+        for start, outcome in zip(attempts[::2], attempts[1::2]):
+            pilot.require(start.get("amendment_id") == amendment["amendment_id"]
+                          and start.get("freeze_signature") == freeze["freeze_signature"]
+                          and start.get("execution_code") == ADAPTER_REL
+                          and start.get("execution_code_sha256") == amendment["adapter_sha256"],
                           f"Actual adapter lineage mismatch for {fit_id}")
-        pilot.require(returned.get("status") == "SAVED"
-                      and returned.get("receipt_sha256") == receipt_hashes[fit_id],
-                      f"Adapter return does not match verified receipt for {fit_id}")
+            if outcome.get("event") == "AMENDMENT_EXECUTION_RAISED":
+                pilot.require(outcome.get("amendment_id") == amendment["amendment_id"]
+                              and outcome.get("freeze_signature") == freeze["freeze_signature"]
+                              and outcome.get("fit_started") is False
+                              and outcome.get("fit_terminal_events") == [],
+                              f"A failed amended attempt consumed/obscured a fit: {fit_id}")
+                reconciled = [e for e in lineage if e.get("event") == "AMENDMENT_PREFIT_ABORT_RECONCILED"
+                              and e.get("fit_id") == fit_id
+                              and e.get("prior_execution_commit") == start.get("execution_commit")]
+                pilot.require(len(reconciled) == 1, f"Pre-fit abort lacks one explicit reconciliation: {fit_id}")
+                proof = reconciled[0]
+                pilot.require(proof.get("fit_slot_consumed") is False
+                              and proof.get("optimizer_invocations") == 0
+                              and proof.get("optimizer_retry") is False
+                              and proof.get("adapter_plumbing_resume") is True,
+                              f"Pre-fit abort reconciliation is insufficient: {fit_id}")
+                count = int(proof.get("official_fit_ledger_event_count", -1))
+                ledger_lines = ledger_path.read_bytes().splitlines(keepends=True)
+                pilot.require(0 <= count <= len(ledger_lines)
+                              and sha256_bytes(b"".join(ledger_lines[:count])) == proof.get("official_fit_ledger_sha256"),
+                              f"Pre-fit ledger snapshot hash mismatch: {fit_id}")
+                prefix_events = [json.loads(line) for line in ledger_lines[:count]]
+                pilot.require(not any(e.get("fit_id") == fit_id for e in prefix_events),
+                              f"Pre-fit ledger snapshot already consumed {fit_id}")
+                if outcome.get("execution_code_sha256") is not None:
+                    pilot.require(outcome.get("execution_code_sha256") == start.get("execution_code_sha256")
+                                  and outcome.get("execution_commit") == start.get("execution_commit"),
+                                  f"Failed-attempt code lineage differs: {fit_id}")
+                continue
+            returned = outcome
+            pilot.require(returned.get("amendment_id") == amendment["amendment_id"]
+                          and returned.get("freeze_signature") == freeze["freeze_signature"]
+                          and returned.get("execution_code") == ADAPTER_REL
+                          and returned.get("execution_code_sha256") == amendment["adapter_sha256"]
+                          and returned.get("status") == "SAVED"
+                          and returned.get("receipt_sha256") == receipt_hashes[fit_id],
+                          f"Adapter return does not match verified receipt for {fit_id}")
+            pilot.require(returned.get("execution_commit") == start.get("execution_commit"),
+                          f"Successful fit commit differs between start and return: {fit_id}")
+            successful.append(start)
+        pilot.require(len(successful) == 1,
+                      f"Expected one successful amended execution for {fit_id}; no retries are allowed after fit start")
+        start = successful[0]
         if execution_commit is None:
             execution_commit = start.get("execution_commit")
-        pilot.require(start.get("execution_commit") == execution_commit == returned.get("execution_commit"),
+        pilot.require(start.get("execution_commit") == execution_commit,
                       "Amended fits used inconsistent execution commits")
         pilot.require(git("merge-base", "--is-ancestor", execution_commit, git("rev-parse", "HEAD")) == "",
                       "Amendment execution commit is not an ancestor of current HEAD")
