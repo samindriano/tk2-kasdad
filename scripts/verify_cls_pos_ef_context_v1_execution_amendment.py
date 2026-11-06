@@ -131,8 +131,7 @@ def verify(official_root: Path) -> dict[str, Any]:
         for start, outcome in zip(attempts[::2], attempts[1::2]):
             pilot.require(start.get("amendment_id") == amendment["amendment_id"]
                           and start.get("freeze_signature") == freeze["freeze_signature"]
-                          and start.get("execution_code") == ADAPTER_REL
-                          and start.get("execution_code_sha256") == amendment["adapter_sha256"],
+                          and start.get("execution_code") == ADAPTER_REL,
                           f"Actual adapter lineage mismatch for {fit_id}")
             if outcome.get("event") == "AMENDMENT_EXECUTION_RAISED":
                 pilot.require(outcome.get("amendment_id") == amendment["amendment_id"]
@@ -145,6 +144,12 @@ def verify(official_root: Path) -> dict[str, Any]:
                               and e.get("prior_execution_commit") == start.get("execution_commit")]
                 pilot.require(len(reconciled) == 1, f"Pre-fit abort lacks one explicit reconciliation: {fit_id}")
                 proof = reconciled[0]
+                if start.get("execution_code_sha256") != amendment["adapter_sha256"]:
+                    prior = amendment.get("prefit_abort", {})
+                    pilot.require(fit_id == prior.get("fit_id")
+                                  and start.get("execution_code_sha256") == prior.get("execution_code_sha256")
+                                  and start.get("execution_commit") == prior.get("execution_commit"),
+                                  f"Unapproved historical adapter code in pre-fit abort: {fit_id}")
                 pilot.require(proof.get("fit_slot_consumed") is False
                               and proof.get("optimizer_invocations") == 0
                               and proof.get("optimizer_retry") is False
@@ -162,11 +167,16 @@ def verify(official_root: Path) -> dict[str, Any]:
                     pilot.require(outcome.get("execution_code_sha256") == start.get("execution_code_sha256")
                                   and outcome.get("execution_commit") == start.get("execution_commit"),
                                   f"Failed-attempt code lineage differs: {fit_id}")
+                elif start.get("execution_code_sha256") != amendment["adapter_sha256"]:
+                    pilot.require(proof.get("prior_execution_code_sha256") == start.get("execution_code_sha256")
+                                  and proof.get("prior_execution_commit") == start.get("execution_commit"),
+                                  f"Historical pre-fit attempt hash/commit lacks reconciliation: {fit_id}")
                 continue
             returned = outcome
             pilot.require(returned.get("amendment_id") == amendment["amendment_id"]
                           and returned.get("freeze_signature") == freeze["freeze_signature"]
                           and returned.get("execution_code") == ADAPTER_REL
+                          and start.get("execution_code_sha256") == amendment["adapter_sha256"]
                           and returned.get("execution_code_sha256") == amendment["adapter_sha256"]
                           and returned.get("status") == "SAVED"
                           and returned.get("receipt_sha256") == receipt_hashes[fit_id],
