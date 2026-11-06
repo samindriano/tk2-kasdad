@@ -380,6 +380,7 @@ def test_prefit_report_assembly_and_r1_replay_lineage_reject_a_third_read(monkey
         "prefix_rows_sha256": row_sha,
         "prefix_ids_sha256": ids_sha,
         "prefix_target_sha256": target_sha,
+        "cause": "synthetic serialization failure after preflight read",
         "additional_same_prefix_reads_allowed": 1,
         "expected_total_prefit_reads_after_replay": 2,
         "optimizer_starts_before_replay": 0,
@@ -400,6 +401,7 @@ def test_prefit_report_assembly_and_r1_replay_lineage_reject_a_third_read(monkey
     assert qa["prefix_label_rows_per_read"] == len(prior_rows)
     assert qa["prefix_label_rows_read_total"] == 2 * len(prior_rows)
     assert qa["prefix_label_target_sha256"] == target_sha
+    assert "E75 fitting boundary" in qa["prefix_label_replay_disclosure"]
     assert freeze["prefit_replay_authorization_sha256"] == runner.sha256_file(runner.ROOT_PREFIT_REPLAY_PATH)
     assert runner.verify_freeze(official_root)["freeze_signature"] == freeze["freeze_signature"]
 

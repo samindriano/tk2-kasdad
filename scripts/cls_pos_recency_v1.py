@@ -352,6 +352,7 @@ def _preflight_weight_checks(
             "prior_ledger_sha256": prior_ledger_sha256,
             "prefix_rows_sha256": expected_rows_sha, "prefix_ids_sha256": expected_ids_sha,
             "expected_prefix_target_sha256": replay_authorization["prefix_target_sha256"],
+            "disclosure": replay_authorization.get("disclosure"),
             "prior_fit_starts": 0, "replay_slot_consumed": True,
             "query_labels_read": False, "test_or_sample_access": False})
     open_event_name = "PREFIT_PREFIX_LABELS_REPLAY_OPENED" if replay else "PREFIT_PREFIX_LABELS_OPENED"
@@ -521,6 +522,8 @@ def preflight_and_freeze(official_root: Path) -> dict[str, Any]:
         "prefix_label_target_sha256": prefix_weight_preflight["prefix_label_target_sha256"],
         "prefix_label_replay_count": prefix_weight_preflight["prefix_label_replay_count"],
         "prefix_label_replay_authorization_sha256": prefix_weight_preflight["prefix_label_replay_authorization_sha256"],
+        "prefix_label_replay_cause": replay_authorization.get("cause") if replay_authorization else None,
+        "prefix_label_replay_disclosure": replay_authorization.get("disclosure") if replay_authorization else None,
         "query_labels_read": False,
         "test_or_sample_access": False,
         "kaggle_access": False,
@@ -571,6 +574,7 @@ def preflight_and_freeze(official_root: Path) -> dict[str, Any]:
         },
         "boundary": {
             "fit_labels": "prefix-present rows only; original prefit read plus the single R1-authorized identical-prefix replay, then recorded fit-prefix reads",
+            "prefit_replay_disclosure": body["prefix_label_replay_disclosure"],
             "query_labels": "closed until both origins' predictions and independent committed prelabel verify",
             "test_or_sample_access": False,
             "kaggle_access": False,
@@ -635,6 +639,9 @@ def verify_freeze(official_root: Path, *, require_committed_freeze: bool = False
             or claim.get("authority_sha256") != authorization_sha
             or claim.get("prior_ledger_sha256") != authorization.get("prior_ledger_sha256")
             or claim.get("expected_prefix_target_sha256") != authorization.get("prefix_target_sha256")
+            or claim.get("disclosure") != authorization.get("disclosure")
+            or qa.get("prefix_label_replay_cause") != authorization.get("cause")
+            or qa.get("prefix_label_replay_disclosure") != authorization.get("disclosure")
             or regular_open != [authorization.get("prior_prefix_open_event")]
             or regular_read != [authorization.get("prior_prefix_read_event")]
             or bound_read.get("target_sha256") != authorization.get("prefix_target_sha256")
