@@ -96,6 +96,19 @@ def test_synthetic_fit_artifact_tampering_fails_closed(tmp_path: Path) -> None:
                                      freeze_signature="SYNTHETIC_FREEZE")
 
 
+def test_synthetic_fit_receipt_tampering_fails_closed(tmp_path: Path) -> None:
+    output = tmp_path / "synthetic"
+    runner.run_synthetic(output)
+    fit_id = model.FIT_IDS[0]
+    receipt_path = output / "fits" / fit_id / "FIT_RECEIPT.json"
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    receipt["ridge_c"] = 2.0
+    receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+    with pytest.raises(RuntimeError, match="Receipt self-hash mismatch"):
+        verifier.verify_fit_artifact(output / "fits", fit_id,
+                                     freeze_signature="SYNTHETIC_FREEZE")
+
+
 def test_synthetic_application_csv_and_receipt_tampering_fail_closed(tmp_path: Path) -> None:
     output = tmp_path / "synthetic"
     runner.run_synthetic(output)

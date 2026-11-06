@@ -87,4 +87,3 @@ committed and the audit worktree is clean. `reserve`, `fit-all`, and
 `ROOT_PASS.json` authorizes the same freeze, exact two fit IDs, and one
 application. Run `verify-freeze` before root review and before every later
 official command. Do not invoke `fit-all` or `apply-test` as part of source QA.
-

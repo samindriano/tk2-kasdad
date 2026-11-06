@@ -149,4 +149,3 @@ def build_probabilities(
 
 def apply_thresholds(probability: Sequence[float], present: Sequence[bool]) -> np.ndarray:
     return load_pilot_helpers().apply_fixed_thresholds(probability, present)
-

@@ -53,4 +53,3 @@ sequence. Verify both persisted fit receipts independently before the one
 authorized `apply-test` call. Stop after the CSV and application manifest pass
 readback. Do not upload to Kaggle from this script; Kaggle access is explicitly
 outside this candidate protocol.
-

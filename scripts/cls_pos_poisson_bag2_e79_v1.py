@@ -439,8 +439,13 @@ def create_source_freeze(repository: Path, *, audit_root: Path = AUDIT_ROOT) -> 
 def verify_source_freeze(repository: Path, *, audit_root: Path = AUDIT_ROOT) -> dict[str, Any]:
     path = audit_root / FREEZE_REL
     freeze = _read_json(path)
-    signature = freeze.get("freeze_signature")
-    body = dict(freeze)
+    receipt_sha = freeze.get("receipt_sha256")
+    receipt_body = dict(freeze)
+    receipt_body.pop("receipt_sha256", None)
+    H.require(receipt_sha == H.canonical_sha256(receipt_body),
+              "E79 prefit freeze receipt self-hash is invalid")
+    signature = receipt_body.get("freeze_signature")
+    body = dict(receipt_body)
     body.pop("freeze_signature", None)
     H.require(signature == H.canonical_sha256(body), "E79 prefit freeze signature is invalid")
     H.require(freeze.get("candidate_id") == CANDIDATE_ID
@@ -1212,4 +1217,3 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

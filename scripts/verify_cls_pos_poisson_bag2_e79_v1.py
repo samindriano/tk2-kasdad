@@ -60,6 +60,12 @@ def _json(path: Path) -> dict[str, Any]:
     return value
 
 
+def _verify_receipt_self_hash(value: dict[str, Any], label: str) -> None:
+    body = dict(value)
+    receipt_sha = body.pop("receipt_sha256", None)
+    require(receipt_sha == canonical_sha256(body), f"Receipt self-hash mismatch: {label}")
+
+
 def _candidate_root(path: Path) -> Path:
     path = Path(path)
     return path.parent if path.name == "fits" else path
@@ -76,6 +82,7 @@ def verify_fit_artifact(run_root: Path, fit_id: str, *,
     require(all(path.is_file() for path in (attempt_path, artifact_path, receipt_path)),
             f"Fit artifact/receipt/attempt missing: {fit_id}")
     attempt, receipt = _json(attempt_path), _json(receipt_path)
+    _verify_receipt_self_hash(receipt, fit_id)
     seed = SEED_BY_FIT_ID[fit_id]
     require(receipt.get("candidate_id") == CANDIDATE_ID
             and receipt.get("fit_id") == fit_id
@@ -168,6 +175,7 @@ def verify_application(run_root: Path, *, receipt_path: Path, bundle_path: Path,
                        expected_baseline_sha256: str) -> dict[str, Any]:
     root = _candidate_root(run_root)
     receipt = _json(receipt_path)
+    _verify_receipt_self_hash(receipt, "E79 application")
     require(receipt.get("candidate_id") == CANDIDATE_ID
             and receipt.get("status") == "PASS_E79_APPLICATION_CSV_CREATED"
             and receipt.get("fit_count_during_application") == 0
