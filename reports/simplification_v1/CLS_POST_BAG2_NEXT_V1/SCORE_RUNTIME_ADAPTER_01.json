@@ -1,0 +1,28 @@
+{
+  "adapter_script_path": "scripts/score_cls_a02_position_kernel_v1_runtime_adapter_01.py",
+  "adapter_script_sha256": "137ec57af2cfbe9681a1de25e5b60ca3129c364fec9d802a3f61cca4d558c498",
+  "amendment_id": "CLS_A02_POSITION_KERNEL_V1_SCORE_RUNTIME_ADAPTER_01",
+  "compatibility_change": "Inject only the Python standard-library subprocess module as a missing global on the already imported frozen scorer module, then call its unchanged score_once() function.",
+  "created_at_utc": "2026-11-06T11:32:12.484549+00:00",
+  "freeze_sha256": "dcfb2cdd81f76ec3763ee660ed338c7e6c2fbe008db7684b1c2864e957fab16e",
+  "frozen_score_script_path": "scripts/score_cls_a02_position_kernel_v1.py",
+  "frozen_score_script_sha256": "9b55f458c48954d1da7c225cf8e6d059d4d8b82441dbe8792e65c5f4b16e3bd4",
+  "frozen_scorer_modified": false,
+  "implementation_commit": "0800d332e942ce5d7840c0776e9efa56d4f8394e",
+  "one_score_run_allowed_after_this_manifest": true,
+  "original_prelabel_boundary_compliant": false,
+  "prelabel_status": "PASS_AMENDED_PRELABEL_VERIFICATION",
+  "prelabel_verification_sha256": "dede86f6e096d875764edf197d4ec2d398a72310066c92399747eb75bd372cf4",
+  "previous_runtime_failure": {
+    "exception": "NameError: name 'subprocess' is not defined",
+    "failure_phase": "before SCORING_ATTEMPT creation and before artifact_signal read",
+    "kaggle_accessed": false,
+    "score_attempt_file_created": false,
+    "target_labels_accessed": false,
+    "test_or_sample_accessed": false
+  },
+  "scientific_qualification": false,
+  "scoring_logic_or_metric_changed": false,
+  "source_commit": "5ef136bc1265cd1f1d607d7fd9b600f11d5f29f8",
+  "status": "APPROVED_SCORER_RUNTIME_COMPATIBILITY_ONLY"
+}
