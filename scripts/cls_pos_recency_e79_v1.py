@@ -124,6 +124,12 @@ def file_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def source_text_sha256(path: Path) -> str:
+    """Hash committed text independent of Windows checkout line-ending conversion."""
+    payload = Path(path).read_bytes().replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    return hashlib.sha256(payload).hexdigest()
+
+
 def array_sha256(value: Any) -> str:
     array = np.ascontiguousarray(np.asarray(value))
     digest = hashlib.sha256()
@@ -206,7 +212,8 @@ def _committed_file_sha(commit: str, relative: str) -> str:
     )
     if result.returncode:
         raise RuntimeError(f"Frozen source is absent from commit {commit}: {relative}")
-    return hashlib.sha256(result.stdout).hexdigest()
+    normalized = result.stdout.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    return hashlib.sha256(normalized).hexdigest()
 
 
 def _inventory_body() -> dict[str, Any]:
@@ -260,8 +267,8 @@ def _verify_root_authority_and_inputs() -> dict[str, Any]:
         verified_pins[pin_id] = expected
     return {
         "inventory_sha256": inventory["inventory_sha256"],
-        "inventory_file_sha256": file_sha256(INVENTORY_PATH),
-        "root_decision_file_sha256": file_sha256(ROOT_DECISION_PATH),
+        "inventory_file_sha256": source_text_sha256(INVENTORY_PATH),
+        "root_decision_file_sha256": source_text_sha256(ROOT_DECISION_PATH),
         "root_decision_commit": ROOT_DECISION_COMMIT,
         "main_root": str(MAIN_ROOT),
         "main_head": current_main_head,
@@ -276,7 +283,7 @@ def _verify_root_authority_and_inputs() -> dict[str, Any]:
 
 
 def _freeze_body() -> dict[str, Any]:
-    source_hashes = {rel: file_sha256(AUDIT_ROOT / rel) for rel in SOURCE_FILES}
+    source_hashes = {rel: source_text_sha256(AUDIT_ROOT / rel) for rel in SOURCE_FILES}
     body = {
         "schema_version": 1,
         "candidate_id": core.CANDIDATE_ID,
@@ -428,7 +435,7 @@ def verify_freeze() -> tuple[dict[str, Any], dict[str, Any]]:
     if git("status", "--porcelain", "--untracked-files=no"):
         raise RuntimeError("Tracked E79 source changed after freeze")
     for rel, expected in freeze.get("source_file_sha256", {}).items():
-        if file_sha256(AUDIT_ROOT / rel) != expected or _committed_file_sha(source_commit, rel) != expected:
+        if source_text_sha256(AUDIT_ROOT / rel) != expected or _committed_file_sha(source_commit, rel) != expected:
             raise RuntimeError(f"Frozen E79 source mismatch: {rel}")
     authority = _verify_root_authority_and_inputs()
     if authority != freeze.get("input_lineage"):

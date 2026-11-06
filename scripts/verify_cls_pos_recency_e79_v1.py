@@ -96,6 +96,11 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def source_text_sha256(path: Path) -> str:
+    payload = Path(path).read_bytes().replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    return hashlib.sha256(payload).hexdigest()
+
+
 def array_sha256(value: Any) -> str:
     array = np.ascontiguousarray(np.asarray(value))
     digest = hashlib.sha256()
@@ -208,11 +213,14 @@ def verify_authority_and_cache(mode: str = "train") -> tuple[dict[str, Any], dic
         path = AUDIT_ROOT / relative
         committed = subprocess.run(["git", "-C", str(AUDIT_ROOT), "show", f"{source_commit}:{relative}"],
                                    capture_output=True)
-        if (not path.is_file() or sha256_file(path) != expected or committed.returncode
-                or hashlib.sha256(committed.stdout).hexdigest() != expected):
+        committed_text = committed.stdout.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+        if (not path.is_file() or source_text_sha256(path) != expected or committed.returncode
+                or hashlib.sha256(committed_text).hexdigest() != expected):
             raise RuntimeError(f"Frozen E79 source code changed: {relative}")
     lineage = freeze.get("input_lineage", {})
     if (lineage.get("inventory_sha256") != inventory.get("inventory_sha256")
+            or lineage.get("inventory_file_sha256") != source_text_sha256(INVENTORY_PATH)
+            or lineage.get("root_decision_file_sha256") != source_text_sha256(decision_path)
             or lineage.get("official_train_sha256") != OFFICIAL_TRAIN_SHA256
             or lineage.get("test_or_sample_access") is not False
             or lineage.get("target_column_read") is not False):
