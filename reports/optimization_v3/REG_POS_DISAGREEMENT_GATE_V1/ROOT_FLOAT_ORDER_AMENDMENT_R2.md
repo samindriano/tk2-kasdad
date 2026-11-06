@@ -1,0 +1,11 @@
+# R2 construction amendment: preserve parent arithmetic
+
+Root independently read only baseline, pos_t50, champion_direct and missing from frozen SOURCE_E67_R1/SOURCE_E75_R1 archives. The original `clip(.75*b+.25*p,0,100)` reproduces the saved champion exactly at both origins. The alternative `clip(b+.25*(p-b),0,100)` differs on 3,400/20,903 E67 rows and 1,441/8,491 E75 rows, maximum absolute difference 1.4210854715202004e-14. This is a confirmed floating-point operation-order mismatch, not corrupted source or evidence of model performance.
+
+Authorize a source/verifier R2 amendment correcting the comparator to the parent's arithmetic. Supported REAL and CONTROL keep their already specified `b+w*(p-b)` arithmetic, weights, scale and causal hinge. Unsupported fallback must copy the saved champion exactly. Keep exact checks; do not replace them with permissive tolerances. Add regression coverage for operation ordering, tampering, fallback and saved-scale reuse.
+
+The two scale states are already saved and must be reused byte-for-byte with their receipts. No additional scale fit, base/POS/preprocessor/calibrator fit is authorized. Preserve the original source freeze and arrays. Bind them and the scale hashes into a new R2 source amendment.
+
+REAL_D1 and CONTROL_D1 started but failed before any prediction archive was published; retain those consumed attempts and record their terminal failure. Explicit deterministic policy-start allowance increases from four to six, with at most four successful logical policy artifacts. Two new D1 R2 IDs are authorized; unstarted D2 operations may execute under the new source binding. No counter reset or reuse of a consumed ID. This budget amendment concerns deterministic arithmetic constructions, not additional model training.
+
+After synthetic QA and source binding, Luna2 may continue directly through remaining constructions, independent prelabel/readback, one scoring stage and independent metric QA. No performance gate or recipe selection changes. No Test/E79/Kaggle. Return results to Sol without another cosmetic approval checkpoint. This amendment is issued before candidate scoring; no evaluation labels were read by this root diagnostic.
