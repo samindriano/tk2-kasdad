@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "experiment_id": "REG_POS_DISAGREEMENT_GATE_V1",
+  "status": "BLOCKED_COMPARATOR_RECONSTRUCTION",
+  "failed_stage": "D1 REAL/CONTROL deterministic policy construction",
+  "observed_error": "GateError: Champion direct formula does not reproduce frozen source at E67",
+  "cause": "The implementation compared the frozen champion against b + 0.25*(p-b), while the authoritative saved champion uses clip(0.75*b + 0.25*p, 0, 100). Algebraic equivalence did not guarantee bitwise identity.",
+  "source_freeze_intact": true,
+  "scale_states_saved": ["D1", "D2"],
+  "policy_operations_started": ["REAL_D1", "CONTROL_D1"],
+  "policy_archives_written": [],
+  "policy_operations_saved": [],
+  "D2_policy_operations_started": false,
+  "query_targets_read": false,
+  "test_or_sample_accessed": false,
+  "kaggle_or_submission_action": false,
+  "authorized_next_step": "Preserve this failure and obtain root adjudication before any corrected policy construction. Reuse the saved scalar states; do not refit them."
+}

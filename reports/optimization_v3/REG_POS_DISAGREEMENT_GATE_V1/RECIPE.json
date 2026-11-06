@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "experiment_id": "REG_POS_DISAGREEMENT_GATE_V1",
+  "parent": {
+    "champion": "five learner DIRECT blend plus frozen causal P50 hinge",
+    "public_reference": "58019539",
+    "public_mae": 11.01510,
+    "excluded_parent": "Poisson Bag2 public reference 58047858, MAE 11.04202"
+  },
+  "hypothesis": "A fixed reduction of the POS contribution on rows with large disagreement from the frozen four learner R06 baseline can outperform both the unchanged champion and a same-cycle uniform shrink control. This is not a learned reliability estimator.",
+  "source_contract": {
+    "pos_raw": "Original full-cycle POS raw auxiliary output from the frozen original POS model.",
+    "pos_t50": "Apply the unchanged same-cycle T50 mapping to the original POS raw output before selection or blending.",
+    "baseline": "Frozen R06 four learner OOF baseline for the same physical row.",
+    "identity": ["physical row index", "record_id", "cycle_code", "missing mask"],
+    "labels": "No query labels may be read before candidate prediction freeze and independent prelabel QA."
+  },
+  "scales": {
+    "D1": {"source_origin": 67, "selection_cycles": [68, 71], "required_positive_disagreements": 200},
+    "D2": {"source_origin": 67, "selection_cycles": [68, 75], "required_positive_disagreements": 200},
+    "statistic": "Median of strictly positive absolute POS T50 minus R06 disagreements on present selection rows.",
+    "unsupported_behavior": "If support is below 200, mark the scale unsupported and use the exact champion policy for that window."
+  },
+  "policies": {
+    "REAL": "w_i = 0.25 * exp(-abs(p_i-b_i)/s); present DIRECT = clip(b_i + w_i*(p_i-b_i), 0, 100).",
+    "CONTROL": "For each query cycle, use the mean REAL weight among present rows in that same cycle as a constant weight for present rows in the cycle.",
+    "CHAMPION": "Use the frozen 0.25 POS contribution.",
+    "missing": "Every policy returns the exact R06 baseline on missing rows.",
+    "hinges": "Apply the same already frozen causal D1/D2 hinge to all policies; never apply the final all OOF hinge to the pilot windows."
+  },
+  "evaluation": {
+    "D1": {"origin": 67, "cycles": [72, 75]},
+    "D2": {"origin": 75, "cycles": [76, 79]},
+    "primary": "Unique D1 plus D2 rows, expected total 15953.",
+    "disclosure": "Development labels have been used repeatedly. D1 and D2 are distinct score rows but not independent validation; E75 training includes earlier D1 cycles.",
+    "metrics": ["MAE", "p90 absolute error", "per cycle", "missing/present", "target tails", "entry friction", "impact_load quartiles", "text_load quartiles"],
+    "group_support": "Use inherited REG groups and n>=100; unsupported groups remain UNKNOWN.",
+    "scientific_gate": "REAL pooled MAE gain >= 0.02; D1 and D2 gains >= 0; REAL gain over CONTROL > 0; required groups supported; maximum supported REAL group harm <= 0.25; exact missing fallback; independent QA PASS.",
+    "exploratory_gate": "(REAL pooled gain > 0 OR (D2 gain >= 0.01 AND pooled gain >= -0.01)); D1 gain >= -0.05; required groups supported; maximum supported REAL group harm <= 0.25; exact missing fallback; independent QA PASS.",
+    "selection": "No label-based selection of scale, lambda, policy, or control after scoring. Never promote CONTROL after seeing results."
+  },
+  "budget": {
+    "scalar_scale_states": 2,
+    "deterministic_policy_constructions": 4,
+    "base_pos_vectorizer_calibrator_optimizer_fits": 0,
+    "test_sample_kaggle_or_submission_access": false
+  },
+  "final_source": "Only after independent metric QA and exploratory eligibility, write the unique target-free OOF disagreement source (E67 cycles 68-75 plus E75 cycles 76-79); do not fit its final scale or run E79 before root review."
+}

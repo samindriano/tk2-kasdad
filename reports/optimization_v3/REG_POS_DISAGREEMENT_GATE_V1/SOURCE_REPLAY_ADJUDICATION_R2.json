@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "experiment_id": "REG_POS_DISAGREEMENT_GATE_V1",
+  "status": "REPLAY_CHECK_MISCONFIGURED",
+  "prior_error": "Durable fit unit receipt/hash/schema failed: REG_POSITION_DIRECT_L1_V1_E67_STRUCTURED",
+  "root_read_only_check": {
+    "position_freeze_signature": "80614c292413e00fd4234bb1d4da4f3b40f2aea019bb6d510dab035e356b4003",
+    "all_five_unit_receipt_conditions_passed": true,
+    "artifact_corruption_established": false
+  },
+  "cause": "The first replay attempt passed the Poisson Bag2 experiment freeze instead of the original R06 position freeze to the historical replay helper.",
+  "interpretation": "Do not describe the cached structured unit as corrupt. Continue with direct validation of the immutable original POS prediction and R06 OOF cache, which avoids rebuilding the unused preprocessor design.",
+  "new_fit_started": false,
+  "query_targets_read": false,
+  "test_or_sample_accessed": false
+}
