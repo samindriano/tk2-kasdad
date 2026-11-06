@@ -72,9 +72,9 @@ Test dan satu persiapan CSV yang benar-benar berjalan.
 - Prefit source/synthetic QA PASS; freeze/reservation membatasi fit resmi satu.
 - Synthetic lifecycle PASS, termasuk persistence/readback, overwrite refusal,
   dan resume tanpa fit kedua.
-- Test suite model: 9 passed; recovery regression suite: 10 passed, 0 failed
-  (`RECOVERY_UNIT_TEST_QA.json`). QA pertama yang berisi satu ekspektasi label
-  keliru tetap disimpan terpisah sebagai riwayat.
+- Final regression run atas dua file test: 10 passed, 0 failed (9 test model +
+  1 recovery; `RECOVERY_UNIT_TEST_QA.json`). QA pertama yang berisi satu
+  ekspektasi label keliru tetap disimpan terpisah sebagai riwayat.
 - Independent fit verifier menghitung ulang weights, class mass, objective,
   gradient, dan seluruh input digest tanpa memanggil optimizer.
 - Independent application verifier memeriksa hash receipt/cache, route
