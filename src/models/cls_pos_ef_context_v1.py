@@ -255,4 +255,3 @@ def supported(mask: Sequence[bool], y: Sequence[int], *, min_n: int = 200, min_p
     return {"n": n, "positive": positive, "negative": negative,
             "supported": bool(n >= min_n and positive >= min_per_class and negative >= min_per_class),
             "minimum_n": int(min_n), "minimum_per_class": int(min_per_class)}
-
