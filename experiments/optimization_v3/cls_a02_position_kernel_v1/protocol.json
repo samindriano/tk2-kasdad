@@ -1,0 +1,100 @@
+{
+  "pilot_id": "CLS_A02_POSITION_KERNEL_V1",
+  "status_before_execution": "FROZEN_RESEARCH_PILOT",
+  "authorized_predictor_constructions": 4,
+  "units": [
+    "E67_REAL",
+    "E67_SHUFFLED",
+    "E75_REAL",
+    "E75_SHUFFLED"
+  ],
+  "estimator_fits": 0,
+  "base_fits": 0,
+  "position_or_bag_vectorizer_fits": 0,
+  "calibration_fits": 0,
+  "fixed_recipe": {
+    "reuse": [
+      "same-origin original A02 prefix-fitted vectorizer",
+      "full original historical A02 donor bank, OOF probabilities and residuals",
+      "query Sparse25 baseline probability",
+      "original A02 lexical top-32 source rows and similarities",
+      "original POS probability",
+      "uniform POS/A02 present blend and existing missing-stream route"
+    ],
+    "position_block": "existing build_position_block transform; same original A02 vectorizer; REAL original token order; SHUFFLED deterministic per-document order shuffle seed 42 preserving token multiset and third-segment sizes",
+    "kernel": "K(q,d) = cosine_bag(q,d) * (0.5 + 0.5 * cosine_position(q,d))",
+    "donor_search": "top 32 positive K over the complete original bank, ties resolved by stable source row position",
+    "mass": "M0(q) = sum(original lexical top-32 similarities squared); u=K^2; w=M0*u/sum(u)",
+    "correction": "clip(sum(w * historical_residual)/(4 + M0), -0.05, 0.05)",
+    "probability": "clip(query Sparse25 baseline + correction, 0, 1)",
+    "fallback": "M0=0 uses exact Sparse25 baseline; missing stream retains exact current A02 probability and threshold 0.53230976129477; M0>0 with no positive K support is an integrity error",
+    "blend": "present stream score = 0.5 * original POS probability + 0.5 * candidate A02 probability; class 1 iff score >= 0.50"
+  },
+  "views": {
+    "e67": "origin 67, query cycles 68-79; report H12 and W4/W5/W6",
+    "e75": "origin 75, query cycles 76-79; report W6",
+    "unique_primary": "E67 cycles 68-75 plus E75 cycles 76-79; 20,903 distinct rows; do not duplicate E67 W6"
+  },
+  "source_boundaries": {
+    "allowed_sources": [
+      "official Classification Train feature columns for text, cycle, and identity",
+      "historical A02 saved model and fit-prefix bank state",
+      "A02 cached query probabilities and lexical neighbor geometry",
+      "original POS cached query probabilities",
+      "fit-defined cached text-load quartiles and entry-friction groups"
+    ],
+    "query_labels": "must not be accessed for construction, selection, or prelabel verification; scoring is allowed only after all four immutable outputs and independent prelabel verification are durable",
+    "test_sample_kaggle": "not accessed"
+  },
+  "prospective_scientific_performance_gates": {
+    "real_unique_pool_gain_vs_full_champion": ">= 0.0005 Macro F1",
+    "real_e67_h12_gain_vs_full_champion": ">= 0",
+    "real_e75_w6_gain_vs_full_champion": ">= 0",
+    "real_vs_shuffled_unique_pool_gain": ">= 0.0002 Macro F1",
+    "real_vs_shuffled_e75_w6_gain": ">= 0",
+    "supported_legacy_guards": "must pass",
+    "minimum_group_support": "n >= 200 and at least 30 examples per class; otherwise UNKNOWN"
+  },
+  "prospective_exploratory_eligibility": {
+    "pool_policy": "unique-pool gain > 0 OR (E75 W6 gain >= 0.0005 and unique-pool gain >= -0.0005)",
+    "group_harm": "Macro F1 harm <= 0.02 and positive-recall harm <= 0.03 for supported groups",
+    "additional_requirements": [
+      "exact missing-stream invariant",
+      "independent QA PASS",
+      "verified model-construction training boundary PASS"
+    ],
+    "status_limit": "exploratory-only; never scientific qualification or champion promotion"
+  },
+  "resource_limits": {
+    "one_job_at_a_time": true,
+    "max_threads": 2,
+    "initial_free_ram_min_bytes": 1073741824,
+    "projected_free_ram_reserve_bytes": 536870912,
+    "shared_lock": "%TEMP%/kasdad_single_heavy_job.lock"
+  },
+  "accounting": {
+    "fresh_lane_local_cap": 4,
+    "no_retry_or_refund": true,
+    "historical_ledgers_mutated": false
+  },
+  "novelty_check": {
+    "status": "PASS_TARGETED_SEARCH_NO_EQUIVALENT_HISTORICAL_POSITIONAL_DONOR_KERNEL",
+    "scope": [
+      "official src/models/classification_a02_neighbors.py",
+      "official src/models/a02_coefficient_geometry_v1.py",
+      "official src/models/optimization_v3_positional_text_pilot_v1.py::build_position_block",
+      "official reports/optimization_v3/posoffset_a02_endgame_v1/RECIPE.json",
+      "official reports/optimization_v3/posoffset_a02_endgame_v1/FINAL_HANDOFF.md",
+      "targeted keyword search across official src, scripts, reports, and experiments for position-aware donor kernels"
+    ],
+    "related_but_not_equivalent": [
+      "POSOFFSET MIX50 and ADD_RESIDUAL combine existing positional-route and A02 probabilities; they do not condition residual donor retrieval on positional cosine.",
+      "CGEOM changes donor geometry by coefficient-weighting bag TF-IDF columns; it does not use token-position blocks.",
+      "The positional text pilot adds position-block features to a separate learner; it does not perform position-aware A02 donor retrieval."
+    ],
+    "limitation": "Targeted repository search is evidence against a direct duplicate, not proof that no equivalent exists outside the searched artifacts."
+  },
+  "deviation_amendment": "reports/simplification_v1/CLS_POST_BAG2_NEXT_V1/INCIDENT_01.json",
+  "original_prelabel_boundary_compliant": false,
+  "scientific_qualification": false
+}
