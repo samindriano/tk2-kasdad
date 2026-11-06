@@ -1,0 +1,53 @@
+{
+  "adapter_manifest_path": "reports/simplification_v1/CLS_POST_BAG2_NEXT_V1/SCORE_RUNTIME_ADAPTER_01.json",
+  "adapter_manifest_sha256": "1e3481b134e1e7b278e9f9695643f7c96a0dd3109adafe1d9a19acf0c503f8ea",
+  "adapter_script_path": "scripts/score_cls_a02_position_kernel_v1_runtime_adapter_01.py",
+  "adapter_script_sha256": "137ec57af2cfbe9681a1de25e5b60ca3129c364fec9d802a3f61cca4d558c498",
+  "candidate_outputs_or_ledger_changed": false,
+  "execution_command": "python -m scripts.score_cls_a02_position_kernel_v1_runtime_adapter_01",
+  "exploratory_eligibility": "NOT_ELIGIBLE_EXPLORATORY",
+  "frozen_score_script_path": "scripts/score_cls_a02_position_kernel_v1.py",
+  "frozen_score_script_sha256": "9b55f458c48954d1da7c225cf8e6d059d4d8b82441dbe8792e65c5f4b16e3bd4",
+  "frozen_source_hash_matches": true,
+  "integrity_note": "Hash-bound report; no digital signature is claimed.",
+  "kaggle_accessed": false,
+  "metric_verification_sha256": "f894843c57e79072716724c5a904d712140616538d876938398022d6d4bc76ad",
+  "metric_verification_status": "PASS_INDEPENDENT_METRIC_AND_GATE_RECONSTRUCTION",
+  "metric_verifier_path": "scripts/verify_cls_a02_position_kernel_v1_metrics.py",
+  "metric_verifier_sha256": "6147eda245fe1b20d2b8c8b377a2e1672cdc4a7e89c2e6dc18189c6a7416d4a0",
+  "original_prelabel_boundary_compliant": false,
+  "prelabel_status": "PASS_AMENDED_PRELABEL_VERIFICATION",
+  "prelabel_verification_sha256": "dede86f6e096d875764edf197d4ec2d398a72310066c92399747eb75bd372cf4",
+  "pretarget_runtime_failures": [
+    {
+      "command": "python scripts/score_cls_a02_position_kernel_v1.py",
+      "error": "NameError: name 'subprocess' is not defined",
+      "score_attempt_created": false,
+      "target_labels_accessed": false
+    },
+    {
+      "command": "python scripts/score_cls_a02_position_kernel_v1_runtime_adapter_01.py",
+      "error": "ModuleNotFoundError: No module named scripts.score_cls_a02_position_kernel_v1",
+      "score_attempt_created": false,
+      "target_labels_accessed": false
+    }
+  ],
+  "scientific_performance_gates": {
+    "real_e67_h12_gain_nonnegative": false,
+    "real_e75_w6_gain_nonnegative": false,
+    "real_unique_pool_gain_ge_0_0005": false,
+    "real_vs_shuffled_e75_w6_gain_nonnegative": true,
+    "real_vs_shuffled_unique_gain_ge_0_0002": false,
+    "supported_legacy_guards_pass": true
+  },
+  "scientific_qualification": false,
+  "score_results_sha256": "80617062f93e0f15fe49d8c2bbc8a46730dcd17c1afb523b5ba93fd71123cd4b",
+  "score_status": "SCORED_EXPLORATORY_WITH_PROTOCOL_DEVIATION",
+  "scoring_attempt_sha256": "1e928018c507a608c869be16e88e0a0be137b01bb5fdfb1385242fc414e9464c",
+  "scoring_attempt_status": "AUTHORIZED_SCORE_STARTED",
+  "scoring_logic_changed": false,
+  "status": "PASS_SCORE_AND_INDEPENDENT_METRIC_RUNTIME_BINDING",
+  "successful_target_scoring_passes": 1,
+  "target_labels_accessed_after_committed_prelabel": true,
+  "test_or_sample_accessed": false
+}
