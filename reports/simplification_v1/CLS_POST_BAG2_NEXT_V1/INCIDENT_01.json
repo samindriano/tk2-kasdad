@@ -1,0 +1,52 @@
+{
+  "incident_id": "CLS_A02_POSITION_KERNEL_V1_INCIDENT_01",
+  "recorded_before_further_execution": true,
+  "recorded_on": "2026-11-06",
+  "authority": "Sol root adjudication in thread 01a19569-16e0-7253-aa14-57a0a3160e03",
+  "candidate": "CLS_A02_POSITION_KERNEL_V1",
+  "incident": {
+    "kind": "premature_query_label_member_materialization_during_metadata_inventory",
+    "origin": 67,
+    "member": "labels",
+    "query_rows": 20903,
+    "dtype": "int8",
+    "probe": "Python 3.13 metadata loop opened experiments/runs/optimization_v3_a02_neighbors_v1/E67/observed/predictions.npz with np.load(..., allow_pickle=False), iterated z.files, then executed a = z[k] for every key before printing k, a.shape, a.dtype.",
+    "what_happened": "The labels array was materialized into the short-lived Python process and its key, shape, and dtype were printed. The label values themselves were not printed, summarized, counted, scored, used to choose a recipe/control/weight, or used in any other decision. The process stopped while attempting to load the E67 historical model artifact.",
+    "exception": "ModuleNotFoundError: No module named 'src.models.classification_a02_neighbors'",
+    "scope": "The loop completed only for E67. It did not continue to E75. No query labels were read from another origin.",
+    "probe_command_shape": "$python -c $py; Python body: for k in z.files: a = z[k]; print(k, a.shape, a.dtype)",
+    "boundary_effect": "The original prelabel boundary is noncompliant. Do not describe the evaluation as outcome-blind or original-prelabel-compliant. This development-label read does not authorize using the labels for construction, training, recipe selection, or control selection."
+  },
+  "verified_state_at_recording": {
+    "predictor_constructions_started": 0,
+    "estimator_fits_started": 0,
+    "budget_reservations_written": 0,
+    "candidate_predictions_written": false,
+    "metrics_scored": false,
+    "recipe_or_gates_changed": false,
+    "test_or_sample_submission_accessed": false,
+    "kaggle_accessed": false,
+    "repository_outputs_written_before_incident_record": false,
+    "python_probe_process_exited": true,
+    "raw_train_source_modified": false,
+    "historical_artifacts_modified": false
+  },
+  "input_and_source_hashes": {
+    "official_source_commit": "7108c276c9904556a1d6eb186c46588ddf2ef6fb",
+    "audit_repository_head_before_incident_record": "dc4739df92202de7878591738394e8c24a54054e",
+    "official_train_csv_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "e67_query_prediction_npz_sha256": "49442235f6c828618d8aa12569a802bcad6d12ae6f5d6040294a6f4ac9323eca",
+    "e67_prediction_manifest_sha256": "876f5c58986179f4db3511af240b98493ccf66814e10f457bc89d50da509f27f",
+    "e67_fit_state_sha256": "9bd7d2d33bc101a5580cec8cc7ebd352e7d4151ada67d4a7bf4c1a22c7b57508",
+    "a02_neighbor_source_sha256": "817263092683779f5f6f3a437ffc2c470dfec16d3b32c67802952b731cc6efaa",
+    "position_transform_source_sha256": "390d9585a91440cc83314d2fa58acfebf374371032308937489019c2bd242c36"
+  },
+  "amended_execution_status": {
+    "original_prelabel_boundary_compliant": false,
+    "scientific_qualification": false,
+    "scientific_performance_gate_booleans": "May be calculated separately for information after the amended scoring boundary; they do not erase the protocol deviation or produce scientific qualification.",
+    "exploratory_eligibility": "May be evaluated only under the already frozen ROOT_EXECUTION_PLAN exploratory rule, unchanged, with independent QA PASS and verified training-boundary PASS. Any eligibility is exploratory-only.",
+    "plan_recipe_and_performance_gates_changed": false,
+    "test_e79_or_kaggle_authorized": false
+  }
+}
