@@ -275,6 +275,19 @@ def _verify_legacy_inputs(repository: Path, legacy_freeze: Mapping[str, Any]) ->
             **{f"source::{k}": v for k, v in source_hashes.items()}}
 
 
+def _verify_cgeom_recipe(pos_recipe: Mapping[str, Any]) -> None:
+    expected_objective = (
+        "sum(logaddexp(0, -(2*y-1)*(z0 + X_position@gamma))) + "
+        "dot(gamma,gamma)/(2*C)"
+    )
+    H.require(pos_recipe.get("model") == "C2_B logit as fixed offset plus real-position gamma only"
+              and pos_recipe.get("objective") == expected_objective
+              and "C=1" in pos_recipe.get("optimizer", "")
+              and "L-BFGS-B" in pos_recipe.get("optimizer", "")
+              and "no retries" in pos_recipe.get("optimizer", ""),
+              "CGeom frozen recipe does not attest the uniform C=1 gamma fit")
+
+
 def build_source_freeze(repository: Path, *, audit_root: Path = AUDIT_ROOT) -> dict[str, Any]:
     repo = repository.resolve()
     source_commit = _git(audit_root, "rev-parse", "HEAD")
@@ -301,9 +314,7 @@ def build_source_freeze(repository: Path, *, audit_root: Path = AUDIT_ROOT) -> d
     recipes_path = repo / LEGACY_SOURCE_RECIPE_REL
     recipes = _read_json(recipes_path)
     pos_recipe = recipes.get("candidates", {}).get("POS_BAG_OFFSET", {})
-    H.require("C=1" in pos_recipe.get("optimizer", "")
-              and "C=1" in pos_recipe.get("objective", ""),
-              "CGeom frozen recipe does not attest uniform C=1 gamma penalty")
+    _verify_cgeom_recipe(pos_recipe)
 
     manifest_path = audit_root / LEGACY_INPUT_MANIFEST_REL
     input_manifest = _read_json(manifest_path)

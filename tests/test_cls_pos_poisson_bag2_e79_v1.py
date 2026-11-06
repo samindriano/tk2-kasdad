@@ -52,6 +52,17 @@ def test_fixed_identity_matrix_bundle_and_policy() -> None:
     assert set(labels.tolist()).issubset({0, 1})
 
 
+def test_original_cgeom_recipe_requires_symbolic_objective_and_uniform_c_one() -> None:
+    recipe = {
+        "model": "C2_B logit as fixed offset plus real-position gamma only",
+        "objective": "sum(logaddexp(0, -(2*y-1)*(z0 + X_position@gamma))) + dot(gamma,gamma)/(2*C)",
+        "optimizer": "L-BFGS-B, zero initialization, C=1, maxiter=2000, ftol=1e-12, gtol=1e-6, maxls=50; no retries",
+    }
+    runner._verify_cgeom_recipe(recipe)
+    with pytest.raises(RuntimeError, match="uniform C=1"):
+        runner._verify_cgeom_recipe({**recipe, "optimizer": recipe["optimizer"].replace("C=1", "C=2")})
+
+
 def test_synthetic_cli_end_to_end_and_resume_without_additional_fits(tmp_path: Path) -> None:
     output = tmp_path / "synthetic"
     command = [sys.executable, "-O", str(runner.AUDIT_ROOT / runner.RUNNER_REL),
