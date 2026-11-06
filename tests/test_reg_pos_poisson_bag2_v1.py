@@ -4,10 +4,13 @@ import tempfile
 import unittest
 from hashlib import sha256
 from pathlib import Path
+import subprocess
+import sys
 from types import SimpleNamespace
 from unittest.mock import patch
 
 from scripts import reg_pos_poisson_bag2_v1 as pilot
+from scripts import verify_reg_pos_poisson_bag2_v1 as verifier
 
 
 class TestRegPosPoissonBag2V1(unittest.TestCase):
@@ -59,15 +62,108 @@ class TestRegPosPoissonBag2V1(unittest.TestCase):
                     pilot._assert_frozen_training_source(
                         root, {"official_train_sha256": "0" * 64}, runner)
 
-    def test_benchmark_gate_allows_small_d1_harm_only_inside_strict_bound(self):
+    def test_reviewed_source_commit_ancestor_ignores_unrelated_untracked_files(self):
+        with tempfile.TemporaryDirectory(prefix="reg-pos-ancestry-") as temporary:
+            root = Path(temporary)
+
+            def git(*args: str) -> str:
+                return subprocess.run(["git", "-C", str(root), *args], check=True,
+                                      capture_output=True, text=True).stdout.strip()
+
+            git("init", "--quiet")
+            git("config", "user.name", "Codex Test")
+            git("config", "user.email", "codex-test@example.invalid")
+            tracked = root / "tracked.txt"
+            tracked.write_text("frozen source\n", encoding="utf-8")
+            git("add", "tracked.txt")
+            git("-c", "user.name=Codex Test", "-c", "user.email=codex-test@example.invalid",
+                "commit", "--quiet", "-m", "reviewed source")
+            reviewed = git("rev-parse", "HEAD")
+            unrelated = root / "unrelated.txt"
+            unrelated.write_text("later unrelated commit\n", encoding="utf-8")
+            git("add", "unrelated.txt")
+            git("-c", "user.name=Codex Test", "-c", "user.email=codex-test@example.invalid",
+                "commit", "--quiet", "-m", "unrelated follow-up")
+            current = git("rev-parse", "HEAD")
+            frozen_sha = sha256(tracked.read_bytes()).hexdigest()
+            blob_sha = sha256(subprocess.run(
+                ["git", "-C", str(root), "show", f"{reviewed}:tracked.txt"],
+                check=True, capture_output=True).stdout).hexdigest()
+            approval = {"local_commit": reviewed,
+                        "tracked_source_hashes": {"tracked.txt": frozen_sha},
+                        "tracked_blob_hashes": {"tracked.txt": blob_sha}}
+            with patch.object(pilot, "REQUIRED_ROOT_TRACKED_PATHS", {"tracked.txt"}):
+                approved, head = pilot._verify_approved_source_commit(root, reviewed, approval)
+                self.assertEqual((approved, head), (reviewed, current))
+                with patch.object(verifier, "REQUIRED_ROOT_TRACKED_PATHS", {"tracked.txt"}):
+                    self.assertEqual(
+                        verifier._verify_approved_source_commit(root, reviewed, approval),
+                        (reviewed, current))
+                self.assertFalse(pilot._is_git_ancestor(root, current, reviewed))
+                (root / "untracked-note.txt").write_text("not part of this lane\n", encoding="utf-8")
+                self.assertEqual(
+                    pilot._verify_approved_source_commit(root, reviewed, approval), (reviewed, current))
+                with patch.object(verifier, "REQUIRED_ROOT_TRACKED_PATHS", {"tracked.txt"}):
+                    self.assertEqual(
+                        verifier._verify_approved_source_commit(root, reviewed, approval),
+                        (reviewed, current))
+                tracked.write_text("changed frozen source\n", encoding="utf-8")
+                with self.assertRaises(pilot.PilotError):
+                    pilot._verify_approved_source_commit(root, reviewed, approval)
+                with patch.object(verifier, "REQUIRED_ROOT_TRACKED_PATHS", {"tracked.txt"}):
+                    with self.assertRaises(verifier.VerifyError):
+                        verifier._verify_approved_source_commit(root, reviewed, approval)
+
+    def test_shared_advisory_lock_is_nonblocking_compatible_and_persistent(self):
+        with tempfile.TemporaryDirectory(prefix="reg-pos-lock-") as temporary:
+            lock_path = Path(temporary) / "kasdad_single_heavy_job.lock"
+            child_code = (
+                "import sys; from pathlib import Path; "
+                "from scripts.verify_reg_pos_poisson_bag2_v1 import _SharedHeavyJobLock, VerifyError; "
+                "p=Path(sys.argv[1]); "
+                "try_lock=None; "
+                "\ntry:\n with _SharedHeavyJobLock(p): print('ACQUIRED')"
+                "\nexcept VerifyError: print('BLOCKED')"
+            )
+            with pilot._SharedHeavyJobLock(lock_path):
+                child = subprocess.run([sys.executable, "-c", child_code, str(lock_path)],
+                                       cwd=pilot.ROOT, check=True, capture_output=True, text=True,
+                                       timeout=15)
+                self.assertEqual(child.stdout.strip(), "BLOCKED")
+            self.assertTrue(lock_path.is_file())
+            child = subprocess.run([sys.executable, "-c", child_code, str(lock_path)],
+                                   cwd=pilot.ROOT, check=True, capture_output=True, text=True,
+                                   timeout=15)
+            self.assertEqual(child.stdout.strip(), "ACQUIRED")
+            self.assertTrue(lock_path.is_file())
+            runner_child_code = (
+                "import sys; from pathlib import Path; "
+                "from scripts.reg_pos_poisson_bag2_v1 import _SharedHeavyJobLock, PilotError; "
+                "p=Path(sys.argv[1]); "
+                "\ntry:\n with _SharedHeavyJobLock(p): print('ACQUIRED')"
+                "\nexcept PilotError: print('BLOCKED')"
+            )
+            with verifier._SharedHeavyJobLock(lock_path):
+                child = subprocess.run([sys.executable, "-c", runner_child_code, str(lock_path)],
+                                       cwd=pilot.ROOT, check=True, capture_output=True, text=True,
+                                       timeout=15)
+                self.assertEqual(child.stdout.strip(), "BLOCKED")
+            self.assertTrue(lock_path.is_file())
+            child = subprocess.run([sys.executable, "-c", runner_child_code, str(lock_path)],
+                                   cwd=pilot.ROOT, check=True, capture_output=True, text=True,
+                                   timeout=15)
+            self.assertEqual(child.stdout.strip(), "ACQUIRED")
+            self.assertTrue(lock_path.is_file())
+
+    def test_benchmark_gate_uses_inclusive_frozen_boundaries(self):
         qualification, eligible = pilot._decision_gates(
-            -0.01, -0.049, 0.01, True, 0.249, True, True)
+            -0.01, -0.05, 0.01, True, 0.25, True, True)
         self.assertFalse(qualification)
         self.assertTrue(eligible)
         self.assertFalse(pilot._decision_gates(
-            -0.01, -0.05, 0.01, True, 0.249, True, True)[1])
+            -0.01, -0.050001, 0.01, True, 0.25, True, True)[1])
         self.assertFalse(pilot._decision_gates(
-            -0.01, -0.049, 0.01, True, 0.25, True, True)[1])
+            -0.01, -0.05, 0.01, True, 0.250001, True, True)[1])
 
     def test_synthetic_train_receipt_readback_prediction_metric_and_independent_verifier(self):
         with tempfile.TemporaryDirectory(prefix="reg-pos-poisson-report-") as temporary:

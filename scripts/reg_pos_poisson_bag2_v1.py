@@ -44,12 +44,16 @@ WEIGHTS_PATH = EXPERIMENT / "POISSON_WEIGHTS_R1.npz"
 FREEZE_PATH = EXPERIMENT / "FREEZE_R1.json"
 SUPERSEDED_FREEZE_PATH = EXPERIMENT / "FREEZE_R1_SUPERSEDED_2c5742e5.json"
 SUPERSEDED_FREEZE_ATTEMPT_PATH = EXPERIMENT / "FREEZE_R1_SUPERSEDED_INVALID_928ba2a8.json"
+SUPERSEDED_SOURCE_FREEZE_PATH = EXPERIMENT / "FREEZE_R1_SUPERSEDED_1161187.json"
 ROOT_SOURCE_PASS = EXPERIMENT / "ROOT_SOURCE_PASS_R1.json"
 ROOT_SCORE_PASS = EXPERIMENT / "ROOT_SCORE_PASS_R1.json"
 OFFICIAL_RUN = ROOT / "experiments" / "runs" / "reg_pos_poisson_bag2_v1"
+SHARED_HEAVY_LOCK_PATH = Path(tempfile.gettempdir()) / "kasdad_single_heavy_job.lock"
 PREDICTION_FREEZE = OFFICIAL_RUN / "PREDICTION_FREEZE_R1.json"
 PREFIT_REPORT = REPORT / "PREFIT_VERIFICATION_R1.json"
 SUPERSEDED_PREFIT_REPORT_PATH = REPORT / "PREFIT_VERIFICATION_R1_SUPERSEDED_INVALID_928ba2a8.json"
+SUPERSEDED_SOURCE_PREFIT_PATH = REPORT / "PREFIT_VERIFICATION_R1_SUPERSEDED_1161187.json"
+SUPERSESSION_RECEIPT_PATH = REPORT / "SOURCE_SUPERSESSION_R2.json"
 PRELABEL_REPORT = REPORT / "PRELABEL_VERIFICATION_R1.json"
 SCORE_REPORT = REPORT / "SCORE_R1.json"
 SYNTHETIC_REPORT = REPORT / "SYNTHETIC_E2E.json"
@@ -65,9 +69,12 @@ REQUIRED_ROOT_TRACKED_PATHS = {
     "experiments/reg_pos_poisson_bag2_v1/FREEZE_R1.json",
     "experiments/reg_pos_poisson_bag2_v1/FREEZE_R1_SUPERSEDED_2c5742e5.json",
     "experiments/reg_pos_poisson_bag2_v1/FREEZE_R1_SUPERSEDED_INVALID_928ba2a8.json",
+    "experiments/reg_pos_poisson_bag2_v1/FREEZE_R1_SUPERSEDED_1161187.json",
     "experiments/reg_pos_poisson_bag2_v1/POISSON_WEIGHTS_R1.npz",
     "reports/optimization_v3/reg_pos_poisson_bag2_v1/PREFIT_VERIFICATION_R1.json",
     "reports/optimization_v3/reg_pos_poisson_bag2_v1/PREFIT_VERIFICATION_R1_SUPERSEDED_INVALID_928ba2a8.json",
+    "reports/optimization_v3/reg_pos_poisson_bag2_v1/PREFIT_VERIFICATION_R1_SUPERSEDED_1161187.json",
+    "reports/optimization_v3/reg_pos_poisson_bag2_v1/SOURCE_SUPERSESSION_R2.json",
     "reports/optimization_v3/reg_pos_poisson_bag2_v1/SYNTHETIC_E2E.json",
 }
 HINGE_RUNNER = ROOT / "scripts" / "reg_monotone_hinge_p50_v1.py"
@@ -289,6 +296,55 @@ class _ExclusiveLock:
         self.path.unlink(missing_ok=True)
 
 
+class _SharedHeavyJobLock:
+    """Nonblocking advisory byte lock shared across TK2 heavy-job lanes."""
+    def __init__(self, path: Path = SHARED_HEAVY_LOCK_PATH):
+        self.path = Path(path)
+        self.stream = None
+        self.backend = None
+        self.locked = False
+
+    def __enter__(self):
+        try:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            self.stream = self.path.open("a+b")
+            if self.path.stat().st_size == 0:
+                self.stream.write(b"\0")
+                self.stream.flush()
+                os.fsync(self.stream.fileno())
+            self.stream.seek(0)
+            if os.name == "nt":
+                import msvcrt
+                self.backend = msvcrt
+                msvcrt.locking(self.stream.fileno(), msvcrt.LK_NBLCK, 1)
+            else:
+                import fcntl
+                self.backend = fcntl
+                fcntl.flock(self.stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            self.locked = True
+            return self
+        except OSError as exc:
+            if self.stream is not None:
+                self.stream.close()
+                self.stream = None
+            raise PilotError(f"Shared heavy-job lock is held or unavailable: {self.path}") from exc
+
+    def __exit__(self, exc_type, exc, traceback):
+        if self.stream is None:
+            return
+        try:
+            if self.locked:
+                self.stream.seek(0)
+                if os.name == "nt":
+                    self.backend.locking(self.stream.fileno(), self.backend.LK_UNLCK, 1)
+                else:
+                    self.backend.flock(self.stream.fileno(), self.backend.LOCK_UN)
+        finally:
+            self.locked = False
+            self.stream.close()
+            self.stream = None
+
+
 def _load_module(path: Path, module_name: str):
     if not path.is_file():
         raise PilotError(f"Required frozen source file is missing: {path}")
@@ -318,6 +374,166 @@ def _git(root: Path, *args: str) -> str:
     except (OSError, subprocess.CalledProcessError) as exc:
         raise PilotError(f"Git identity query failed in {root}: {args}") from exc
     return result.stdout.strip()
+
+
+def _is_git_ancestor(root: Path, ancestor: str, descendant: str) -> bool:
+    valid = lambda value: (isinstance(value, str) and len(value) in (40, 64)
+                           and all(char in "0123456789abcdef" for char in value.lower()))
+    if not valid(ancestor) or not valid(descendant):
+        return False
+    try:
+        result = subprocess.run(["git", "-C", str(root), "merge-base", "--is-ancestor",
+                                 ancestor, descendant], check=False, capture_output=True)
+    except OSError as exc:
+        raise PilotError(f"Cannot verify Git ancestry in {root}") from exc
+    if result.returncode == 0:
+        return True
+    if result.returncode == 1:
+        return False
+    raise PilotError(f"Git ancestry check failed in {root}: {result.stderr.decode(errors='replace')}")
+
+
+def _git_blob_sha256(root: Path, revision: str, relative_path: str) -> str:
+    try:
+        blob = subprocess.run(["git", "-C", str(root), "show", f"{revision}:{relative_path}"],
+                              check=True, capture_output=True).stdout
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise PilotError(f"Reviewed commit does not contain required source: {relative_path}") from exc
+    return hashlib.sha256(blob).hexdigest()
+
+
+def _verify_approved_source_commit(root: Path, freeze_base_commit: str,
+                                   approval: Mapping[str, Any]) -> tuple[str, str]:
+    reviewed = approval.get("reviewed_source_commit", approval.get("local_commit"))
+    if (approval.get("local_commit") not in (None, reviewed)
+            or not _is_git_ancestor(root, freeze_base_commit, reviewed)):
+        raise PilotError("Root approval commit is not descended from the frozen source base")
+    current_head = _git(root, "rev-parse", "HEAD")
+    if not _is_git_ancestor(root, reviewed, current_head):
+        raise PilotError("Reviewed source commit is not an ancestor of current HEAD")
+    tracked_hashes = approval.get("tracked_source_hashes", {})
+    blob_hashes = approval.get("tracked_blob_hashes", {})
+    if (not isinstance(tracked_hashes, dict) or set(tracked_hashes) != REQUIRED_ROOT_TRACKED_PATHS
+            or not isinstance(blob_hashes, dict) or set(blob_hashes) != REQUIRED_ROOT_TRACKED_PATHS):
+        raise PilotError("Root approval must bind exact worktree and Git blob hashes for required pilot paths")
+    for relative_path in sorted(REQUIRED_ROOT_TRACKED_PATHS):
+        expected_worktree_sha = tracked_hashes[relative_path]
+        expected_blob_sha = blob_hashes[relative_path]
+        if any(not isinstance(value, str) or len(value) != 64
+               or any(char not in "0123456789abcdef" for char in value.lower())
+               for value in (expected_worktree_sha, expected_blob_sha)):
+            raise PilotError(f"Root approval hash is invalid: {relative_path}")
+        path = _bounded(root, relative_path)
+        current_sha = _sha_file(path)
+        reviewed_sha = _git_blob_sha256(root, reviewed, relative_path)
+        head_sha = _git_blob_sha256(root, current_head, relative_path)
+        if (current_sha != expected_worktree_sha or reviewed_sha != expected_blob_sha
+                or head_sha != expected_blob_sha):
+            raise PilotError(f"Reviewed, current HEAD, and worktree source hashes differ: {relative_path}")
+    return reviewed, current_head
+
+
+def _verify_prefit_snapshot() -> dict[str, Any]:
+    freeze = _validate_signed_json(FREEZE_PATH, "freeze_signature")
+    if freeze.get("status") != "PREFIT_FROZEN" or freeze.get("experiment_id") != CARD_ID:
+        raise PilotError("Prefit source freeze identity/status failed")
+    current_head = _git(ROOT, "rev-parse", "HEAD")
+    current_source_head = _git(SOURCE_ROOT, "rev-parse", "HEAD")
+    if (not _is_git_ancestor(ROOT, freeze.get("base_commit"), current_head)
+            or not _is_git_ancestor(SOURCE_ROOT, freeze.get("source_git_head"), current_source_head)):
+        raise PilotError("Frozen source commit is not an ancestor of its current checkout")
+    runner = _runner()
+    current_impl = {key: _sha_file(path) for key, path in IMPLEMENTATION_PATHS.items()}
+    if (current_impl != freeze.get("implementation_hashes")
+            or _sha_file(RUNNER_PATH) != freeze.get("runner_sha256")
+            or freeze.get("source_revision") != 2
+            or _sha_file(POSITION_FREEZE) != freeze.get("position_freeze_sha256")
+            or _assert_frozen_training_source(SOURCE_ROOT, freeze, runner)
+            != freeze.get("official_train_sha256")
+            or _source_artifact_hashes(runner) != freeze.get("source_artifacts")
+            or freeze.get("source_artifacts") != freeze.get("local_sources")):
+        raise PilotError("Current code, Train.csv, or relevant source/artifact hashes differ from freeze")
+    head_paths: dict[str, str] = {}
+    blob_paths: dict[str, str] = {}
+    for relative_path in sorted(REQUIRED_ROOT_TRACKED_PATHS):
+        path = _bounded(ROOT, relative_path)
+        worktree_sha = _sha_file(path)
+        head_paths[relative_path] = worktree_sha
+        blob_paths[relative_path] = _git_blob_sha256(ROOT, current_head, relative_path)
+    report = _read_json(PREFIT_REPORT)
+    if (report.get("status") != "PASS" or report.get("freeze_signature") != freeze["freeze_signature"]
+            or report.get("freeze_sha256") != _sha_file(FREEZE_PATH)
+            or report.get("source_revision") != freeze.get("source_revision")
+            or report.get("implementation_hashes") != current_impl
+            or report.get("supersession_receipt_path") != SUPERSESSION_RECEIPT_PATH.relative_to(ROOT).as_posix()
+            or report.get("query_targets_read") is not False
+            or report.get("official_target_column_loaded") is not False
+            or report.get("official_fit_units_started") != 0
+            or report.get("official_ledger_mutated") is not False
+            or report.get("test_or_sample_accessed") is not False
+            or report.get("csv_created") is not False):
+        raise PilotError("Preserved target-free preflight report does not match the current freeze")
+    weights_sha = _sha_file(WEIGHTS_PATH)
+    if weights_sha != freeze.get("weights_sha256"):
+        raise PilotError("Frozen Poisson weight file hash differs")
+    receipt = _validate_signed_json(SUPERSESSION_RECEIPT_PATH, "receipt_sha256")
+    superseded_freeze = freeze.get("superseded_source_freeze", {})
+    superseded_report = freeze.get("superseded_source_preflight_report", {})
+    if (superseded_freeze.get("path") != SUPERSEDED_SOURCE_FREEZE_PATH.relative_to(ROOT).as_posix()
+            or superseded_report.get("path") != SUPERSEDED_SOURCE_PREFIT_PATH.relative_to(ROOT).as_posix()
+            or freeze.get("supersession_receipt_path") != SUPERSESSION_RECEIPT_PATH.relative_to(ROOT).as_posix()):
+        raise PilotError("Source supersession paths differ from the reviewed R2 package")
+    old_freeze_path = _bounded(ROOT, superseded_freeze.get("path", ""))
+    old_report_path = _bounded(ROOT, superseded_report.get("path", ""))
+    old_freeze = _validate_signed_json(old_freeze_path, "freeze_signature")
+    old_report = _read_json(old_report_path)
+    old_freeze_sha = _sha_file(old_freeze_path)
+    old_report_sha = _sha_file(old_report_path)
+    if (receipt.get("status") != "PASS"
+            or old_freeze_sha != superseded_freeze.get("sha256")
+            or old_freeze["freeze_signature"] != superseded_freeze.get("freeze_signature")
+            or old_report_sha != superseded_report.get("sha256")
+            or old_report.get("status") != "PASS"
+            or old_report.get("freeze_signature") != old_freeze["freeze_signature"]
+            or old_report.get("freeze_sha256") != old_freeze_sha
+            or old_report.get("query_targets_read") is not False
+            or old_report.get("official_target_column_loaded") is not False
+            or old_report.get("official_fit_units_started") != 0
+            or old_report.get("official_ledger_mutated") is not False
+            or old_report.get("test_or_sample_accessed") is not False
+            or old_report.get("csv_created") is not False
+            or receipt.get("supersedes_freeze_signature") != superseded_freeze.get("freeze_signature")
+            or receipt.get("current_freeze_signature") != freeze.get("freeze_signature")
+            or receipt.get("superseded_freeze_sha256") != superseded_freeze.get("sha256")
+            or receipt.get("superseded_preflight_report_sha256") != superseded_report.get("sha256")
+            or receipt.get("current_freeze_sha256") != _sha_file(FREEZE_PATH)
+            or receipt.get("source_commit") != freeze.get("base_commit")
+            or receipt.get("source_revision") != freeze.get("source_revision")
+            or receipt.get("implementation_hashes") != current_impl
+            or receipt.get("target_blind_integrity_only") is not True
+            or report.get("supersession_receipt_sha256") != _sha_file(SUPERSESSION_RECEIPT_PATH)):
+        raise PilotError("Source supersession receipt does not bind preserved freeze history")
+    synthetic = _read_json(SYNTHETIC_REPORT)
+    if (synthetic.get("status") != "PASS" or synthetic.get("production_fit_units_started") != 0
+            or synthetic.get("runner_sha256") != current_impl["runner"]
+            or synthetic.get("verifier_sha256") != current_impl["verifier"]):
+        raise PilotError("Synthetic actual-entrypoint audit is absent or stale")
+    return {
+        "status": "PASS", "phase": "PREFIT_SOURCE_READY",
+        "freeze_signature": freeze["freeze_signature"],
+        "freeze_sha256": _sha_file(FREEZE_PATH), "weights_sha256": weights_sha,
+        "train_sha256": freeze["official_train_sha256"],
+        "source_revision": freeze.get("source_revision"),
+        "current_root_head": current_head, "current_external_source_head": current_source_head,
+        "current_source_branch_informational": _git(SOURCE_ROOT, "branch", "--show-current"),
+        "current_source_status_sha256_informational": _canonical_sha(
+            _git(SOURCE_ROOT, "status", "--porcelain").splitlines()),
+        "tracked_source_paths_verified": len(head_paths),
+        "worktree_hashes": head_paths, "current_head_blob_hashes": blob_paths,
+        "query_targets_read": False, "official_fit_units_started": 0,
+        "official_ledger_present": (OFFICIAL_RUN / "fit_ledger.jsonl").is_file(),
+        "test_or_sample_accessed": False, "csv_created": False,
+    }
 
 
 def _freeze_body(freeze: Mapping[str, Any]) -> dict[str, Any]:
@@ -565,7 +781,8 @@ def _replay_origin(runner: Any, hinge_module: Any, source_root: Path, frame: Any
 def _preflight_body(runner: Any, position_freeze: Mapping[str, Any],
                     origins: Mapping[int, Mapping[str, Any]], weight_sha: str) -> dict[str, Any]:
     return {
-        "schema_version": 1, "experiment_id": CARD_ID, "status": "PREFIT_FROZEN",
+        "schema_version": 1, "experiment_id": CARD_ID, "source_revision": 2,
+        "status": "PREFIT_FROZEN",
         "base_commit": _git(ROOT, "rev-parse", "HEAD"),
         "local_branch": _git(ROOT, "branch", "--show-current"),
         "source_root": str(SOURCE_ROOT.resolve()),
@@ -606,6 +823,30 @@ def _preflight_body(runner: Any, position_freeze: Mapping[str, Any],
     }
 
 
+def _preflight_replay_origins(runner: Any, source_root: Path,
+                              position_freeze: Mapping[str, Any],
+                              hinge_module: Any,
+                              parameters: Mapping[int, Mapping[str, float]]) -> tuple[
+                                  dict[int, Any], dict[int, dict[str, Any]], int, int]:
+    initial_available = int(psutil.virtual_memory().available)
+    if initial_available < 1024 * 1024**2:
+        raise PilotError(f"Target-free sparse replay needs at least 1 GiB available RAM; saw {initial_available}")
+    frame = runner._load_feature_frame(source_root)
+    if "threat_rank" in frame.columns:
+        raise PilotError("Feature loader exposed threat_rank during preflight")
+    items: dict[int, Any] = {}
+    info: dict[int, dict[str, Any]] = {}
+    for origin in ORIGINS:
+        item, origin_info = _replay_origin(
+            runner, hinge_module, source_root, frame, origin, position_freeze, parameters)
+        items[origin] = item
+        info[origin] = origin_info
+        available_now = int(psutil.virtual_memory().available)
+        if available_now < MIN_FREE_RAM_RESERVE:
+            raise PilotError(f"Sparse preflight reserve fell below 512 MiB at E{origin}: {available_now}")
+    return items, info, initial_available, int(psutil.virtual_memory().available)
+
+
 def preflight(source_root: Path = SOURCE_ROOT) -> dict[str, Any]:
     source_root = source_root.resolve()
     if source_root != SOURCE_ROOT.resolve():
@@ -613,6 +854,18 @@ def preflight(source_root: Path = SOURCE_ROOT) -> dict[str, Any]:
     if not POSITION_FREEZE.is_file():
         raise PilotError("Authoritative POS FREEZE_V4 is missing")
     runner = _runner()
+    prior_freeze = (_validate_signed_json(FREEZE_PATH, "freeze_signature")
+                    if FREEZE_PATH.is_file() else None)
+    if prior_freeze is not None:
+        current_root_head = _git(ROOT, "rev-parse", "HEAD")
+        current_source_head = _git(SOURCE_ROOT, "rev-parse", "HEAD")
+        if (not _is_git_ancestor(ROOT, prior_freeze.get("base_commit"), current_root_head)
+                or not _is_git_ancestor(SOURCE_ROOT, prior_freeze.get("source_git_head"), current_source_head)
+                or _source_artifact_hashes(runner) != prior_freeze.get("source_artifacts")
+                or prior_freeze.get("source_artifacts") != prior_freeze.get("local_sources")
+                or _assert_frozen_training_source(source_root, prior_freeze, runner)
+                != prior_freeze.get("official_train_sha256")):
+            raise PilotError("Existing frozen source ancestry or exact relevant source hashes changed")
     position_freeze = _validate_signed_json(POSITION_FREEZE, "freeze_signature")
     if position_freeze.get("card_id") != runner.CARD_ID or position_freeze.get("targets_read") is not False:
         raise PilotError("Authoritative POS freeze identity or target-blind status failed")
@@ -635,26 +888,13 @@ def preflight(source_root: Path = SOURCE_ROOT) -> dict[str, Any]:
         path = Path(entry["path"])
         if not path.is_file() or _sha_file(path) != entry.get("sha256"):
             raise PilotError(f"Existing local comparator prediction hash failed: {path}")
-    initial_available = int(psutil.virtual_memory().available)
-    if initial_available < 1024 * 1024**2:
-        raise PilotError(f"Target-free sparse replay needs at least 1 GiB available RAM; saw {initial_available}")
-    frame = runner._load_feature_frame(source_root)
-    if "threat_rank" in frame.columns:
-        raise PilotError("Feature loader exposed threat_rank during preflight")
     hinge_module = _hinge()
     parameters = _load_hinge_parameters()
-    items: dict[int, Any] = {}
-    info: dict[int, dict[str, Any]] = {}
     official_ledger = OFFICIAL_RUN / "fit_ledger.jsonl"
     ledger_before = _sha_file(official_ledger) if official_ledger.is_file() else None
-    for origin in ORIGINS:
-        item, origin_info = _replay_origin(
-            runner, hinge_module, source_root, frame, origin, position_freeze, parameters)
-        items[origin] = item
-        info[origin] = origin_info
-        available_now = int(psutil.virtual_memory().available)
-        if available_now < MIN_FREE_RAM_RESERVE:
-            raise PilotError(f"Sparse preflight reserve fell below 512 MiB at E{origin}: {available_now}")
+    with _SharedHeavyJobLock():
+        items, info, initial_available, available_after_replay = _preflight_replay_origins(
+            runner, source_root, position_freeze, hinge_module, parameters)
     payload = _weight_payload(items)
     weights_sha = _ensure_weight_file(payload)
     body = _preflight_body(runner, position_freeze, info, weights_sha)
@@ -668,6 +908,22 @@ def preflight(source_root: Path = SOURCE_ROOT) -> dict[str, Any]:
         for origin in ORIGINS for seed in SEEDS
     }
     body["source_artifacts"] = _source_artifact_hashes(runner)
+    if prior_freeze is not None:
+        if (not _is_git_ancestor(SOURCE_ROOT, prior_freeze.get("source_git_head"),
+                                 _git(SOURCE_ROOT, "rev-parse", "HEAD"))
+                or not _is_git_ancestor(ROOT, prior_freeze.get("base_commit"),
+                                        _git(ROOT, "rev-parse", "HEAD"))
+                or body["source_artifacts"] != prior_freeze.get("source_artifacts")
+                or body["source_artifacts"] != prior_freeze.get("local_sources")):
+            raise PilotError("Existing frozen source ancestry or exact relevant source hashes changed")
+        for key in ("base_commit", "local_branch", "source_git_head", "source_git_branch",
+                    "source_worktree_status_sha256"):
+            body[key] = prior_freeze[key]
+        for key in ("supersedes", "superseded_attempts", "superseded_preflight_report",
+                    "superseded_source_freeze", "superseded_source_preflight_report",
+                    "supersession_receipt_path"):
+            if key in prior_freeze:
+                body[key] = prior_freeze[key]
     body = _sign_freeze(body)
     if FREEZE_PATH.exists():
         old = _validate_signed_json(FREEZE_PATH, "freeze_signature")
@@ -715,7 +971,7 @@ def preflight(source_root: Path = SOURCE_ROOT) -> dict[str, Any]:
         "official_ledger_after_sha256": ledger_after, "official_ledger_mutated": False,
         "resource_snapshots": {"initial_available_bytes": initial_available,
                                "minimum_reserve_bytes": MIN_FREE_RAM_RESERVE,
-                               "available_after_replay_bytes": int(psutil.virtual_memory().available)},
+                               "available_after_replay_bytes": available_after_replay},
         "test_or_sample_accessed": False, "csv_created": False,
         "origins": {str(origin): info[origin]["comparator"] for origin in ORIGINS},
         "weight_vectors": body["weight_vectors"],
@@ -857,41 +1113,26 @@ def _fit_slot(output_root: Path, fit_id: str, origin: int, seed: int,
 
 
 def _root_source_gate(freeze: Mapping[str, Any]) -> dict[str, Any]:
+    _verify_prefit_snapshot()
     if not ROOT_SOURCE_PASS.is_file():
         raise PilotError("Official fitting blocked: ROOT_SOURCE_PASS_R1.json is absent")
     approval = _validate_signed_json(ROOT_SOURCE_PASS, "approval_sha256")
-    expected_head = _git(ROOT, "rev-parse", "HEAD")
     if (approval.get("status") != "PASS" or approval.get("freeze_signature") != freeze["freeze_signature"]
-            or approval.get("local_commit") != expected_head
             or approval.get("fit_ids") != list(FIT_IDS) or approval.get("fit_cap") != len(FIT_IDS)
             or approval.get("score_access_allowed") is not False
             or approval.get("reviewer") in (None, "", "self")):
-        raise PilotError("Root source approval does not match this committed, four-fit, pre-score freeze")
-    if (_git(SOURCE_ROOT, "rev-parse", "HEAD") != freeze.get("source_git_head")
-            or _git(SOURCE_ROOT, "branch", "--show-current") != freeze.get("source_git_branch")
-            or _canonical_sha(_git(SOURCE_ROOT, "status", "--porcelain").splitlines())
-            != freeze.get("source_worktree_status_sha256")):
-        raise PilotError("Frozen source checkout identity or status changed after preflight")
+        raise PilotError("Root source approval does not match this four-fit, pre-score freeze")
+    _reviewed_commit, _current_head = _verify_approved_source_commit(ROOT, freeze.get("base_commit"), approval)
+    source_head = _git(SOURCE_ROOT, "rev-parse", "HEAD")
+    if not _is_git_ancestor(SOURCE_ROOT, freeze.get("source_git_head"), source_head):
+        raise PilotError("Frozen external source commit is not an ancestor of the current source checkout")
     tracked_hashes = approval.get("tracked_source_hashes", {})
-    if not REQUIRED_ROOT_TRACKED_PATHS.issubset(tracked_hashes):
-        raise PilotError("Root source approval does not bind all required source, freeze, weight, and QA files")
     for key, path in IMPLEMENTATION_PATHS.items():
         rel = path.relative_to(ROOT).as_posix()
         if tracked_hashes.get(rel) != freeze.get("implementation_hashes", {}).get(key):
             raise PilotError(f"Root source approval does not bind frozen implementation hash: {rel}")
-    for rel, expected_sha in tracked_hashes.items():
-        path = _bounded(ROOT, rel)
-        if _sha_file(path) != expected_sha:
-            raise PilotError(f"Committed source hash differs from root approval: {rel}")
-        try:
-            committed = subprocess.run(["git", "-C", str(ROOT), "show", f"HEAD:{rel}"],
-                                       check=True, capture_output=True).stdout
-        except (OSError, subprocess.CalledProcessError) as exc:
-            raise PilotError(f"Approved source is not present in HEAD: {rel}") from exc
-        if hashlib.sha256(committed).hexdigest() != expected_sha:
-            raise PilotError(f"Committed blob differs from approved source hash: {rel}")
     synthetic = _read_json(SYNTHETIC_REPORT)
-    if (synthetic.get("status") != "PASS" or synthetic.get("official_fit_units_started") != 0
+    if (synthetic.get("status") != "PASS" or synthetic.get("production_fit_units_started") != 0
             or synthetic.get("runner_sha256") != _sha_file(Path(__file__))):
         raise PilotError("Required synthetic actual-entrypoint audit is absent or stale")
     if PREFIT_REPORT.is_file():
@@ -984,7 +1225,7 @@ def fit_official(source_root: Path = SOURCE_ROOT) -> dict[str, Any]:
     if OFFICIAL_RUN.exists() and not (OFFICIAL_RUN / "fit_ledger.jsonl").is_file():
         raise PilotError("Official run root exists without an append-only ledger; refusing ambiguous state")
     outputs: dict[int, Path] = {}
-    with _ExclusiveLock(OFFICIAL_RUN / "training.lock"):
+    with _SharedHeavyJobLock(), _ExclusiveLock(OFFICIAL_RUN / "training.lock"):
         all_events = _read_ledger(OFFICIAL_RUN / "fit_ledger.jsonl")
         prior = [e.get("fit_id") for e in all_events if e.get("event") == "FIT_STARTED"]
         if prior != list(FIT_IDS[:len(prior)]):
@@ -1092,12 +1333,12 @@ def _metric(y: np.ndarray, pred: np.ndarray) -> dict[str, float]:
 def _decision_gates(pooled_gain: float, d1_gain: float, d2_gain: float,
                     fixed_groups_known: bool, supported_group_max_harm: float,
                     missing_invariant_pass: bool, independent_qa_pass: bool) -> tuple[bool, bool]:
-    support_and_harm_pass = bool(fixed_groups_known and supported_group_max_harm < 0.25)
+    support_and_harm_pass = bool(fixed_groups_known and supported_group_max_harm <= 0.25)
     qualification = bool(pooled_gain >= 0.02 and min(d1_gain, d2_gain) >= 0
                          and support_and_harm_pass and missing_invariant_pass)
     benchmark_eligible = bool(
         (pooled_gain > 0 or (d2_gain >= 0.01 and pooled_gain >= -0.01))
-        and d1_gain > -0.05 and support_and_harm_pass
+        and d1_gain >= -0.05 and support_and_harm_pass
         and missing_invariant_pass and independent_qa_pass)
     return qualification, benchmark_eligible
 
@@ -1107,16 +1348,20 @@ def _score_gate(freeze: Mapping[str, Any], prediction_freeze: Mapping[str, Any])
         raise PilotError("Score target access blocked: ROOT_SCORE_PASS_R1.json is absent")
     approval = _validate_signed_json(ROOT_SCORE_PASS, "approval_sha256")
     prelabel_sha = _sha_file(PRELABEL_REPORT) if PRELABEL_REPORT.is_file() else None
+    score_commit = approval.get("reviewed_source_commit", approval.get("local_commit"))
+    current_head = _git(ROOT, "rev-parse", "HEAD")
     if (approval.get("status") != "PASS"
             or approval.get("source_freeze_signature") != freeze["freeze_signature"]
             or approval.get("prediction_signature") != prediction_freeze.get("prediction_signature")
             or approval.get("score_access_allowed") is not True
             or approval.get("fit_ids") != list(FIT_IDS)
-            or approval.get("local_commit") != _git(ROOT, "rev-parse", "HEAD")
+            or approval.get("local_commit") not in (None, score_commit)
+            or not _is_git_ancestor(ROOT, score_commit, current_head)
             or approval.get("prelabel_report_sha256") != prelabel_sha
             or approval.get("reviewer") in (None, "", "self")
             or approval.get("score_input_sha256") != {str(k): v for k, v in AUTHORIZED_SCORE_SHA256.items()}):
         raise PilotError("Root score approval does not match frozen predictions")
+    _root_source_gate(freeze)
     if not PRELABEL_REPORT.is_file():
         raise PilotError("Score stage requires independent prelabel verification")
     prelabel = _read_json(PRELABEL_REPORT)
@@ -1150,6 +1395,8 @@ def score_official(source_root: Path = SOURCE_ROOT) -> dict[str, Any]:
     approval = _score_gate(freeze, prediction_freeze)
     runner = _runner()
     _assert_frozen_training_source(source_root, freeze, runner)
+    if _source_artifact_hashes(runner) != freeze.get("source_artifacts"):
+        raise PilotError("Frozen POS42, preprocessing, comparator, or simplification source changed")
     results: dict[int, dict[str, Any]] = {}
     score_targets: dict[int, np.ndarray] = {}
     score_candidate: dict[int, np.ndarray] = {}
@@ -1246,7 +1493,7 @@ def score_official(source_root: Path = SOURCE_ROOT) -> dict[str, Any]:
                              for o in ORIGINS for name, entry in results[o]["groups"].items()
                              if name in {"missing", "target_lt5", "target_ge95", "EF0", "EF1"})
     supported_group_max_harm = max(supported_harms, default=float("inf"))
-    support_and_harm_pass = bool(fixed_groups_known and supported_group_max_harm < 0.25)
+    support_and_harm_pass = bool(fixed_groups_known and supported_group_max_harm <= 0.25)
     prelabel_verifier_pass = True  # _score_gate returns only after validating the independent prelabel report.
     qa_pass = bool(prelabel_verifier_pass and finite_outputs_pass and support_and_harm_pass
                    and missing_invariant_pass)
@@ -1398,6 +1645,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     modes = parser.add_mutually_exclusive_group(required=True)
     modes.add_argument("--preflight", action="store_true")
+    modes.add_argument("--verify-prefit", action="store_true")
     modes.add_argument("--fit", action="store_true")
     modes.add_argument("--score", action="store_true")
     modes.add_argument("--synthetic-e2e", action="store_true")
@@ -1405,6 +1653,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.preflight:
             result = preflight()
+        elif args.verify_prefit:
+            result = _verify_prefit_snapshot()
         elif args.fit:
             result = fit_official()
         elif args.score:

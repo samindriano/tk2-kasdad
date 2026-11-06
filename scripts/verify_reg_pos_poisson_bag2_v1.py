@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import tempfile
 from typing import Any, Mapping
 import zipfile
 
@@ -25,6 +26,7 @@ FRONTIER_ROOT = Path(r"C:\Users\Sam\OneDrive\Documents\KASDAD\tk2-regression-fro
 RUNNER_PATH = FRONTIER_ROOT / "scripts" / "reg_position_direct_l1_v1.py"
 POSITION_FREEZE = FRONTIER_ROOT / "experiments" / "runs" / "reg_position_direct_l1_v1" / "FREEZE_V4.json"
 POSITION_RUN = POSITION_FREEZE.parent
+HINGE_RUNNER = ROOT / "scripts" / "reg_monotone_hinge_p50_v1.py"
 CARD_ID = "REG_POS_POISSON_BAG2_V1"
 ORIGINS = (67, 75)
 SEEDS = (17, 137)
@@ -36,21 +38,30 @@ REQUIRED_ROOT_TRACKED_PATHS = {
     "experiments/reg_pos_poisson_bag2_v1/FREEZE_R1.json",
     "experiments/reg_pos_poisson_bag2_v1/FREEZE_R1_SUPERSEDED_2c5742e5.json",
     "experiments/reg_pos_poisson_bag2_v1/FREEZE_R1_SUPERSEDED_INVALID_928ba2a8.json",
+    "experiments/reg_pos_poisson_bag2_v1/FREEZE_R1_SUPERSEDED_1161187.json",
     "experiments/reg_pos_poisson_bag2_v1/POISSON_WEIGHTS_R1.npz",
     "reports/optimization_v3/reg_pos_poisson_bag2_v1/PREFIT_VERIFICATION_R1.json",
     "reports/optimization_v3/reg_pos_poisson_bag2_v1/PREFIT_VERIFICATION_R1_SUPERSEDED_INVALID_928ba2a8.json",
+    "reports/optimization_v3/reg_pos_poisson_bag2_v1/PREFIT_VERIFICATION_R1_SUPERSEDED_1161187.json",
+    "reports/optimization_v3/reg_pos_poisson_bag2_v1/SOURCE_SUPERSESSION_R2.json",
     "reports/optimization_v3/reg_pos_poisson_bag2_v1/SYNTHETIC_E2E.json",
 }
 EXPERIMENT = ROOT / "experiments" / "reg_pos_poisson_bag2_v1"
 REPORT = ROOT / "reports" / "optimization_v3" / "reg_pos_poisson_bag2_v1"
 FREEZE_PATH = EXPERIMENT / "FREEZE_R1.json"
+SUPERSEDED_SOURCE_FREEZE_PATH = EXPERIMENT / "FREEZE_R1_SUPERSEDED_1161187.json"
+SUPERSEDENCE_RECEIPT_PATH = REPORT / "SOURCE_SUPERSESSION_R2.json"
+PREFIT_REPORT = REPORT / "PREFIT_VERIFICATION_R1.json"
+SUPERSEDED_SOURCE_PREFIT_PATH = REPORT / "PREFIT_VERIFICATION_R1_SUPERSEDED_1161187.json"
 WEIGHTS_PATH = EXPERIMENT / "POISSON_WEIGHTS_R1.npz"
 OFFICIAL_RUN = ROOT / "experiments" / "runs" / "reg_pos_poisson_bag2_v1"
 PREDICTION_FREEZE = OFFICIAL_RUN / "PREDICTION_FREEZE_R1.json"
 PRELABEL_REPORT = REPORT / "PRELABEL_VERIFICATION_R1.json"
 ROOT_SOURCE_PASS = EXPERIMENT / "ROOT_SOURCE_PASS_R1.json"
+SHARED_HEAVY_LOCK_PATH = Path(tempfile.gettempdir()) / "kasdad_single_heavy_job.lock"
 LOCAL_CORRECTION = ROOT / "experiments" / "reg_center_local_correction_v1"
 LOCAL_PREDICTION_FREEZE = LOCAL_CORRECTION / "PREDICTION_FREEZE_R1.json"
+LOCAL_ROOT_SOURCE_PASS = LOCAL_CORRECTION / "ROOT_SOURCE_PASS_R1.json"
 HINGE_PARAMS_PATHS = {
     67: LOCAL_CORRECTION / "fits_R1" / "D1_LOCAL.json",
     75: LOCAL_CORRECTION / "fits_R1" / "D2_LOCAL.json",
@@ -60,6 +71,9 @@ LOCAL_PREDICTION_PATHS = {
     75: LOCAL_CORRECTION / "score_predictions_R1" / "HINGE_D2_PREDICTIONS.npz",
 }
 SCORE_WINDOWS = {67: (72, 75), 75: (76, 79)}
+SIMPLIFICATION_ROOT = Path(r"C:\Users\Sam\OneDrive\Documents\KASDAD\tk2-simplification-audit-v1")
+SIMPLIFICATION_SCRIPT = SIMPLIFICATION_ROOT / "scripts" / "simplification_audit_v1.py"
+SIMPLIFICATION_FREEZE = SIMPLIFICATION_ROOT / "reports" / "simplification_v1" / "INPUT_FREEZE.json"
 THREADS = 2
 
 
@@ -82,6 +96,119 @@ def _sha_file(path: Path) -> str:
         for block in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def _bounded(root: Path, relative_path: str) -> Path:
+    root = root.resolve()
+    path = (root / relative_path).resolve()
+    if root not in path.parents or not path.is_file():
+        raise VerifyError(f"Required source path is missing or escapes repository: {relative_path}")
+    return path
+
+
+def _is_git_ancestor(root: Path, ancestor: str, descendant: str) -> bool:
+    valid = lambda value: (isinstance(value, str) and len(value) in (40, 64)
+                           and all(char in "0123456789abcdef" for char in value.lower()))
+    if not valid(ancestor) or not valid(descendant):
+        return False
+    try:
+        result = subprocess.run(["git", "-C", str(root), "merge-base", "--is-ancestor",
+                                 ancestor, descendant], check=False, capture_output=True)
+    except OSError as exc:
+        raise VerifyError(f"Cannot verify Git ancestry in {root}") from exc
+    if result.returncode == 0:
+        return True
+    if result.returncode == 1:
+        return False
+    raise VerifyError(f"Git ancestry check failed in {root}: {result.stderr.decode(errors='replace')}")
+
+
+def _git_blob_sha256(root: Path, revision: str, relative_path: str) -> str:
+    try:
+        blob = subprocess.run(["git", "-C", str(root), "show", f"{revision}:{relative_path}"],
+                              check=True, capture_output=True).stdout
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise VerifyError(f"Reviewed commit does not contain required source: {relative_path}") from exc
+    return hashlib.sha256(blob).hexdigest()
+
+
+def _verify_approved_source_commit(root: Path, freeze_base_commit: str,
+                                   approval: Mapping[str, Any]) -> tuple[str, str]:
+    reviewed = approval.get("reviewed_source_commit", approval.get("local_commit"))
+    if (approval.get("local_commit") not in (None, reviewed)
+            or not _is_git_ancestor(root, freeze_base_commit, reviewed)):
+        raise VerifyError("Root approval commit is not descended from the frozen source base")
+    current_head = subprocess.run(["git", "-C", str(root), "rev-parse", "HEAD"],
+                                  check=True, capture_output=True, text=True).stdout.strip()
+    if not _is_git_ancestor(root, reviewed, current_head):
+        raise VerifyError("Reviewed source commit is not an ancestor of current HEAD")
+    tracked_hashes = approval.get("tracked_source_hashes", {})
+    blob_hashes = approval.get("tracked_blob_hashes", {})
+    if (not isinstance(tracked_hashes, dict) or set(tracked_hashes) != REQUIRED_ROOT_TRACKED_PATHS
+            or not isinstance(blob_hashes, dict) or set(blob_hashes) != REQUIRED_ROOT_TRACKED_PATHS):
+        raise VerifyError("Root approval must bind exact worktree and Git blob hashes for required pilot paths")
+    for relative_path in sorted(REQUIRED_ROOT_TRACKED_PATHS):
+        expected_worktree_sha = tracked_hashes[relative_path]
+        expected_blob_sha = blob_hashes[relative_path]
+        if any(not isinstance(value, str) or len(value) != 64
+               or any(char not in "0123456789abcdef" for char in value.lower())
+               for value in (expected_worktree_sha, expected_blob_sha)):
+            raise VerifyError(f"Root approval hash is invalid: {relative_path}")
+        path = _bounded(root, relative_path)
+        if (_sha_file(path) != expected_worktree_sha
+                or _git_blob_sha256(root, reviewed, relative_path) != expected_blob_sha
+                or _git_blob_sha256(root, current_head, relative_path) != expected_blob_sha):
+            raise VerifyError(f"Reviewed, current HEAD, and worktree source hashes differ: {relative_path}")
+    return reviewed, current_head
+
+
+class _SharedHeavyJobLock:
+    """Independent verifier side of the shared nonblocking advisory byte lock."""
+    def __init__(self, path: Path = SHARED_HEAVY_LOCK_PATH):
+        self.path = Path(path)
+        self.stream = None
+        self.backend = None
+        self.locked = False
+
+    def __enter__(self):
+        try:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            self.stream = self.path.open("a+b")
+            if self.path.stat().st_size == 0:
+                self.stream.write(b"\0")
+                self.stream.flush()
+                os.fsync(self.stream.fileno())
+            self.stream.seek(0)
+            if os.name == "nt":
+                import msvcrt
+                self.backend = msvcrt
+                msvcrt.locking(self.stream.fileno(), msvcrt.LK_NBLCK, 1)
+            else:
+                import fcntl
+                self.backend = fcntl
+                fcntl.flock(self.stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            self.locked = True
+            return self
+        except OSError as exc:
+            if self.stream is not None:
+                self.stream.close()
+                self.stream = None
+            raise VerifyError(f"Shared heavy-job lock is held or unavailable: {self.path}") from exc
+
+    def __exit__(self, exc_type, exc, traceback):
+        if self.stream is None:
+            return
+        try:
+            if self.locked:
+                self.stream.seek(0)
+                if os.name == "nt":
+                    self.backend.locking(self.stream.fileno(), self.backend.LK_UNLCK, 1)
+                else:
+                    self.backend.flock(self.stream.fileno(), self.backend.LOCK_UN)
+        finally:
+            self.locked = False
+            self.stream.close()
+            self.stream = None
 
 
 def _sha_array(value: Any, *, dtype: str | None = None) -> str:
@@ -144,6 +271,116 @@ def _module(path: Path, name: str):
 def _runner():
     sys.path.insert(0, str(FRONTIER_ROOT)) if str(FRONTIER_ROOT) not in sys.path else None
     return _module(RUNNER_PATH, "reg_position_direct_l1_v1_independent")
+
+
+def _source_artifact_hashes(runner: Any) -> dict[str, str]:
+    hashes: dict[str, str] = {
+        "frontier_runner": _sha_file(RUNNER_PATH),
+        "position_freeze_v4": _sha_file(POSITION_FREEZE),
+        "hinge_runner": _sha_file(HINGE_RUNNER),
+        "local_prediction_freeze": _sha_file(LOCAL_PREDICTION_FREEZE),
+        "local_root_source_pass": _sha_file(LOCAL_ROOT_SOURCE_PASS),
+        "simplification_audit_script": _sha_file(SIMPLIFICATION_SCRIPT),
+        "simplification_input_freeze": _sha_file(SIMPLIFICATION_FREEZE),
+    }
+    for origin in ORIGINS:
+        hashes[f"hinge_parameters_E{origin}"] = _sha_file(HINGE_PARAMS_PATHS[origin])
+        hashes[f"local_comparator_E{origin}"] = _sha_file(LOCAL_PREDICTION_PATHS[origin])
+        fit_id = f"{runner.CARD_ID}_E{origin}_REAL"
+        artifact, receipt = runner._unit_paths(fit_id, runner.RUN_ROOT)
+        pred, pred_receipt = runner._prediction_paths(fit_id, runner.RUN_ROOT)
+        for suffix, path in (("model", artifact), ("model_receipt", receipt),
+                             ("pos42_prediction", pred), ("pos42_prediction_receipt", pred_receipt)):
+            if not path.is_file():
+                raise VerifyError(f"Required original POS42 artifact is missing: {path}")
+            hashes[f"E{origin}_{suffix}"] = _sha_file(path)
+        for component in ("STRUCTURED", "SCALER", "OHE"):
+            unit = f"{runner.CARD_ID}_E{origin}_{component}"
+            artifact, receipt = runner._unit_paths(unit, runner.RUN_ROOT)
+            if not artifact.is_file() or not receipt.is_file():
+                raise VerifyError(f"Required cached preprocessor is absent: {unit}")
+            hashes[f"E{origin}_{component}_artifact"] = _sha_file(artifact)
+            hashes[f"E{origin}_{component}_receipt"] = _sha_file(receipt)
+    return hashes
+
+
+def _verify_external_frozen_inputs(freeze: Mapping[str, Any], runner: Any) -> dict[str, Any]:
+    source_head = subprocess.run(["git", "-C", str(SOURCE_ROOT), "rev-parse", "HEAD"],
+                                 check=True, capture_output=True, text=True).stdout.strip()
+    if not _is_git_ancestor(SOURCE_ROOT, freeze.get("source_git_head"), source_head):
+        raise VerifyError("Frozen external source commit is not an ancestor of the current source checkout")
+    train_path = runner._contained_file(SOURCE_ROOT, runner.TRAIN_REL)
+    train_sha = _sha_file(train_path)
+    if (train_sha != freeze.get("official_train_sha256")
+            or train_sha != getattr(runner, "TRAIN_SHA256", None)):
+        raise VerifyError("Current Train.csv differs from the POS source and pilot freeze hashes")
+    current_artifacts = _source_artifact_hashes(runner)
+    if (current_artifacts != freeze.get("source_artifacts")
+            or current_artifacts != freeze.get("local_sources")):
+        raise VerifyError("Relevant external source/artifact hashes differ from the pilot freeze")
+    return {"frozen_head": freeze["source_git_head"], "current_head": source_head,
+            "train_sha256": train_sha, "relevant_artifact_hashes": "PASS"}
+
+
+def _verify_source_supersession(freeze: Mapping[str, Any], implementation_hashes: Mapping[str, str]) -> dict[str, Any]:
+    superseded_freeze = freeze.get("superseded_source_freeze", {})
+    superseded_report = freeze.get("superseded_source_preflight_report", {})
+    expected_freeze_path = SUPERSEDED_SOURCE_FREEZE_PATH.relative_to(ROOT).as_posix()
+    expected_report_path = SUPERSEDED_SOURCE_PREFIT_PATH.relative_to(ROOT).as_posix()
+    expected_receipt_path = SUPERSEDENCE_RECEIPT_PATH.relative_to(ROOT).as_posix()
+    if (freeze.get("source_revision") != 2
+            or superseded_freeze.get("path") != expected_freeze_path
+            or superseded_report.get("path") != expected_report_path
+            or freeze.get("supersession_receipt_path") != expected_receipt_path):
+        raise VerifyError("Source freeze does not identify the reviewed R2 supersession package")
+    old_freeze = _signed(SUPERSEDED_SOURCE_FREEZE_PATH, "freeze_signature")
+    old_report = _read_json(SUPERSEDED_SOURCE_PREFIT_PATH)
+    old_freeze_sha = _sha_file(SUPERSEDED_SOURCE_FREEZE_PATH)
+    old_report_sha = _sha_file(SUPERSEDED_SOURCE_PREFIT_PATH)
+    receipt = _signed(SUPERSEDENCE_RECEIPT_PATH, "receipt_sha256")
+    current_freeze_sha = _sha_file(FREEZE_PATH)
+    current_report = _read_json(PREFIT_REPORT)
+    if (old_freeze_sha != superseded_freeze.get("sha256")
+            or old_freeze["freeze_signature"] != superseded_freeze.get("freeze_signature")
+            or old_report_sha != superseded_report.get("sha256")
+            or old_report.get("status") != "PASS"
+            or old_report.get("freeze_signature") != old_freeze["freeze_signature"]
+            or old_report.get("freeze_sha256") != old_freeze_sha
+            or old_report.get("query_targets_read") is not False
+            or old_report.get("official_target_column_loaded") is not False
+            or old_report.get("official_fit_units_started") != 0
+            or old_report.get("official_ledger_mutated") is not False
+            or old_report.get("test_or_sample_accessed") is not False
+            or old_report.get("csv_created") is not False
+            or receipt.get("status") != "PASS"
+            or receipt.get("supersedes_freeze_signature") != old_freeze["freeze_signature"]
+            or receipt.get("superseded_freeze_sha256") != old_freeze_sha
+            or receipt.get("superseded_preflight_report_sha256") != old_report_sha
+            or receipt.get("current_freeze_signature") != freeze.get("freeze_signature")
+            or receipt.get("current_freeze_sha256") != current_freeze_sha
+            or receipt.get("source_revision") != freeze.get("source_revision")
+            or receipt.get("source_commit") != freeze.get("base_commit")
+            or receipt.get("implementation_hashes") != dict(implementation_hashes)
+            or receipt.get("target_blind_integrity_only") is not True
+            or current_report.get("status") != "PASS"
+            or current_report.get("freeze_signature") != freeze.get("freeze_signature")
+            or current_report.get("freeze_sha256") != current_freeze_sha
+            or current_report.get("source_revision") != freeze.get("source_revision")
+            or current_report.get("implementation_hashes") != dict(implementation_hashes)
+            or current_report.get("supersession_receipt_path") != expected_receipt_path
+            or current_report.get("supersession_receipt_sha256") != _sha_file(SUPERSEDENCE_RECEIPT_PATH)
+            or current_report.get("query_targets_read") is not False
+            or current_report.get("official_target_column_loaded") is not False
+            or current_report.get("official_fit_units_started") != 0
+            or current_report.get("official_ledger_mutated") is not False
+            or current_report.get("test_or_sample_accessed") is not False
+            or current_report.get("csv_created") is not False):
+        raise VerifyError("Independent source supersession or target-free prefit receipt failed")
+    return {"superseded_freeze_sha256": old_freeze_sha,
+            "superseded_preflight_report_sha256": old_report_sha,
+            "current_freeze_sha256": current_freeze_sha,
+            "receipt_sha256": _sha_file(SUPERSEDENCE_RECEIPT_PATH),
+            "source_revision": freeze["source_revision"]}
 
 
 def _rank50(raw: np.ndarray, cycles: np.ndarray) -> np.ndarray:
@@ -286,47 +523,33 @@ def verify_synthetic(root: Path) -> dict[str, Any]:
             "synthetic_mae": metric_values, "target_arrays": "synthetic-only"}
 
 
-def verify_official_prelabel() -> dict[str, Any]:
+def _verify_official_prelabel_locked() -> dict[str, Any]:
     freeze = _signed(FREEZE_PATH, "freeze_signature")
     if freeze.get("status") != "PREFIT_FROZEN" or freeze.get("experiment_id") != CARD_ID:
         raise VerifyError("Source freeze identity/status failed")
-    if {"runner": _sha_file(ROOT / "scripts" / "reg_pos_poisson_bag2_v1.py"),
-            "verifier": _sha_file(Path(__file__)),
-            "test": _sha_file(ROOT / "tests" / "test_reg_pos_poisson_bag2_v1.py")} != freeze.get("implementation_hashes"):
+    implementation_hashes = {
+        "runner": _sha_file(ROOT / "scripts" / "reg_pos_poisson_bag2_v1.py"),
+        "verifier": _sha_file(Path(__file__)),
+        "test": _sha_file(ROOT / "tests" / "test_reg_pos_poisson_bag2_v1.py"),
+    }
+    if implementation_hashes != freeze.get("implementation_hashes"):
         raise VerifyError("Implementation or test source differs from the frozen prefit package")
+    source_supersession_check = _verify_source_supersession(freeze, implementation_hashes)
     if _sha_file(RUNNER_PATH) != freeze["runner_sha256"] or _sha_file(POSITION_FREEZE) != freeze["position_freeze_sha256"]:
         raise VerifyError("POS source runner or source freeze changed")
     source_head = subprocess.run(["git", "-C", str(SOURCE_ROOT), "rev-parse", "HEAD"],
                                  check=True, capture_output=True, text=True).stdout.strip()
-    source_branch = subprocess.run(["git", "-C", str(SOURCE_ROOT), "branch", "--show-current"],
-                                   check=True, capture_output=True, text=True).stdout.strip()
-    source_status = subprocess.run(["git", "-C", str(SOURCE_ROOT), "status", "--porcelain"],
-                                   check=True, capture_output=True, text=True).stdout.splitlines()
-    if (source_head != freeze.get("source_git_head") or source_branch != freeze.get("source_git_branch")
-            or _canonical_sha(source_status) != freeze.get("source_worktree_status_sha256")):
-        raise VerifyError("Frozen external source checkout identity/status changed")
+    if not _is_git_ancestor(SOURCE_ROOT, freeze.get("source_git_head"), source_head):
+        raise VerifyError("Frozen external source commit is not an ancestor of the current source checkout")
     root_pass = _signed(ROOT_SOURCE_PASS, "approval_sha256")
     if (root_pass.get("status") != "PASS"
             or root_pass.get("freeze_signature") != freeze["freeze_signature"]
-            or root_pass.get("local_commit") != subprocess.run(
-                ["git", "-C", str(ROOT), "rev-parse", "HEAD"], check=True,
-                capture_output=True, text=True).stdout.strip()
             or root_pass.get("fit_ids") != list(FIT_IDS)
             or root_pass.get("fit_cap") != len(FIT_IDS)
             or root_pass.get("reviewer") in (None, "", "self")
             or root_pass.get("score_access_allowed") is not False):
         raise VerifyError("Four-fit root source approval is missing or does not match")
-    tracked = root_pass.get("tracked_source_hashes", {})
-    if not REQUIRED_ROOT_TRACKED_PATHS.issubset(tracked):
-        raise VerifyError("Root source approval does not bind the complete implementation package")
-    for rel, expected_sha in tracked.items():
-        current = (ROOT / rel).resolve()
-        if ROOT.resolve() not in current.parents or not current.is_file() or _sha_file(current) != expected_sha:
-            raise VerifyError(f"Root approved source file hash mismatch: {rel}")
-        committed = subprocess.run(["git", "-C", str(ROOT), "show", f"HEAD:{rel}"],
-                                   check=True, capture_output=True).stdout
-        if hashlib.sha256(committed).hexdigest() != expected_sha:
-            raise VerifyError(f"Root approved source differs from commit: {rel}")
+    reviewed_commit, current_head = _verify_approved_source_commit(ROOT, freeze.get("base_commit"), root_pass)
     prediction_freeze = _signed(PREDICTION_FREEZE, "prediction_signature")
     ledger_path = OFFICIAL_RUN / "fit_ledger.jsonl"
     if (not ledger_path.is_file()
@@ -346,6 +569,13 @@ def verify_official_prelabel() -> dict[str, Any]:
     if _sha_file(WEIGHTS_PATH) != freeze["weights_sha256"]:
         raise VerifyError("Poisson weight file hash differs from prefit freeze")
     runner = _runner()
+    external_source_check = _verify_external_frozen_inputs(freeze, runner)
+    current_source_branch = subprocess.run(
+        ["git", "-C", str(SOURCE_ROOT), "branch", "--show-current"],
+        check=True, capture_output=True, text=True).stdout.strip()
+    current_source_status_sha = _canonical_sha(subprocess.run(
+        ["git", "-C", str(SOURCE_ROOT), "status", "--porcelain"],
+        check=True, capture_output=True, text=True).stdout.splitlines())
     position_freeze = _signed(POSITION_FREEZE, "freeze_signature")
     frame = runner._load_feature_frame(SOURCE_ROOT)
     if "threat_rank" in frame.columns:
@@ -471,12 +701,22 @@ def verify_official_prelabel() -> dict[str, Any]:
         "test_or_sample_accessed": False, "csv_created": False,
         "independent_model_readback": True, "formula_replay": True,
         "missing_fallback_bit_exact": True, "origins": origin_checks,
+        "reviewed_source_commit": reviewed_commit, "current_root_head": current_head,
+        "external_source_check": external_source_check,
+        "source_supersession_check": source_supersession_check,
+        "external_source_branch_informational": current_source_branch,
+        "external_source_status_sha256_informational": current_source_status_sha,
         "verified_utc": datetime.now(timezone.utc).isoformat(),
     }
     PRELABEL_REPORT.parent.mkdir(parents=True, exist_ok=True)
     PRELABEL_REPORT.write_text(json.dumps(report, sort_keys=True, ensure_ascii=False,
                                           allow_nan=False, indent=2) + "\n", encoding="utf-8")
     return report
+
+
+def verify_official_prelabel() -> dict[str, Any]:
+    with _SharedHeavyJobLock():
+        return _verify_official_prelabel_locked()
 
 
 def main(argv: list[str] | None = None) -> int:
