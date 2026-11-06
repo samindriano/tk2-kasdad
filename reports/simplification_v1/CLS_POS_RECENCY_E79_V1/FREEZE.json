@@ -1,0 +1,175 @@
+{
+  "application": {
+    "authorized_after_fit_verification": true,
+    "csv_upload": false,
+    "kaggle_contact": false,
+    "missing_probability": "frozen p_A02 copied bit-exactly",
+    "missing_threshold": 0.53230976129477,
+    "present_probability": "0.5*sigmoid(z_BAG + X_position@gamma_E79) + 0.5*p_A02",
+    "present_threshold": 0.5,
+    "sample_schema_only": true,
+    "test_cycles": [
+      80,
+      91
+    ],
+    "test_rows": 29421,
+    "test_target_read": false
+  },
+  "boundaries": {
+    "champion_changed": false,
+    "root_decision_is_exploratory_only": true,
+    "scientific_gate_changed": false,
+    "target_read_during_prefit": false,
+    "test_or_sample_access_during_prefit": false
+  },
+  "candidate_id": "CLS_POS_RECENCY_E79_V1",
+  "fit_cap": 1,
+  "fit_id": "CLS_POS_RECENCY_E79_V1_E79_RECENCY",
+  "fit_population": {
+    "cycles": [
+      47,
+      79
+    ],
+    "gamma_fit_rows": "stream-present subset only",
+    "missing_stream_rows_fit": false,
+    "official_train_rows": 50608
+  },
+  "freeze_sha256": "80f9f94c47b12291588ab232203ce63fbf740deecac038b65912263cd2ab93c9",
+  "full_train_matrix": {
+    "base": {
+      "logical_sha256": "9d47aa36ff15a0cbeead8cf36049f0a699f7618d0ea8890806a2d82140cff59b",
+      "nnz": 3855766,
+      "shape": [
+        50608,
+        20427
+      ]
+    },
+    "ordered_ids_sha256": "9a96fa28e72b08a6022dd005aed877dadcc5e3dd5053200bcdd12711312c26b2",
+    "position": {
+      "logical_sha256": "32268550b8220dbfb43f5c92c33cd84554f0bced446d1459c5c55c3eabbf9942",
+      "nnz": 1638979,
+      "shape": [
+        50608,
+        17259
+      ]
+    },
+    "rows": 50608
+  },
+  "input_lineage": {
+    "inventory_file_sha256": "0bee4b5b95bbff71cdd0ee5e30d7b47e9cbd9add8d621568eebd07ca6648b8ba",
+    "inventory_sha256": "1e77b7f68362e8595bd9b79d00ebcae799eed9c663d58442e0869e52c55181d4",
+    "main_head": "7108c276c9904556a1d6eb186c46588ddf2ef6fb",
+    "main_root": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2",
+    "official_train_path": "C:\\Users\\Sam\\OneDrive\\Documents\\KASDAD\\TP 2\\data\\raw\\classification\\Train.csv",
+    "official_train_rows": 50608,
+    "official_train_sha256": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "pinned_main_file_count": 51,
+    "pinned_main_file_hashes": {
+      "input:data/raw/classification/Train.csv": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+      "input:experiments/optimization_v3/cls_pos_global_strength_e79_v1/protocol.json": "a78e9e193df3fff51eca3c07ecc6a62bad4d17a973a5d847ee453b5b88fc56df",
+      "input:experiments/optimization_v3/cls_pos_global_strength_e79_v2/protocol.json": "6cdd19cfdce8351470bf5fd2f3549cf5794a6fc382247c69b05cfa29420c81a9",
+      "input:experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/INTEGRATION_PREFLIGHT_R1.json": "087e1eb82fa65f046aebfb57fd365d95dc417bdf6841b250b1b60440f506e243",
+      "input:experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_C2B_LR_INTEGRATION_R1.joblib": "40b9588e1cd2f93350fe09ffc69efa9bf0bcb6927e6b8a2bc0192a4a6235ca80",
+      "input:experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_C2B_LR_INTEGRATION_R1.json": "d076a1b2bcc29f14aa4be9c6d7621f4b0217b79f528ea9a376765329f4b2c9b9",
+      "input:experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_C2B_OHE.joblib": "85c6f0f7fb4b318d3ffd11bff5f4944cba8a7ea1124355b493d0e92509c3bb77",
+      "input:experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_C2B_OHE.json": "c86e8682fda527dee706231f12078c2b4839c0acdab7b05cd1224daba5e22fae",
+      "input:experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_C2B_SCALER.joblib": "d45db93e7a02c7b3c2662347d0b2b31a87838df3080b0b6150856c75df4883d9",
+      "input:experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_C2B_SCALER.json": "183df7d8a8f6f6936d0d832f293a26e627d9d923dc626b1fb3ec773bcbb2af1b",
+      "input:experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_C2B_STRUCTURED.joblib": "3347262f1df86a70011bebe01e8ec7df38bff1aedf0da8edbf30ab4d4c3a537a",
+      "input:experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_C2B_STRUCTURED.json": "8da5f7ae163577aaecc8db94fd6130188ffeb270e52a30b8cd5925dce8414840",
+      "input:experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_POS_BAG_OFFSET_GAMMA_INTEGRATION_R1.joblib": "d741d016f990d8742208edc919f5c58305b7579980d059b202609df4e5b3e650",
+      "input:experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_POS_BAG_OFFSET_GAMMA_INTEGRATION_R1.json": "f08f1bd3733a20fb8745d40c82190543a48af6bade1df5684ccfef3198c34580",
+      "input:experiments/runs/optimization_v3_a02_continuation_v1/E79/fulltrain_observed/fit_receipt.json": "11a7e46b6595e92a421e358b8e7e3a5ffbac8a6db69c64c9c33fd3d5c5bd7d77",
+      "input:experiments/runs/optimization_v3_a02_continuation_v1/E79/fulltrain_observed/model.joblib": "2791eddf410c7e81b119bde2a0b1d33a694eed4de84027c61cee97f6668dcb6e",
+      "input:experiments/runs/optimization_v3_cls_pos_global_strength_e79_v1/source_compatibility_replay/ATTEMPT.started.json": "9f9f33f573280cab6a57a7fa95e1e6baa17813f4e6a91e04b75d3f91af5de7c7",
+      "input:experiments/runs/optimization_v3_cls_pos_global_strength_e79_v1/source_compatibility_replay/REPLAY_RECEIPT.json": "a754f0efb85f89bb5991d732518b78d4a3e0e765c77ae4303331c8b86262fdf8",
+      "input:experiments/runs/optimization_v3_cls_pos_global_strength_e79_v2/source_compatibility_replay/ATTEMPT.started.json": "2f175f4a3bbbb2b53898df0969a9eef7eb7d4599898281705c54ec8c0c8a8c49",
+      "input:experiments/runs/optimization_v3_cls_pos_global_strength_e79_v2/source_compatibility_replay/REPLAY_RECEIPT.json": "1a001f7843dfa19356adab62b0eadd21aecf1b0be8fa83f3db63a9a354c68ff9",
+      "input:experiments/runs/optimization_v3_cls_pos_global_strength_e79_v3/descendant_replay_v1/REPLAY_RECEIPT.json": "e2978ea5b5ffd531b8a2592353ae2ac38e83a32706fa16f74a13c2c61d715105",
+      "input:experiments/runs/optimization_v3_cls_pos_global_strength_e79_v3/df_map_v1/DFMAP_RECEIPT.json": "1b6fe3a858c27f132ce230f330836b9d4cb34db8198236fc8a07a3a6aa5c487d",
+      "input:experiments/runs/optimization_v3_cls_pos_global_strength_e79_v3/df_map_v1/DFMAP_RESOURCE_V2_VERIFICATION.json": "2542d3bf8e134fc523b0666da89a96ff81ce2976e948636744e4fa99ea020efc",
+      "input:experiments/runs/optimization_v3_cls_pos_global_strength_e79_v3/df_map_v1/E79_DF_MAP.npz": "fb199787b5ff0540385c40c1fd107ed389456eadf2bff2054877fbbf5a5d4d10",
+      "input:reports/optimization_v3/cls_pos_global_strength_e79_v1/SOL_COMPATIBILITY_REPLAY_AUTHORIZATION.md": "9d0729d1f19793dfb79cc3024be868e44f8ff97020147cd0af2d91ff5df6b6e3",
+      "input:reports/optimization_v3/cls_pos_global_strength_e79_v1/SOURCE_COMPATIBILITY_ATTESTATION.json": "6839ef1228cfaffbefa80d9ede9fbddf09d589685d95faa83ee225af2c60703f",
+      "input:reports/optimization_v3/cls_pos_global_strength_e79_v2/CORRECTION_NOTE.md": "870b55b360a70486e3efcc0e362532ce4fe76367f376b9ca5ae2a3d4df0e9406",
+      "input:reports/optimization_v3/cls_pos_global_strength_e79_v2/SOURCE_COMPATIBILITY_ATTESTATION.json": "7ee26bdb1f0a32dba081e15999f882a0334953d02ba3f17cbdb68af56346817e",
+      "input:reports/optimization_v3/cls_pos_global_strength_e79_v3/DFMAP_FREEZE.json": "068522aec896b39bd0301c94a102fd2ec87857b3a1d5a4199132c75727d8c0e1",
+      "input:reports/optimization_v3/cls_pos_global_strength_e79_v3/DFMAP_RESOURCE_V2_FREEZE.json": "b90baa5ea3739e20f4f94ff641dfc0a01db2844c7b2896cd73159b0f42a6594a",
+      "input:scripts/optimization_v3_cls_pos_global_strength_e79_v1.py": "e3d4f30c15733e7ccd2ace4429277ea006794294bd5cf449681faad420dd9aa9",
+      "input:scripts/optimization_v3_cls_pos_global_strength_e79_v2.py": "08654eab445b5b3e51574dfa4d7d416f3684670d4dc3722cb821ea44a4d1c59e",
+      "input:scripts/verify_optimization_v3_cls_pos_global_strength_e79_v1.py": "337fa46569647b6875b2e49b81d446144ce794a1637eceeea5a166ea1e04f350",
+      "input:scripts/verify_optimization_v3_cls_pos_global_strength_e79_v2.py": "ac06d3f4136d93d74638b2535aef728f5f14ed9a970bca9f1f03da2753770b8e",
+      "input:tests/test_cls_pos_global_strength_e79_v1.py": "b63ccf49501118bdaf2f3e40aa82b25511b2171b5f9dfa6368f2492a88d03856",
+      "input:tests/test_cls_pos_global_strength_e79_v2.py": "c84eb32d6957f9b9a0041f45ae7038c2f2feb16905a4205119029ff911cbbeb7",
+      "source:reports/optimization_v3/cls_pos_global_strength_e79_v3/GAMMA_CONTINUATION.md": "83d596c72bb0f3e4b86fc15d21e4a6fa76915daaaba67c7e83913ec300e955cd",
+      "source:scripts/optimization_v3_a02_cgeom_benchmark_v1.py": "d6af3f3e18787c9cd1e5c52b1463fb30e18398cee6e3dc838e5227cf30a50a3f",
+      "source:scripts/optimization_v3_cls_pos_global_strength_e79_dfmap_resource_v2.py": "11e60daf2fe1ef9cf3109d784be2b41ca3e9764b03145b59fc9f263295ecfd88",
+      "source:scripts/optimization_v3_cls_pos_global_strength_e79_dfmap_v1.py": "2e07eb282305094097106f53caa4a001578ca935bd5976f567c87e9159a43687",
+      "source:scripts/optimization_v3_cls_pos_global_strength_e79_gamma_v1.py": "39a04d64bbd957bfade8c15cf463309f22bfd8326db907db138ec816456e76a8",
+      "source:scripts/optimization_v3_cls_pos_global_strength_e79_v3.py": "dbb9d5d2c9f1129838ff5173dba6adbfa63a11f275ff447985139fab9540887b",
+      "source:scripts/verify_optimization_v3_cls_pos_global_strength_e79_dfmap_resource_v2.py": "9514ed74b6e344c02ff3335d719191a6fba65039b193d68bc40ba35d52dfb426",
+      "source:scripts/verify_optimization_v3_cls_pos_global_strength_e79_dfmap_v1.py": "7459c7fe19e4227c2da5e1ec7ee4bc071bda1ec23800198f97a09c2b2cf7b809",
+      "source:scripts/verify_optimization_v3_cls_pos_global_strength_e79_gamma_v1.py": "694a145c8ee9876b8dc0797c4191fb5bea5a9feca86149ffb9504229b1abdc9b",
+      "source:src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+      "source:src/models/cls_pos_global_strength_e79_v1.py": "99574ad5d2ef74be91af7544a316ea6bdda6bcbc7b8056992a6739d56fe0b938",
+      "source:src/models/optimization_v3_positional_text_pilot_v1.py": "390d9585a91440cc83314d2fa58acfebf374371032308937489019c2bd242c36",
+      "source:src/models/pos_frequency_ridge_v1.py": "db800c5a671cc3714ea2754a7d1eca2fc287da88908dd0116d2fc447ecc21490",
+      "source:src/models/pos_one_sided_ridge_v1.py": "3dd47aabe71e708da09acf476b085ab1cc233cd2ebc6e5e058485845fe8b7892",
+      "source:tests/test_optimization_v3_cls_pos_global_strength_e79_gamma_v1.py": "5a0ece363525a59e4513e15f7f3ca6ca56c17c3f454613518ed467da701429b7"
+    },
+    "root_decision_commit": "7a8ad5b6437db1c3bb8d716fb879252935615e34",
+    "root_decision_file_sha256": "073348f702a32a18feb61528284a01abd8076acbd9ff7eff4eb6e1b289a08273",
+    "target_column_read": false,
+    "test_or_sample_access": false
+  },
+  "original_uniform_gamma": {
+    "artifact_path": "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_POS_BAG_OFFSET_GAMMA_INTEGRATION_R1.joblib",
+    "artifact_sha256": "d741d016f990d8742208edc919f5c58305b7579980d059b202609df4e5b3e650",
+    "base_matrix_sha256": "9d47aa36ff15a0cbeead8cf36049f0a699f7618d0ea8890806a2d82140cff59b",
+    "fit_id": "A02_CGEOM_BENCHMARK_V1_E79_POS_BAG_OFFSET_GAMMA_INTEGRATION_R1",
+    "fit_matrix_sha256": "32268550b8220dbfb43f5c92c33cd84554f0bced446d1459c5c55c3eabbf9942",
+    "fit_rows": 50608,
+    "gamma_shape": [
+      17259
+    ],
+    "gamma_vector_sha256": "2171d72a0168f0ce43980a9c416fd64d673e1a7d9e9a213b226f843b55bf1bb1",
+    "receipt_file_sha256": "f08f1bd3733a20fb8745d40c82190543a48af6bade1df5684ccfef3198c34580",
+    "receipt_path": "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/units/A02_CGEOM_BENCHMARK_V1_E79_POS_BAG_OFFSET_GAMMA_INTEGRATION_R1.json",
+    "receipt_status": null,
+    "source": "frozen C=1 full-Train POS_BAG_OFFSET gamma; not the separate global-strength gamma artifact",
+    "training_rows_include_missing_streams": true
+  },
+  "prefit_qa_sha256": "975d0634da7561c8cbf32f17cf1a65378469b6f0c8c31b8ac2072a461fcc6c82",
+  "prepared_from_head": "bbac3d998f801702788d3b7e934a0263f99825bf",
+  "recipe": {
+    "base_weight": "max(0.25, 2**(-(79-cycle_code)/8))",
+    "control_or_comparator_fit_count": 0,
+    "normalization": "divide by mean base weight separately within each target class on stream-present fit rows",
+    "objective": "sum_i w_i*logaddexp(0,-(2*y_i-1)*(z_BAG_i + X_position_i@gamma)) + 0.5*dot(gamma,gamma)",
+    "offset": "frozen C2_B positive-class logit z_BAG = X_base @ coef_[0] + intercept_[0]",
+    "optimizer": "the frozen CLS_POS_RECENCY_V1 float64 L-BFGS-B helper; zero initialization; maxiter=2000, ftol=1e-12, gtol=1e-6, maxls=50",
+    "preprocessing_fit_count": 0,
+    "test_threshold_selection": false
+  },
+  "resource_policy": {
+    "maximum_threads": 2,
+    "minimum_free_after_fit_bytes": 536870912,
+    "minimum_free_before_fit_bytes": 1073741824,
+    "one_heavy_job_at_a_time": true,
+    "optimizer_starts_maximum": 1,
+    "retry_after_optimizer_start": false
+  },
+  "schema_version": 1,
+  "source_file_sha256": {
+    "reports/simplification_v1/CLS_POS_RECENCY_E79_V1/PROTOCOL.md": "84e2ba8dbee0961d4e948bd0277ab5bd017da86f1168b1f3d2b692fc929aafa8",
+    "reports/simplification_v1/CLS_POS_RECENCY_E79_V1/SOURCE_INVENTORY.json": "0bee4b5b95bbff71cdd0ee5e30d7b47e9cbd9add8d621568eebd07ca6648b8ba",
+    "reports/simplification_v1/CLS_POS_RECENCY_E79_V1/SYNTHETIC_QA_FINAL.json": "34bc11437322c828f8055d68ba0d072d3ceb4728e0b0e9f5ba2549eb3fa6deea",
+    "reports/simplification_v1/CLS_POS_RECENCY_E79_V1/TEST_SUITE_QA_FINAL.json": "72d200154ef7a321fe972f1f82407be99e255d704239198d6bd2c6c9a2f5be5c",
+    "scripts/cls_pos_recency_e79_main_bridge_v1.py": "d132a8f7218022efc751e1b2edd4ed705c1dfbac0122c0ff0e7c52cf68f22b9b",
+    "scripts/cls_pos_recency_e79_v1.py": "4402ee70b3a1692c8d83dd5ed6136faef5512b72e1b8e7e96f4b20f77ea999d0",
+    "scripts/verify_cls_pos_recency_e79_v1.py": "b793fdd88f32b68285e8b5f009fc88706c9101af0da071dc799e431aac2485a8",
+    "src/models/cls_pos_recency_e79_v1.py": "4cd032743815e3a5faeec5079f1344f042548358ff45ac710951c0c626a5b15c",
+    "tests/test_cls_pos_recency_e79_v1.py": "5e9c1ade4597a7887f4198473a32542583b2650e5672d787e658ac07069a0c64"
+  },
+  "status": "FROZEN_ONE_E79_RECENCY_GAMMA_FIT"
+}
