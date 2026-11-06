@@ -415,6 +415,7 @@ def _validate_historical_artifacts(origin: int, *, input_hashes: dict[str, str] 
     parent_readback_output = parent_readback.get("predictions", {}).get(parent_key, {})
     if (parent_output.get("path") != f"experiments/CLS_POS_POISSON_BAG2_V1/E{origin}/predictions_E{origin}.npz"
             or parent_output.get("sha256") != parent_readback_output.get("bundle_sha256")
+            or parent_output.get("ordered_ids_sha256") != parent_readback_output.get("ids_sha256")
             or parent_output.get("sha256") != _sha_file(paths["poisson_parent_predictions"])
             or parent_readback_output.get("has_label_values") is not False
             or int(parent_output.get("rows", -1)) != int(len(a02["score_rows"]))
@@ -446,8 +447,7 @@ def _validate_historical_artifacts(origin: int, *, input_hashes: dict[str, str] 
             or not np.array_equal(parent["cycles"], a02["score_cycles"])
             or not np.array_equal(parent["present_mask"], pos["present_mask"])
             or str(parent["input_freeze_signature"].reshape(-1)[0]) != parent_freeze["freeze_signature"]
-            or str(parent["matrix_manifest_sha256"].reshape(-1)[0]) != parent_output.get("matrix_manifest_sha256")
-            or parent_readback_output.get("ids_sha256") != _canonical_sha(parent["record_ids"].astype(str).tolist())):
+            or str(parent["matrix_manifest_sha256"].reshape(-1)[0]) != parent_output.get("matrix_manifest_sha256")):
         raise PilotError(f"Poisson original-only cache rows/IDs/cycles/availability differ for E{origin}")
     if not np.array_equal(parent["p_a02"], a02["prediction"]):
         raise PilotError(f"Poisson full champion does not use the exact original A02 probabilities for E{origin}")
