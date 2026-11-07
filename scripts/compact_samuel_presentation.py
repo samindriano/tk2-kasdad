@@ -1,5 +1,6 @@
 """Concise academic presentation; no model/metric/plot changes."""
 import re
+import nbformat
 
 EDA = {
 0: "## 2. EDA individual: teks kosong dan terisi\n\n**Apakah persentase laporan berlabel `artifact_signal = 1` berbeda antara `signal_stream` kosong dan terisi, setelah mempertimbangkan waktu dan volume laporan?**",
@@ -39,6 +40,7 @@ REG = {
 }
 
 def compact(nb, task):
+    nb.cells = [c for c in nb.cells if not c.id.startswith("samuel-format-")]
     for index, source in (CLS if task == "Classification" else REG).items():
         assert nb.cells[index].cell_type == "markdown"
         nb.cells[index].source = source
@@ -63,4 +65,48 @@ def compact(nb, task):
     "Hasil bukan sebab-akibat atau konfirmasi independen. Routing berasal dari diagnosis model terdahulu, "
     "bukan ditemukan secara prospektif melalui EDA ini."
 ))"""
+    # Match the TP1 opening: task, individual EDA, short approach, identity.
+    title = "Klasifikasi `artifact_signal`" if task == "Classification" else "Regresi `threat_rank`"
+    approach = ("C4_HGB memakai hybrid structured + TF-IDF Logistic Regression saat teks terisi, dan structured HGB saat kosong. Metrik utama: **Macro F1**." if task == "Classification" else "LightGBM L1 memakai fitur structured dan TF-IDF/SVD32, dengan rank blend yang dipilih melalui inner validation. Metrik utama: **MAE**.")
+    nb.cells[0].source = (f"# TP2 KASDAD - {title}\n\n"
+        "**EDA individual:** Apakah persentase laporan berlabel `artifact_signal = 1` berbeda antara `signal_stream` kosong dan terisi, setelah mempertimbangkan waktu dan volume laporan?\n\n"
+        + approach + "\n\n**Identitas:** Kelompok **A06 - KasdudLovers** | **Samuel Indriano** | NPM **2406400524**.\n\n"
+        "Notebook mencakup data, EDA, preprocessing, pemodelan, dan evaluasi temporal. Approach individual ini berbeda dari ensemble champion kelompok terbaru.")
+    # Add short readings directly after the preceding computed table/figure.
+    insights = {
+        5: "**Insight data.** Teks kosong hanya mencakup 6,73% laporan. Ukuran kelompok yang jauh berbeda perlu diperhatikan saat membaca persentase dan ketidakpastiannya.",
+        7: "**Insight perbandingan awal.** Label 1 lebih sering muncul pada kelompok kosong, dengan selisih +3,66 pp. Ini belum memperhitungkan perbedaan waktu dan volume laporan.",
+        9: "**Insight waktu.** Gap positif pada 21 dari 33 cycle, tetapi negatif pada 12 lainnya. Periode tengah menunjukkan perbedaan terbesar; satu angka agregat menyembunyikan variasi ini.",
+        11: "**Insight volume.** Median `text_load` kelompok kosong 21,81, sedangkan kelompok terisi 31,78. Komposisi volume yang berbeda menjadi alasan untuk membandingkan kelompok waktu/volume yang lebih setara.",
+        14: "**Insight penyesuaian.** Menyamakan cycle saja tidak membalik arah gap, sedangkan penyesuaian periode dan volume membalikkannya. Hasil 5 dan 10 kelompok memiliki arah serupa, dengan coverage lebih rendah pada 10 kelompok."
+    }
+    for c in nb.cells:
+        if c.id.startswith("samuel-approved-eda-"):
+            i = int(c.id.rsplit("-",1)[1])
+            if i in insights: c.source = insights[i] + "\n\n" + c.source
+            if i == 0: c.source = c.source.replace("## 2.", "## 3.")
+    if task == "Classification":
+        nb.cells[2].source = nb.cells[2].source.replace("## 1. Masalah dan data", "## 2. Dataset dan target")
+        nb.cells[23].source = nb.cells[23].source.replace("## 3.", "## 4.")
+        nb.cells[25].source = nb.cells[25].source.replace("## 4. Reproduksi temporal", "## 5. Pipeline dan validasi temporal")
+        nb.cells[25].source = nb.cells[25].source.replace("**Pemilihan model.**", "**Insight pemilihan model.**")
+        nb.cells[29].source = nb.cells[29].source.replace("### Hasil W6", "## 6. Evaluasi model")
+        nb.cells[31].source = "**Insight W6.** Routing mengurangi false positive dari **608 menjadi 522**, tetapi true positive juga turun dari **1.758 menjadi 1.725** dibanding hybrid C2_B. Jadi, peningkatan keputusan memiliki trade-off: lebih sedikit alarm salah dengan sedikit kehilangan deteksi positif."
+        nb.cells[33].source = nb.cells[33].source.replace("## 5. Recipe individual dan Kaggle", "### Recipe individual dan Kaggle")
+        nb.cells[36].source = nb.cells[36].source.replace("### Refit penuh (opsional)", "## 7. Refit penuh (opsional)")
+        nb.cells[38].source = nb.cells[38].source.replace("## 6.", "## 8.")
+        prep = nbformat.v4.new_markdown_cell("## 1. Persiapan\n\nGunakan dependencies dan lokasi data di [README](README.md), lalu Restart & Run All. Refit penuh tetap dimatikan secara default.")
+        prep.id = "samuel-format-preparation"; nb.cells.insert(1,prep)
+    else:
+        nb.cells[1].source = nb.cells[1].source.replace("## 1. Data dan lingkungan", "## 1. Persiapan")
+        nb.cells[22].source = nb.cells[22].source.replace("## 3.", "## 4.")
+        nb.cells[24].source += "\n\n**Insight model.** Tambahan teks memperbaiki Ridge dalam keluarga model yang sama. Ini evidence prediktif yang terpisah dari EDA availability; EDA tersebut memakai target Classification."
+        nb.cells[26].source = nb.cells[26].source.replace("## 4.", "## 5.")
+        nb.cells[29].source = nb.cells[29].source.replace("## 5. Evaluasi dan keterbatasan", "## 6. Evaluasi model")
+        nb.cells[29].source += "\n\n**Insight pemilihan.** Hasil primary yang lebih baik belum berarti unggul pada semua horizon. Keunggulan Ridge di H12 menjadi alasan untuk tetap menampilkannya sebagai pembanding."
+        nb.cells[31].source = "**Insight error.** Pada grafik bias, target rendah cenderung diprediksi terlalu tinggi dan target tinggi terlalu rendah. Prediksi mendekati nilai tengah dapat memberi MAE yang baik secara keseluruhan, tetapi masih kurang tepat pada target ekstrem.\n\n" + nb.cells[31].source.split("\n\n",1)[-1]
+        nb.cells[32].source = nb.cells[32].source.replace("## 6.", "## 7.")
+        nb.cells[34].source = nb.cells[34].source.replace("## 7.", "## 8.")
+        data = nbformat.v4.new_markdown_cell("## 2. Dataset dan target\n\nModel memprediksi `threat_rank` pada skala 0-100. Ringkasan berikut memakai official Regression Train; bagian EDA kemudian memakai Classification Train secara terpisah.")
+        data.id = "samuel-format-dataset"; nb.cells.insert(3,data)
     return nb
