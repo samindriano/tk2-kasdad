@@ -1,0 +1,36 @@
+{
+  "additional_query_vector_reads_authorized_remaining": 1,
+  "amendment_commit_binding": "The evaluator requires the commit that adds this receipt to be current HEAD, requires this receipt to bind the prior marker commit and corrected code/test hashes, and records that amendment commit SHA in the R2 results.",
+  "authority": "Root-approved narrow repair of a pre-reader validator defect; reuses the still-unused R2 vector read and adds no read allowance.",
+  "campaign_total_actual_query_vector_reads_cap": 2,
+  "candidate_id": "CLS_DAN_V1",
+  "corrected_source_test_hashes": {
+    "scripts/cls_dan_v1_evaluation_recovery_r2.py": "f880125234f2af084b224ec55dce959823814bcd377ac1920faaa1c41322310a",
+    "tests/test_cls_dan_v1_evaluation_recovery_r2.py": "a381df0a9d0dd6ffbd78b9932c391df1cb5b64ef9cc68474b770af6b7cb9359c"
+  },
+  "kaggle_contacted": false,
+  "new_model_fits_allowed": 0,
+  "pre_reader_failure": {
+    "failure": "validator expected expected_campaign_total_actual_query_vector_reads at the intent top level; committed intent correctly stores expected_campaign_total_actual_reads under expected_query_vector",
+    "failure_location": "scripts/cls_dan_v1_evaluation_recovery_r2.py::_validate_recovery_ready",
+    "failure_type": "RuntimeError",
+    "historical_markers_changed": false,
+    "metrics_computed": false,
+    "query_label_values_read": 0,
+    "result_files_written": false,
+    "target_reader_entered": false,
+    "target_reader_function": "scripts.cls_dan_v1._read_exact_targets",
+    "technical_invocations_before_recovery": 1
+  },
+  "prediction_changes_allowed": false,
+  "previous_actual_query_vector_reads": 1,
+  "prior_start_marker_commit": "c8c16a2a7ea500691ab9c6a85d32ec26023b3963",
+  "prior_start_marker_parent_commit": "4063a72084da0b3af2ce833bfd304df6c9ab2f85",
+  "r2_consumed_sha256": "650d5b6c7bdb1975c0aed1fb5ce705718eb9b55945ac7cc7e9006e1a7d9acb09",
+  "r2_intent_sha256": "5514b04ec4e55a3ee25c4835ae2f477aacda76d36868641882b693e2e9d37962",
+  "r2_started_sha256": "37243377f21225eed1f7ca69023de5ee9d9a87dccf3bd0cefb6436f44e1b30cf",
+  "recovery_id": "R2",
+  "root_authority_sha256": "b09be1f3808a219476932ee1ca888eccb6f38dd7e863184cc036ab8bc78f8819",
+  "status": "PASS_R2_PRE_READER_FAILURE_AMENDMENT",
+  "test_or_sample_access": false
+}

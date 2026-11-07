@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from copy import deepcopy
 
 import numpy as np
 import pytest
@@ -85,6 +86,104 @@ def test_original_and_amended_e75_gate_components_are_distinct():
     assert gates["scientific_r2_amended"]["components"]["E75_DAN_minus_LINEAR_nonnegative_R2_amendment"] is True
     assert gates["exploratory_eligibility_original_rule"]["components"][
         "campaign_primary_or_E75_performance_rule"] is True
+
+
+def _validator_fixtures():
+    intent = {
+        "status": "PASS_R2_PREACCESS_NO_QUERY_LABELS",
+        "expected_query_vector": {"expected_campaign_total_actual_reads": 2},
+        "code_test_hashes": {"scripts/old.py": "old-script", "tests/old.py": "old-test"},
+        "prelabel_shape_audit": {"fixture": "shape"},
+        "target_free_hashes": {"fixture": "source"},
+    }
+    consumed = {
+        "status": "R2_ADDITIONAL_QUERY_VECTOR_READ_CONSUMED_NO_RETRY",
+        "query_labels_read": False,
+        "intent_sha256": "intent-hash",
+        "expected_campaign_total_actual_query_vector_reads": 2,
+    }
+    started = {"query_labels_read": False, "consumed_receipt_sha256": "consumed-hash",
+               "head_before_marker_commit": "marker-parent"}
+    repair = {
+        "status": "PASS_R2_PRE_READER_FAILURE_AMENDMENT",
+        "pre_reader_failure": {
+            "target_reader_entered": False, "query_label_values_read": 0,
+            "metrics_computed": False,
+        },
+        "r2_intent_sha256": "intent-hash",
+        "r2_consumed_sha256": "consumed-hash",
+        "r2_started_sha256": "started-hash",
+        "root_authority_sha256": "authority-hash",
+        "prior_start_marker_commit": "marker-commit",
+        "prior_start_marker_parent_commit": "marker-parent",
+        "additional_query_vector_reads_authorized_remaining": 1,
+        "corrected_source_test_hashes": {
+            recovery.SCRIPT_REL: "new-script", recovery.TEST_REL: "new-test",
+        },
+    }
+    committed = {
+        recovery.INTENT_PATH: intent,
+        recovery.CONSUMED_PATH: consumed,
+        recovery.STARTED_PATH: started,
+        recovery.PRE_READER_REPAIR_PATH: repair,
+    }
+    hashes = {
+        recovery.INTENT_PATH: "intent-hash", recovery.CONSUMED_PATH: "consumed-hash",
+        recovery.STARTED_PATH: "started-hash", recovery.AUTHORITY_PATH: "authority-hash",
+    }
+    audit = {"shape_audit": {"fixture": "shape"}, "data": {"target-free": True},
+             "prediction_ready": {"readiness": True}}
+    return intent, consumed, started, repair, committed, hashes, audit
+
+
+def _patch_validator_boundaries(monkeypatch, fixtures):
+    intent, consumed, started, repair_receipt, committed, hashes, audit = fixtures
+    monkeypatch.setattr(recovery, "require_committed", lambda path: committed[path])
+    monkeypatch.setattr(recovery, "assert_clean_checkout", lambda: "repair-commit")
+    monkeypatch.setattr(
+        recovery, "latest_commit_for_path",
+        lambda relative: {recovery.STARTED_REL: "marker-commit",
+                          recovery.PRE_READER_REPAIR_REL: "repair-commit",
+                          recovery.INTENT_REL: "intent-commit"}[relative],
+    )
+    monkeypatch.setattr(recovery, "is_commit_ancestor", lambda ancestor, descendant: (
+        (ancestor == "marker-commit" and descendant == "repair-commit")
+        or (ancestor == "marker-parent" and descendant == "marker-commit")))
+    monkeypatch.setattr(recovery, "sha256_file", lambda path: hashes[path])
+    monkeypatch.setattr(recovery, "committed_source_hash_at", lambda path, commit: {
+        "scripts/old.py": "old-script", "tests/old.py": "old-test"}[path])
+    monkeypatch.setattr(recovery, "committed_source_hash", lambda path: {
+        recovery.SCRIPT_REL: "new-script", recovery.TEST_REL: "new-test",
+    }[path])
+    monkeypatch.setattr(recovery, "audit_actual_prelabel", lambda _root: audit)
+    monkeypatch.setattr(recovery, "_target_free_hash_map", lambda _audit: {"fixture": "source"})
+
+
+def test_production_recovery_ready_validates_nested_intent_and_committed_amendment(monkeypatch):
+    fixtures = _validator_fixtures()
+    _patch_validator_boundaries(monkeypatch, fixtures)
+    intent, data, prediction_ready = recovery._validate_recovery_ready(
+        recovery.Path("synthetic-official-root")
+    )
+    assert intent["pre_reader_repair_commit"] == "repair-commit"
+    assert intent["r2_technical_pre_reader_failures"] == 1
+    assert data == {"target-free": True}
+    assert prediction_ready == {"readiness": True}
+
+
+@pytest.mark.parametrize("mutation", ["missing_nested_key", "bad_source_hash", "wrong_marker_commit"])
+def test_production_recovery_ready_rejects_missing_or_mismatched_amendment(monkeypatch, mutation):
+    fixtures = _validator_fixtures()
+    intent, _consumed, _started, repair_receipt, *_ = fixtures
+    if mutation == "missing_nested_key":
+        intent["expected_query_vector"].pop("expected_campaign_total_actual_reads")
+    elif mutation == "bad_source_hash":
+        repair_receipt["corrected_source_test_hashes"][recovery.SCRIPT_REL] = "bad"
+    else:
+        repair_receipt["prior_start_marker_commit"] = "other-commit"
+    _patch_validator_boundaries(monkeypatch, fixtures)
+    with pytest.raises(RuntimeError):
+        recovery._validate_recovery_ready(recovery.Path("synthetic-official-root"))
 
 
 def test_synthetic_cli_persistence_and_no_retry_guard(tmp_path, monkeypatch, capsys):

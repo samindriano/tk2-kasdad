@@ -31,6 +31,7 @@ ACK_PATH = REPORT_DIR / "EVALUATION_RECOVERY_R2_GATE_ACK.json"
 INTENT_PATH = REPORT_DIR / "EVALUATION_RECOVERY_R2_INTENT.json"
 CONSUMED_PATH = REPORT_DIR / "EVALUATION_RECOVERY_R2_CONSUMED.json"
 STARTED_PATH = REPORT_DIR / "EVALUATION_RECOVERY_R2_STARTED.json"
+PRE_READER_REPAIR_PATH = REPORT_DIR / "EVALUATION_RECOVERY_R2_PRE_READER_REPAIR.json"
 RESULTS_PATH = REPORT_DIR / "EVALUATION_RECOVERY_R2_RESULTS.json"
 VERIFY_PATH = REPORT_DIR / "EVALUATION_RECOVERY_R2_INDEPENDENT_VERIFICATION.json"
 COMPLETED_PATH = REPORT_DIR / "EVALUATION_RECOVERY_R2_COMPLETED.json"
@@ -41,6 +42,7 @@ ACK_REL = "reports/simplification_v1/CLS_DAN_V1/EVALUATION_RECOVERY_R2_GATE_ACK.
 INTENT_REL = "reports/simplification_v1/CLS_DAN_V1/EVALUATION_RECOVERY_R2_INTENT.json"
 CONSUMED_REL = "reports/simplification_v1/CLS_DAN_V1/EVALUATION_RECOVERY_R2_CONSUMED.json"
 STARTED_REL = "reports/simplification_v1/CLS_DAN_V1/EVALUATION_RECOVERY_R2_STARTED.json"
+PRE_READER_REPAIR_REL = "reports/simplification_v1/CLS_DAN_V1/EVALUATION_RECOVERY_R2_PRE_READER_REPAIR.json"
 RESULTS_REL = "reports/simplification_v1/CLS_DAN_V1/EVALUATION_RECOVERY_R2_RESULTS.json"
 VERIFY_REL = "reports/simplification_v1/CLS_DAN_V1/EVALUATION_RECOVERY_R2_INDEPENDENT_VERIFICATION.json"
 COMPLETED_REL = "reports/simplification_v1/CLS_DAN_V1/EVALUATION_RECOVERY_R2_COMPLETED.json"
@@ -99,6 +101,26 @@ def committed_source_hash(relative: str) -> str:
     require(normalized_sha256(blob) == normalized_sha256(disk),
             f"R2 source file is not committed exactly: {relative}")
     return normalized_sha256(blob)
+
+
+def latest_commit_for_path(relative: str) -> str:
+    return subprocess.check_output(
+        ["git", "-C", str(ROOT), "log", "-1", "--format=%H", "--", relative], text=True
+    ).strip()
+
+
+def committed_source_hash_at(relative: str, commit: str) -> str:
+    blob = subprocess.check_output(
+        ["git", "-C", str(ROOT), "show", f"{commit}:{relative}"]
+    )
+    return normalized_sha256(blob)
+
+
+def is_commit_ancestor(ancestor: str, descendant: str) -> bool:
+    return subprocess.run(
+        ["git", "-C", str(ROOT), "merge-base", "--is-ancestor", ancestor, descendant],
+        check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+    ).returncode == 0
 
 
 def assert_clean_checkout() -> str:
@@ -625,26 +647,49 @@ def _validate_recovery_ready(official_root: Path) -> tuple[dict[str, Any], dict[
     intent = require_committed(INTENT_PATH)
     consumed = require_committed(CONSUMED_PATH)
     started = require_committed(STARTED_PATH)
+    repair_receipt = require_committed(PRE_READER_REPAIR_PATH)
     current_head = assert_clean_checkout()
-    marker_commit = subprocess.check_output(
-        ["git", "-C", str(ROOT), "log", "-1", "--format=%H", "--", STARTED_REL], text=True
-    ).strip()
-    require(marker_commit == current_head,
-            "R2 consumed/start markers must be in current HEAD before target access")
+    marker_commit = latest_commit_for_path(STARTED_REL)
+    repair_commit = latest_commit_for_path(PRE_READER_REPAIR_REL)
+    require(repair_commit == current_head
+            and repair_receipt.get("status") == "PASS_R2_PRE_READER_FAILURE_AMENDMENT"
+            and repair_receipt.get("pre_reader_failure", {}).get("target_reader_entered") is False
+            and repair_receipt.get("pre_reader_failure", {}).get("query_label_values_read") == 0
+            and repair_receipt.get("pre_reader_failure", {}).get("metrics_computed") is False
+            and repair_receipt.get("r2_intent_sha256") == sha256_file(INTENT_PATH)
+            and repair_receipt.get("r2_consumed_sha256") == sha256_file(CONSUMED_PATH)
+            and repair_receipt.get("r2_started_sha256") == sha256_file(STARTED_PATH)
+            and repair_receipt.get("root_authority_sha256") == sha256_file(AUTHORITY_PATH)
+            and repair_receipt.get("prior_start_marker_commit") == marker_commit
+            and repair_receipt.get("prior_start_marker_parent_commit") == started.get("head_before_marker_commit")
+            and is_commit_ancestor(marker_commit, repair_commit)
+            and is_commit_ancestor(started.get("head_before_marker_commit", ""), marker_commit),
+            "Committed pre-reader amendment does not bind the consumed R2 markers and their source commit")
     require(consumed.get("status") == "R2_ADDITIONAL_QUERY_VECTOR_READ_CONSUMED_NO_RETRY"
+            and consumed.get("query_labels_read") is False
+            and consumed.get("intent_sha256") == sha256_file(INTENT_PATH)
+            and consumed.get("expected_campaign_total_actual_query_vector_reads") == 2
             and started.get("consumed_receipt_sha256") == sha256_file(CONSUMED_PATH)
-            and intent.get("expected_campaign_total_actual_query_vector_reads") == 2
+            and started.get("query_labels_read") is False
+            and intent.get("expected_query_vector", {}).get("expected_campaign_total_actual_reads") == 2
+            and repair_receipt.get("additional_query_vector_reads_authorized_remaining") == 1
             and not any(path.exists() for path in (RESULTS_PATH, VERIFY_PATH, COMPLETED_PATH, FAILURE_PATH)),
             "R2 read is already consumed or has prior results; no second target access")
+    intent_commit = latest_commit_for_path(INTENT_REL)
     for relative, expected in intent["code_test_hashes"].items():
+        require(committed_source_hash_at(relative, intent_commit) == expected,
+                f"Original R2 code/test source differs from the pre-access intent: {relative}")
+    for relative, expected in repair_receipt["corrected_source_test_hashes"].items():
         require(committed_source_hash(relative) == expected,
-                f"R2 source/test hash changed before target access: {relative}")
+                f"R2 pre-reader amendment source/test hash changed: {relative}")
     audit = audit_actual_prelabel(official_root)
     require(audit["shape_audit"] == intent["prelabel_shape_audit"],
             "Actual prelabel shape/identity audit changed after R2 preflight")
     require(_target_free_hash_map(audit) == intent["target_free_hashes"],
             "R2 target-free source, fit ledger or prelabel hashes changed after preflight")
-    return intent, audit["data"], audit["prediction_ready"]
+    return {**intent, "pre_reader_repair": repair_receipt,
+            "pre_reader_repair_commit": repair_commit,
+            "r2_technical_pre_reader_failures": 1}, audit["data"], audit["prediction_ready"]
 
 
 def evaluate(official_root: Path) -> tuple[dict[str, Any], dict[str, Any]]:
@@ -670,6 +715,10 @@ def evaluate(official_root: Path) -> tuple[dict[str, Any], dict[str, Any]]:
             "r2_intent_sha256": sha256_file(INTENT_PATH),
             "r2_consumed_sha256": sha256_file(CONSUMED_PATH),
             "r2_started_sha256": sha256_file(STARTED_PATH),
+            "pre_reader_repair_sha256": sha256_file(PRE_READER_REPAIR_PATH),
+            "pre_reader_repair_commit": intent["pre_reader_repair_commit"],
+            "r2_technical_pre_reader_failures": intent["r2_technical_pre_reader_failures"],
+            "r2_target_reader_calls_before_success": 0,
             "r2_read_attempt_calls": read_calls,
             "previous_r1_query_vector_read": 1,
             "campaign_total_actual_query_vector_reads": 2,
@@ -685,6 +734,7 @@ def evaluate(official_root: Path) -> tuple[dict[str, Any], dict[str, Any]]:
             "status": "PASS_R2_EVALUATION_COMPLETED" if result["status"] == "PASS_EVALUATED" else "FAIL_R2_EVALUATION_QA",
             "candidate_id": "CLS_DAN_V1", "recovery_id": "R2",
             "r2_query_vector_reads": 1,
+            "r2_technical_pre_reader_failures": intent["r2_technical_pre_reader_failures"],
             "previous_r1_failed_query_vector_reads": 1,
             "campaign_total_actual_query_vector_reads": 2,
             "query_vector_rows": 20903,
