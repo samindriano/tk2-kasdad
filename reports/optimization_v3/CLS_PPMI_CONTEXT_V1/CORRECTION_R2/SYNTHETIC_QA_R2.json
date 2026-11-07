@@ -1,0 +1,70 @@
+{
+  "complete_synthetic_lifecycle": {
+    "all_view_guards_recomputed": true,
+    "gain_anchor_derived_metric": "candidate_real_minus_champion_macro_f1",
+    "independent_verifier": "PASS",
+    "mismatched_anchor_rejected": true,
+    "production_anchor_schema_keys": [
+      "candidate_real",
+      "champion",
+      "control_shuffled",
+      "gain_real_vs_champion"
+    ],
+    "production_anchor_schema_views": [
+      "E67_H12",
+      "E75_W6",
+      "PRIMARY_UNIQUE"
+    ],
+    "report_generation": "PASS",
+    "score_views": 6,
+    "serialization_roundtrip_signature": "PASS",
+    "unknown_anchor_rejected": true,
+    "view_names": [
+      "E67_H12",
+      "E67_W4",
+      "E67_W5",
+      "E67_W6",
+      "E75_W6",
+      "PRIMARY_UNIQUE"
+    ]
+  },
+  "correction_id": "CLS_PPMI_CONTEXT_V1_CORRECTION_R2",
+  "dual_e75_gate_fixtures": {
+    "baseline": {
+      "original_root_campaign": {
+        "comparison": "control_shuffled_minus_champion_macro_f1",
+        "gain": 0.0,
+        "nonnegative": true,
+        "source": "scripts/cls_ppmi_context_v1.py original E75 control-gain gate"
+      },
+      "r1_amended_comparison": {
+        "comparison": "candidate_real_minus_control_shuffled_macro_f1",
+        "gain": 0.0,
+        "nonnegative": true,
+        "source": "ROOT_CORRECTED_SCORING_R1.json later amendment; reported separately"
+      }
+    },
+    "opposite_sign_adversarial": {
+      "original_root_campaign": {
+        "comparison": "control_shuffled_minus_champion_macro_f1",
+        "gain": -0.02592735089712117,
+        "nonnegative": false,
+        "source": "scripts/cls_ppmi_context_v1.py original E75 control-gain gate"
+      },
+      "r1_amended_comparison": {
+        "comparison": "candidate_real_minus_control_shuffled_macro_f1",
+        "gain": 0.014148508478084576,
+        "nonnegative": true,
+        "source": "ROOT_CORRECTED_SCORING_R1.json later amendment; reported separately"
+      }
+    },
+    "signs_differ": true
+  },
+  "official_source_opened": false,
+  "pre_read_guard_case": "PASS",
+  "query_targets_read": false,
+  "schema_version": 1,
+  "status": "PASS",
+  "synthetic_result_sha256": "f6c1a9674471752e289dc7c33d67ea4988d5555f1097d7035aa0b9d111ede54d",
+  "test_or_sample_opened": false
+}
