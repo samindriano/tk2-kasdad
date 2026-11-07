@@ -1,0 +1,167 @@
+{
+  "candidate_id": "CLS_DAN_V1",
+  "fit_type": "SYNTHETIC_ONLY",
+  "metric_verifier_match": true,
+  "models": {
+    "DAN": {
+      "artifact_sha256": "24622ee0640eb93e9eaac6845ac3429ab70c575ce0701f1861d24458ee3efb57",
+      "fit_count_coverage_mean": 1.0,
+      "query_count_coverage_mean": 1.0,
+      "query_probability_sha256": "c9a00fae2bfc25f3d7976907c48f368b9ae14bd88fcb5ff1b9f234dea8113256",
+      "train_loss_final": {
+        "data_bce": 0.5450490269872966,
+        "regularization": 0.009860277166254412,
+        "total_objective": 0.554909304153551
+      },
+      "train_loss_initial": {
+        "data_bce": 0.6838656868616158,
+        "regularization": 0.009859711701637982,
+        "total_objective": 0.6937253985632538
+      },
+      "updates": 20
+    },
+    "LINEAR": {
+      "artifact_sha256": "65082b2edaeaff4149144f70e6d740f69677bf63dccb59aa670b136d9ceeda23",
+      "fit_count_coverage_mean": 1.0,
+      "query_count_coverage_mean": 1.0,
+      "query_probability_sha256": "13a7c0af16d5b4d56d9f940b0f127bf932de7e94a9fcfbfbaaee6991c74d86c3",
+      "train_loss_final": {
+        "data_bce": 0.6418717598878527,
+        "regularization": 0.0001470527709207584,
+        "total_objective": 0.6420188126587735
+      },
+      "train_loss_initial": {
+        "data_bce": 0.7187835597167315,
+        "regularization": 0.00013667793905697658,
+        "total_objective": 0.7189202376557885
+      },
+      "updates": 20
+    }
+  },
+  "official_data_opened": false,
+  "official_fit_starts": 0,
+  "query_targets_used_for_synthetic_metric_only": true,
+  "readback_probability_max_abs_diff": 0.0,
+  "status": "PASS_SYNTHETIC_ONLY",
+  "synthetic_metrics": {
+    "DAN": {
+      "absolute_deltas": {
+        "average_precision": 0.0,
+        "brier_score": 0.0,
+        "log_loss": 0.0,
+        "macro_f1": 0.0,
+        "positive_recall": 0.0,
+        "precision": 0.0,
+        "roc_auc": 0.0
+      },
+      "atol": 1e-12,
+      "manual": {
+        "average_precision": 0.931795634920635,
+        "brier_score": 0.1772951786742829,
+        "confusion_matrix": [
+          [
+            7,
+            1
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "log_loss": 0.54039128723985,
+        "macro_f1": 0.6761133603238867,
+        "n": 16,
+        "negative": 8,
+        "positive": 8,
+        "positive_recall": 0.5,
+        "precision": 0.8,
+        "predicted_positive": 5,
+        "roc_auc": 0.9375
+      },
+      "sklearn": {
+        "average_precision": 0.931795634920635,
+        "brier_score": 0.1772951786742829,
+        "confusion_matrix": [
+          [
+            7,
+            1
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "log_loss": 0.54039128723985,
+        "macro_f1": 0.6761133603238867,
+        "n": 16,
+        "negative": 8,
+        "positive": 8,
+        "positive_recall": 0.5,
+        "precision": 0.8,
+        "predicted_positive": 5,
+        "roc_auc": 0.9375
+      },
+      "status": "PASS"
+    },
+    "LINEAR": {
+      "absolute_deltas": {
+        "average_precision": 0.0,
+        "brier_score": 0.0,
+        "log_loss": 0.0,
+        "macro_f1": 0.0,
+        "positive_recall": 0.0,
+        "precision": 0.0,
+        "roc_auc": 0.0
+      },
+      "atol": 1e-12,
+      "manual": {
+        "average_precision": 0.7864583333333333,
+        "brier_score": 0.23878096090721582,
+        "confusion_matrix": [
+          [
+            3,
+            5
+          ],
+          [
+            2,
+            6
+          ]
+        ],
+        "log_loss": 0.6695015997996758,
+        "macro_f1": 0.5465587044534412,
+        "n": 16,
+        "negative": 8,
+        "positive": 8,
+        "positive_recall": 0.75,
+        "precision": 0.5454545454545454,
+        "predicted_positive": 11,
+        "roc_auc": 0.671875
+      },
+      "sklearn": {
+        "average_precision": 0.7864583333333333,
+        "brier_score": 0.23878096090721582,
+        "confusion_matrix": [
+          [
+            3,
+            5
+          ],
+          [
+            2,
+            6
+          ]
+        ],
+        "log_loss": 0.6695015997996758,
+        "macro_f1": 0.5465587044534412,
+        "n": 16,
+        "negative": 8,
+        "positive": 8,
+        "positive_recall": 0.75,
+        "precision": 0.5454545454545454,
+        "predicted_positive": 11,
+        "roc_auc": 0.671875
+      },
+      "status": "PASS"
+    }
+  },
+  "vectorizer_fit_scope": "synthetic training strings only"
+}
