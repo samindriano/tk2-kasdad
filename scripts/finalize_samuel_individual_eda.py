@@ -6,6 +6,7 @@ import copy
 import re
 from pathlib import Path
 import nbformat
+from compact_samuel_presentation import compact
 
 ROOT = Path(__file__).resolve().parents[1]
 DEST = ROOT / "notebooks/samuel/final"
@@ -53,6 +54,7 @@ def build():
                 cell.outputs = []
                 cell.execution_count = None
         nb.metadata["samuel_scope"] = "Approved availability EDA integrated; historical individual modeling preserved; no new research or Kaggle action"
+        nb = compact(nb, task)
         nbformat.validate(nb)
         path = DEST / f"TP2_{task}_A06_KasdudLovers_SamuelIndriano_2406400524.ipynb"
         DEST.mkdir(parents=True, exist_ok=True)

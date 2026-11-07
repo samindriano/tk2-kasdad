@@ -31,3 +31,5 @@ PDF resmi yang ditunjuk pengguna `TP KASDAD Ganjil 2026_2027 (1).pdf` (57 halama
 Angka inti: kosong 38,13% versus terisi 34,47%; selisih +3,66 poin persentase. Setelah komposisi cycle disamakan +3,96 pp; setelah periode dan kelompok volume disamakan −2,30 pp (5 kelompok) dan −2,15 pp (10 kelompok; coverage 94,33%). Minimum 20 baris per status per kelompok. Ini asosiasi deskriptif dan bergantung pada komposisi, bukan bukti sebab-akibat atau jaminan performa model.
 
 Belum dibuat ZIP, belum dikumpulkan, dan tidak ada submission Kaggle. Review Samuel tetap diperlukan untuk memahami jawaban demo dan memastikan paket kelompok membawa dependencies/source yang dibutuhkan.
+
+Versi presentasi: narasi diringkas; detail administrasi/reproduksi berada di README ini. Modeling dan perhitungan grafik tetap sama.
