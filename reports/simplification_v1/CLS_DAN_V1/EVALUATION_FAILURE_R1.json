@@ -1,0 +1,44 @@
+{
+  "candidate_id": "CLS_DAN_V1",
+  "evaluation_consumed_sha256": "7573337e0798268ada80b13ba0d58cb22acc24e065878988f80d64a592315cde",
+  "evaluation_rows": 20903,
+  "evaluation_start_sha256": "77e380dbf6705ced65d0d3af0f6bb3289ab8155a6f96d97a780311da38be2fea",
+  "failure": {
+    "array_contract": {
+      "E67_coverage_rows": 19528,
+      "E67_query_rows": 20903,
+      "E75_coverage_rows": 7965,
+      "E75_query_rows": 8491,
+      "coverage_values_are_present_stream_only": true
+    },
+    "exception_type": "IndexError",
+    "frozen_runner_file": "scripts/cls_dan_v1.py",
+    "frozen_runner_line": 1258,
+    "message": "boolean index did not match indexed array along axis 0; size of axis is 19528 but size of corresponding boolean axis is 20903",
+    "stage": "_build_views before _metrics"
+  },
+  "fit_failures": 0,
+  "fit_saves": 4,
+  "fit_starts": 4,
+  "freeze_signature": "bb9e117f28d0b8a3d0d46e45ae4aa3c8862eaf0420f3c807a12f76556ca6dc04",
+  "kaggle_contacted": false,
+  "metrics_computed": false,
+  "no_additional_fit_or_retry": true,
+  "no_retry_after_one_shot_marker": true,
+  "prelabel_sha256": "3b21bab1cbc1120933808b75ba27abb346b4c71fe01847b11ce8b776409d8e78",
+  "query_label_contents_recorded": false,
+  "query_label_values_read_once": true,
+  "query_target_read_attempts": 1,
+  "recommendation_for_separately_authorized_future_attempt": [
+    "Keep the original fit outputs, predictions, source freeze, and protocol immutable.",
+    "Repair only the coverage array shape in an additive prelabel/evaluation adapter: expand present-only coverage to full query row order and use a documented missing value for missing streams.",
+    "Add synthetic coverage-alignment tests with missing rows and replay the entire target-free prelabel/arm/begin/score path before any future label read.",
+    "The current one-shot evaluation budget is consumed; any new label read requires fresh explicit authorization and a new evaluation protocol."
+  ],
+  "result_files_written": false,
+  "retry_count": 0,
+  "sample_submission_opened": false,
+  "source_commit": "4378fab397191291733bf6586db039bd2be2ae97",
+  "status": "EVALUATION_ATTEMPT_CONSUMED_NO_METRICS",
+  "test_opened": false
+}
