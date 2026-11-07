@@ -146,4 +146,18 @@ def compact(nb, task):
                     "Dalam eksperimen Regression, fitur structured memperbaiki baseline median, kemudian tambahan teks kembali menurunkan MAE. LightGBM L1 dengan TF-IDF/SVD32 dan inner-selected rank blend dipilih karena mencapai **primary MAE 11,9316**. Rank blend menyesuaikan jarak prediksi dalam setiap cycle tanpa menggunakan label inference.\n\n"
                     "Pilihan tersebut memiliki trade-off. H12 LightGBM adalah **14,7040**, sedangkan hybrid Ridge lebih baik pada **13,9381**. Prediksi juga masih terlalu tinggi pada target rendah dan terlalu rendah pada target tinggi. Karena itu, rata-rata MAE yang baik belum berarti error sudah merata pada semua horizon dan kelompok target.\n\n"
                     "Public benchmark approach individual ini adalah **11,71363**, terpisah dari validasi internal. Seluruh window telah digunakan dalam development, dan label Test belum tersedia; hasil tidak menjamin private generalization. EDA dan evaluasi model bersama-sama membantu menjelaskan data, alasan pemilihan pendekatan, serta keterbatasan keputusan tersebut.")
+    # Keep interpretation that affects understanding or choices; remove captions
+    # already conveyed by a heading, axis, table, or the immediately next output.
+    redundant = [
+        "Jumlah laporan, label positif, dan volume menurut ketersediaan teks.",
+        "Bandingkan persentase label 1 pada seluruh laporan. ",
+        "Selisih kosong dikurangi terisi tidak positif pada semua cycle maupun periode.",
+        "Histogram dinormalisasi agar ukuran kelompok yang berbeda tetap dapat dibandingkan. Distribusi volume kedua kelompok berbeda.",
+        "Perubahan proporsi label mendukung penggunaan validasi temporal.",
+        "Confusion matrix: baris aktual, kolom prediksi. Periksa precision dan recall bersama Macro F1.",
+    ]
+    for c in nb.cells:
+        if c.cell_type == "markdown":
+            for phrase in redundant: c.source = c.source.replace(phrase, "")
+            c.source = c.source.strip()
     return nb
