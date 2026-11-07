@@ -1,0 +1,116 @@
+{
+  "created_at_utc": "2026-11-07T04:02:53.551326+00:00",
+  "independent_verification": {
+    "additional_target_reads": 0,
+    "all_frozen_metrics_recomputed": true,
+    "all_gates_recomputed": true,
+    "all_supported_subgroups_recomputed_across_all_views": true,
+    "macro_f1_root_anchors": {
+      "E67_H12": {
+        "candidate_real": {
+          "actual": 0.8118996740158839,
+          "expected": 0.8118996740158839,
+          "metric": "macro_f1",
+          "pass": true
+        },
+        "champion": {
+          "actual": 0.8113274914773272,
+          "expected": 0.8113274914773272,
+          "metric": "macro_f1",
+          "pass": true
+        },
+        "control_shuffled": {
+          "actual": 0.8075575148003603,
+          "expected": 0.8075575148003603,
+          "metric": "macro_f1",
+          "pass": true
+        },
+        "gain_real_vs_champion": {
+          "actual": 0.0005721825385567314,
+          "expected": 0.0005721825385567314,
+          "metric": "candidate_real_minus_champion_macro_f1",
+          "pass": true
+        }
+      },
+      "E75_W6": {
+        "candidate_real": {
+          "actual": 0.8162459494082972,
+          "expected": 0.8162459494082972,
+          "metric": "macro_f1",
+          "pass": true
+        },
+        "champion": {
+          "actual": 0.8188841876192341,
+          "expected": 0.8188841876192341,
+          "metric": "macro_f1",
+          "pass": true
+        },
+        "control_shuffled": {
+          "actual": 0.8163818051861182,
+          "expected": 0.8163818051861182,
+          "metric": "macro_f1",
+          "pass": true
+        },
+        "gain_real_vs_champion": {
+          "actual": -0.002638238210936894,
+          "expected": -0.002638238210936894,
+          "metric": "candidate_real_minus_champion_macro_f1",
+          "pass": true
+        }
+      },
+      "PRIMARY_UNIQUE": {
+        "candidate_real": {
+          "actual": 0.8206732184674614,
+          "expected": 0.8206732184674614,
+          "metric": "macro_f1",
+          "pass": true
+        },
+        "champion": {
+          "actual": 0.8219407679596171,
+          "expected": 0.8219407679596171,
+          "metric": "macro_f1",
+          "pass": true
+        },
+        "control_shuffled": {
+          "actual": 0.8197850002757465,
+          "expected": 0.8197850002757465,
+          "metric": "macro_f1",
+          "pass": true
+        },
+        "gain_real_vs_champion": {
+          "actual": -0.001267549492155684,
+          "expected": -0.001267549492155684,
+          "metric": "candidate_real_minus_champion_macro_f1",
+          "pass": true
+        }
+      }
+    },
+    "method": "independent sklearn MacroF1 and metric recomputation from the single in-memory selected target vector",
+    "query_target_vector_rows": 20903,
+    "root_anchor_schema": {
+      "gain_real_vs_champion_metric": "candidate_real_minus_champion_macro_f1",
+      "keys": [
+        "champion",
+        "candidate_real",
+        "control_shuffled",
+        "gain_real_vs_champion"
+      ],
+      "views": [
+        "PRIMARY_UNIQUE",
+        "E67_H12",
+        "E75_W6"
+      ]
+    },
+    "status": "PASS",
+    "subgroup_groups_recomputed": 48,
+    "subgroup_views_recomputed": 6,
+    "views_recomputed": 6
+  },
+  "recovery_id": "CLS_PPMI_CONTEXT_V1_CORRECTION_R2",
+  "schema_version": 1,
+  "selected_target_rows_in_memory": 20903,
+  "selected_target_vector_sha256": "6a0b61a4d9f5fbd34ef31c0dbeeb815e8c82079779ee9d726b532b069045e917",
+  "status": "PASS",
+  "target_read_calls_in_verifier": 0,
+  "verification_signature": "c4f906a72fce225b83e8291265b2853ad17dfaecb2b1d4119fa576dff9808280"
+}
