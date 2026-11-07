@@ -1,0 +1,684 @@
+{
+  "created_at_utc": "2026-11-07T03:02:45.762204+00:00",
+  "external_source_sha256_unchanged": true,
+  "fit_ids": [
+    "CLS_PPMI_CONTEXT_V1_E67_REAL",
+    "CLS_PPMI_CONTEXT_V1_E67_SHUFFLED",
+    "CLS_PPMI_CONTEXT_V1_E75_REAL",
+    "CLS_PPMI_CONTEXT_V1_E75_SHUFFLED"
+  ],
+  "fit_label_counts": {
+    "67": {
+      "negative": 18862,
+      "positive": 10843,
+      "rows": 29705
+    },
+    "75": {
+      "negative": 27047,
+      "positive": 15070,
+      "rows": 42117
+    }
+  },
+  "fit_summaries": [
+    {
+      "active_cols": 5675,
+      "active_dimensions_gate_pass": true,
+      "active_rows": 5675,
+      "arm": "REAL",
+      "artifact_sha256": {
+        "experiments/CLS_PPMI_CONTEXT_V1/runtime/E67/REAL/counts.npz": "945d4e50be7d19cba9cd4d0c48888e717cf53e5a6d9293256a22246727e63d33",
+        "experiments/CLS_PPMI_CONTEXT_V1/runtime/E67/REAL/hgb.joblib": "2d8250f2f138cb42aab69819267ca5182635df78d4fd12fd4170dcb94c8af096",
+        "experiments/CLS_PPMI_CONTEXT_V1/runtime/E67/REAL/ppmi.npz": "ee91f500b78fdfc3ef380109da0bd9b9071841d8b1f2ba14b5ce0acabf57a5a6",
+        "experiments/CLS_PPMI_CONTEXT_V1/runtime/E67/REAL/svd_state.npz": "147a7ef367d64327c27cc9c23ece87c489e157b149b1a49b73a0fd6bfca8d194"
+      },
+      "context_window_distances": [
+        1,
+        2
+      ],
+      "counts_density": 0.01603070892119001,
+      "counts_nnz": 516279,
+      "counts_shape": [
+        5675,
+        5675
+      ],
+      "directed_pair_weight": 1,
+      "document_fit_coverage": {
+        "documents": 29705,
+        "known_token_occurrences": 1064775,
+        "missing_documents": 2029,
+        "oov_token_occurrences": 81744,
+        "present_documents": 27676,
+        "rows_with_known_tokens": 27676,
+        "rows_without_known_tokens": 0,
+        "token_coverage": 0.9287024462743313,
+        "token_occurrences": 1146519
+      },
+      "document_score_coverage": {
+        "documents": 20903,
+        "known_token_occurrences": 745187,
+        "missing_documents": 1375,
+        "oov_token_occurrences": 71403,
+        "present_documents": 19528,
+        "rows_with_known_tokens": 19528,
+        "rows_without_known_tokens": 0,
+        "token_coverage": 0.9125595464063974,
+        "token_occurrences": 816590
+      },
+      "fit_class_counts_present": {
+        "0": 17644,
+        "1": 10032
+      },
+      "fit_cycle_max": 67,
+      "fit_cycle_min": 47,
+      "fit_id": "CLS_PPMI_CONTEXT_V1_E67_REAL",
+      "fit_quality": {
+        "accuracy": 0.8594088741147564,
+        "average_precision": 0.8921722183815768,
+        "brier_score": 0.1006777375199867,
+        "confusion_matrix_labels_0_1": [
+          [
+            16305,
+            1339
+          ],
+          [
+            2552,
+            7480
+          ]
+        ],
+        "f1": 0.7935918518911463,
+        "independent_f1": 0.7935918518911463,
+        "log_loss": 0.3238779766115773,
+        "n": 27676,
+        "negative": 17644,
+        "positive": 10032,
+        "precision": 0.8481687266129947,
+        "recall": 0.7456140350877193,
+        "roc_auc": 0.9335566280850723
+      },
+      "fit_rows_missing": 2029,
+      "fit_rows_present": 27676,
+      "fit_rows_total": 29705,
+      "fit_token_stats": {
+        "known_token_occurrences": 1064775,
+        "missing_streams": 2029,
+        "oov_token_occurrences": 81744,
+        "present_streams": 27676,
+        "token_occurrences": 1146519
+      },
+      "hgb_params": {
+        "early_stopping": false,
+        "l2_regularization": 1.0,
+        "learning_rate": 0.05,
+        "loss": "log_loss",
+        "max_bins": 255,
+        "max_iter": 200,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 30,
+        "random_state": 42
+      },
+      "hgb_runtime_seconds": 12.085316199998488,
+      "origin": 67,
+      "pair_count_total_directed": 3729168,
+      "peak_rss_predictor_bytes": 764944384,
+      "peak_rss_representation_bytes": 602263552,
+      "ppmi_density": 0.012621925517669661,
+      "ppmi_nnz": 406497,
+      "query_targets_read": false,
+      "runtime_path": "experiments/CLS_PPMI_CONTEXT_V1/runtime/E67/REAL",
+      "score_missing": 1375,
+      "score_present": 19528,
+      "score_rows": 20903,
+      "score_token_stats": {
+        "known_token_occurrences": 745187,
+        "missing_streams": 1375,
+        "oov_token_occurrences": 71403,
+        "present_streams": 19528,
+        "token_occurrences": 816590
+      },
+      "svd_components": 32,
+      "svd_embedding_sha256": "adf5e14fc78c642e7cd90de708a47854d1ae91b88bbbf1a59393bcbf97151a99",
+      "svd_runtime_seconds": 6.335235400001693,
+      "svd_singular_values": [
+        335.7538832919783,
+        138.89313530849012,
+        134.25351104238956,
+        123.82691872481769,
+        112.76182341010315,
+        107.31961439873889,
+        99.7328916064864,
+        98.73627817904742,
+        97.04560624796608,
+        93.84887342213591,
+        93.0056739717822,
+        90.09107787878001,
+        87.29411044030444,
+        86.45340239807321,
+        86.30388883604003,
+        82.84183450103089,
+        82.20376995400022,
+        82.04331354289121,
+        81.73373940564957,
+        80.44789646561418,
+        78.71248217566172,
+        78.31051771954438,
+        76.8094441214209,
+        75.94957896606424,
+        75.21601864328511,
+        74.70481160226818,
+        73.84729378876979,
+        72.72576227370257,
+        72.24643531545603,
+        71.57846360334614,
+        71.17108944074994,
+        70.67540831431533
+      ],
+      "test_or_sample_opened": false,
+      "vocabulary_size": 5675
+    },
+    {
+      "active_cols": 5675,
+      "active_dimensions_gate_pass": true,
+      "active_rows": 5675,
+      "arm": "SHUFFLED",
+      "artifact_sha256": {
+        "experiments/CLS_PPMI_CONTEXT_V1/runtime/E67/SHUFFLED/counts.npz": "61be888c9bf193c0ba08ba3c11ca092b81ccf75968ffe8d4f25ef8bde86f5e39",
+        "experiments/CLS_PPMI_CONTEXT_V1/runtime/E67/SHUFFLED/hgb.joblib": "ce9240c12469573634c162430b4f22ea466088de079edc6f0ba5edab39d74652",
+        "experiments/CLS_PPMI_CONTEXT_V1/runtime/E67/SHUFFLED/ppmi.npz": "3f5e03d4eb57311b88de0c55ccd4eeb0f83acb3d759546624772aec81d4b00b9",
+        "experiments/CLS_PPMI_CONTEXT_V1/runtime/E67/SHUFFLED/svd_state.npz": "efd32f984d825ada0b7bd28e56cb4f105e117475dcea65a8159d7bfb6dcbca00"
+      },
+      "context_window_distances": [
+        1,
+        2
+      ],
+      "counts_density": 0.02589808457373518,
+      "counts_nnz": 834064,
+      "counts_shape": [
+        5675,
+        5675
+      ],
+      "directed_pair_weight": 1,
+      "document_fit_coverage": {
+        "documents": 29705,
+        "known_token_occurrences": 1064775,
+        "missing_documents": 2029,
+        "oov_token_occurrences": 81744,
+        "present_documents": 27676,
+        "rows_with_known_tokens": 27676,
+        "rows_without_known_tokens": 0,
+        "token_coverage": 0.9287024462743313,
+        "token_occurrences": 1146519
+      },
+      "document_score_coverage": {
+        "documents": 20903,
+        "known_token_occurrences": 745187,
+        "missing_documents": 1375,
+        "oov_token_occurrences": 71403,
+        "present_documents": 19528,
+        "rows_with_known_tokens": 19528,
+        "rows_without_known_tokens": 0,
+        "token_coverage": 0.9125595464063974,
+        "token_occurrences": 816590
+      },
+      "fit_class_counts_present": {
+        "0": 17644,
+        "1": 10032
+      },
+      "fit_cycle_max": 67,
+      "fit_cycle_min": 47,
+      "fit_id": "CLS_PPMI_CONTEXT_V1_E67_SHUFFLED",
+      "fit_quality": {
+        "accuracy": 0.8613961555138026,
+        "average_precision": 0.8979723251520703,
+        "brier_score": 0.09785200003461937,
+        "confusion_matrix_labels_0_1": [
+          [
+            16256,
+            1388
+          ],
+          [
+            2448,
+            7584
+          ]
+        ],
+        "f1": 0.7981477583666596,
+        "independent_f1": 0.7981477583666596,
+        "log_loss": 0.3139350949730681,
+        "n": 27676,
+        "negative": 17644,
+        "positive": 10032,
+        "precision": 0.845296477931342,
+        "recall": 0.7559808612440191,
+        "roc_auc": 0.9370034168827968
+      },
+      "fit_rows_missing": 2029,
+      "fit_rows_present": 27676,
+      "fit_rows_total": 29705,
+      "fit_token_stats": {
+        "known_token_occurrences": 1064775,
+        "missing_streams": 2029,
+        "oov_token_occurrences": 81744,
+        "present_streams": 27676,
+        "token_occurrences": 1146519
+      },
+      "hgb_params": {
+        "early_stopping": false,
+        "l2_regularization": 1.0,
+        "learning_rate": 0.05,
+        "loss": "log_loss",
+        "max_bins": 255,
+        "max_iter": 200,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 30,
+        "random_state": 42
+      },
+      "hgb_runtime_seconds": 9.140925799998513,
+      "origin": 67,
+      "pair_count_total_directed": 3692018,
+      "peak_rss_predictor_bytes": 774569984,
+      "peak_rss_representation_bytes": 609128448,
+      "ppmi_density": 0.021353412641425217,
+      "ppmi_nnz": 687700,
+      "query_targets_read": false,
+      "runtime_path": "experiments/CLS_PPMI_CONTEXT_V1/runtime/E67/SHUFFLED",
+      "score_missing": 1375,
+      "score_present": 19528,
+      "score_rows": 20903,
+      "score_token_stats": {
+        "known_token_occurrences": 745187,
+        "missing_streams": 1375,
+        "oov_token_occurrences": 71403,
+        "present_streams": 19528,
+        "token_occurrences": 816590
+      },
+      "svd_components": 32,
+      "svd_embedding_sha256": "d0aab99456ffb1fb24ed3c009b7bff646f47ce8b56a31719626c8856135644ce",
+      "svd_runtime_seconds": 6.483360400001402,
+      "svd_singular_values": [
+        422.23682459559996,
+        177.17192233272783,
+        172.89197460208317,
+        166.1380612499798,
+        162.96244699443568,
+        152.75668938721367,
+        144.1885567928557,
+        136.67998126328186,
+        127.83614134068274,
+        123.79393948071194,
+        120.6397049352236,
+        114.50300579370287,
+        112.77343002313309,
+        111.53539338430818,
+        107.99085575169359,
+        105.04175226375492,
+        101.82952315949073,
+        100.8880190218721,
+        99.1795248494054,
+        97.38311639149386,
+        96.60192905438646,
+        95.19900438616939,
+        94.67187047244023,
+        93.03046040998726,
+        91.97600080940845,
+        90.30309546703047,
+        89.44647406838655,
+        87.89294826347646,
+        86.82086036763785,
+        86.01536551779753,
+        85.34389628042427,
+        85.14558814890101
+      ],
+      "test_or_sample_opened": false,
+      "vocabulary_size": 5675
+    },
+    {
+      "active_cols": 5723,
+      "active_dimensions_gate_pass": true,
+      "active_rows": 5723,
+      "arm": "REAL",
+      "artifact_sha256": {
+        "experiments/CLS_PPMI_CONTEXT_V1/runtime/E75/REAL/counts.npz": "1b21a140ee0019ba95e3d5a646dd853daddf75ce537fdf4742f2bec4998ac842",
+        "experiments/CLS_PPMI_CONTEXT_V1/runtime/E75/REAL/hgb.joblib": "7a330b063a200964b2b0122a56f86cc62a61ed1a3a49468d00a858e76b1674b3",
+        "experiments/CLS_PPMI_CONTEXT_V1/runtime/E75/REAL/ppmi.npz": "37e6a09007da51b6ce0ec4f0d5387b8ba617f3c7f325d6fe886f1bd80b637b54",
+        "experiments/CLS_PPMI_CONTEXT_V1/runtime/E75/REAL/svd_state.npz": "7da87eda249ebdd732db575b5470df5b0bde83e0299b0d8c93d10a0e3707ff76"
+      },
+      "context_window_distances": [
+        1,
+        2
+      ],
+      "counts_density": 0.019508175944667083,
+      "counts_nnz": 638946,
+      "counts_shape": [
+        5723,
+        5723
+      ],
+      "directed_pair_weight": 1,
+      "document_fit_coverage": {
+        "documents": 42117,
+        "known_token_occurrences": 1525780,
+        "missing_documents": 2878,
+        "oov_token_occurrences": 120138,
+        "present_documents": 39239,
+        "rows_with_known_tokens": 39239,
+        "rows_without_known_tokens": 0,
+        "token_coverage": 0.9270085143974366,
+        "token_occurrences": 1645918
+      },
+      "document_score_coverage": {
+        "documents": 8491,
+        "known_token_occurrences": 289794,
+        "missing_documents": 526,
+        "oov_token_occurrences": 27397,
+        "present_documents": 7965,
+        "rows_with_known_tokens": 7965,
+        "rows_without_known_tokens": 0,
+        "token_coverage": 0.9136261747653622,
+        "token_occurrences": 317191
+      },
+      "fit_class_counts_present": {
+        "0": 25296,
+        "1": 13943
+      },
+      "fit_cycle_max": 75,
+      "fit_cycle_min": 47,
+      "fit_id": "CLS_PPMI_CONTEXT_V1_E75_REAL",
+      "fit_quality": {
+        "accuracy": 0.851856571268381,
+        "average_precision": 0.8757735420771693,
+        "brier_score": 0.10571626231563923,
+        "confusion_matrix_labels_0_1": [
+          [
+            23200,
+            2096
+          ],
+          [
+            3717,
+            10226
+          ]
+        ],
+        "f1": 0.778678850180849,
+        "independent_f1": 0.778678850180849,
+        "log_loss": 0.3378804283088557,
+        "n": 39239,
+        "negative": 25296,
+        "positive": 13943,
+        "precision": 0.829897743872748,
+        "recall": 0.7334146166535179,
+        "roc_auc": 0.9251352404655748
+      },
+      "fit_rows_missing": 2878,
+      "fit_rows_present": 39239,
+      "fit_rows_total": 42117,
+      "fit_token_stats": {
+        "known_token_occurrences": 1525780,
+        "missing_streams": 2878,
+        "oov_token_occurrences": 120138,
+        "present_streams": 39239,
+        "token_occurrences": 1645918
+      },
+      "hgb_params": {
+        "early_stopping": false,
+        "l2_regularization": 1.0,
+        "learning_rate": 0.05,
+        "loss": "log_loss",
+        "max_bins": 255,
+        "max_iter": 200,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 30,
+        "random_state": 42
+      },
+      "hgb_runtime_seconds": 14.646533000006457,
+      "origin": 75,
+      "pair_count_total_directed": 5334178,
+      "peak_rss_predictor_bytes": 860180480,
+      "peak_rss_representation_bytes": 644837376,
+      "ppmi_density": 0.015011604071221058,
+      "ppmi_nnz": 491671,
+      "query_targets_read": false,
+      "runtime_path": "experiments/CLS_PPMI_CONTEXT_V1/runtime/E75/REAL",
+      "score_missing": 526,
+      "score_present": 7965,
+      "score_rows": 8491,
+      "score_token_stats": {
+        "known_token_occurrences": 289794,
+        "missing_streams": 526,
+        "oov_token_occurrences": 27397,
+        "present_streams": 7965,
+        "token_occurrences": 317191
+      },
+      "svd_components": 32,
+      "svd_embedding_sha256": "3b636d5299368034167e254325e4ea8f3afbcc57695228c339cb02f9ac7b7499",
+      "svd_runtime_seconds": 8.97438599999441,
+      "svd_singular_values": [
+        375.5798940912778,
+        155.68564963364173,
+        143.3764852153403,
+        136.19604012698858,
+        122.40785455211056,
+        114.78387743263214,
+        107.64769936796517,
+        106.88527276511238,
+        104.9502435392878,
+        101.01394662398647,
+        97.46017939235252,
+        95.97197753040913,
+        93.82100078143769,
+        92.15050744084452,
+        90.73134267999333,
+        89.95940194999831,
+        89.00240113004499,
+        87.92656349874962,
+        86.72523970494836,
+        86.38752302406724,
+        83.95904873638045,
+        82.6896875594456,
+        81.96177162683801,
+        81.71810381551613,
+        80.54180432665896,
+        79.27027188572472,
+        78.97965669079329,
+        77.72630308996378,
+        77.57590228062644,
+        76.05172368606263,
+        75.48422180241347,
+        75.02037622190825
+      ],
+      "test_or_sample_opened": false,
+      "vocabulary_size": 5723
+    },
+    {
+      "active_cols": 5723,
+      "active_dimensions_gate_pass": true,
+      "active_rows": 5723,
+      "arm": "SHUFFLED",
+      "artifact_sha256": {
+        "experiments/CLS_PPMI_CONTEXT_V1/runtime/E75/SHUFFLED/counts.npz": "a5f3e1c1b84f5a3ab5bb7b535fdff06cd840a0fc60875f2a277702106d0641aa",
+        "experiments/CLS_PPMI_CONTEXT_V1/runtime/E75/SHUFFLED/hgb.joblib": "29ee434f3ba9ea4e3ea82ed6d090a6b2e374c8423c2ed3444f8f81dde24f0642",
+        "experiments/CLS_PPMI_CONTEXT_V1/runtime/E75/SHUFFLED/ppmi.npz": "c63b5cb93acec42a975a1c96f57860aab447eb30467c9831b063dfa0ae63fb9d",
+        "experiments/CLS_PPMI_CONTEXT_V1/runtime/E75/SHUFFLED/svd_state.npz": "86a6eb3b10756c1e1ffa4e1c41f4e2dd13b146c796860a17219440a7289f9638"
+      },
+      "context_window_distances": [
+        1,
+        2
+      ],
+      "counts_density": 0.03167320805542646,
+      "counts_nnz": 1037384,
+      "counts_shape": [
+        5723,
+        5723
+      ],
+      "directed_pair_weight": 1,
+      "document_fit_coverage": {
+        "documents": 42117,
+        "known_token_occurrences": 1525780,
+        "missing_documents": 2878,
+        "oov_token_occurrences": 120138,
+        "present_documents": 39239,
+        "rows_with_known_tokens": 39239,
+        "rows_without_known_tokens": 0,
+        "token_coverage": 0.9270085143974366,
+        "token_occurrences": 1645918
+      },
+      "document_score_coverage": {
+        "documents": 8491,
+        "known_token_occurrences": 289794,
+        "missing_documents": 526,
+        "oov_token_occurrences": 27397,
+        "present_documents": 7965,
+        "rows_with_known_tokens": 7965,
+        "rows_without_known_tokens": 0,
+        "token_coverage": 0.9136261747653622,
+        "token_occurrences": 317191
+      },
+      "fit_class_counts_present": {
+        "0": 25296,
+        "1": 13943
+      },
+      "fit_cycle_max": 75,
+      "fit_cycle_min": 47,
+      "fit_id": "CLS_PPMI_CONTEXT_V1_E75_SHUFFLED",
+      "fit_quality": {
+        "accuracy": 0.8598333290858584,
+        "average_precision": 0.8839135358698836,
+        "brier_score": 0.10147052940377095,
+        "confusion_matrix_labels_0_1": [
+          [
+            23238,
+            2058
+          ],
+          [
+            3442,
+            10501
+          ]
+        ],
+        "f1": 0.7924684929439287,
+        "independent_f1": 0.7924684929439287,
+        "log_loss": 0.3248714818615278,
+        "n": 39239,
+        "negative": 25296,
+        "positive": 13943,
+        "precision": 0.836133450115455,
+        "recall": 0.7531377752277129,
+        "roc_auc": 0.9308989539184183
+      },
+      "fit_rows_missing": 2878,
+      "fit_rows_present": 39239,
+      "fit_rows_total": 42117,
+      "fit_token_stats": {
+        "known_token_occurrences": 1525780,
+        "missing_streams": 2878,
+        "oov_token_occurrences": 120138,
+        "present_streams": 39239,
+        "token_occurrences": 1645918
+      },
+      "hgb_params": {
+        "early_stopping": false,
+        "l2_regularization": 1.0,
+        "learning_rate": 0.05,
+        "loss": "log_loss",
+        "max_bins": 255,
+        "max_iter": 200,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 30,
+        "random_state": 42
+      },
+      "hgb_runtime_seconds": 13.720687400003953,
+      "origin": 75,
+      "pair_count_total_directed": 5280210,
+      "peak_rss_predictor_bytes": 868888576,
+      "peak_rss_representation_bytes": 662437888,
+      "ppmi_density": 0.025665769713418385,
+      "ppmi_nnz": 840624,
+      "query_targets_read": false,
+      "runtime_path": "experiments/CLS_PPMI_CONTEXT_V1/runtime/E75/SHUFFLED",
+      "score_missing": 526,
+      "score_present": 7965,
+      "score_rows": 8491,
+      "score_token_stats": {
+        "known_token_occurrences": 289794,
+        "missing_streams": 526,
+        "oov_token_occurrences": 27397,
+        "present_streams": 7965,
+        "token_occurrences": 317191
+      },
+      "svd_components": 32,
+      "svd_embedding_sha256": "cd61c674523c231e7f2b449354bf1b9b6a34beb9590ffe13a7ad3346a066a7f8",
+      "svd_runtime_seconds": 9.195257199993648,
+      "svd_singular_values": [
+        471.9885205045695,
+        192.29461043994618,
+        184.42853310214392,
+        180.91289312810764,
+        167.74115294038924,
+        155.3843819875896,
+        151.4362322167551,
+        145.13033058956077,
+        136.34872226209185,
+        131.1645551653796,
+        124.30601126419387,
+        120.19535403639783,
+        119.45535750709752,
+        116.8058238451206,
+        115.3679415633978,
+        110.29559804562788,
+        106.48227746858666,
+        105.07952513074645,
+        101.84073726693178,
+        101.5881450197859,
+        99.57453496450161,
+        98.69655903354456,
+        97.57703110423097,
+        96.9704216698975,
+        95.34823068082859,
+        94.58386139848999,
+        92.88883298266232,
+        90.76741529441514,
+        90.49947736120183,
+        89.6523325788266,
+        87.685017189768,
+        85.76730390274892
+      ],
+      "test_or_sample_opened": false,
+      "vocabulary_size": 5723
+    }
+  ],
+  "freeze_signature": "2ff619a7fccd7ae7f49b875c0ab4bc652112f69805164eea3e77df99aae5792b",
+  "pilot_id": "CLS_PPMI_CONTEXT_V1",
+  "predictions": [
+    {
+      "fit_ids": [
+        "CLS_PPMI_CONTEXT_V1_E67_REAL",
+        "CLS_PPMI_CONTEXT_V1_E67_SHUFFLED"
+      ],
+      "fit_ids_sha256": "90e75b5ea553548cb8e618222a0bb1525751d80d8537360ee537c69699ba1228",
+      "matrix_manifest_sha256": "d8d672c26771944bc2bb6eee907e9bef903959fbc62d9f5df3aaab7f7cb28028",
+      "origin": 67,
+      "path": "experiments/CLS_PPMI_CONTEXT_V1/predictions_E67.npz",
+      "score_ids_sha256": "541f9e7620ae2663fd762e385d60e6eddad6e4834dac5df63dfef75631f3ece9",
+      "score_missing": 1375,
+      "score_present": 19528,
+      "score_rows": 20903,
+      "sha256": "6089705fe1aad08a58cecdc08377644d378f56439826a69507b701a44668727e"
+    },
+    {
+      "fit_ids": [
+        "CLS_PPMI_CONTEXT_V1_E75_REAL",
+        "CLS_PPMI_CONTEXT_V1_E75_SHUFFLED"
+      ],
+      "fit_ids_sha256": "306de4728708b27fa725bf79946c117b3708d6d85ec36b67102638e96a1ccee8",
+      "matrix_manifest_sha256": "67ec3f9bd376f5f4dad2afbd5e13ee5fd8316126fa3894ef676fa40077166fc5",
+      "origin": 75,
+      "path": "experiments/CLS_PPMI_CONTEXT_V1/predictions_E75.npz",
+      "score_ids_sha256": "340024c53fbececfdbd21bf6f0d637366f2ddecd45a388b7856fee9e9ef4b4d3",
+      "score_missing": 526,
+      "score_present": 7965,
+      "score_rows": 8491,
+      "sha256": "8d47b131810dd3578b05c6fa10ebccf240a5f14400c085ea9a88e4cc2aedb7cc"
+    }
+  ],
+  "predictor_fit_count": 4,
+  "query_targets_read": false,
+  "representation_fit_count": 4,
+  "schema_version": 1,
+  "source_worktree_head": "3ac45a68485545bf2c87814a5894fae964ac5eee",
+  "test_or_sample_opened": false
+}
