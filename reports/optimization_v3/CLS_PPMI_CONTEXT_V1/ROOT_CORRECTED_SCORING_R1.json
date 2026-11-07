@@ -1,0 +1,89 @@
+{
+  "status": "APPROVE_ONE_CORRECTED_METRIC_VIEW_GATE_RECONSTRUCTION",
+  "candidate_id": "CLS_PPMI_CONTEXT_V1",
+  "authority": "Root technical/methodological audit under original prospective CLS dual campaign and Sam continuous research instruction",
+  "original_checkpoint": "7d298cd",
+  "original_results_sha256": "2e17ca1f497cbe8185cff4685fbb237db37a629f69502066ea5d427cb2a504f8",
+  "original_postlabel_verification_sha256": "2ed30f32e6fc7513f6baffcd27d6c3cd26195e0e874f0fe92757ad237284d239",
+  "original_report_sha256": "41de527c0689faa607794aaef49fe46ce7f129d77d845bde87f09d06144fa43b",
+  "freeze_signature": "2ff619a7fccd7ae7f49b875c0ab4bc652112f69805164eea3e77df99aae5792b",
+  "prediction_hashes": {
+    "67": "6089705fe1aad08a58cecdc08377644d378f56439826a69507b701a44668727e",
+    "75": "8d47b131810dd3578b05c6fa10ebccf240a5f14400c085ea9a88e4cc2aedb7cc"
+  },
+  "original_verdict_status": "INVALID_FOR_INTENDED_MACRO_F1_AND_TEMPORAL_VIEW_CONTRACT_PRESERVE_AS_HISTORY",
+  "confirmed_defects": [
+    "Default binary positive-classF1 reported/gated instead of MacroF1; manual verifier duplicated same wrong estimand.",
+    "E67W5=68-72 andW6=68-73 instead of72-75 and76-79.",
+    "Protected subgroups evaluated onlyprimary instead ofeach intendedview.",
+    "E75 mechanism gate used shuffled-minus-champion instead ofREAL-minus-SHUFFLED.",
+    "Original evaluation read entire50608Trainlabel column; report20903queryrows understates actual source read cardinality."
+  ],
+  "no_label_root_checks": {
+    "origin_champion_probabilities_and_rows_match_recency_cache_bit_exact": true,
+    "confusion_matrix_only_macro_reconstruction": {
+      "PRIMARY_UNIQUE": {
+        "champion": 0.8219407679596171,
+        "candidate_real": 0.8206732184674614,
+        "control_shuffled": 0.8197850002757465,
+        "gain_real_vs_champion": -0.001267549492155684
+      },
+      "E67_H12": {
+        "champion": 0.8113274914773272,
+        "candidate_real": 0.8118996740158839,
+        "control_shuffled": 0.8075575148003603,
+        "gain_real_vs_champion": 0.0005721825385567314
+      },
+      "E75_W6": {
+        "champion": 0.8188841876192341,
+        "candidate_real": 0.8162459494082972,
+        "control_shuffled": 0.8163818051861182,
+        "gain_real_vs_champion": -0.002638238210936894
+      }
+    }
+  },
+  "additional_predictor_or_representation_fits_allowed": 0,
+  "additional_candidate_or_policy_changes_allowed": false,
+  "additional_evaluation_label_vector_reads_allowed": 1,
+  "allowed_read": "Exact frozen20903unique query rows from officialTrain; identity-checked selected vector, target-column-only scan maytouchmoreCSVfields but onlyspecifiedtargetvaluesmaterialized.",
+  "original_actual_target_vector_rows": 50608,
+  "original_actual_target_column_read_count": 1,
+  "permitted_work": "Additive corrected scorer/verifier/tests and versionedoutputs only. Preservealloldsource/freeze/results/report/NPZ/receipts. Samepredictions/thresholds/blend,rootplanintendedMacroF1/windows/gates/support. Newappend-only correctionintent before re-read andfinalreceipt counts bothoriginalandcorrection.",
+  "correct_windows": {
+    "E67_W4": [
+      68,
+      71,
+      4950
+    ],
+    "E67_W5": [
+      72,
+      75,
+      7462
+    ],
+    "E67_W6": [
+      76,
+      79,
+      8491
+    ],
+    "E67_H12": [
+      68,
+      79,
+      20903
+    ],
+    "E75_W6": [
+      76,
+      79,
+      8491
+    ],
+    "PRIMARY_UNIQUE": "E67cycles68-75+E75cycles76-79;20903unique"
+  },
+  "validation_required": [
+    "MacroF1manualmeanofclass0and1F1vssklearnlabels[0,1],average=macro onimbalanced/perfect/constant/tiedtoy cases (balanced2x2cannotcatcholdbug).",
+    "Allviewexactrowcounts/IDs/presence/overlapandcorrectpredsources;candidatebaselinecheckcomputedagainstknownchampanchors.",
+    "Allsupportedsubgroups each6views n>=200and30eachclass;unsupportedreported;allfrozenmetrics/gatesindependentrecomputed.",
+    "GateunitcasewhereE75REALminusSHUFFLEDandSHUFFLEDminusCHAMPhavedifferentsigns;useformer.",
+    "Originalsupervisedtraining/representationrecipe/sourcehashauditbeforeclosingfamily;originaldefectsaffectreportingnotfits.",
+    "Committedcorrectedsource+syntheticQAandoriginaloutputhashbindingsbeforeoneapprovedselectedrowread; metricverificationusesin-memorytargetvector only."
+  ],
+  "next_action": "Luna2completezero-fitcorrectionandindependentQAthenreturnRoot; do not repeatunconditionalNO_ADVANCE/candidatecloseuntilintendedmetricsverified. NoTest/Sample/Kaggle."
+}
