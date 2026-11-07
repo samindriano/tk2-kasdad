@@ -52,19 +52,7 @@ def compact(nb, task):
                 if index == 0:
                     cell.source += "\n\nSumber: official Classification Train. Analisis ini sama pada kedua notebook; tidak memasukkan label Classification ke model Regression." if task == "Regression" else "\n\nSumber: official Classification Train."
             elif index == 15:
-                cell.source = """display(Markdown(
-    f"**Hasil:** gap awal {eda_marginal_gap_pp:+.2f} pp; setelah penyesuaian cycle "
-    f"{eda_cycle_standardized['standardized_missing_minus_present_pp']:+.2f} pp; "
-    f"periode x volume: {eda_period_q5['standardized_missing_minus_present_pp']:+.2f} pp (5 kelompok), "
-    f"{eda_period_q10['standardized_missing_minus_present_pp']:+.2f} pp (10 kelompok).\\n\\n"
-    f"**Dukungan:** minimum 20 baris per status/kelompok. Coverage 10 kelompok "
-    f"{eda_period_q10['supported_rows_total']:,}/{len(eda_analysis):,} "
-    f"({eda_period_q10['coverage_all_rows']:.2%}); "
-    f"{eda_period_q10['cells_supported']}/{eda_period_q10['cells_total']} kelompok didukung.\\n\\n"
-    "**Batasan:** kelompok volume masih kasar; faktor lain belum dikontrol. "
-    "Hasil bukan sebab-akibat atau konfirmasi independen. Routing berasal dari diagnosis model terdahulu, "
-    "bukan ditemukan secara prospektif melalui EDA ini."
-))"""
+                pass  # Short computed narrative is assigned below.
     # Match the TP1 opening: task, individual EDA, short approach, identity.
     title = "Klasifikasi `artifact_signal`" if task == "Classification" else "Regresi `threat_rank`"
     approach = ("C4_HGB memakai hybrid structured + TF-IDF Logistic Regression saat teks terisi, dan structured HGB saat kosong. Metrik utama: **Macro F1**." if task == "Classification" else "LightGBM L1 memakai fitur structured dan TF-IDF/SVD32, dengan rank blend yang dipilih melalui inner validation. Metrik utama: **MAE**.")
@@ -160,4 +148,35 @@ def compact(nb, task):
         if c.cell_type == "markdown":
             for phrase in redundant: c.source = c.source.replace(phrase, "")
             c.source = c.source.strip()
+    for c in nb.cells:
+        if c.cell_type == "markdown":
+            if c.id == "samuel-approved-eda-16":
+                c.source = ("### EDA 8. Kesimpulan\n\n"
+                    "Ada perbedaan proporsi label, tetapi arahnya bergantung pada cara laporan dibandingkan. Pada seluruh data, teks kosong memiliki proporsi label 1 **38,13%**, dibanding **34,47%** pada teks terisi: gap **+3,66 pp**. Setelah komposisi setiap cycle disamakan, gap tetap positif **+3,96 pp** dengan seluruh **33 cycle dan 100% baris** didukung.\n\n"
+                    "Ketika periode dan kelompok volume disamakan bersama, gap berbalik menjadi **-2,30 pp** pada 5 kelompok volume (**100% coverage**) dan **-2,15 pp** pada 10 kelompok (**94,33% coverage; 28/30 strata**). Jadi, pembalikan arah muncul pada penyesuaian gabungan waktu dan volume, bukan pada waktu saja.\n\n"
+                    "Status teks kosong tidak cukup untuk menyimpulkan proporsi artifact tanpa memperhatikan komposisi laporan. Penyesuaian masih memakai rentang volume yang kasar; hasil ini bersifat deskriptif, tidak membuktikan sebab-akibat, dan belum memastikan pola yang sama pada Test.")
+            if task == "Classification" and c.source.startswith("## 4."):
+                c.source = c.source.replace("## 4. Perkembangan pendekatan", "## 4. Perkembangan pendekatan\n\nKode berikut hanya nama eksperimen, bukan algoritme baru. **HGB** adalah HistGradientBoosting, yaitu kumpulan pohon yang dilatih bertahap; **LR** adalah Logistic Regression.\n\n| Nama yang dipakai | Kode riset | Fitur dan cara kerja |\n|---|---|---|\n| HGB terstruktur | C1_B | Fitur numerik/kategori, tanpa isi teks |\n| LR gabungan | C2_B | Fitur terstruktur + TF-IDF teks |\n| Routing | C4_HGB | LR gabungan saat teks terisi; HGB terstruktur saat kosong |")
+            if task == "Regression":
+                c.source = c.source.replace("\n\nHasil primary yang lebih baik belum berarti unggul pada semua horizon. Keunggulan Ridge di H12 menjadi alasan untuk tetap menampilkannya sebagai pembanding.", "")
+            # Use descriptive names in the narrative; preserve codes in glossary.
+            if not c.source.startswith("## 4. Perkembangan pendekatan"):
+                c.source = c.source.replace("C4_HGB", "Routing (C4_HGB)").replace("C2_B", "LR gabungan (C2_B)").replace("C1_B", "HGB terstruktur (C1_B)")
+        elif task == "Classification":
+            if c.id == "historical-evidence":
+                labels = 'MODEL_LABELS = {"C0_A":"Majority", "C0_C":"LR dua fitur", "C1_A":"LR terstruktur", "C1_B":"HGB terstruktur", "C2_A":"LR teks", "C2_B":"LR gabungan", "C4_LR":"Routing fallback LR", "C4_HGB":"Routing"}\n\n'
+                c.source = labels + c.source if not c.source.startswith("MODEL_LABELS") else c.source
+                c.source = c.source.replace('.set_index("recipe")', '.set_index("recipe").rename(index=MODEL_LABELS)')
+                c.source = c.source.replace('"recipe": "C2_B"', '"recipe": MODEL_LABELS["C2_B"]').replace('"recipe": "C4_HGB"', '"recipe": MODEL_LABELS["C4_HGB"]')
+                c.source = c.source.replace('"recipe": recipe,', '"recipe": MODEL_LABELS.get(recipe, recipe),')
+            if c.id in {"heldout-metrics", "subgroups-thresholds"}:
+                c.source = c.source.replace('"model": name,', '"model": MODEL_LABELS.get(name, name),')
+                c.source = c.source.replace('title=name,', 'title=MODEL_LABELS.get(name, name),')
+    for c in nb.cells:
+        if c.id == "samuel-approved-eda-15":
+            c.source = 'display(Markdown(\'\\n\\n\'.join([\n    f"Gap awal {eda_marginal_gap_pp:+.2f} pp; setelah penyesuaian cycle {eda_cycle_standardized[\'standardized_missing_minus_present_pp\']:+.2f} pp; periode dan volume {eda_period_q5[\'standardized_missing_minus_present_pp\']:+.2f} pp (5 kelompok) dan {eda_period_q10[\'standardized_missing_minus_present_pp\']:+.2f} pp (10 kelompok).",\n    f"Minimum 20 baris per status/kelompok. Pemeriksaan 10 kelompok mencakup {eda_period_q10[\'supported_rows_total\']:,}/{len(eda_analysis):,} baris ({eda_period_q10[\'coverage_all_rows\']:.2%}); {eda_period_q10[\'cells_supported\']}/{eda_period_q10[\'cells_total\']} kelompok didukung.",\n    "Kelompok volume masih kasar dan faktor lain belum dikontrol. Routing berasal dari diagnosis model terdahulu; hasil EDA ini tidak membuktikan bahwa status teks menyebabkan label atau kenaikan performa."\n])))'
+    for c in nb.cells:
+        if c.cell_type == "markdown":
+            c.source = c.source.replace("Primary menggabungkan enam window; H12 menguji horizon lebih panjang dengan sebagian baris yang sama, sehingga bukan bukti independen.", "Primary menggabungkan enam evaluasi dengan horizon 4 cycle; H12 memakai horizon 12 cycle. Sebagian barisnya sama, sehingga kedua hasil bukan bukti independen.")
+            c.source = c.source.replace("Tabel berikut adalah hasil historis enam window temporal.", "Tabel berikut adalah hasil historis enam window temporal. Primary mengevaluasi horizon 4 cycle, sedangkan H12 horizon 12 cycle.")
     return nb
