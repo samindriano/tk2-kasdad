@@ -44,6 +44,9 @@ def test_prelabel_champion_is_checked_against_its_own_origin_cache(tmp_path):
     payload = {
         "prelabel_metadata_json": np.asarray(json.dumps({
             "candidate_id": "CLS_DAN_V1",
+            "freeze_signature": "SYNTHETIC_FREEZE",
+            "fit_receipt_hashes": {fit_id: f"receipt-{fit_id}" for fit_id in runner.FIT_IDS},
+            "fit_artifact_hashes": {fit_id: f"model-{fit_id}" for fit_id in runner.FIT_IDS},
             "evaluation_query_targets_read": False,
             "test_opened": False,
             "sample_submission_opened": False,
@@ -60,8 +63,12 @@ def test_prelabel_champion_is_checked_against_its_own_origin_cache(tmp_path):
         present = view["present"]
         dan = view["champion"].copy()
         linear = view["champion"].copy()
-        dan[present] = 0.75 * view["champion"][present] + 0.25 * 0.6
-        linear[present] = 0.75 * view["champion"][present] + 0.25 * 0.4
+        aux_dan = np.full(len(present), np.nan, dtype=np.float64)
+        aux_linear = np.full(len(present), np.nan, dtype=np.float64)
+        aux_dan[present] = 0.6
+        aux_linear[present] = 0.4
+        dan[present] = 0.75 * view["champion"][present] + 0.25 * aux_dan[present]
+        linear[present] = 0.75 * view["champion"][present] + 0.25 * aux_linear[present]
         caches[origin] = cache
         prefix = f"E{origin}_"
         for key, value in view.items():
@@ -73,11 +80,22 @@ def test_prelabel_champion_is_checked_against_its_own_origin_cache(tmp_path):
         payload[prefix + "coverage"] = cache["coverage"]
         payload[prefix + "dan"] = dan
         payload[prefix + "linear"] = linear
+        payload[prefix + "aux_dan"] = aux_dan
+        payload[prefix + "aux_linear"] = aux_linear
 
-    cache_ready = {"origins": {"67": {"sha256": "cache-67"}, "75": {"sha256": "cache-75"}}}
+    fit_receipts = {fit_id: f"receipt-{fit_id}" for fit_id in runner.FIT_IDS}
+    fit_artifacts = {fit_id: f"model-{fit_id}" for fit_id in runner.FIT_IDS}
+    cache_ready = {
+        "freeze_signature": "SYNTHETIC_FREEZE",
+        "fit_receipt_hashes": fit_receipts,
+        "fit_artifact_hashes": fit_artifacts,
+        "origins": {"67": {"sha256": "cache-67"}, "75": {"sha256": "cache-75"}},
+    }
     good_path = tmp_path / "good.npz"
     runner.atomic_npz(good_path, **payload)
-    verification = repair._verify_prelabel_against_caches(good_path, cache_ready, caches)
+    verification = repair._verify_prelabel_against_caches(
+        good_path, cache_ready, caches, fit_receipts, fit_artifacts
+    )
     assert verification["overlap"]["champion_probabilities_different_rows"] > 0
     assert verification["target_free_payload_metadata"] is True
 
@@ -87,7 +105,9 @@ def test_prelabel_champion_is_checked_against_its_own_origin_cache(tmp_path):
     bad_path = tmp_path / "bad.npz"
     runner.atomic_npz(bad_path, **tampered)
     with pytest.raises(RuntimeError, match="hash-bound feature cache"):
-        repair._verify_prelabel_against_caches(bad_path, cache_ready, caches)
+        repair._verify_prelabel_against_caches(
+            bad_path, cache_ready, caches, fit_receipts, fit_artifacts
+        )
 
 
 @pytest.mark.parametrize(

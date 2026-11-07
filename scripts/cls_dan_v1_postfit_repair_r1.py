@@ -272,12 +272,17 @@ def _verify_prelabel_against_caches(
     prelabel_path: Path,
     ready: Mapping[str, Any],
     caches: Mapping[int, Mapping[str, np.ndarray]],
+    expected_fit_receipts: Mapping[str, str],
+    expected_fit_artifacts: Mapping[str, str],
 ) -> dict[str, Any]:
     per_origin: dict[str, Any] = {}
     values: dict[int, dict[str, np.ndarray]] = {}
     with np.load(prelabel_path, allow_pickle=False) as archive:
         metadata = json.loads(str(archive["prelabel_metadata_json"].item()))
         _require(metadata.get("candidate_id") == "CLS_DAN_V1"
+                 and metadata.get("freeze_signature") == ready.get("freeze_signature")
+                 and metadata.get("fit_receipt_hashes") == dict(expected_fit_receipts)
+                 and metadata.get("fit_artifact_hashes") == dict(expected_fit_artifacts)
                  and metadata.get("evaluation_query_targets_read") is False
                  and metadata.get("test_opened") is False
                  and metadata.get("sample_submission_opened") is False
@@ -293,6 +298,8 @@ def _verify_prelabel_against_caches(
                 "champion": np.asarray(archive[prefix + "champion"], dtype=np.float64),
                 "dan": np.asarray(archive[prefix + "dan"], dtype=np.float64),
                 "linear": np.asarray(archive[prefix + "linear"], dtype=np.float64),
+                "aux_dan": np.asarray(archive[prefix + "aux_dan"], dtype=np.float64),
+                "aux_linear": np.asarray(archive[prefix + "aux_linear"], dtype=np.float64),
             }
             values[origin] = view
             for key in ("score_rows", "score_record_ids", "score_cycles", "present", "champion",
@@ -314,6 +321,19 @@ def _verify_prelabel_against_caches(
                 _require(np.array_equal(probability[~view["present"]].view(np.uint64),
                                         view["champion"][~view["present"]].view(np.uint64)),
                          f"E{origin} {model} missing-stream fallback differs from its own champion")
+                auxiliary = view[f"aux_{model}"]
+                _require(np.isnan(auxiliary[~view["present"]]).all()
+                         and np.isfinite(auxiliary[view["present"]]).all()
+                         and np.all((auxiliary[view["present"]] >= 0.0)
+                                    & (auxiliary[view["present"]] <= 1.0)),
+                         f"E{origin} {model} auxiliary probability presence mask is invalid")
+                expected = view["champion"].copy()
+                expected[view["present"]] = (
+                    0.75 * view["champion"][view["present"]]
+                    + 0.25 * auxiliary[view["present"]]
+                )
+                _require(np.array_equal(expected.view(np.uint64), probability.view(np.uint64)),
+                         f"E{origin} {model} prelabel differs from the frozen 0.75/0.25 route")
             per_origin[str(origin)] = {
                 "rows": int(len(view["score_rows"])),
                 "feature_cache_sha256": ready["origins"][str(origin)]["sha256"],
@@ -321,6 +341,8 @@ def _verify_prelabel_against_caches(
                 "record_ids_sha256": _sha256_array(view["score_record_ids"]),
                 "cycles_sha256": _sha256_array(view["score_cycles"]),
                 "champion_sha256": _sha256_array(view["champion"]),
+                "dan_auxiliary_sha256": _sha256_array(view["aux_dan"][view["present"]]),
+                "linear_auxiliary_sha256": _sha256_array(view["aux_linear"][view["present"]]),
                 "missing_route_exact": True,
             }
     overlap = validate_origin_alignment(values[67], values[75])
@@ -328,12 +350,67 @@ def _verify_prelabel_against_caches(
             "target_free_payload_metadata": True}
 
 
+def _verify_saved_prediction_readback(
+    ready: Mapping[str, Any],
+    authorization: Mapping[str, Any],
+    prelabel_path: Path,
+) -> dict[str, Any]:
+    checks: dict[str, Any] = {}
+    with np.load(prelabel_path, allow_pickle=False) as prelabel:
+        for fit_id, (origin, architecture) in runner.FIT_IDS.items():
+            receipt_path = runner.RUN_ROOT / "units" / "receipts" / f"{fit_id}.json"
+            model_path = runner.RUN_ROOT / "units" / f"{fit_id}.npz"
+            prediction_path = runner.RUN_ROOT / "predictions" / f"{fit_id}.npz"
+            fit_record = authorization["saved_fits"][fit_id]
+            receipt = runner.read_json(receipt_path)
+            _require(_sha256_file(receipt_path) == fit_record["receipt_sha256"]
+                     and _sha256_file(model_path) == fit_record["model_artifact_sha256"]
+                     and _sha256_file(prediction_path) == fit_record["prediction_artifact_sha256"],
+                     f"{fit_id} readback artifacts differ from root authorization")
+            cache_path = runner.AUDIT / ready["origins"][str(origin)]["path"]
+            with np.load(cache_path, allow_pickle=False) as cache:
+                counts = runner._csr_from_payload(cache, "score_counts")
+                structured = np.asarray(cache["score_structured"], dtype=np.float64)
+                rows = np.asarray(cache["score_rows"], dtype=np.int64)
+                record_ids = np.asarray(cache["score_record_ids"]).astype(str)
+                cycles = np.asarray(cache["score_cycles"], dtype=np.int64)
+                present_positions = np.asarray(cache["score_present_positions"], dtype=np.int64)
+            with np.load(model_path, allow_pickle=False) as saved_model:
+                model = runner.core.model_from_arrays({key: saved_model[key]
+                                                       for key in saved_model.files})
+            with np.load(prediction_path, allow_pickle=False) as saved_prediction:
+                auxiliary = np.asarray(saved_prediction["score_aux_probability"], dtype=np.float64)
+                _require(np.array_equal(np.asarray(saved_prediction["score_rows"], dtype=np.int64), rows)
+                         and np.array_equal(np.asarray(saved_prediction["score_record_ids"]).astype(str),
+                                            record_ids)
+                         and np.array_equal(np.asarray(saved_prediction["score_cycles"], dtype=np.int64),
+                                            cycles)
+                         and np.array_equal(np.asarray(saved_prediction["score_present_positions"],
+                                                       dtype=np.int64), present_positions),
+                         f"{fit_id} saved prediction row identity differs from its origin cache")
+            replay = runner.core.predict_probabilities(model, counts, structured)
+            _require(np.array_equal(auxiliary.view(np.uint64), replay.view(np.uint64)),
+                     f"{fit_id} saved model readback differs from its prediction artifact")
+            key = f"E{origin}_aux_{architecture.lower()}"
+            prelabel_auxiliary = np.asarray(prelabel[key], dtype=np.float64)
+            expected_aux = np.full(len(rows), np.nan, dtype=np.float64)
+            expected_aux[present_positions] = replay
+            _require(np.array_equal(prelabel_auxiliary.view(np.uint64), expected_aux.view(np.uint64)),
+                     f"{fit_id} saved predictions differ from the prelabel auxiliary array")
+            checks[fit_id] = {
+                "model_sha256": fit_record["model_artifact_sha256"],
+                "prediction_sha256": fit_record["prediction_artifact_sha256"],
+                "prediction_readback_bit_identical": True,
+                "prelabel_auxiliary_bit_identical": True,
+                "query_labels_read": False,
+            }
+    return checks
+
+
 def build_prelabel(official_root: Path) -> dict[str, Any]:
     """Build the original prelabel with one authorized origin-specific guard repair."""
     freeze, authorization = _validate_root_repair(official_root)
-    _require(not runner.PRELABEL_PATH.exists()
-             and not runner.PREDICTIONS_READY_PATH.exists()
-             and not (runner.RUN_ROOT / "EVALUATION_ARM.json").exists()
+    _require(not (runner.RUN_ROOT / "EVALUATION_ARM.json").exists()
              and not (runner.RUN_ROOT / "EVALUATION_STARTED.json").exists()
              and not (runner.RUN_ROOT / "EVALUATION_CONSUMED.json").exists()
              and not runner.RESULTS_PATH.exists(),
@@ -344,23 +421,71 @@ def build_prelabel(official_root: Path) -> dict[str, Any]:
     caches = {origin: _origin_cache(ready, origin) for origin in runner.ORIGINS}
     overlap = validate_origin_alignment(caches[67], caches[75])
 
-    original_require = runner.require
-    bypassed: list[str] = []
+    has_prelabel = runner.PRELABEL_PATH.exists()
+    has_ready = runner.PREDICTIONS_READY_PATH.exists()
+    has_repair_receipt = POSTFIT_RECEIPT_PATH.exists()
+    _require(not has_repair_receipt,
+             "Post-fit adapter receipt already exists; this write-once lane cannot rerun")
+    _require(has_prelabel == has_ready,
+             "Prelabel output state is incomplete; refusing to overwrite or retry")
 
-    def scoped_require(condition: bool, message: str) -> None:
-        if message == ALIGNMENT_ERROR:
-            bypassed.append(message)
-            return
-        original_require(condition, message)
+    if has_prelabel:
+        # Recovery for a completed target-free builder whose first adapter
+        # stopped only at its incorrect postcondition after writing both files.
+        prediction_ready = runner.read_json(runner.PREDICTIONS_READY_PATH)
+        bypass_count = overlap["shared_query_rows"]
+        builder_provenance = {
+            "output_reused_without_rebuild": True,
+            "original_adapter_commit": "11b262a9c8e72bc809a1839e6578e49f3eae3532",
+            "original_builder_returned_and_wrote_both_outputs": True,
+            "initial_postcondition_failure": (
+                "Adapter expected one bypass, but the frozen equality guard is inside the "
+                "loop and is called once per shared late query row."
+            ),
+            "bypass_count_basis": (
+                "Verified output has 8,491 aligned E75 query rows; the frozen builder returned "
+                "normally after applying the scoped guard to each row before writing readiness."
+            ),
+        }
+    else:
+        original_require = runner.require
+        bypassed: list[str] = []
 
-    runner.require = scoped_require
-    try:
-        prediction_ready = runner.build_prelabel_predictions(official_root)
-    finally:
-        runner.require = original_require
-    _require(bypassed == [ALIGNMENT_ERROR],
-             "Expected exactly one authorized cross-origin champion equality guard")
-    audit = _verify_prelabel_against_caches(runner.PRELABEL_PATH, ready, caches)
+        def scoped_require(condition: bool, message: str) -> None:
+            if message == ALIGNMENT_ERROR:
+                bypassed.append(message)
+                return
+            original_require(condition, message)
+
+        runner.require = scoped_require
+        try:
+            prediction_ready = runner.build_prelabel_predictions(official_root)
+        finally:
+            runner.require = original_require
+        bypass_count = len(bypassed)
+        _require(bypass_count == overlap["shared_query_rows"]
+                 and all(message == ALIGNMENT_ERROR for message in bypassed),
+                 "Scoped equality-guard bypass count differs from shared late query rows")
+        builder_provenance = {
+            "output_reused_without_rebuild": False,
+            "original_builder_returned_and_wrote_both_outputs": True,
+            "bypass_count_basis": "Direct count of the one per-row invalid guard site.",
+        }
+
+    fit_receipts = {
+        fit_id: saved["receipt_sha256"]
+        for fit_id, saved in authorization["saved_fits"].items()
+    }
+    fit_artifacts = {
+        fit_id: saved["model_artifact_sha256"]
+        for fit_id, saved in authorization["saved_fits"].items()
+    }
+    audit = _verify_prelabel_against_caches(
+        runner.PRELABEL_PATH, ready, caches, fit_receipts, fit_artifacts
+    )
+    model_readback = _verify_saved_prediction_readback(
+        ready, authorization, runner.PRELABEL_PATH
+    )
     _assert_binary_ignored_and_untracked(runner.PRELABEL_PATH)
     prelabel_sha = _sha256_file(runner.PRELABEL_PATH)
     prediction_ready_sha = _sha256_file(runner.PREDICTIONS_READY_PATH)
@@ -372,11 +497,9 @@ def build_prelabel(official_root: Path) -> dict[str, Any]:
              and prediction_ready.get("sample_submission_opened") is False
              and prediction_ready.get("kaggle_contacted") is False,
              "Prelabel builder did not preserve target-free readiness flags")
-    expected_fit_receipts = {
-        fit_id: saved["receipt_sha256"]
-        for fit_id, saved in authorization["saved_fits"].items()
-    }
-    _require(prediction_ready["fit_receipt_hashes"] == expected_fit_receipts,
+    expected_fit_receipts = fit_receipts
+    _require(prediction_ready["fit_receipt_hashes"] == expected_fit_receipts
+             and prediction_ready["fit_artifact_hashes"] == fit_artifacts,
              "Prelabel manifest fit receipts differ from the four root-bound saved fits")
     receipt = {
         "status": "PASS_POSTFIT_PRELABEL_REPAIR_R1",
@@ -394,7 +517,8 @@ def build_prelabel(official_root: Path) -> dict[str, Any]:
         "saved_models_and_predictions_unchanged": True,
         "cross_origin_repair": {
             "only_bypassed_guard": ALIGNMENT_ERROR,
-            "bypass_count": len(bypassed),
+            "bypass_count": bypass_count,
+            "expected_per_shared_query_row": True,
             **overlap,
             "per_origin_champions_verified_against_own_hash_bound_cache": True,
             "per_origin_missing_fallback_exact": True,
@@ -404,6 +528,8 @@ def build_prelabel(official_root: Path) -> dict[str, Any]:
         "prediction_ready_sha256": prediction_ready_sha,
         "prediction_ready_status": prediction_ready["status"],
         "prelabel_cache_verification": audit,
+        "saved_model_prediction_readback": model_readback,
+        "builder_execution_provenance": builder_provenance,
         "binary_policy": _assert_binary_ignored_and_untracked(runner.PRELABEL_PATH),
         "evaluation_labels_read": False,
         "test_opened": False,

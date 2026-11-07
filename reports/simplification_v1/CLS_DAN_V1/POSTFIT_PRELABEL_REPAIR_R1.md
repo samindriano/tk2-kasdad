@@ -6,6 +6,8 @@ The four authorized fits completed and their saved models reproduced every saved
 
 The root authorization is recorded in `ROOT_PRELABEL_REPAIR_R1.json`. The original fit runner, freeze, fit receipts, model binaries, and prediction binaries remain unchanged. The adapter bypasses only that one cross-origin probability equality guard, after independently verifying row ID, Train row position, cycle, and availability alignment. It then verifies each origin's entire champion input against that origin's hash-bound feature cache and checks each missing-stream fallback against that same origin's champion.
 
+The first adapter invocation completed the frozen target-free builder and wrote both prelabel files, then stopped at an adapter postcondition that incorrectly expected one guard call. The frozen guard is inside the per-row overlap loop, so it is called 8,491 times for 8,491 aligned E75 query rows. Recovery reuses and independently verifies those existing files; it does not rebuild them. The completion receipt records the initial adapter commit and the corrected per-row count.
+
 ## Binary artifact policy
 
 `PRELABEL.npz` contains raw row arrays and remains ignored and untracked. A committed `PREDICTIONS_READY.json` binds the exact NPZ SHA-256 and records that query labels and metrics have not been read. The separately committed `POSTFIT_PRELABEL_R1.json` binds both hashes, the adapter commit, authorization, fit receipts, and per-origin cache checks. The adapter substitutes the original committed-file guard only for this exact NPZ; every other committed-file check is unchanged.
