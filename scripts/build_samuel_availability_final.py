@@ -18,22 +18,24 @@ def py(value):
 def build():
     cells = [
         md('''
-# EDA Individual Samuel — Ketersediaan Stream dan Artifact
+# EDA Individual Samuel — Teks Kosong dan Terisi
 
 ## Pertanyaan penelitian
 
-**Apakah proporsi artifact_signal = 1 berbeda menurut ketersediaan signal_stream, dan bagaimana perbedaannya berubah setelah mempertimbangkan periode cycle_code serta volume narasi (text_load)?**
+**Apakah persentase laporan berlabel `artifact_signal = 1` berbeda antara `signal_stream` kosong dan terisi, setelah mempertimbangkan waktu dan volume laporan?**
 
-Analisis memakai official Classification Train TP2. Fokusnya hubungan deskriptif antara ketersediaan aliran teks dan label. Status kosong berarti teks tidak tersedia pada record, bukan bahwa isi teks berkualitas rendah.
+Kita membandingkan laporan yang teksnya kosong dengan laporan yang teksnya tersedia. Setelah itu, kita memeriksa apakah perbedaannya tetap terlihat saat waktu dan volume laporan ikut diperhatikan. Analisis memakai official Classification Train TP2. Teks kosong berarti isi `signal_stream` tidak tersedia pada record tersebut; status ini tidak menilai kualitas teks.
 '''),
         md('''
 ## 1. Data dan definisi
 
-artifact_signal = 1 menandai indikasi artefak eksploit publik yang teramati; nilai 0 bukan bukti bahwa artefak pasti tidak ada. signal_stream disebut **missing** jika null, kosong, atau hanya whitespace, mengikuti fungsi availability yang dipakai pipeline Classification. Selain itu disebut **present**.
+`artifact_signal = 1` berarti ada indikasi artefak eksploit publik yang teramati. Nilai 0 tidak membuktikan bahwa artefak pasti tidak ada. Teks disebut **kosong (missing)** jika nilainya null, string kosong, atau hanya spasi. Selain itu disebut **terisi (present)**.
 
-Periode dibagi menjadi 47–57, 58–68, dan 69–79. text_load dipakai sebagai ukuran volume narasi. Analisis memakai baris Train saja; tidak ada Test atau label Test yang dibuka.
+Waktu pengamatan dibagi menjadi tiga periode `cycle_code`: 47–57, 58–68, dan 69–79. Volume laporan memakai nilai `text_load` yang disediakan dataset, bukan jumlah token yang dihitung dari `signal_stream`. Analisis hanya memakai Train.
 
-Standardisasi memakai minimum **20 observasi untuk setiap status availability dalam setiap sel**. Sel yang didukung diberi bobot yang sama bagi kedua kelompok, sebesar proporsi gabungan baris pada sel tersebut. Batas kuantil text_load dihitung dari text_load Train saja tanpa memakai availability atau target. Bin kuantil menyamakan rentang secara kasar dan tidak menjamin overlap tepat pada setiap nilai text_load.
+Untuk membuat perbandingan lebih seimbang, laporan dikelompokkan menurut waktu dan rentang volume. Bobot setiap kelompok mengikuti proporsinya terhadap seluruh baris yang memenuhi syarat. Bobot ini dipakai sama untuk laporan kosong dan terisi. Cara ini disebut **standardisasi**. Setiap kelompok harus memiliki sedikitnya **20 laporan kosong dan 20 laporan terisi**. Batas rentang volume dihitung tanpa memakai label target atau status kosong/terisi.
+
+Rentang volume memakai kelompok kuantil, yaitu pembagian data berdasarkan urutan nilainya. Pembagian ini masih kasar: berada dalam rentang yang sama tidak berarti dua laporan memiliki nilai `text_load` yang persis sama.
 '''),
         py(r'''
 from pathlib import Path
@@ -103,9 +105,9 @@ print(
 )
 '''),
         md('''
-## 3. Perbandingan marginal
+## 3. Perbandingan awal: semua laporan
 
-Perbandingan awal memakai seluruh baris pada setiap kelompok. Interval Wilson 95% menjelaskan ketidakpastian tiap proporsi marginal secara terpisah; interval ini bukan interval untuk selisih kedua kelompok.
+Kita mulai dengan membandingkan persentase label 1 pada seluruh laporan kosong dan terisi. Interval Wilson 95% pada grafik menggambarkan ketidakpastian persentase masing-masing kelompok; interval tersebut bukan interval untuk selisih kedua kelompok.
 '''),
         py(r'''
 marginal_rows = []
@@ -254,9 +256,11 @@ display(Markdown(
 ))
 '''),
         md('''
-## 6. Standardisasi terhadap cycle dan volume
+## 6. Membandingkan komposisi waktu dan volume yang sama
 
-Kontras menyamakan bobot komposisi cell agar kedua status availability dibandingkan pada komposisi cycle/volume yang sama. Standardisasi exact cycle masih mencakup semua baris karena setiap cycle memiliki ≥20 baris dari tiap status. Analisis gabungan memakai periode × kuantil global text_load 5 dan 10 bins.
+Pada perbandingan awal, kedua kelompok bisa memiliki komposisi waktu dan volume yang berbeda. Di sini kita menyamakan bobot kelompok waktu/volume untuk keduanya, lalu menghitung ulang persentase label 1. Inilah perbandingan yang distandardisasi.
+
+Pemeriksaan pertama memakai setiap `cycle_code` secara terpisah dan mencakup seluruh baris, karena setiap cycle memiliki sedikitnya 20 laporan dari masing-masing status. Pemeriksaan berikutnya memakai tiga periode dan membagi `text_load` ke dalam 5 atau 10 kelompok kuantil. Jumlah baris yang memenuhi syarat tetap dilaporkan.
 '''),
         py(r'''
 cycle_standardized, cycle_cells = standardized_contrast(analysis, ["cycle_code"], min_support=20)
@@ -331,9 +335,11 @@ fig.tight_layout()
 plt.show()
 '''),
         md('''
-## 7. Interpretasi dan keterbatasan
+## 7. Cara membaca hasil dan batasannya
 
-Arah positif berarti proporsi pada kelompok missing lebih tinggi daripada kelompok present. Standardisasi menyamakan komposisi hanya pada strata yang ditentukan.
+Selisih dihitung sebagai **persentase pada laporan kosong dikurangi persentase pada laporan terisi**. Nilai positif berarti label 1 lebih sering teramati pada kelompok kosong; nilai negatif berarti lebih sering pada kelompok terisi. Satuan **poin persentase (pp)** menyatakan selisih dua persentase.
+
+Perbandingan yang disesuaikan hanya menyamakan kelompok waktu/volume yang kita tetapkan. Hasilnya menunjukkan hubungan pada data, bukan bukti sebab-akibat.
 '''),
         py(r'''
 q10_unsupported = period_q10_cells.loc[~period_q10_cells.supported]
@@ -382,7 +388,11 @@ display(Markdown(
         md('''
 ## 8. Kesimpulan
 
-Pada official Classification Train, proporsi artifact_signal = 1 berbeda menurut ketersediaan signal_stream. Selisih marginal missing − present positif **+3,66 pp** dan tetap **+3,96 pp** setelah standardisasi exact cycle dengan seluruh baris didukung. Setelah menyamakan periode bersama kuantil text_load, selisih menjadi negatif (sekitar **−2,2 sampai −2,3 pp**); estimasi ini memakai bin kasar, dan standardisasi 10-bin mencakup **94,33%** baris. Perubahan tersebut menunjukkan sensitivitas komposisi periode dan volume, bukan efek kausal. Hubungan bervariasi antarperiode/cycle dan common support tidak sempurna.
+Secara keseluruhan, label `artifact_signal = 1` lebih sering teramati pada laporan dengan teks kosong: **38,13%**, dibanding **34,47%** pada laporan dengan teks terisi. Selisihnya **+3,66 poin persentase**. Jika hanya komposisi cycle yang disamakan, selisihnya tetap positif, yaitu **+3,96 poin persentase**.
+
+Namun, setelah komposisi periode dan kelompok volume laporan disamakan, arahnya berbalik: persentase pada kelompok kosong sekitar **2,2–2,3 poin persentase lebih rendah**. Jadi, hasil perbandingan bergantung pada komposisi laporan yang dibandingkan. Kesimpulan sederhana dari seluruh data saja belum cukup untuk menggambarkan polanya.
+
+Penyesuaian volume masih memakai rentang yang kasar; analisis 10 kelompok mencakup **94,33%** baris. Hubungan juga berbeda antarperiode/cycle. Hasil ini tidak membuktikan bahwa teks kosong menyebabkan perubahan label dan belum memastikan pola yang sama pada official Test.
 '''),
     ]
     notebook = nbf.v4.new_notebook(

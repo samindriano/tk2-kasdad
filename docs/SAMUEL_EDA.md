@@ -2,7 +2,9 @@
 
 **Keputusan pengguna, 31 Oktober 2026:** pertanyaan resmi EDA individual adalah:
 
-> Apakah proporsi `artifact_signal = 1` berbeda menurut ketersediaan `signal_stream`, dan bagaimana perbedaannya berubah setelah mempertimbangkan periode `cycle_code` serta volume narasi (`text_load`)?
+> Apakah persentase laporan berlabel `artifact_signal = 1` berbeda antara `signal_stream` kosong dan terisi, setelah mempertimbangkan waktu dan volume laporan?
+
+Waktu memakai `cycle_code` dan volume laporan memakai `text_load`. Ini penyederhanaan bahasa dari pertanyaan yang sama; variabel, metode, dan hasil analisis tetap.
 
 Notebook final: [12_samuel_formal_eda_availability.ipynb](../notebooks/samuel/12_samuel_formal_eda_availability.ipynb). Notebook menggunakan official Classification Train dan menghitung hasil dari raw data, bukan laporan cache. Ringkasan keputusan ada di [FINDINGS.md](../reports/academic_availability/FINDINGS.md); metodologi dan eksekusi tercatat pada [QA.json](../reports/academic_availability/QA.json).
 
