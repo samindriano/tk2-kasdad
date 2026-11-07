@@ -1,0 +1,47 @@
+{
+  "case_count": 8,
+  "cases": {
+    "all_six_view_subgroups_and_metric_readback": "PASS",
+    "constant_class_and_threshold_tie": "PASS",
+    "e75_real_minus_shuffle_opposite_sign_fixture": "PASS",
+    "exact_six_view_counts_ids_and_sources": "PASS",
+    "imbalanced_asymmetric_confusion_macro_f1": "PASS",
+    "independent_sklearn_macro_f1_and_gate_recompute": "PASS",
+    "macro_f1_differs_from_old_positive_f1": "PASS",
+    "perfect_prediction_macro_f1": "PASS"
+  },
+  "correction_id": "CLS_PPMI_CONTEXT_V1_CORRECTION_R1",
+  "e75_gate_direction_fixture": {
+    "intended_gate_source": "real_minus_shuffled",
+    "real_minus_shuffled": 0.4000000000000001,
+    "shuffled_minus_champion": -0.6666666666666667,
+    "signs_differ": true,
+    "status": "PASS"
+  },
+  "independent_verifier": {
+    "additional_target_reads": 0,
+    "all_frozen_metrics_recomputed": true,
+    "all_gates_recomputed": true,
+    "all_supported_subgroups_recomputed_across_all_views": true,
+    "macro_f1_root_anchors": {},
+    "method": "independent sklearn MacroF1 and metric recomputation from the single in-memory selected target vector",
+    "query_target_vector_rows": 20903,
+    "status": "PASS",
+    "subgroup_groups_recomputed": 48,
+    "subgroup_views_recomputed": 6,
+    "views_recomputed": 6
+  },
+  "official_source_opened": false,
+  "query_targets_read": false,
+  "schema_version": 1,
+  "status": "PASS",
+  "test_or_sample_opened": false,
+  "window_counts": {
+    "E67_H12": 20903,
+    "E67_W4": 4950,
+    "E67_W5": 7462,
+    "E67_W6": 8491,
+    "E75_W6": 8491,
+    "PRIMARY_UNIQUE": 20903
+  }
+}
