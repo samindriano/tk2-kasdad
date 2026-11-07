@@ -531,10 +531,11 @@ def preflight(official_root: Path) -> dict[str, Any]:
     code_hashes = {SCRIPT_REL: normalized_sha256(Path(__file__).read_bytes()),
                    TEST_REL: normalized_sha256((ROOT / TEST_REL).read_bytes())}
     ack = require_committed(ACK_PATH)
+    reconciliation = ack.get("specification_reconciliation", {})
     require(ack.get("status") == "ACKNOWLEDGED_BEFORE_R2_TARGET_READ"
-            and ack.get("original_frozen_E75_component") == "LINEAR_minus_champion >= 0"
-            and ack.get("R2_amended_E75_component") == "DAN_minus_LINEAR >= 0"
-            and ack.get("exploratory_rule_changed") is False,
+            and reconciliation.get("original_frozen_E75_component") == "LINEAR_minus_champion >= 0"
+            and reconciliation.get("R2_authority_amended_E75_component") == "DAN_minus_LINEAR >= 0"
+            and reconciliation.get("exploratory_rule_changed") is False,
             "Committed R2 gate acknowledgment does not define the dual-verdict policy")
     report = {
         "status": "PASS_R2_PREACCESS_NO_QUERY_LABELS",
