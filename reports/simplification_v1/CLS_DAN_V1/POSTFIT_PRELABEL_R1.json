@@ -1,0 +1,132 @@
+{
+  "adapter_commit": "7fb8b5b2d4636d973ce9287e570f0fb7bd0401f3",
+  "adapter_file_hashes": {
+    "experiments/CLS_DAN_V1/.gitignore": "983fa01d3cfd810223ccd215ea5a413afbff1f22984bac7a9ea83fd411c73caa",
+    "reports/simplification_v1/CLS_DAN_V1/POSTFIT_PRELABEL_REPAIR_R1.md": "f70b19e38c4f14ff5ae6c95799e5ac1528779cbf579e4e73a1a97e5ab4cb0431",
+    "scripts/cls_dan_v1_postfit_repair_r1.py": "a2858b9bba5630142f37f3efbd9c78255920b7ea87c935c531524d3f16233048",
+    "tests/test_cls_dan_v1_postfit_repair_r1.py": "3f382eb72e32936c26b22a0ade4346f1043ea20709816c02f1844bea1d11d739"
+  },
+  "binary_policy": {
+    "git_ignored": true,
+    "git_tracked": false,
+    "path": "experiments/CLS_DAN_V1/predictions/PRELABEL.npz"
+  },
+  "builder_execution_provenance": {
+    "bypass_count_basis": "Verified output has 8,491 aligned E75 query rows; the frozen builder returned normally after applying the scoped guard to each row before writing readiness.",
+    "initial_postcondition_failure": "Adapter expected one bypass, but the frozen equality guard is inside the loop and is called once per shared late query row.",
+    "original_adapter_commit": "11b262a9c8e72bc809a1839e6578e49f3eae3532",
+    "original_builder_returned_and_wrote_both_outputs": true,
+    "output_reused_without_rebuild": true
+  },
+  "candidate_id": "CLS_DAN_V1",
+  "cross_origin_repair": {
+    "availability_exact": true,
+    "bypass_count": 8491,
+    "champion_probabilities_different_rows": 8491,
+    "champion_probabilities_exact_equal_rows": 0,
+    "champion_probabilities_required_equal": false,
+    "cycles_exact": true,
+    "earlier_rows_sha256": "2c17e594e04e8c5406a52117894c8e296730cfcf88de1423468438e691580df8",
+    "expected_per_shared_query_row": true,
+    "later_rows_sha256": "2c17e594e04e8c5406a52117894c8e296730cfcf88de1423468438e691580df8",
+    "only_bypassed_guard": "E67/E75 champion probabilities differ on overlapping query IDs",
+    "per_origin_champions_verified_against_own_hash_bound_cache": true,
+    "per_origin_missing_fallback_exact": true,
+    "record_ids_exact": true,
+    "shared_query_rows": 8491,
+    "source_rows_exact": true
+  },
+  "evaluation_labels_read": false,
+  "features_ready_sha256": "faef2523972799588f8a2622872a0ad70099b815c3925d70adc53a1b0a2d4954",
+  "fit_ledger_sha256": "87a7e0a23629c5b0643a00a6608282aa23769d6f4206a7869b2e8670d7b299c1",
+  "fit_receipt_hashes": {
+    "E67_DAN": "c889ef287026041844353eb57955a6017388ab94ca3c331c0d5135ba0faee1c1",
+    "E67_LINEAR": "ed88f08bde22b7a1ee37189c4c24a8999a1d0e434aa544a12d05511f4d3988c6",
+    "E75_DAN": "4c35e3e7c55f5a2e27a9115cbaab4cb4fcf1d2dc790de2a0325b6d534dcce99e",
+    "E75_LINEAR": "01a64cb616aa97b854c562fb7d6290dbf8551b5fa6b46aa25816bd1547ca6963"
+  },
+  "freeze_signature": "bb9e117f28d0b8a3d0d46e45ae4aa3c8862eaf0420f3c807a12f76556ca6dc04",
+  "kaggle_contacted": false,
+  "metrics_computed": false,
+  "original_fit_source_commit": "4378fab397191291733bf6586db039bd2be2ae97",
+  "original_frozen_runner_sha256": "8b096018c5903198aba69f90f955676197e440dab13d64e7f654f9b8e43c0a69",
+  "prediction_ready_sha256": "defa67011acd313af7d032d849688bcc8ca4122a91717d9d4bd4bb3084a065ff",
+  "prediction_ready_status": "PASS_PRELABEL_READY_NO_QUERY_LABELS",
+  "prelabel_cache_verification": {
+    "origins": {
+      "67": {
+        "champion_sha256": "b637c143ea6e4fcdf431c9cf8798f1d6481373930989c6d7175b452431a37a9c",
+        "cycles_sha256": "8007b06288e509423528c658f58c28653c34e667e3ff21d9773b35759d305717",
+        "dan_auxiliary_sha256": "97717bd6f91313090fc6e16674d30e77c69553cbd0f631766bc828e8fb479aba",
+        "feature_cache_sha256": "3009bb04f3278748833a45b844330940a276933190fd7291239df9bac1f7ae9a",
+        "linear_auxiliary_sha256": "003594939cf3c36f7f8ef642541eb3fbac82444327dd2aa7dfb393f0041b22ea",
+        "missing_route_exact": true,
+        "record_ids_sha256": "541f9e7620ae2663fd762e385d60e6eddad6e4834dac5df63dfef75631f3ece9",
+        "row_positions_sha256": "ca439ef7bc8f5be60cd7dcb7456c7f5c5be9455338bcf75940ee6f00b52247ab",
+        "rows": 20903
+      },
+      "75": {
+        "champion_sha256": "0391df5135143ac4cc97d21d6f0e78b18feceb37c65aab774ff022b2f7b8329d",
+        "cycles_sha256": "3542484bfdfa1c7833d09351a57f50d15c60898031981ca3567e6ff290f69762",
+        "dan_auxiliary_sha256": "8e52ac0e6e03e2bf09146b8dd7fadfca1bab1d557ad051dc0148b55346f5d331",
+        "feature_cache_sha256": "10a464148f77bf2dd402ce33734ff1e901743a83f553e8189ed986c5814a756e",
+        "linear_auxiliary_sha256": "8b8446f36e531219eeef96a418eda40d12db485987772e030dfdb0f75987cc4b",
+        "missing_route_exact": true,
+        "record_ids_sha256": "340024c53fbececfdbd21bf6f0d637366f2ddecd45a388b7856fee9e9ef4b4d3",
+        "row_positions_sha256": "2c17e594e04e8c5406a52117894c8e296730cfcf88de1423468438e691580df8",
+        "rows": 8491
+      }
+    },
+    "overlap": {
+      "availability_exact": true,
+      "champion_probabilities_different_rows": 8491,
+      "champion_probabilities_exact_equal_rows": 0,
+      "champion_probabilities_required_equal": false,
+      "cycles_exact": true,
+      "earlier_rows_sha256": "2c17e594e04e8c5406a52117894c8e296730cfcf88de1423468438e691580df8",
+      "later_rows_sha256": "2c17e594e04e8c5406a52117894c8e296730cfcf88de1423468438e691580df8",
+      "record_ids_exact": true,
+      "shared_query_rows": 8491,
+      "source_rows_exact": true
+    },
+    "target_free_payload_metadata": true
+  },
+  "prelabel_path": "experiments/CLS_DAN_V1/predictions/PRELABEL.npz",
+  "prelabel_sha256": "3b21bab1cbc1120933808b75ba27abb346b4c71fe01847b11ce8b776409d8e78",
+  "repair_authorization_sha256": "d134f0f8923814e4834f69e0122a725cda2c322858f7f90ab7f2eb860e7d24cf",
+  "reservation_sha256": "7563b0aa325ed99c8af94c57e2c7b737f6d05710cf8821a13e937e88fed12d64",
+  "sample_submission_opened": false,
+  "saved_model_prediction_readback": {
+    "E67_DAN": {
+      "model_sha256": "6326087275c481cc36c78a6e76d0e9cd705258235d37696b3064173f30a264e8",
+      "prediction_readback_bit_identical": true,
+      "prediction_sha256": "8efd2e4d8dca3a4da1a446fee9686350686711e534140f98b4ba7607b4cfae70",
+      "prelabel_auxiliary_bit_identical": true,
+      "query_labels_read": false
+    },
+    "E67_LINEAR": {
+      "model_sha256": "a300077467e1e4a7c768257dc5abe3b1ed82fd14371344d0340195db54941dec",
+      "prediction_readback_bit_identical": true,
+      "prediction_sha256": "6f689abe2957ac1fa112f403465e3ad7b60d88f954220a531932ffd664e1498e",
+      "prelabel_auxiliary_bit_identical": true,
+      "query_labels_read": false
+    },
+    "E75_DAN": {
+      "model_sha256": "65f28ee6d310e04c683e8b75623e7304836dda079359fa47586d328794f17bc2",
+      "prediction_readback_bit_identical": true,
+      "prediction_sha256": "6bdeef29a43afdd760de22ed856bcc4a2ed3130a8fe32bdd98deed3c63d6bb07",
+      "prelabel_auxiliary_bit_identical": true,
+      "query_labels_read": false
+    },
+    "E75_LINEAR": {
+      "model_sha256": "79a6ed9267dc04f41db87d779c2dd4f807c98e66fb8a432bb899131161c08ceb",
+      "prediction_readback_bit_identical": true,
+      "prediction_sha256": "9097b24708ba9b0fd86f62816ba0d01626930d916d2ab9c3ad6d108ea1f0a820",
+      "prelabel_auxiliary_bit_identical": true,
+      "query_labels_read": false
+    }
+  },
+  "saved_models_and_predictions_unchanged": true,
+  "status": "PASS_POSTFIT_PRELABEL_REPAIR_R1",
+  "test_opened": false
+}
