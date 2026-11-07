@@ -109,4 +109,41 @@ def compact(nb, task):
         nb.cells[34].source = nb.cells[34].source.replace("## 7.", "## 8.")
         data = nbformat.v4.new_markdown_cell("## 2. Dataset dan target\n\nModel memprediksi `threat_rank` pada skala 0-100. Ringkasan berikut memakai official Regression Train; bagian EDA kemudian memakai Classification Train secara terpisah.")
         data.id = "samuel-format-dataset"; nb.cells.insert(3,data)
+    for c in nb.cells:
+        if c.cell_type != "markdown": continue
+        c.source = re.sub(r"\*\*Insight[^*]*\.\*\*\s*", "", c.source)
+        c.source = re.sub(r"\*\*Identitas:\*\*\s*", "", c.source)
+        c.source = c.source.replace("Petunjuk data, dependencies, dan bukti eksekusi: [README](README.md).", "")
+        if c.source.startswith("## 1."):
+            c.source = ("## 1. Persiapan\n\n"
+                "Jalankan dengan Python dan pustaka NumPy, pandas, SciPy, Matplotlib, scikit-learn, serta LightGBM untuk Regression. Mulai dari kernel baru, lalu Run All.\n\n"
+                "Sediakan official `classification/Train.csv` untuk EDA. Modeling memakai Train sesuai task; Regression juga memerlukan `regression/Train.csv`. Lokasi induk data dapat diatur melalui `TP2_DATA_DIR`; default repository adalah `data/raw/`. Implementasi pipeline diimpor dari folder `src/` repository. Test dan SampleSubmission hanya diperlukan untuk bagian pembuatan prediksi Test.")
+        if c.source.startswith("## 7."):
+            switch = "RUN_FULL_TRAIN_INFERENCE" if task == "Classification" else "RUN_FULL_TRAIN"
+            c.source = ("## 7. Melatih model akhir dan membuat prediksi Test\n\n"
+                "Evaluasi sebelumnya memisahkan data masa lalu untuk melatih model dan cycle berikutnya untuk mengukur error. Setelah pendekatan dipilih, model dilatih ulang memakai **seluruh 50.608 baris Train**, agar prediksi official Test memanfaatkan semua label yang tersedia. Tahap inilah yang disebut **refit penuh**.\n\n"
+                f"Sel di bawah menjalankannya jika `{switch} = True`: seluruh preprocessing dipelajari ulang dari Train, kemudian model memprediksi Test dan menyimpan CSV lokal. Nilainya dibiarkan `False` saat demonstrasi agar tidak mengulang pembuatan file; **evaluasi temporal di bagian sebelumnya tetap dijalankan**.\n\n"
+                "Tahap ini tidak menghasilkan skor validasi baru karena label Test tidak tersedia. Angka public Kaggle yang ditampilkan berasal dari submission historis, bukan dihitung oleh sel ini.")
+        if task == "Classification" and "## 5. Pipeline" in c.source:
+            c.source = ("Model dua fitur dan majority masih lemah. Fitur structured menaikkan Macro F1 primary menjadi **0,7145 (LR)** dan **0,7310 (HGB)**; TF-IDF saja mencapai **0,8014**. Menggabungkan teks dan struktur pada C2_B mencapai **0,8206**, sehingga kedua jenis informasi saling melengkapi dalam eksperimen ini.\n\n"
+                "Namun C2_B lebih lemah pada teks kosong: Macro F1 subgroup **0,7104**, dibanding **0,7817** setelah memakai fallback HGB pada C4_HGB. Routing dipilih untuk menangani perbedaan tersebut sambil mempertahankan hybrid pada teks terisi. Hasil gabungan menjadi **0,8255 primary / 0,7968 H12**.\n\n"
+                "Pemilihan threshold dari inner history memperbaiki H12, tetapi menurunkan primary C4_HGB dari **0,8255 menjadi 0,8236**. Karena manfaatnya tidak konsisten, keputusan tetap memakai threshold **0,50**.\n\n"
+                "## 5. Pipeline dan validasi temporal\n\nFit pada cycle 47-75, evaluasi 76-79. C2_B memakai structured + TF-IDF Logistic Regression dan C1_B memakai structured HGB. Imputasi, encoding, scaling, dan vocabulary hanya dipelajari dari fold fit.")
+        if task == "Regression" and c.source.startswith("**Alur keputusan:"):
+            c.source = ("Global median menghasilkan MAE **25,0000**. Median menurut impact dan entry friction menurunkannya menjadi **15,3114**, menunjukkan bahwa informasi fitur memberi baseline yang jauh lebih baik. HGB dua fitur dengan objective MAE mencapai **15,1490**; fitur structured yang diperluas mencapai **13,3498** pada primary.\n\n"
+                "Perluasan fitur belum selalu membantu: H12 HGB meningkat dari **15,4779 menjadi 15,5772**, yaitu memburuk. Karena recency dan penghapusan fitur juga tidak konsisten, langkah berikutnya menambahkan informasi teks. Structured Ridge **14,1787** menjadi hybrid Ridge **12,5513** pada primary; perbandingan satu keluarga ini mendukung manfaat prediktif teks.\n\n"
+                "HGB+SVD mencapai **12,3662**, lalu LightGBM+SVD memberi primary terbaik **11,9316**. Namun hybrid Ridge tetap lebih baik pada H12 (**13,9381 vs 14,7040**). LightGBM dipilih dengan menerima trade-off horizon tersebut, bukan karena unggul pada setiap kondisi.")
+        if c.source.startswith("## 8."):
+            if task == "Classification":
+                c.source = ("## 8. Kesimpulan\n\n"
+                    "Laporan dengan teks kosong memiliki proporsi `artifact_signal = 1` lebih tinggi secara agregat (**38,13% vs 34,47%**). Akan tetapi, setelah komposisi periode dan volume disamakan, selisih berbalik menjadi sekitar **-2,2 sampai -2,3 poin persentase**. Jawaban EDA bergantung pada komposisi laporan; status teks kosong saja belum cukup untuk menjelaskan proporsi label.\n\n"
+                    "Pada modeling, teks dan fitur structured saling melengkapi. Hybrid C2_B lebih kuat secara keseluruhan, tetapi lebih lemah saat teks kosong. Karena itu, C4_HGB mempertahankan hybrid pada teks terisi dan memakai structured HGB pada teks kosong. Pilihan ini memberi **Macro F1 0,8255 primary dan 0,7968 H12**, dibanding C2_B **0,8206 dan 0,7886**. Threshold tetap 0,50 karena penyesuaian threshold tidak konsisten memperbaiki primary.\n\n"
+                    "Public benchmark approach individual ini adalah **0,82641**. Nilai tersebut merupakan evaluasi sebagian Test dan berbeda dari skor internal. EDA memberi pemahaman tentang komposisi data; bukti manfaat routing berasal dari evaluasi model yang terpisah.\n\n"
+                    "Kesimpulan tetap terbatas pada data yang dianalisis. Kelompok volume masih kasar, seluruh window sudah digunakan dalam development, dan H12 tidak independen dari primary. Hasil tidak membuktikan sebab-akibat maupun menjamin performa pada private Test.")
+            else:
+                c.source = ("## 8. Kesimpulan\n\n"
+                    "EDA menunjukkan bahwa perbandingan proporsi artifact pada teks kosong dan terisi dipengaruhi waktu serta volume laporan. Gap awal **+3,66 pp** berubah menjadi sekitar **-2,2 sampai -2,3 pp** setelah penyesuaian. Analisis ini memakai target Classification; manfaat teks untuk prediksi `threat_rank` harus dinilai melalui eksperimen Regression tersendiri.\n\n"
+                    "Dalam eksperimen Regression, fitur structured memperbaiki baseline median, kemudian tambahan teks kembali menurunkan MAE. LightGBM L1 dengan TF-IDF/SVD32 dan inner-selected rank blend dipilih karena mencapai **primary MAE 11,9316**. Rank blend menyesuaikan jarak prediksi dalam setiap cycle tanpa menggunakan label inference.\n\n"
+                    "Pilihan tersebut memiliki trade-off. H12 LightGBM adalah **14,7040**, sedangkan hybrid Ridge lebih baik pada **13,9381**. Prediksi juga masih terlalu tinggi pada target rendah dan terlalu rendah pada target tinggi. Karena itu, rata-rata MAE yang baik belum berarti error sudah merata pada semua horizon dan kelompok target.\n\n"
+                    "Public benchmark approach individual ini adalah **11,71363**, terpisah dari validasi internal. Seluruh window telah digunakan dalam development, dan label Test belum tersedia; hasil tidak menjamin private generalization. EDA dan evaluasi model bersama-sama membantu menjelaskan data, alasan pemilihan pendekatan, serta keterbatasan keputusan tersebut.")
     return nb
