@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "policy": "Samuel0.83225 public benchmark (confirmed submission58001282)",
+  "export_source_commit": "ec960303a147a890722a31ad6dcd21dc15ac0408",
+  "source_artifacts": {
+    "validation": {
+      "path": "experiments/runs/optimization_v3_posoffset_a02_endgame_v1/policy_predictions.npz",
+      "sha256": "25d1d2b91348a57d33b3b0e5ce78da29840d115b75e24f9502cc83c1b63ef351"
+    },
+    "test": {
+      "path": "experiments/runs/optimization_v3_a02_cgeom_benchmark_v1/test_predictions.npz",
+      "sha256": "ffc55aa2d18b75438257f3cf0aa205baa3f4c2922180e2b3688b36c352c00271"
+    }
+  },
+  "raw_source_hashes": {
+    "classification/Train.csv": "875552a68a3d24b0f3e1966d6ddb5671e6f54305a1c526e2f0a76747942ed91c",
+    "classification/Test.csv": "4e6c381d582ed24f92d17f620f4f0ad25e2e0def29eb57a91a5482867f6afe3c"
+  },
+  "confirmed_submission_csv_sha256": "189a779b6100333a2fecfe443689fe7d340a331e828167221c81281a7ece4a4a",
+  "missing_threshold": 0.53230976129477,
+  "formula": "present: 0.5*p_pos+0.5*p_a02 at threshold0.50; missing: p_a02 at threshold0.53230976129477",
+  "validation_warning": "Model probabilities are forward predictions. Operational missing threshold was selected on reused adaptive development outcomes, not independently validated. E67/E75 overlap8491 IDs; do not pool both as independent rows.",
+  "labels": "No official Train labels or Test labels exported. samuel_prediction is a model prediction, not ground truth. Join Train labels locally by record_id when evaluating.",
+  "calibration_warning": "p_samuel is a score in[0,1], not proven calibrated or directly commensurate with teammate scores.",
+  "new_fits": 0,
+  "new_inference": 0,
+  "new_metric_selection": 0,
+  "kaggle_access": false,
+  "counts": {
+    "validation_rows": 29394,
+    "test_rows": 29421,
+    "primary_unique_rows": 20903,
+    "overlapping_validation_IDs_across_origins": 8491,
+    "test_missing_rows": 1062,
+    "test_predicted_positive": 6759
+  },
+  "files": {
+    "validation_probabilities.csv.gz": {
+      "sha256": "dbc8f7ceca5b04921fd49db0c1891b52ac76838e7053038ede13d4a8c5b2136d",
+      "rows": 29394,
+      "columns": [
+        "origin",
+        "fit_cycle_start",
+        "fit_cycle_end",
+        "record_id",
+        "source_row",
+        "cycle_code",
+        "stream_missing",
+        "p_pos",
+        "p_a02",
+        "p_samuel",
+        "operational_threshold",
+        "samuel_prediction",
+        "prediction_at_050",
+        "is_primary_unique"
+      ],
+      "bytes": 1234614
+    },
+    "test_probabilities.csv.gz": {
+      "sha256": "c9cd49b3f446c255451e4dd4aa81bed2e059a83324d709859fc57f8c4bdab214",
+      "rows": 29421,
+      "columns": [
+        "origin",
+        "fit_cycle_start",
+        "fit_cycle_end",
+        "record_id",
+        "source_row",
+        "cycle_code",
+        "stream_missing",
+        "p_pos",
+        "p_a02",
+        "p_samuel",
+        "operational_threshold",
+        "samuel_prediction",
+        "prediction_at_050"
+      ],
+      "bytes": 1226844
+    }
+  }
+}
