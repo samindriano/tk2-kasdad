@@ -1,0 +1,164 @@
+{
+  "status": "PASS_STANDALONE_FINAL_REVIEW",
+  "date": "2026-11-08",
+  "files": {
+    "Classification": {
+      "path": "notebooks\\samuel\\final\\TP2_Classification_A06_KasdudLovers_SamuelIndriano_2406400524.ipynb",
+      "sha256": "b74b1630e9c9fe9e400a3f0a59d5f9acd588fd28f188c9445c6738316fcd9b51",
+      "cells": 47,
+      "executed_code_cells": 24,
+      "standalone": true,
+      "historical_sources": {
+        "experiments/classification_round1/freeze.json": "9eb7a7156a8985aac815e17aead155604d669e20f22f1d51bacfae9f7f4f83c9",
+        "experiments/classification_round1/protocol.json": "cf2a129c5c6f555fb5d1f15d7ef65595abd4bb09a6913f55b4d96ac5cdfb6b80",
+        "experiments/classification_round2/freeze.json": "f9887c960ecc9dd7aea20b9dcd9475ce30e8e2cab54c6af47665037e0198cf06",
+        "reports/classification_round1/fit_audits/fit75.json": "428a8f1530e0eadf288303721519e521ee9b14fc65bff84faf09aae5a08d4e2b",
+        "reports/classification_round1/results.json": "3c2dc8d9a83d351e38eea3ea90da3b07fd4e037baa5d030ea16868db7ddfe666",
+        "reports/classification_round2/results.json": "10bcbe0033b3a66a431bebf79ce5e9014b8cd4290e097228dd1eeada596e7414",
+        "reports/submissions/classification_initial_manifest.json": "3369ec1a73c98a276c65783bd2e71a3bdfc129cece8d48a035aee98846818974"
+      },
+      "inline_sources": {
+        "src/eda/availability.py": "2240da85704003ebeeb36b147ac01181f8f45da4e030af31c6cc7368dc2273d1",
+        "src/models/classification_metrics.py": "db77dd99210835006f96db1659bf4e87213179962b8f692d181af831b6539563",
+        "src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+        "src/models/classification_round2_models.py": "239008f056c6f5e004e84d2b9df9f5bfb20695ccfad90eed4deec3463c7d4575",
+        "src/models/round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4"
+      }
+    },
+    "Regression": {
+      "path": "notebooks\\samuel\\final\\TP2_Regression_A06_KasdudLovers_SamuelIndriano_2406400524.ipynb",
+      "sha256": "fee70c599b26e025514fb90f5923423968cfae73f521be5b823ef0b83d8793ca",
+      "cells": 45,
+      "executed_code_cells": 23,
+      "standalone": true,
+      "historical_sources": {
+        "reports/regression_research/report_data.json": "d1681c17c1938e21668205f15a582bc90d1db419e5033de606502252b0104f95",
+        "reports/regression_research/stage5_lgb_text.json": "a7fb69f80c4aa0d91c01f50669b2e921dd51e1f04a7a91153ad6e71565837cf5",
+        "reports/regression_round2/results.json": "75e7d54ed58f414a271409481a59337fd030bb391e6d65941137dff67f0345ac",
+        "reports/round1/results.json": "2d92c744d9dc3076664f2fea312504e147baa2f931fbd22a2c17ff5fe321b376"
+      },
+      "inline_sources": {
+        "src/models/regression_research_lgb_text.py": "0fbcd282a6873616c866fc1c12ff4f86a5091e91d266e6900885a95ea8054777",
+        "src/models/regression_research_tabular.py": "674d7e52c485583729b8fe999dc133c39aae8dd85abd005a598e2caea9af99f9",
+        "src/models/regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+        "src/models/regression_round2_models.py": "f56f7ee2c337acdf2cbe7160719faf62b1e3d3470a7f656b044ce0890d677e09",
+        "src/models/round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4"
+      }
+    }
+  },
+  "standalone_inputs": "Notebook plus documented official raw CSVs and common installed Python libraries only; no src/scripts/historical report/private cache files at runtime.",
+  "luna_fresh_kernel_runs_per_notebook": 2,
+  "root_independent_runs": [
+    {
+      "task": "Classification",
+      "full_test": false,
+      "seconds": 29.19,
+      "errors": 0,
+      "code_cells": 24,
+      "isolated_runtime_files": [
+        "TP2_Classification_A06_KasdudLovers_SamuelIndriano_2406400524.ipynb",
+        "data\\raw\\classification\\Train.csv"
+      ]
+    },
+    {
+      "task": "Regression",
+      "full_test": false,
+      "seconds": 53.94,
+      "errors": 0,
+      "code_cells": 23,
+      "isolated_runtime_files": [
+        "TP2_Regression_A06_KasdudLovers_SamuelIndriano_2406400524.ipynb",
+        "data\\raw\\classification\\Train.csv",
+        "data\\raw\\regression\\Train.csv"
+      ]
+    },
+    {
+      "task": "Classification",
+      "full_test": true,
+      "seconds": 62.94,
+      "errors": 0,
+      "code_cells": 24,
+      "isolated_runtime_files": [
+        "classification_reproduced.csv",
+        "TP2_Classification_A06_KasdudLovers_SamuelIndriano_2406400524.ipynb",
+        "data\\raw\\classification\\SampleSubmission.csv",
+        "data\\raw\\classification\\Test.csv",
+        "data\\raw\\classification\\Train.csv"
+      ],
+      "submission_verified": {
+        "rows": 29421,
+        "target": "artifact_signal",
+        "sha256": "97156470466ec8e91f1454bcdbef464f9e43f928ede67e2a9dadada1fb6d090f",
+        "valid": true
+      }
+    },
+    {
+      "task": "Regression",
+      "full_test": true,
+      "seconds": 91.5,
+      "errors": 0,
+      "code_cells": 23,
+      "isolated_runtime_files": [
+        "regression_reproduced.csv",
+        "TP2_Regression_A06_KasdudLovers_SamuelIndriano_2406400524.ipynb",
+        "data\\raw\\classification\\Train.csv",
+        "data\\raw\\regression\\SampleSubmission.csv",
+        "data\\raw\\regression\\Test.csv",
+        "data\\raw\\regression\\Train.csv"
+      ],
+      "submission_verified": {
+        "rows": 29421,
+        "target": "threat_rank",
+        "sha256": "3711cd83a90f03035614a7603702a81bb461de04aef11219af8f0c1eb15d680b",
+        "valid": true
+      }
+    }
+  ],
+  "root_source_provenance_checks": {
+    "TP2_Classification_A06_KasdudLovers_SamuelIndriano_2406400524.ipynb": {
+      "candidate_sha256": "e3e3be3f676e255a76233bf58472372ffa669ffb877a1eeb409c9006228deb4f",
+      "historical_sources_verified": {
+        "experiments/classification_round1/protocol.json": "cf2a129c5c6f555fb5d1f15d7ef65595abd4bb09a6913f55b4d96ac5cdfb6b80",
+        "experiments/classification_round1/freeze.json": "9eb7a7156a8985aac815e17aead155604d669e20f22f1d51bacfae9f7f4f83c9",
+        "experiments/classification_round2/freeze.json": "f9887c960ecc9dd7aea20b9dcd9475ce30e8e2cab54c6af47665037e0198cf06",
+        "reports/classification_round1/results.json": "3c2dc8d9a83d351e38eea3ea90da3b07fd4e037baa5d030ea16868db7ddfe666",
+        "reports/classification_round2/results.json": "10bcbe0033b3a66a431bebf79ce5e9014b8cd4290e097228dd1eeada596e7414",
+        "reports/classification_round1/fit_audits/fit75.json": "428a8f1530e0eadf288303721519e521ee9b14fc65bff84faf09aae5a08d4e2b",
+        "reports/submissions/classification_initial_manifest.json": "3369ec1a73c98a276c65783bd2e71a3bdfc129cece8d48a035aee98846818974"
+      },
+      "inline_sources_verified": {
+        "src/models/round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+        "src/models/classification_models.py": "6fa123f5da93c2d1d1fc2d2eae0a04ead2988848123ece9b206e97ae5021c646",
+        "src/models/classification_round2_models.py": "239008f056c6f5e004e84d2b9df9f5bfb20695ccfad90eed4deec3463c7d4575",
+        "src/models/classification_metrics.py": "db77dd99210835006f96db1659bf4e87213179962b8f692d181af831b6539563",
+        "src/eda/availability.py": "2240da85704003ebeeb36b147ac01181f8f45da4e030af31c6cc7368dc2273d1"
+      }
+    },
+    "TP2_Regression_A06_KasdudLovers_SamuelIndriano_2406400524.ipynb": {
+      "candidate_sha256": "cfcb8d94373acb090da37ba68496a76429e58b2e99bedaff68a18ee5eaeee1fd",
+      "historical_sources_verified": {
+        "reports/round1/results.json": "2d92c744d9dc3076664f2fea312504e147baa2f931fbd22a2c17ff5fe321b376",
+        "reports/regression_round2/results.json": "75e7d54ed58f414a271409481a59337fd030bb391e6d65941137dff67f0345ac",
+        "reports/regression_research/report_data.json": "d1681c17c1938e21668205f15a582bc90d1db419e5033de606502252b0104f95",
+        "reports/regression_research/stage5_lgb_text.json": "a7fb69f80c4aa0d91c01f50669b2e921dd51e1f04a7a91153ad6e71565837cf5"
+      },
+      "inline_sources_verified": {
+        "src/models/round1_models.py": "766e0c2e183c5aa653a5c5b81aae4d646e99cecdcd043bead3eadb99edd0a7a4",
+        "src/models/regression_round2_models.py": "f56f7ee2c337acdf2cbe7160719faf62b1e3d3470a7f656b044ce0890d677e09",
+        "src/models/regression_research_tabular.py": "674d7e52c485583729b8fe999dc133c39aae8dd85abd005a598e2caea9af99f9",
+        "src/models/regression_research_text.py": "685dbbc1a1fe8508f570e0eaaa355d81cad857d944a64c2c2a23563492777ba6",
+        "src/models/regression_research_lgb_text.py": "0fbcd282a6873616c866fc1c12ff4f86a5091e91d266e6900885a95ea8054777"
+      }
+    }
+  },
+  "visual_review": "EDA figures retained, confusion matrix and regression error plots inspected. Added helper cells collapsed for presentation; long hash blocks moved to notebook metadata; all custom definitions remain readable inline.",
+  "score_provenance": "W6 metrics recomputed, historical comparisons explicitly embedded with verified SHA256 provenance. No new research or policy selection based on Test labels.",
+  "remaining_limits": [
+    "Historical model-family selection used development windows repeatedly; not an independent untouched holdout.",
+    "Public scores shown are historical benchmarks, not newly measured Kaggle scores.",
+    "EDA target remains artifact_signal in both notebooks; no claim it explains threat_rank."
+  ],
+  "kaggle_uploads": 0,
+  "canonical_test_inference_default": false,
+  "old_notebooks_and_unrelated_user_changes_preserved": true
+}
